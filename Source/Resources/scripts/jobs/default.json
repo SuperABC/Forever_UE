@@ -1,0 +1,29 @@
+[
+{
+	"milestone": "game_start",
+	"visible": false,
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [
+	],
+	"changes": [
+		{"type": "add_option", "target": "$$self.name", "option": "ÄãºÃ"}
+	],
+	"subsequences": [
+		"test_dialog"
+	]
+},
+{
+	"milestone": "test_dialog",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "option": "ÄãºÃ"}],
+	"dialogs": [
+		{"list": [
+			{"content": "ÄãºÃ¡£"}
+		]}
+	],
+	"changes": [
+	],
+	"subsequences": []
+}
+]

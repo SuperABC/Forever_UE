@@ -1,0 +1,57 @@
+{
+	"names":["楚梦瑶", "陈雨舒", "唐韵", "冯笑笑", "关馨", "雨凝", "土冉冉", "王心妍", "宋凌珊", "郁小可", "杨七七", "孙静怡", "许诗涵", "刘静涵", "应梓瑜", "天婵"],
+	"milestones":
+[
+{ //arrive_songshan
+	"milestone": "arrive_songshan",
+	"visible": false,
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [
+		{"list": [
+			{"content": "你忘记了所有的事情，摸遍全身只找到一张纸条，上面写着：去鹏展大厦找楚鹏展。"}
+		]}
+	],
+	"changes": [
+		{"type": "spawn_npc", "target": "楚梦瑶", "gender": "female", "birthday": "$$system.time.year-17+\"年5月21日\""},
+		{"type": "spawn_npc", "target": "陈雨舒", "gender": "female", "birthday": "$$system.time.year-17+\"年8月6日\""},
+		{"type": "spawn_npc", "target": "唐韵", "gender": "female", "birthday": "$$system.time.year-17+\"年6月22日\""},
+		{"type": "spawn_npc", "target": "冯笑笑", "gender": "female", "birthday": "$$system.time.year-16+\"年11月12日\""},
+		{"type": "spawn_npc", "target": "关馨", "gender": "female", "birthday": "$$system.time.year-17+\"年1月8日\""},
+		{"type": "spawn_npc", "target": "雨凝", "gender": "female", "birthday": "$$system.time.year-17+\"年12月1日\""},
+		{"type": "spawn_npc", "target": "土冉冉", "gender": "female", "birthday": "$$system.time.year-16+\"年7月10日\""},
+		{"type": "spawn_npc", "target": "王心妍", "gender": "female", "birthday": "$$system.time.year-18+\"年6月29日\""},
+		{"type": "spawn_npc", "target": "宋凌珊", "gender": "female", "birthday": "$$system.time.year-23+\"年3月6日\""},
+		{"type": "spawn_npc", "target": "郁小可", "gender": "female", "birthday": "$$system.time.year-17+\"年9月15日\""},
+		{"type": "spawn_npc", "target": "杨七七", "gender": "female", "birthday": "$$system.time.year-15+\"年1月20日\""},
+		{"type": "spawn_npc", "target": "孙静怡", "gender": "female", "birthday": "$$system.time.year-31+\"年12月5日\""},
+		{"type": "spawn_npc", "target": "许诗涵", "gender": "female", "birthday": "$$system.time.year-28+\"年3月19日\""},
+		{"type": "spawn_npc", "target": "刘静涵", "gender": "female", "birthday": "$$system.time.year-20+\"年8月2日\""},
+		{"type": "spawn_npc", "target": "应梓瑜", "gender": "female", "birthday": "$$system.time.year-14+\"年10月25日\""},
+		{"type": "spawn_npc", "target": "天婵", "gender": "female", "birthday": "$$system.time.year-19+\"年11月4日\""},
+		
+		{"type": "spawn_npc", "target": "楚鹏展", "gender": "male", "birthday": "$$system.time.year-46+\"年8月8日\""},
+		{"type": "add_option", "target": "楚鹏展", "option": "你好"},
+		{"type": "set_value", "variable": "plot_step", "value": "before_meet_cpz"}
+	],
+	"subsequences": [
+		"meet_cpz[at_plot]"
+	]
+},
+
+{ //meet_cpz[at_plot]
+	"milestone": "meet_cpz[at_plot]",
+	"visible": false,
+	"triggers": [{"type": "option_dialog", "target": "楚鹏展", "option": "你好"}],
+	"dialogs": [
+		{"condition": "$$plot_step==before_meet_cpz", "list": [
+			{"speaker": "林逸", "content": "楚叔叔您好，我是林逸。"}
+		]}
+	],
+	"changes": [
+		{"type": "remove_option", "target": "楚鹏展", "value": "你好"},
+		{"type": "set_value", "variable": "plot_step", "value": "after_meet_cpz"}
+	],
+	"subsequences": []
+}
+]
+}

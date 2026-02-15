@@ -1,0 +1,7 @@
+{
+	"mods":{
+		"character": ["default", "mod"],
+		"fitness": ["default", "mod"],
+		"skill": ["default", "mod"]
+	}
+}

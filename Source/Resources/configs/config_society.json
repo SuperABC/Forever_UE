@@ -1,0 +1,6 @@
+{
+	"mods":{
+		"organization": ["default", "mod"],
+		"calendar": ["standard", "full", "mod"]
+	}
+}

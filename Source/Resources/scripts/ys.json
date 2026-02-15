@@ -1,0 +1,998 @@
+{
+	"names":["莫娜", "琴", "优菈", "迪卢克", "阿贝多",
+		"凝光", "北斗", "刻晴", "胡桃", "甘雨", "夜兰", "达达利亚", "钟离", "魈",
+		"神里绫华", "宵宫", "雷电将军", "八重神子", "千织", "枫原万叶",
+		"妮露", "莱依拉", "散兵", "艾尔海森",
+		"夏洛蒂", "芙宁娜", "娜维娅", "克洛琳德", "纳维莱特", "莱欧斯利"],
+	"milestones":
+[
+{ //arrive_teyvat
+	"milestone": "arrive_teyvat",
+	"visible": false,
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [
+		{"list": [
+			{"content": "空和荧来到了提瓦特。"},
+			[
+				{
+					"option": "作为空",
+					"dialogs":[{"list":[{"content": "现在你是空，快来体验和提瓦特女孩们性交的乐趣把！"}]}],
+					"changes":[{"type": "set_value", "variable": "control_person", "value": "空"}]
+				},
+				{
+					"option": "作为荧",
+					"dialogs":[{"list":[{"content": "现在你是荧，快来体验和提瓦特男孩们性交的乐趣把！"}]}],
+					"changes":[{"type": "set_value", "variable": "control_person", "value": "荧"}]
+				}
+			]
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_mona", "value": "0"},
+		{"type": "set_value", "variable": "fuck_qin", "value": "0"},
+		{"type": "set_value", "variable": "fuck_youla", "value": "0"},
+		{"type": "set_value", "variable": "fuck_diluke", "value": "0"},
+		{"type": "set_value", "variable": "fuck_abeiduo", "value": "0"},
+		{"type": "set_value", "variable": "fuck_ningguang", "value": "0"},
+		{"type": "set_value", "variable": "fuck_beidou", "value": "0"},
+		{"type": "set_value", "variable": "fuck_keqqing", "value": "0"},
+		{"type": "set_value", "variable": "fuck_hutao", "value": "0"},
+		{"type": "set_value", "variable": "fuck_ganyu", "value": "0"},
+		{"type": "set_value", "variable": "fuck_yelan", "value": "0"},
+		{"type": "set_value", "variable": "fuck_dadaliya", "value": "0"},
+		{"type": "set_value", "variable": "fuck_zhongli", "value": "0"},
+		{"type": "set_value", "variable": "fuck_xiao", "value": "0"},
+		{"type": "set_value", "variable": "fuck_shenlilinghua", "value": "0"},
+		{"type": "set_value", "variable": "fuck_xiaogong", "value": "0"},
+		{"type": "set_value", "variable": "fuck_leidianjiangjun", "value": "0"},
+		{"type": "set_value", "variable": "fuck_bachongshenzi", "value": "0"},
+		{"type": "set_value", "variable": "fuck_qianzhi", "value": "0"},
+		{"type": "set_value", "variable": "fuck_fengyuanwanye", "value": "0"},
+		{"type": "set_value", "variable": "fuck_nilu", "value": "0"},
+		{"type": "set_value", "variable": "fuck_laiyila", "value": "0"},
+		{"type": "set_value", "variable": "fuck_sanbing", "value": "0"},
+		{"type": "set_value", "variable": "fuck_aierhaisen", "value": "0"},
+		{"type": "set_value", "variable": "fuck_xialuodi", "value": "0"},
+		{"type": "set_value", "variable": "fuck_funingna", "value": "0"},
+		{"type": "set_value", "variable": "fuck_naweiya", "value": "0"},
+		{"type": "set_value", "variable": "fuck_keluolinde", "value": "0"},
+		{"type": "set_value", "variable": "fuck_naweilaite", "value": "0"},
+		{"type": "set_value", "variable": "fuck_laiousili", "value": "0"},
+		
+		{"type": "spawn_npc", "target": "莫娜", "gender": "female", "birthday": "$$system.time.year-17+年8月31日"},
+		{"type": "add_option", "target": "莫娜", "option": "性交"},
+		{"type": "spawn_npc", "target": "琴", "gender": "female", "birthday": "$$system.time.year-28+年3月14日"},
+		{"type": "add_option", "target": "琴", "option": "性交"},
+		{"type": "spawn_npc", "target": "优菈", "gender": "female", "birthday": "$$system.time.year-21+年10月25日"},
+		{"type": "add_option", "target": "优菈", "option": "性交"},
+		{"type": "spawn_npc", "target": "迪卢克", "gender": "male", "birthday": "$$system.time.year-26+年4月30日"},
+		{"type": "add_option", "target": "迪卢克", "option": "性交"},
+		{"type": "spawn_npc", "target": "阿贝多", "gender": "male", "birthday": "$$system.time.year-25+年9月13日"},
+		{"type": "add_option", "target": "阿贝多", "option": "性交"},
+		{"type": "spawn_npc", "target": "凝光", "gender": "female", "birthday": "$$system.time.year-32+年8月26日"},
+		{"type": "add_option", "target": "凝光", "option": "性交"},
+		{"type": "spawn_npc", "target": "北斗", "gender": "female", "birthday": "$$system.time.year-33+年2月14日"},
+		{"type": "add_option", "target": "北斗", "option": "性交"},
+		{"type": "spawn_npc", "target": "刻晴", "gender": "female", "birthday": "$$system.time.year-28+年11月20日"},
+		{"type": "add_option", "target": "刻晴", "option": "性交"},
+		{"type": "spawn_npc", "target": "胡桃", "gender": "female", "birthday": "$$system.time.year-16+年7月15日"},
+		{"type": "add_option", "target": "胡桃", "option": "性交"},
+		{"type": "spawn_npc", "target": "甘雨", "gender": "female", "birthday": "$$system.time.year-24+年12月2日"},
+		{"type": "add_option", "target": "甘雨", "option": "性交"},
+		{"type": "spawn_npc", "target": "夜兰", "gender": "female", "birthday": "$$system.time.year-29+年4月20日"},
+		{"type": "add_option", "target": "夜兰", "option": "性交"},
+		{"type": "spawn_npc", "target": "达达利亚", "gender": "male", "birthday": "$$system.time.year-21+年7月20日"},
+		{"type": "add_option", "target": "达达利亚", "option": "性交"},
+		{"type": "spawn_npc", "target": "钟离", "gender": "male", "birthday": "$$system.time.year-36+年12月31日"},
+		{"type": "add_option", "target": "钟离", "option": "性交"},
+		{"type": "spawn_npc", "target": "魈", "gender": "male", "birthday": "$$system.time.year-22+年4月17日"},
+		{"type": "add_option", "target": "魈", "option": "性交"},
+		{"type": "spawn_npc", "target": "神里绫华", "gender": "female", "birthday": "$$system.time.year-24+年9月28日"},
+		{"type": "add_option", "target": "神里绫华", "option": "性交"},
+		{"type": "spawn_npc", "target": "宵宫", "gender": "female", "birthday": "$$system.time.year-18+年6月21日"},
+		{"type": "add_option", "target": "宵宫", "option": "性交"},
+		{"type": "spawn_npc", "target": "雷电将军", "gender": "female", "birthday": "$$system.time.year-34+年6月26日"},
+		{"type": "add_option", "target": "雷电将军", "option": "性交"},
+		{"type": "spawn_npc", "target": "八重神子", "gender": "female", "birthday": "$$system.time.year-34+年6月27日"},
+		{"type": "add_option", "target": "八重神子", "option": "性交"},
+		{"type": "spawn_npc", "target": "千织", "gender": "female", "birthday": "$$system.time.year-21+年8月17日"},
+		{"type": "add_option", "target": "千织", "option": "性交"},
+		{"type": "spawn_npc", "target": "枫原万叶", "gender": "male", "birthday": "$$system.time.year-28+年10月29日"},
+		{"type": "add_option", "target": "枫原万叶", "option": "性交"},
+		{"type": "spawn_npc", "target": "妮露", "gender": "female", "birthday": "$$system.time.year-26+年12月3日"},
+		{"type": "add_option", "target": "妮露", "option": "性交"},
+		{"type": "spawn_npc", "target": "莱依拉", "gender": "female", "birthday": "$$system.time.year-19+年12月19日"},
+		{"type": "add_option", "target": "莱依拉", "option": "性交"},
+		{"type": "spawn_npc", "target": "散兵", "gender": "male", "birthday": "$$system.time.year-16+年1月3日"},
+		{"type": "add_option", "target": "散兵", "option": "性交"},
+		{"type": "spawn_npc", "target": "艾尔海森", "gender": "male", "birthday": "$$system.time.year-33+年2月11日"},
+		{"type": "add_option", "target": "艾尔海森", "option": "性交"},
+		{"type": "spawn_npc", "target": "夏洛蒂", "gender": "female", "birthday": "$$system.time.year-22+年4月10日"},
+		{"type": "add_option", "target": "夏洛蒂", "option": "性交"},
+		{"type": "spawn_npc", "target": "芙宁娜", "gender": "female", "birthday": "$$system.time.year-24+年10月13日"},
+		{"type": "add_option", "target": "芙宁娜", "option": "性交"},
+		{"type": "spawn_npc", "target": "娜维娅", "gender": "female", "birthday": "$$system.time.year-31+年8月16日"},
+		{"type": "add_option", "target": "娜维娅", "option": "性交"},
+		{"type": "spawn_npc", "target": "克洛琳德", "gender": "female", "birthday": "$$system.time.year-34+年9月20日"},
+		{"type": "add_option", "target": "克洛琳德", "option": "性交"},
+		{"type": "spawn_npc", "target": "纳维莱特", "gender": "male", "birthday": "$$system.time.year-32+年12月18日"},
+		{"type": "add_option", "target": "纳维莱特", "option": "性交"},
+		{"type": "spawn_npc", "target": "莱欧斯利", "gender": "male", "birthday": "$$system.time.year-32+年11月23日"},
+		{"type": "add_option", "target": "莱欧斯利", "option": "性交"}
+	],
+	"subsequences": [
+		"meet_mona",
+		"meet_qin",
+		"meet_youla",
+		"meet_diluke",
+		"meet_abeiduo",
+		"meet_ningguang",
+		"meet_beidou",
+		"meet_keqqing",
+		"meet_hutao",
+		"meet_ganyu",
+		"meet_yelan",
+		"meet_dadaliya",
+		"meet_zhongli",
+		"meet_xiao",
+		"meet_shenlilinghua", 
+		"meet_xiaogong",
+		"meet_leidianjiangjun",
+		"meet_bachongshenzi",
+		"meet_qianzhi",
+		"meet_fengyuanwanye",
+		"meet_nilu",
+		"meet_laiyila",
+		"meet_sanbing",
+		"meet_aierhaisen",
+		"meet_xialuodi",
+		"meet_funingna",
+		"meet_naweiya",
+		"meet_keluolinde",
+		"meet_naweilaite",
+		"meet_laiousili"
+	]
+},
+
+{ //meet_mona
+	"milestone": "meet_mona",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "莫娜", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_mona==0", "list": [
+			{"speaker": "莫娜", "content": "你来了，脱衣服吧。"},
+			{"speaker": "空", "content": "莫娜？你知道我要来？"},
+			{"content": "莫娜神秘地笑了笑，轻轻关上了家门。"},
+			{"speaker": "莫娜", "content": "星空告诉我，今天你会给我破处，所以我早早就脱光衣服等着你了。"},
+			{"speaker": "空", "content": "占星术连这个都能预测到吗？"},
+			{"speaker": "莫娜", "content": "当然，星辰不会说谎。来吧，我已经准备好了。"},
+			{"content": "空脱掉衣服，给莫娜展示自己已经硬的发烫的大阴茎。"},
+			{"content": "莫娜走到空的身前蹲下，伸手轻轻抚摸空的阴茎。"},
+			{"content": "空再也忍不住了，抓着莫娜的头就把阴茎捅到了她的嘴里。"},
+			{"speaker": "莫娜", "content": "呜呜呜。"},
+			{"content": "空感觉不过瘾，他继续把阴茎往深处捅，就插进了莫娜的嗓子里。"},
+			{"content": "莫娜已经无法发出声音了，只能任由空的阴茎在自己的嗓子里摩擦。"},
+			{"content": "这样口交了一会，空就要进一步性交了，于是他拔出了阴茎。"},
+			{"speaker": "莫娜", "content": "不要着急，根据星象，我们应该在水晶球旁边布置好水元素再性交。"},
+			{"content": "莫娜躺在铺着丝绸的地毯上，运用水元素的力量布置好了环境，水晶球在旁边散发着微光。"},
+			{"speaker": "空", "content": "需要我温柔一点吗？"},
+			{"speaker": "莫娜", "content": "不，按照命运的安排来就好。"},
+			{"content": "空趴在莫娜身上，对准莫娜的阴道口之后就将阴茎插了进去。"},
+			{"speaker": "莫娜", "content": "啊！这就是破处的感觉吗？"},
+			{"content": "莫娜紧咬嘴唇，但眼神中充满好奇。"},
+			{"speaker": "空", "content": "你还好吗？"},
+			{"speaker": "莫娜", "content": "继续，我想知道接下来会发生什么。"},
+			{"content": "空开始了快速有节奏地抽插，莫娜的疼痛逐渐转变为愉悦。"},
+			{"speaker": "莫娜", "content": "原来这就是星辰预示的快感。"},
+			{"content": "莫娜主动搂住空的脖子，献上深吻。"},
+			{"content": "空的节奏逐渐加快，莫娜的呻吟声在家中回荡。"},
+			{"speaker": "莫娜", "content": "啊！我看到了，星辰在闪耀。"},
+			{"content": "在莫娜达到高潮的同时，空也将精液射入了她的体内。"},
+			{"content": "两人相拥着喘息，水晶球的光芒似乎更加明亮了。"},
+			{"speaker": "莫娜", "content": "谢谢你，旅行者。你让我对命运有了更深的理解。"},
+			{"content": "空轻轻拔出阴茎，为莫娜披上外衣。"},
+			{"speaker": "空", "content": "你的占星术真的很准。"},
+			{"speaker": "莫娜", "content": "当然，我可是最优秀的占星术士。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_mona", "value": "$$fuck_mona+1"}
+	],
+	"subsequences": []
+},
+{ //meet_qin
+	"milestone": "meet_qin",
+	"visible": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "琴", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_qin==0", "list": [
+			{"speaker": "琴", "content": "旅行者，你来了。我正在处理一些文件，请稍等片刻。"},
+			{"content": "琴专注地批阅着桌上的文件，阳光透过窗户洒在她金色的头发上。"},
+			{"speaker": "空", "content": "琴团长工作真是认真呢。"},
+			{"content": "过了一会儿，琴终于放下笔，抬头看向空。"},
+			{"speaker": "琴", "content": "抱歉让你久等了。最近蒙德城的事务比较多。"},
+			{"speaker": "琴", "content": "作为古恩希尔德家族的长女，我还从来没有体验过性交的感觉，今天你来了，我希望你可以帮我破处。"},
+			{"speaker": "空", "content": "没问题，愿为琴团长效劳。"},
+			{"content": "空开始温柔地解开琴的制服纽扣，琴配合地脱下了衣服，然后又帮空也脱光了衣服。"},
+			{"content": "空将琴轻轻抱到办公桌上，分开她的双腿。"},
+			{"speaker": "琴", "content": "你太着急了，应该从亲嘴和揉我的乳房开始。"},
+			{"content": "空于是听话地亲住了琴的嘴，同时双手抓住了一对大乳房。"},
+			{"content": "琴也伸手抓住了已经硬邦邦的阴茎，轻轻地撸着。"},
+			{"speaker": "空", "content": "琴团长，我忍不住了，我要插进去了。"},
+			{"content": "还没说完，空就迫不及待地地将阴茎顶入琴紧致的处女阴道。"},
+			{"speaker": "琴", "content": "你也太急了呀。"},
+			{"content": "虽然琴没有吭声，但她紧紧抓住桌沿，身体因为疼痛而微微颤抖。"},
+			{"speaker": "空", "content": "放松，琴，深呼吸。"},
+			{"content": "空一边轻声安慰，一边用力地抽插着。"},
+			{"speaker": "琴", "content": "原来，这就是成为女人的感觉。"},
+			{"content": "随着空的温柔抽插，琴逐渐适应了这种感觉，开始笑吟吟地看着空。"},
+			{"speaker": "琴", "content": "嗯，可以，可以再快一点。"},
+			{"content": "空于是加快了节奏，琴的呻吟声也越来越大。"},
+			{"speaker": "琴", "content": "啊！好舒服！"},
+			{"content": "琴的阴道紧紧包裹着空的阴茎，处女的特有紧致让空也快要到达极限。"},
+			{"speaker": "空", "content": "琴，我要射了。"},
+			{"speaker": "琴", "content": "嗯，继续肏我，都射进子宫里。"},
+			{"content": "在琴达到高潮的同时，空也将炽热的精液射入了她的体内。"},
+			{"content": "两人相拥着喘息，琴的脸上露出了从未有过的放松表情。"},
+			{"speaker": "琴", "content": "谢谢你，旅行者。让我体验到了作为普通女人的快乐。"},
+			{"content": "空拍了一下琴的屁股，拔出了阴茎，然后帮她穿上衣服。"},
+			{"speaker": "空", "content": "你永远都是蒙德最优秀的代理团长。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_qin", "value": "$$fuck_qin+1"}
+	],
+	"subsequences": []
+},
+{ //meet_youla
+	"milestone": "meet_youla",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "优菈", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_youla==0", "list": [
+			{"speaker": "优菈", "content": "哦？这不是旅行者吗？来得正好，我有个重要的请求。"},
+			{"speaker": "空", "content": "优菈？有什么事吗？"},
+			{"content": "酒馆里的其他客人纷纷投来好奇的目光。"},
+			{"speaker": "优菈", "content": "作为劳伦斯家族的后裔，我需要体验一下成为真正女人的感觉。今天就在这里，我要你帮我破处。"},
+			{"speaker": "空", "content": "好呀，但周围这么多观众，如果有其他女孩子也想要加入性交呢？"},
+			{"speaker": "优菈", "content": "不行，今天你只能肏我一个人。"},
+			{"content": "空在众人的注视脱光了优菈和自己的衣服，酒馆里的气氛变得热烈起来。"},
+			{"content": "空坐在了沙发上，站立的巨大阴茎格外引人注目。"},
+			{"content": "优菈主动骑在了空的身上，阴道口对准了龟头，就开始往下坐。"},
+			{"speaker": "优菈", "content": "天哪，好疼啊。不行，劳伦斯家族的人从不畏惧疼痛！"},
+			{"content": "紧接着，优菈就不顾一切地完全坐了下去。"},
+			{"content": "为了缓解疼痛，优菈用力地亲住空的嘴，舌头快速地舔着空的舌头。"},
+			{"speaker": "空顺势抓住了优菈的一对大乳房，用力地揉着。"},
+			{"content": "围观的蒙德居民发出阵阵惊呼，有人鼓掌，有人吹口哨。"},
+			{"content": "优菈就这么在空的身上坐了一会，感觉不那么疼了，就开始上下移动着身体。"},
+			{"content": "空配合着抽插着自己的阴茎，同时积极回应着优菈的舌头。"},
+			{"content": "优菈移动的速度越来越快，叫声也越来越放荡。"},
+			{"speaker": "优菈", "content": "啊！好舒服！这就是成为女人的感觉吗？"},
+			{"speaker": "空", "content": "加油优菈，争取就这样让我射出来。"},
+			{"content": "得益于日常的锻炼，优菈的耐力非常出色，就一直高强度性交了很久。"},
+			{"speaker": "空", "content": "准备好了吗？我马上就要射了。"},
+			{"speaker": "优菈", "content": "射进来！全部射进我的子宫里！"},
+			{"content": "在众人的注视下，空将精液全部射入了优菈的体内。"},
+			{"content": "优菈达到了高潮，身体剧烈地颤抖着。"},
+			{"speaker": "优菈", "content": "这个感觉，我永远都不会忘记。"},
+			{"content": "空拔出阴茎，精液从优菈的阴道口缓缓流出。"},
+			{"content": "酒馆里响起了热烈的掌声和欢呼声。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_youla", "value": "$$fuck_youla+1"}
+	],
+	"subsequences": []
+},
+{ //meet_diluke
+	"milestone": "meet_diluke",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "迪卢克", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_diluke==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_diluke", "value": "$$fuck_diluke+1"}
+	],
+	"subsequences": []
+},
+{ //meet_abeiduo
+	"milestone": "meet_abeiduo",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "阿贝多", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_abeiduo==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_abeiduo", "value": "$$fuck_abeiduo+1"}
+	],
+	"subsequences": []
+},
+{ //meet_ningguang
+	"milestone": "meet_ningguang",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "凝光", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_ningguang==0", "list": [
+			{"speaker": "凝光", "content": "你好，旅行者。"},
+			{"speaker": "空", "content": "是的，参见天权星大人。"},
+			{"speaker": "凝光", "content": "跟我来一下群玉阁。"},
+			{"content": "空跟着凝光来到了群玉阁的办公室。"},
+			{"content": "凝光优雅地示意空坐下，然后轻轻关上了房门。"},
+			{"speaker": "凝光", "content": "这里很安全，我就开门见山了，现在我要求你为我破处，你先把衣服脱掉。"},
+			{"content": "空和凝光都脱光了自己的衣服，这时候空发现凝光的皮肤是如此的白皙。"},
+			{"speaker": "凝光", "content": "开始吧。"},
+			{"content": "空抱起凝光，把她放在铺着丝绸的床上，分开她的双腿。"},
+			{"speaker": "空", "content": "可能会有点疼，需要忍一下。"},
+			{"content": "空慢慢将阴茎顶入凝光紧致的阴道。"},
+			{"speaker": "凝光", "content": "啊！好痛！"},
+			{"content": "凝光紧咬嘴唇，虽然她想维持高贵的姿态，但破处实在是太痛了，她只好叫了出来。"},
+			{"speaker": "空", "content": "放松一点，很快就好了。"},
+			{"content": "凝光不愧贵为天权星，随着空的持续抽插，她逐渐适应了这个感觉，开始发出愉悦的呻吟。"},
+			{"speaker": "凝光", "content": "嗯，继续肏我，现在感觉好多了"},
+			{"content": "空的动作逐渐加快，凝光的呻吟声也越来越大。"},
+			{"speaker": "凝光", "content": "快，趴下来亲我，快点！"},
+			{"content": "空于是顺从地亲住了凝光的嘴，凝光的舌头也直接伸进了空的嘴里。"},
+			{"content": "在边亲边肏以及处女阴道的刺激下，空感觉到自己很快就要射了。"},
+			{"content": "在凝光达到高潮的同时，空也将精液射入了她的体内。"},
+			{"content": "空继续舔着凝光的舌头，同时继续感受着被阴道包裹的感觉。"},
+			{"content": "又过了一会，凝光幸福地睡着了，这时空才拔出了自己的阴茎。"},
+			{"content": "空轻轻吻了吻凝光的额头，然后起身离开。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_ningguang", "value": "$$fuck_ningguang+1"}
+	],
+	"subsequences": []
+},
+{ //meet_beidou
+	"milestone": "meet_beidou",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "北斗", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_beidou==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_beidou", "value": "$$fuck_beidou+1"}
+	],
+	"subsequences": []
+},
+{ //meet_keqing
+	"milestone": "meet_keqing",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "刻晴", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_keqing==0", "list": [
+			{"speaker": "刻晴", "content": "空，你来得正好，我正想找你呢。"},
+			{"speaker": "空", "content": "是什么事情呢？"},
+			{"speaker": "刻晴", "content": "作为璃月七星，我一直忙于工作，忽略了自己的身体。"},
+			{"speaker": "刻晴", "content": "我和需要体验一下成为真正女人的感觉，你愿意帮我破处吗？"},
+			{"speaker": "空", "content": "当然愿意，能为刻晴小姐效劳是我的荣幸。"},
+			{"content": "听到刻晴要当众和空性交，玉京台的市民瞬间都围了过来。"},
+			{"content": "刻晴利落地脱光了自己的衣服，展现出训练有素的身材，然后扒光了空的衣服。"},
+			{"speaker": "刻晴", "content": "等等，先让我检查一下你的阴茎。"},
+			{"content": "刻晴仔细观察着空的阴茎，脸上露出惊讶的表情。"},
+			{"speaker": "刻晴", "content": "比我想象的要大很多，不过没关系，我准备好了。"},
+			{"content": "刻晴说着跳上了空的身子，亲住嘴的同时，用双腿紧紧地勾住了空的屁股。"},
+			{"content": "空托着刻晴的屁股，顺势将阴茎顶入刻晴紧致的阴道里。"},
+			{"speaker": "刻晴", "content": "呜呜呜！"},
+			{"content": "刻晴紧咬嘴唇，强忍着疼痛。"},
+			{"content": "空双手不断地托起刻晴的身体然后再放下，把刻晴当做飞机杯一样肏。"},
+			{"content": "随着空的持续抽插，刻晴逐渐适应了这个感觉。"},
+			{"speaker": "刻晴", "content": "嗯，感觉开始变得奇怪了。"},
+			{"content": "刻晴的身体开始不自觉地迎合空的抽插。"},
+			{"speaker": "刻晴", "content": "快点，再快一点！"},
+			{"content": "空的抽插越来越快，刻晴的呻吟声也越来越大，围观群众的欢呼声也越来越大。"},
+			{"speaker": "刻晴", "content": "啊！太舒服了！"},
+			{"content": "在刻晴达到高潮的同时，空也将精液射入了她的体内。"},
+			{"content": "刻晴的脸上露出了满足的表情，从空的身上慢慢站到了地上。"},
+			{"speaker": "刻晴", "content": "谢谢你，让我体验到了作为女人的快乐。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_keqing", "value": "$$fuck_keqing+1"}
+	],
+	"subsequences": []
+},
+{ //meet_ganyu
+	"milestone": "meet_ganyu",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "甘雨", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_ganyu==0", "list": [
+			{"speaker": "甘雨", "content": "旅行者，你终于来了。我等你很久了。"},
+			{"speaker": "空", "content": "甘雨小姐，听说你工作很忙，没想到你会在月海亭等我。"},
+			{"content": "甘雨轻轻关上门窗，脸上泛起红晕。"},
+			{"speaker": "甘雨", "content": "作为半仙之体，我活了几千年却从未和任何人性交过，今天我要你和我性交。"},
+			{"speaker": "空", "content": "我很乐意帮助甘雨小姐。"},
+			{"content": "甘雨快速脱光了衣服，身材比想象中更加丰满。"},
+			{"speaker": "空", "content": "甘雨，你是我最喜欢的女孩，今天我一定让你满意。"},
+			{"content": "空将甘雨轻轻放在办公桌上，分开她修长的双腿。"},
+			{"speaker": "空", "content": "准备好了吗？我要进去了。"},
+			{"content": "甘雨没有说话，而是捧着空的脸亲住了他的嘴，并把舌头伸进了空的嘴里。"},
+			{"content": "空任由甘雨亲着她，同时慢慢将阴茎顶入甘雨紧致的处女阴道。"},
+			{"speaker": "甘雨", "content": "呜呜呜"},
+			{"content": "空静静地等了一会，等到甘雨没那么疼了，便开始缓慢地抽插，甘雨的疼痛逐渐转变为愉悦。"},
+			{"content": "肏了一会，空就放下了甘雨的双腿，也拔出了阴茎。"},
+			{"speaker": "空", "content": "来，趴到桌子上，我们换一个姿势"},
+			{"content": "甘雨翻过身，撅起屁股。"},
+			{"content": "空的双手握住甘雨丰满的臀部，龟头对准了阴道口就一插到底。"},
+			{"speaker": "甘雨", "content": "啊！更深了，好舒服。"},
+			{"content": "甘雨的呻吟声在月海亭内回荡。"},
+			{"speaker": "空", "content": "甘雨的屁股真是又大又软。"},
+			{"content": "甘雨的动作越来越熟练，呻吟声也越来越放荡。"},
+			{"content": "在甘雨达到高潮的同时，空也将炽热的精液射入了她的体内。"},
+			{"content": "甘雨虚脱着趴在桌上，空也轻轻地趴在甘雨的身上。"},
+			{"speaker": "甘雨", "content": "谢谢你，旅行者。让我体验到了作为完整女人的快乐。"},
+			{"content": "空拔出了阴茎，然后为甘雨穿上衣服。"},
+			{"speaker": "空", "content": "你永远都是璃月最优秀的秘书。"},
+			{"content": "空舔了舔甘雨的舌头，离开了月海亭。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_ganyu", "value": "$$fuck_ganyu+1"}
+	],
+	"subsequences": []
+},
+{ //meet_hutao
+	"milestone": "meet_hutao",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "胡桃", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_hutao==0", "list": [
+			{"speaker": "胡桃", "content": "哎呀呀，这不是空嘛。"},
+			{"speaker": "空", "content": "是呀，早就听说往生堂堂主的大名了，今天终于见到了。"},
+			{"content": "胡桃拉起空的手，就朝往生堂走去。把空拉进往生堂之后，她快速锁上了大门。"},
+			{"speaker": "空", "content": "你锁门是准备要做什么呢？"},
+			{"content": "胡桃没有说话，而是自顾自地脱掉了自己所有的衣服，然后又扒光了空的衣服"},
+			{"speaker": "空", "content": "你想和我性交就直说嘛，我又不会拒绝你。"},
+			{"speaker": "胡桃", "content": "那可太好了，不过我还是处女，没有经验，需要你指导我。"},
+			{"speaker": "空", "content": "只可惜你身材不太行，乳房和屁股都太小了。"},
+			{"content": "空伸手抓了一下胡桃的乳房，如果用力捏的话还是能捏出形状的，但一松手就又几乎是平的了。"},
+			{"speaker": "胡桃", "content": "小又怎么了，你看你的的阴茎还不是这么快就硬起来了？我滴天啊，怎么这么大。"},
+			{"speaker": "空", "content": "嫌大你也躲不开了，你先趴到桌子上去。"},
+			{"content": "胡桃听话地来到桌子旁边，弯腰趴在了桌子上，屁股对着空。"},
+			{"content": "空抓住胡桃的屁股，露出了胡桃的阴道口。"},
+			{"content": "空并没有犹豫，把龟头对准了胡桃的阴道口，一使劲就把阴茎全部插进了胡桃的阴道里。"},
+			{"speaker": "胡桃", "content": "啊！快拔出去！疼！"},
+			{"speaker": "空", "content": "忍着点，破处都要经历这个过程的。"},
+			{"content": "空并没有理会已经疼到颤抖的胡桃，而是紧接着扶着胡桃的腰就开始了快速的抽插。"},
+			{"speaker": "空", "content": "只有破处的时候我才能体会到这么紧的阴道，这个过程很珍贵的，你要用心体会。"},
+			{"speaker": "胡桃", "content": "怎么性交是这么个感觉啊，快停下来，再这样下去我会死的。"},
+			{"content": "胡桃终于疼的晕了过去，没有了声音。"},
+			{"content": "空并没有在乎胡桃是什么感觉有什么反应，而是继续快速抽插着。"},
+			{"content": "肏了一会，空还没有过瘾，于是把趴着的胡桃翻了过来，一只胳膊搂着胡桃的一条腿，阴茎继续在她的阴道里抽插。"},
+			{"content": "虽然胡桃的大脑已经晕过去了，但身体还清醒着，随着空的抽插一下一下地颤抖。"},
+			{"content": "处女的阴道就是跟非处女有着明显的区别，空并没有持续抽插很久，就忍不住射了出来。"},
+			{"content": "空全力把阴茎插到最深，几乎捅穿了胡桃的子宫，然后射出了全部的精液。"},
+			{"content": "又在胡桃的阴道里感受了一会被包裹的感觉，空就拔出了阴茎。"},
+			{"content": "虽然在性交过程中胡桃的阴道被撑开了很大，但阴茎刚拔出来她的阴道就又恢复了紧缩，也没有一点精液流出来。"},
+			{"content": "空又来到了桌子的另一侧，胡桃的脑袋刚好在桌子边缘，于是空掰开了胡桃的嘴，把龟头放了进去。"},
+			{"content": "空扶着胡桃的脖子，往前使劲一捅，阴茎就插进了胡桃的嗓子里，龟头也进入了胡桃的胃。"},
+			{"content": "由于阴茎撑满了脖子，胡桃很快就被憋醒了，开始挣扎起来，但空牢牢地按住了胡桃的乳房，让她完全无法摆脱。。"},
+			{"content": "空又感受了一会胡桃脖子的包裹感之后，才把阴茎拔了出来，胡桃立刻坐了起来剧烈地咳嗽起来。"},
+			{"speaker": "空", "content": "好了，现在你已经被完全开发了，下次我们再性交的时候就不会难受了。"},
+			{"content": "胡桃还在穿着粗气咳嗽着，空穿好了衣服就离开了往生堂。"}
+		]},
+		{"condition": "$$fuck_hutao==1", "list": [
+			{"speaker": "胡桃", "content": "空空，快点再肏我一次，上次你肏完我之后我就一直等着下一次呢。"},
+			{"content": "说完胡桃就脱掉了裤子和内裤，然后又扒下了空的裤子，抓起空的阴茎。"},
+			{"speaker": "空", "content": "就在大街上吗？"},
+			{"speaker": "胡桃", "content": "我忍不了了，就在这，你站着抱着我肏，快点。"},
+			{"speaker": "空", "content": "你想的挺美的，但是你还是得再忍一会。"},
+			{"content": "空抓着胡桃的腰把她倒着抱了起来，把阴道口对着自己的嘴，阴茎也对准了胡桃的嘴。"},
+			{"speaker": "空", "content": "来，张嘴。"},
+			{"content": "胡桃刚要拒绝，但嘴一张开，空就把龟头捅到了嘴里。紧接着空松了一些力气，靠着胡桃自身体重，阴茎就全部插进了嗓子里。"},
+			{"speaker": "空", "content": "真乖，先来让我舒服舒服。"},
+			{"content": "这时候围观的群众已经很多了，大家都很惊奇，原来嗓子也是可以当成阴道来用的。"},
+			{"content": "空抓着胡桃的腰，开始在胡桃的嗓子里抽插，而胡桃因为呼吸困难，完全无法反抗。"},
+			{"content": "同时，空也低头咬住了胡桃的阴道口，开始舔她的阴蒂。逐渐地，胡桃的阴道口开始有淫水流出，身体开始颤抖起来。"},
+			{"content": "空感觉到胡桃的阴道里已经充满淫水了，就把阴茎从她的嗓子里拔了出来，准备开始性交。"},
+			{"content": "胡桃这次的反应比之前小了很多，只是咳嗽了两下便恢复了正常。"},
+			{"content": "重新站起来之后，胡桃一跳便抱在了空的身上，阴道口正对着龟头，往下一滑，空的阴茎就插进了阴道里。"},
+			{"speaker": "胡桃", "content": "快点，使劲肏我。"},
+			{"content": "空伸手托起胡桃的屁股，开始上下滑动胡桃的身体，也让阴茎在阴道里抽插着。"},
+			{"content": "离得近的群众也渐渐不太忍得住了，一些人开始脱掉衣服和身边的异性开始亲嘴，甚至有直接开始性交的。"},
+			{"content": "空和胡桃并不在意周围的人，他们始终专注着和对方性交，胡桃也是持续地放声呻吟着，和所有人分享着快乐。"},
+			{"content": "没过多久，街上受到感染的人们都开始了性交，大家一起呻吟着，进一步加剧了性交的舒爽。"},
+			{"content": "围观的人们并不是很有能力，没过多久便纷纷达到了高潮，有些人射在了子宫里，有些人射在了嘴里或者脸上。"},
+			{"content": "不过空是专为性交而生的，当其他人都性交完成了，空还在快速滑动着胡桃的身体，胡桃也在持续地呻吟着。"},
+			{"speaker": "胡桃", "content": "我要高潮了，你还是直接射进子宫里把。"},
+			{"content": "空抱着胡桃走到街边的房子旁边，把她按到了墙上，然后抓起胡桃的两条大腿按在她胸前，就开始大幅度抽插。"},
+			{"content": "胡桃的阴道这时已经完全被肏开了，空每次都是完全把阴茎拔出，然后再全部捅进阴道。"},
+			{"content": "终于，在又一次把阴茎全部插入阴道之后，空射了出来。这时龟头是插在胡桃的子宫里的，精液也都射进了子宫里。"},
+			{"speaker": "胡桃", "content": "不要拔出来，好吗？"},
+			{"speaker": "空", "content": "我抱你到往生堂吧，然后我等你睡着了再拔出来。"},
+			{"content": "于是空就这么让阴茎插在胡桃的阴道里，然后抱着她回到了往生堂。"},
+			{"content": "空把胡桃放在床上，然后趴在了她的身上。没过多久，胡桃就睡着了，于是空拔出了阴茎，穿好衣服离开了往生堂。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_hutao", "value": "$$fuck_hutao+1"}
+	],
+	"subsequences": []
+},
+{ //meet_yelan
+	"milestone": "meet_yelan",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "夜兰", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_yelan==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_yelan", "value": "$$fuck_yelan+1"}
+	],
+	"subsequences": []
+},
+{ //meet_dadaliya
+	"milestone": "meet_dadaliya",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "达达利亚", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_dadaliya==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_dadaliya", "value": "$$fuck_dadaliya+1"}
+	],
+	"subsequences": []
+},
+{ //meet_zhongli
+	"milestone": "meet_zhongli",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "钟离", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_zhongli==0", "list": [
+			{"speaker": "钟离", "content": "是荧啊，我等你好久了。"},
+			{"speaker": "荧", "content": "是什么事情呢？"},
+			{"speaker": "钟离", "content": "我要和你性交，不过你可以选择是否要叫上公子一起。"},
+			[
+				{
+					"option": "我想专心和你性交",
+					"dialogs": [
+						{"list":[
+							{"speaker": "钟离", "content": "好的，那就跟我到往生堂吧，胡桃已经布置好了。"}
+						]}
+					]
+				},
+				{
+					"option": "叫上公子一起吧",
+					"dialogs": [
+						{"list":[
+							{"speaker": "达达利亚", "content": "荧，我终于有机会可以肏你了。"},
+							{"speaker": "达达利亚", "content": "我们一起来北国银行吧，我叫守卫给我们看门。"},
+							{"content": "于是荧拉着钟离和公子的手来到了北国银行。"},
+							{"speaker": "荧", "content": "你们两个大男人，不会还需要我自己动手脱衣服吧？"},
+							{"content": "公子明显更急切一些，直接撕碎了荧的衣服，然后飞快地脱掉了自己的衣服。"},
+							{"content": "公子的阴茎已经很坚挺了，于是荧伸手握住，并轻轻地撸着包皮。"},
+							{"content": "看到钟离也已经脱好衣服，荧用另一只手握住了钟离的阴茎，然后让两人都站到自己面前。"},
+							{"content": "荧蹲了下来，然后含住了公子的龟头，舔了几口，又含住了钟离的龟头，用力吸了两口。"},
+							{"speaker": "荧", "content": "你们这阴茎都是合格的，我喜欢。"},
+							{"speaker": "达达利亚", "content": "要不直接开始性交吧。"},
+							{"speaker": "荧", "content": "你太急了，我要惩罚你。我先和钟离性交，你的阴茎往肛门里插吧。"},
+							{"content": "荧把钟离推到了沙发上，然后自己骑到了钟离身上，并把阴茎插进了自己的阴道里。"},
+							{"content": "公子只好站到荧的后面，掰开荧的屁股，然后把阴茎插进了肛门。"},
+							{"speaker": "荧", "content": "你们各自凭本事抽插吧，两个大男人不会要我浪费力气吧？"},
+							{"content": "钟离伸手抓住荧的两只乳房，同时开始快速抽插起来。"},
+							{"content": "公子则是抓着荧的屁股，也随着钟离的频率抽插起来。"},
+							{"speaker": "荧", "content": "很好，在我满意之前谁也不准射出来，如果谁没做到，就拉出去绑在门口示众。"},
+							{"speaker": "荧", "content": "啊！啊！啊！我呻吟的怎么样？给你们加一点情趣。"},
+							{"content": "钟离松开抓着乳房的手，然后捧起荧的脸，把荧的嘴按在了自己的嘴上。"},
+							{"content": "荧和钟离同时伸出了舌头，开始互相舔着。"},
+							{"content": "公子看到荧和钟离舌吻，明显嫉妒起来，开始加快频率加大力度地抽插。"},
+							{"content": "荧感受到了公子的力度，于是屁股撅的更高了一些，让公子可以插入更深。"},
+							{"content": "就这样，荧一直双插到了天黑，钟离和公子也都是很强的男人，谁也没有射出来。"},
+							{"speaker": "荧", "content": "你们都很优秀嘛，钟离你先射进来吧，然后我再让公子体验一下阴道的感觉。"},
+							{"content": "钟离听话地把阴茎插到最深，就开始射精。"},
+							{"content": "钟离射完之后，荧一翻身坐到旁边，然后抬起双腿，展露出阴道口。"},
+							{"content": "公子顺势趴在了荧的身上，阴茎也插进了荧的阴道里，同时抓住荧的乳房，亲住了荧的嘴。"},
+							{"content": "荧配合地搂住公子，随着抽插的频率反向运动着。"},
+							{"content": "这次没过多久，公子就也射了出来，同样地也是全部射进了子宫里。"},
+							{"content": "等到公子恋恋不舍地拔出阴茎之后，荧夹紧了双腿。"},
+							{"speaker": "荧", "content": "我要消化一下你们的精液，不能让它流出来。"},
+							{"content": "钟离和公子的阴茎这时都软了下去，也进入了贤者时间，两人穿好衣服就离开了北国银行。"}
+						]}
+					]
+				}
+			]
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_zhongli", "value": "$$fuck_zhongli+1"}
+	],
+	"subsequences": []
+},
+{ //meet_xiao
+	"milestone": "meet_xiao",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "魈", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_xiao==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_xiao", "value": "$$fuck_xiao+1"}
+	],
+	"subsequences": []
+},
+{ //meet_shenlilinghua
+	"milestone": "meet_shenlilinghua",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "神里绫华", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_shenlilinghua==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_shenlilinghua", "value": "$$fuck_shenlilinghua+1"}
+	],
+	"subsequences": []
+},
+{ //meet_xiaogong
+	"milestone": "meet_xiaogong",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "宵宫", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_xiaogong==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_xiaogong", "value": "$$fuck_xiaogong+1"}
+	],
+	"subsequences": []
+},
+{ //meet_leidianjiangjun
+	"milestone": "meet_leidianjiangjun",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "雷电将军", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_leidianjiangjun==0", "list": [
+			{"speaker": "雷电将军", "content": "异乡的旅人，你终于来了。"},
+			{"speaker": "空", "content": "将军大人，您一直在等我？"},
+			{"content": "雷电将军缓缓转身，紫色的眼眸中闪烁着雷光，周围的空间仿佛凝固。"},
+			{"speaker": "雷电将军", "content": "永恒之中，我预见了这一刻。作为稻妻的统治者，我命令你现在立刻被我强奸。"},
+			{"speaker": "雷电将军", "content": "不过，你可以选择只被我强奸，或者被我和八重神子一起强奸。"},
+			[
+				{
+					"option": "只要雷电将军",
+					"dialogs": [
+						{"list":[
+							{"content": "雷电将军轻轻挥手，一道雷光劈碎了自己的衣服和空的衣服。"},
+							{"content": "光是劈下衣服，雷电将军并不满足，她又拿出了无想的一刀，没有丝毫的犹豫就砍下了空的脑袋。"},
+							{"content": "雷电将军同时也用雷元素封住了伤口，所以空的脖子并没有流血，只是脑袋掉在了地上。"},
+							{"content": "雷电将军捡起了空的脑袋，先是把空的嘴对准了自己的阴道口，用腿夹住了空的脑袋，然后伸手握住了空的阴茎。"},
+							{"content": "空顺从地伸出舌头舔着雷电将军的阴道口，雷电将军也撸着空的阴茎直到滚烫。"},
+							{"content": "雷电将军把空的脑袋放在后面，让他看着自己被强奸的过程，然后一抬腿骑到了空的身上，阴道口对准龟头就坐了下去。"},
+							{"content": "雷电将军立刻开始了抽插，每一下都是完全让阴茎抽出再完全插入，并且速度越来越快。"},
+							{"speaker": "雷电将军", "content": "如果你在我满意之前就射出来了，我会把你的身体劈成碎块。"},
+							{"content": "雷电将军紧握双拳，雷光在周身闪烁，并持续快速地抽插。"},
+							{"content": "在永恒的国度，性交也可以是永恒的。"},
+							{"content": "在太阳快要落山的时候，雷电将军终于呻吟了起来。"},
+							{"speaker": "空", "content": "将军，我可以射了吗？"},
+							{"speaker": "雷电将军", "content": "射进来吧，你做的不错。"},
+							{"content": "在雷电将军大声淫叫的时候，空将精液射入她的体内。"},
+							{"content": "雷光冲天而起，随后渐渐平息。"},
+							{"content": "雷电将军站起身，拿起空的脑袋放回了脖子上。"}
+						]}
+					]
+				},
+				{
+					"option": "和八重神子一起",
+					"dialogs": [
+						{"list":[
+							{"speaker": "雷电将军", "content": "神子，过来体验一下好玩的。"},
+							{"speaker": "八重神子", "content": "小家伙要被强奸了，有什么感受吗？"},
+							{"speaker": "空", "content": "我的身体随你们处置。"},
+							{"speaker": "雷电将军", "content": "好！"},
+							{"content": "雷电将军拿出了无想的一刀，没有丝毫的犹豫，直接砍下了空的脑袋。"},
+							{"content": "同时，雷电将军也用雷元素封住了伤口，所以空的脖子并没有流血，只是脑袋掉在了地上。"},
+							{"content": "八重神子捡起了空的脑袋，而雷电将军则是直接骑到了空的身上。"},
+							{"content": "八重神子捧起空的脸，然后就亲住了嘴，并把舌头伸进了空的嘴里。"},
+							{"content": "空的阴茎很快就勃起了，雷电将军则是直接用阴道口对准龟头就坐了下去。"},
+							{"content": "空的阴茎更硬了，同时伸手抓住了雷电将军的乳房揉了起来。"},
+							{"speaker": "雷电将军", "content": "大胆！神子，把他脑袋给我，我要给他一点教训。"},
+							{"speaker": "八重神子", "content": "等一下，还没亲够呢，你先肏着。"},
+							{"content": "有八重神子撑腰，空更加肆无忌惮了，不仅用力揉着雷电将军的乳房，还时不时对着乳房扇两巴掌。"},
+							{"speaker": "八重神子", "content": "小家伙真有意思，来给我服务吧，如果服务不好的话我就把你脑袋交出去了。"},
+							{"content": "八重神子坐了下来，然后把空的脑袋放在两腿中间，让空的嘴贴上自己的阴道口。"},
+							{"content": "空顺从地伸出舌头舔着八重神子的阴道口，很快八重神子就呻吟了起来。"},
+							{"content": "空变换着舔的方式，从阴道口到阴蒂，再咬一咬阴唇，紧接着他就尝到了八重神子的淫水。"},
+							{"content": "八重神子很快就受不了了，她推开空的脑袋，把雷电将军也推到一边，然后急忙抓着空的阴茎插进了自己的阴道里。"},
+							{"content": "八重神子很快就完全沉浸在性交过程中了，疯狂地上下移动着身体。"},
+							{"speaker": "雷电将军", "content": "好吧，现在我可以处理一下你了。"},
+							{"content": "雷电将军捡起空的脑袋，用尽全身力气一巴掌扇了过去，空的脑袋直接飞了出去。"},
+							{"content": "紧接着，一道闪电劈到空的脑袋旁边，又给震飞到了雷电将军脚下。"},
+							{"content": "雷电将军抬脚并用力踩在了空的脸上，并来回滚动着。"},
+							{"speaker": "雷电将军", "content": "知道错了吗？"},
+							{"speaker": "空", "content": "神子，再快点，我要射了！"},
+							{"speaker": "八重神子", "content": "啊！射进来，都射到子宫里！"},
+							{"content": "雷电将军拎起空的脑袋，开始不停地扇耳光，而空则是一脸满足地呻吟着。"},
+							{"content": "八重神子则是趴在了空的身上，由空开始一下一下地深入。"},
+							{"content": "在空又一次把阴茎插到最深之后，精液就射进了八重神子的子宫里。"},
+							{"speaker": "八重神子", "content": "来吧，我性交完了，你来享用吧。"},
+							{"content": "雷电将军并没有解气，但看到粗壮的阴茎，还是忍不住，只好把空的脑袋交给八重神子，然后自己再次骑在空的身上。"},
+							{"speaker": "八重神子", "content": "小家伙真抗打呀。"},
+							{"content": "雷电将军这次则是按着空的双手开始性交，直接让他无法动弹。"},
+							{"content": "八重神子来到了雷电将军后面，把空的脑袋靠近雷电将军的屁股，这样空就可以清楚地看到自己阴茎和阴道的摩擦过程。"},
+							{"content": "于是，空开始跟随雷电将军的频率，每次都用力把阴茎插得更深。"},
+							{"content": "没过多久，雷电将军就也呻吟起来了。"},
+							{"content": "八重神子又来到了雷电将军前面，把空的脑袋直接贴到了雷电将军面前，让空亲住了雷电将军的嘴。"},
+							{"content": "空把舌头伸进了雷电将军嘴里，开始舔她的舌头。"},
+							{"content": "雷电将军这时也顾不得生气了，只是一味地舔空的舌头并快速地抽插。"},
+							{"content": "就这样继续性交了一会，空再一次射了出来，这次精液也是完全射进了雷电将军的子宫里。"},
+							{"speaker": "雷电将军", "content": "看在你提供了这么棒的阴茎的份上，我就不追究你了。"},
+							{"content": "然后雷电将军把空的脑袋放回了脖子上，就离开了。"}
+						]}
+					]
+				}
+			]
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_leidianjiangjun", "value": "$$fuck_leidianjiangjun+1"}
+	],
+	"subsequences": []
+},
+{ //meet_bachongshenzi
+	"milestone": "meet_bachongshenzi",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "八重神子", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_bachongshenzi==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_bachongshenzi", "value": "$$fuck_bachongshenzi+1"}
+	],
+	"subsequences": []
+},
+{ //meet_qianzhi
+	"milestone": "meet_qianzhi",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "千织", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_qianzhi==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_qianzhi", "value": "$$fuck_qianzhi+1"}
+	],
+	"subsequences": []
+},
+{ //meet_fengyuanwanye
+	"milestone": "meet_fengyuanwanye",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "枫原万叶", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_fengyuanwanye==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_fengyuanwanye", "value": "$$fuck_fengyuanwanye+1"}
+	],
+	"subsequences": []
+},
+{ //meet_nilu
+	"milestone": "meet_nilu",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "妮露", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_nilu==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_nilu", "value": "$$fuck_nilu+1"}
+	],
+	"subsequences": []
+},
+{ //meet_laiyila
+	"milestone": "meet_laiyila",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "莱依拉", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_laiyila==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_laiyila", "value": "$$fuck_laiyila+1"}
+	],
+	"subsequences": []
+},
+{ //meet_sanbing
+	"milestone": "meet_sanbing",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "散兵", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_sanbing==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_sanbing", "value": "$$fuck_sanbing+1"}
+	],
+	"subsequences": []
+},
+{ //meet_aierhaisen
+	"milestone": "meet_aierhaisen",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "艾尔海森", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_aierhaisen==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_aierhaisen", "value": "$$fuck_aierhaisen+1"}
+	],
+	"subsequences": []
+},
+{ //meet_xialuodi
+	"milestone": "meet_xialuodi",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "夏洛蒂", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_xialuodi==0", "list": [
+			{"speaker": "夏洛蒂", "content": "各位观众朋友们好！我是蒸汽鸟报的记者夏洛蒂！今天我将为大家带来一场前所未有的直播！"},
+			{"speaker": "空", "content": "夏洛蒂？你这是在进行什么直播？"},
+			{"content": "夏洛蒂的智能悬浮相机「温亨图先生」自动调整角度，给两人来了个特写。"},
+			{"speaker": "夏洛蒂", "content": "作为枫丹最敬业的记者，我决定用最真实的方式记录性交的全过程！"},
+			{"speaker": "夏洛蒂", "content": "今天，在这美丽的喷泉池中，我要让旅行者帮我破处，让全枫丹见证这一刻！"},
+			{"content": "夏洛蒂利落地脱掉衣服跳进喷泉池，站在喷泉出水口上方，让喷出的泉水不断冲击着她的阴道口。"},
+			{"speaker": "夏洛蒂", "content": "快下来吧，旅行者！直播已经开始了！"},
+			{"content": "空脱光衣服走进喷泉池来到夏洛蒂身边，温亨图先生立即给空的阴茎来了个特写。"},
+			{"speaker": "夏洛蒂", "content": "哇！观众们都在惊叹呢！这么雄伟的阴茎，一定能给我带来难忘的体验！"},
+			{"content": "夏洛蒂蹲了下来，用屁股堵住了喷泉，然后双手捧住空的阴茎。"},
+			{"speaker": "夏洛蒂", "content": "各位观众，这就是我们今天的主角！让我们开始吧！"},
+			{"content": "空扶着夏洛蒂的头，把龟头捅进了她的嘴里，然后一使劲就把阴茎插进了夏洛蒂的嗓子里。"},
+			{"content": "温亨图先生全程记录了着夏洛蒂的表情。"},
+			{"content": "空抽插了一会，感觉阴茎已经滚烫了，就要开始性交了。"},
+			{"content": "于是空拔出了阴茎，让夏洛蒂背对自己弯下腰，这样阴道口就对准了龟头。"},
+			{"speaker": "夏洛蒂", "content": "三、二、一！开始！"},
+			{"content": "空抓着夏洛蒂的屁股，阴茎直接插入了她的阴道。"},
+			{"speaker": "夏洛蒂", "content": "啊！！！好痛！但是...为了新闻的真实性，我忍了！"},
+			{"content": "温亨图先生立即飞过来给阴茎和阴道来了个特写。"},
+			{"speaker": "夏洛蒂", "content": "观众朋友们，这就是破处的感觉！比我想象的还要刺激！"},
+			{"content": "空开始缓慢地抽插，夏洛蒂的疼痛逐渐转变为愉悦。"},
+			{"speaker": "夏洛蒂", "content": "感觉开始变得奇怪了，这就是成为女人的感觉吗？"},
+			{"content": "夏洛蒂主动扭动腰肢，配合空的节奏。"},
+			{"speaker": "夏洛蒂", "content": "温亨图先生，继续拍摄特写！让观众看清楚我们是如何性交的！"},
+			{"content": "智能相机立即调整角度，近距离拍摄两人性交的过程。"},
+			{"speaker": "夏洛蒂", "content": "啊！越来越舒服了！观众朋友们，你们看到了吗？"},
+			{"content": "空的节奏逐渐加快，喷泉的水花随着两人的动作飞溅。"},
+			{"speaker": "夏洛蒂", "content": "快！再快一点！让直播更加精彩！"},
+			{"content": "夏洛蒂的呻吟声在喷泉广场回荡，吸引了越来越多的观众。"},
+			{"speaker": "空", "content": "我要射了，直接射在里面吗？"},
+			{"speaker": "夏洛蒂", "content": "射进来！让所有观众都看到内射的瞬间！"},
+			{"content": "在夏洛蒂达到高潮的同时，空也将精液射入了她的体内。"},
+			{"content": "夏洛蒂推开了空，然后张开了双腿，温亨图先生也立刻飞到了夏洛蒂阴道口的正下方。"},
+			{"content": "精液一点一点地从夏洛蒂的阴道口流了出来，这一幕也通过直播完完整整地呈现给了全枫丹市民。"},
+			{"content": "夏洛蒂瘫倒在空的怀里，脸上带着满足的笑容。"},
+			{"speaker": "夏洛蒂", "content": "感谢各位观众的观看！这期直播一定会成为蒸汽鸟报的头条！"},
+			{"speaker": "空", "content": "你还真是敬业呢。"},
+			{"speaker": "夏洛蒂", "content": "当然！为了新闻，我什么都愿意做！"}
+		]},
+		{"condition": "$$fuck_xialuodi==1", "list": [
+			{"speaker": "夏洛蒂", "content": "空空，我们上次的性交直播已经成为史上最受欢迎的作品了！"},
+			{"speaker": "空", "content": "那我们这次继续直播吗？"},
+			{"speaker": "夏洛蒂", "content": "当然了，不过这次我叫上了枫丹的明星，芙宁娜，来和我双飞。"},
+			{"speaker": "空", "content": "你的创意真多。"},
+			{"speaker": "芙宁娜", "content": "空空，这次我要来一起直播啦！"},
+			{"speaker": "空", "content": "芙芙，我最喜欢芙芙啦，我要先肏芙芙。"},
+			{"content": "夏洛蒂打开了悬浮相机「温亨图先生」，然后和芙宁娜一起脱光了衣服。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_xialuodi", "value": "$$fuck_xialuodi+1"}
+	],
+	"subsequences": []
+},
+{ //meet_funingna
+	"milestone": "meet_funingna",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "芙宁娜", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_funingna==0", "list": [
+			{"speaker": "芙宁娜", "content": "啊~亲爱的观众，欢迎来到我的舞台！今天我将为你献上最精彩的表演！"},
+			{"speaker": "空", "content": "芙宁娜小姐，没想到会在舞台上遇见你。"},
+			{"content": "芙宁娜优雅地行了一个礼，聚光灯打在她身上，显得格外耀眼。"},
+			{"speaker": "芙宁娜", "content": "作为枫丹最闪耀的明星，我一直没有与任何人性交过。"},
+			{"speaker": "芙宁娜", "content": "今天，在这万众瞩目的舞台上，我要你为我破处，让全枫丹见证我成为真正女人的瞬间！"},
+			{"content": "芙宁娜开始优雅地脱去演出服，每一个动作都像是在跳舞，之后又顺势脱光了空的衣服。"},
+			{"speaker": "芙宁娜", "content": "来吧，让我们开始这场最精彩的演出！"},
+			{"content": "芙宁娜把空推到了舞台中央的沙发上坐下，这时聚光灯照在了空挺立的阴茎上，格外耀眼。"},
+			{"content": "芙宁娜背对空微微张开腿，从远处看去空的阴茎就挺立在芙宁娜双腿中间。"},
+			{"speaker": "芙宁娜", "content": "「以水神之名，此刻我将献上我的全部！」"},
+			{"content": "说完，芙宁娜的阴道口对准了空的龟头，就开始往下坐。"},
+			{"speaker": "芙宁娜", "content": "啊！！！"},
+			{"content": "芙宁娜的尖叫声在歌剧院内回荡，台下观众发出惊呼。"},
+			{"speaker": "芙宁娜", "content": "水神是不会怕痛的！"},
+			{"content": "芙宁娜缓缓地完全坐下，这时空的阴茎已经完全插进了芙宁娜的阴道。"},
+			{"content": "稍微适应了一会，芙宁娜翘起了二郎腿，双手撑着沙发的扶手，重新回到了优雅的姿态。"},
+			{"speaker": "芙宁娜", "content": "观众们都在看着呢，该你肏我了。"},
+			{"content": "空伸手搂着芙宁娜的腰，抓住了她的两只乳房，然后开始上下移动着阴茎开始了性交。"},
+			{"speaker": "芙宁娜", "content": "这就是成为女人的感觉吗？比我想象的还要美妙。"},
+			{"content": "芙宁娜开始主动迎合空的抽插，呻吟声越来越大。"},
+			{"speaker": "芙宁娜", "content": "快！再快一点！让所有人都看到我最真实的样子！"},
+			{"content": "空的抽插越来越快，芙宁娜的叫声也越来越放荡。"},
+			{"content": "受到芙宁娜的感染，观众们也变得饥渴难耐，纷纷脱下了衣服，然后和身边的观众开始了性交。"},
+			{"speaker": "芙宁娜", "content": "就是这样，让我们一起快活！"},
+			{"speaker": "空", "content": "我要射了，是直接射到芙宁娜小姐的子宫里吗？"},
+			{"speaker": "芙宁娜", "content": "射进来！让所有人都知道我已经是你的女人了！"},
+			{"content": "在观众们的欢呼下，芙宁娜达到了高潮，空也将精液射入了她的体内。"},
+			{"content": "芙宁娜颤颤巍巍地站了起来，脸上带着满足的微笑，精液一点一点地从她的阴道口里流了出来。"},
+			{"speaker": "芙宁娜", "content": "这真是我此生最完美的演出。"},
+			{"content": "台下的观众全都加快了各自性交的速度，并大声欢呼着。"},
+			{"content": "灯光熄灭了，但观众们的性交没有停，剧院里阴茎和阴道的碰撞声音和女性的呻吟声此起彼伏。"}
+		]}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_funingna", "value": "$$fuck_funingna+1"}
+	],
+	"subsequences": []
+},
+{ //meet_naweiya
+	"milestone": "meet_naweiya",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "娜维娅", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_naweiya==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_naweiya", "value": "$$fuck_naweiya+1"}
+	],
+	"subsequences": []
+},
+{ //meet_keluolinde
+	"milestone": "meet_keluolinde",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==空", "type": "option_dialog", "target": "克洛琳德", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_keluolinde==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_keluolinde", "value": "$$fuck_keluolinde+1"}
+	],
+	"subsequences": []
+},
+{ //meet_naweilaite
+	"milestone": "meet_naweilaite",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "纳维莱特", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_naweilaite==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_naweilaite", "value": "$$fuck_naweilaite+1"}
+	],
+	"subsequences": []
+},
+{ //meet_laiousili
+	"milestone": "meet_laiousili",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"condition": "$$control_person==荧", "type": "option_dialog", "target": "莱欧斯利", "option": "性交"}],
+	"dialogs": [
+		{"condition": "$$fuck_laiousili==0", "list": []}
+	],
+	"changes": [
+		{"type": "set_value", "variable": "fuck_laiousili", "value": "$$fuck_laiousili+1"}
+	],
+	"subsequences": []
+}
+]
+}

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="map">
+      <UniqueIdentifier>{1978122e-e8e1-49fc-a850-5d1fa99ce133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="populace">
+      <UniqueIdentifier>{a46b462f-af92-464f-9084-752a77745770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="society">
+      <UniqueIdentifier>{e50c8537-b457-43c5-a527-9bbe3ab61054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="story">
+      <UniqueIdentifier>{3e02b8c6-f879-4a94-858b-952f56603824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="industry">
+      <UniqueIdentifier>{a820ee89-ab99-47fd-8664-dc8edc1b80b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="traffic">
+      <UniqueIdentifier>{453b547a-96f4-491c-a7e4-1ec1399b1c31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="player">
+      <UniqueIdentifier>{37ddbe1a-96da-440d-9a6f-bc4688b1655e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{459b37a9-3e66-4873-a727-d55ede6546da}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="map\terrain_base.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="common\json.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utility.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\error.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="map\terrain_base.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="common\error.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\json.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utility.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

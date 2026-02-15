@@ -1,0 +1,8 @@
+{
+	"mods":{
+		"asset": ["zone", "building", "room", "mod"],
+		"job": ["default", "mod"],
+		"name": "chinese",
+		"scheduler": ["work_only", "mod"]
+	}
+}

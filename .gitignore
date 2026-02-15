@@ -47,10 +47,15 @@ SourceArt/**/*.tga
 
 # Binary Files
 Binaries/*
-Plugins/**/Binaries/*
+Plugins/*
 
 # Builds
 Build/*
+x64/*
+Source/Dependence/x64/*
+Source/Core/x64/*
+Source/Mod/x64/*
+Source/Test/x64/*
 
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
 !Build/*/

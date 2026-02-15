@@ -1,0 +1,10 @@
+{
+	"mods":{
+		"terrain": ["ocean", "mountain", "mod"],
+		"roadnet": "jing",
+		"zone": ["default", "mod"],
+		"building": ["default_residential", "default_working", "mod"],
+		"component": ["default_residential", "default_working", "mod"],
+		"room": ["default_residential", "default_working", "mod"]
+	}
+}

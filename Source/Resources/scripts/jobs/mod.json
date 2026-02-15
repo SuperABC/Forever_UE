@@ -1,0 +1,16 @@
+[
+{
+	"milestone": "test_dialog",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "option": "测试"}],
+	"dialogs": [
+		{"list": [
+			{"content": "模组职业脚本成功。"}
+		]}
+	],
+	"changes": [
+	],
+	"subsequences": []
+}
+]

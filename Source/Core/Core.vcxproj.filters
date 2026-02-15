@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="map">
+      <UniqueIdentifier>{da087845-5483-406b-92a0-47415edc6e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="industry">
+      <UniqueIdentifier>{f194b3c8-bb53-4e4e-a0b2-3c73b39fc2a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="player">
+      <UniqueIdentifier>{6c74cefa-9157-4d9c-be91-d2dd3559a3c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="traffic">
+      <UniqueIdentifier>{b6f9c614-1e9d-4059-bc35-71dc98429cee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="story">
+      <UniqueIdentifier>{a2a19571-e83e-4122-ad10-541fe7b3e0a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="society">
+      <UniqueIdentifier>{11140934-9249-4fc6-8622-cda87e31b46f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="populace">
+      <UniqueIdentifier>{bee7c550-c0fc-4c2b-b80b-22146ffa52d4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="industry\industry.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
+    <ClCompile Include="map\map.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\terrain.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\populace.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="story\story.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="traffic\traffic.cpp">
+      <Filter>traffic</Filter>
+    </ClCompile>
+    <ClCompile Include="player\player.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="society\society.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="industry\industry.h">
+      <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="map\map.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\terrain.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="society\society.h">
+      <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="story\story.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="traffic\traffic.h">
+      <Filter>traffic</Filter>
+    </ClInclude>
+    <ClInclude Include="player\player.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\populace.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

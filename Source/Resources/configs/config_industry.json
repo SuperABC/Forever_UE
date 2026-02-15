@@ -1,0 +1,7 @@
+{
+	"mods":{
+		"product": ["default", "mod"],
+		"storage": ["default", "mod"],
+		"manufacture": ["default", "mod"]
+	}
+}
