@@ -22,9 +22,9 @@ public:
 	void MarkDirty();
 
 	UFUNCTION(BlueprintCallable, Category = "Updating")
-	void LookupTerrain(int x, int y, FString &type);
+	void LookupTerrain(int x, int y, FString &type, float &height);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
-	void UpdateTerrain();
+	void UpdateTerrain(int x1, int y1, int x2, int y2);
 
 protected:
 	virtual void BeginPlay() override;

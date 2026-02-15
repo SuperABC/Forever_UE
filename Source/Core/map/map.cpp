@@ -32,6 +32,15 @@ bool Element::SetTerrain(string terrain) {
     return true;
 }
 
+float Element::GetHeight() const {
+    return height;
+}
+
+bool Element::SetHeight(float height) {
+    this->height = height;
+    return true;
+}
+
 string Element::GetZone() const {
     return this->zone;
 }

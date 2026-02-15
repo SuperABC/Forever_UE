@@ -4,6 +4,14 @@
 
 using namespace std;
 
+Terrain::Terrain() {
+
+}
+
+Terrain::~Terrain() {
+
+}
+
 int Terrain::FloodTerrain(int x, int y, int num, bool overwrite, int width, int height,
     function<bool(int, int, const string)> set, function<string(int, int)> get) const {
     vector<pair<int, int>> q;

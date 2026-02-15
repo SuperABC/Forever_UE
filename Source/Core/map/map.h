@@ -19,6 +19,9 @@ public:
 	std::string GetTerrain() const;
 	bool SetTerrain(std::string terrain);
 
+	float GetHeight() const;
+	bool SetHeight(float height);
+
 	//获取/设置园区标识
 	std::string GetZone() const;
 	bool SetZone(std::string zone);
@@ -30,6 +33,8 @@ public:
 private:
 	// 基础属性
 	std::string terrain = "plain";
+	float height = 0.f;
+
 	std::string zone;
 	std::string building;
 };

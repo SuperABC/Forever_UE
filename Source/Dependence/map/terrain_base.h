@@ -8,8 +8,8 @@
 
 class Terrain {
 public:
-    Terrain() = default;
-    virtual ~Terrain() = default;
+    Terrain();
+    virtual ~Terrain();
 
 	// 子类实现方法
 
