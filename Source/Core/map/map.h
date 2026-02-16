@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "terrain.h"
+#include "roadnet.h"
 
 #include <windows.h>
 #include <vector>
@@ -71,6 +72,7 @@ public:
 
 	// 读取Mods
 	void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles);
 
 	// 读取配置文件
 	void ReadConfigs(std::string path) const;
@@ -113,10 +115,13 @@ private:
 
 	// Mod管理
 	static TerrainFactory* terrainFactory;
+	static RoadnetFactory* roadnetFactory;
 
 	// 基础内容
 	int width = 0, height = 0;
 	std::vector<std::vector<std::shared_ptr<Block>>> blocks;
 
+	// 地图架构
+	Roadnet* roadnet = nullptr;
 };
 

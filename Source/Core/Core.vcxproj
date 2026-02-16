@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="industry\industry.cpp" />
     <ClCompile Include="map\map.cpp" />
+    <ClCompile Include="map\roadnet.cpp" />
     <ClCompile Include="map\terrain.cpp" />
     <ClCompile Include="player\player.cpp" />
     <ClCompile Include="populace\populace.cpp" />
@@ -145,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="industry\industry.h" />
     <ClInclude Include="map\map.h" />
+    <ClInclude Include="map\roadnet.h" />
     <ClInclude Include="map\terrain.h" />
     <ClInclude Include="player\player.h" />
     <ClInclude Include="populace\populace.h" />

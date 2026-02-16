@@ -48,6 +48,9 @@
     <ClCompile Include="society\society.cpp">
       <Filter>society</Filter>
     </ClCompile>
+    <ClCompile Include="map\roadnet.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="populace\populace.h">
       <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="map\roadnet.h">
+      <Filter>map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -39,6 +39,15 @@
     <ClCompile Include="common\error.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="map\roadnet_base.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="common\quad.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\plot.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -51,6 +60,15 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="common\utility.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="map\roadnet_base.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="common\quad.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\plot.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

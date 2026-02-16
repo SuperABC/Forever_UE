@@ -34,6 +34,7 @@ int main() {
 	// 读取Map相关类及Mod
 	::map->ReadConfigs(REPLACE_PATH("../Resources/configs/config_map.json"));
 	::map->InitTerrains(modHandles);
+	::map->InitRoadnets(modHandles);
 
 	// 读取Populace相关类及Mod
 	populace->ReadConfigs(REPLACE_PATH("../Resources/configs/config_populace.json"));

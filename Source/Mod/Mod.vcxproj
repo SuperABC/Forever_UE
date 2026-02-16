@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="roadnet_mod.h" />
     <ClInclude Include="terrain_mod.h" />
   </ItemGroup>
   <ItemGroup>

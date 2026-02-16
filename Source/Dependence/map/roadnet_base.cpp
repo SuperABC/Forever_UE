@@ -22,6 +22,20 @@ struct pair_hash {
     }
 };
 
+Roadnet::Roadnet() {
+
+}
+
+Roadnet::~Roadnet() {
+     for (auto plot : plots) {
+         if (plot) {
+             delete plot;
+             plot = nullptr;
+         }
+    }
+     plots.clear();
+}
+
 const vector<Node>& Roadnet::GetNodes() const {
     return nodes;
 }
@@ -30,7 +44,7 @@ const vector<Connection>& Roadnet::GetConnections() const {
     return connections;
 }
 
-const vector<shared_ptr<Plot>>& Roadnet::GetPlots() const {
+const vector<Plot *>& Roadnet::GetPlots() const {
     return plots;
 }
 
@@ -41,14 +55,14 @@ void Roadnet::AllocateAddress() {
 		auto roads = plot->GetRoads();
         for (const auto& road : roads) {
             if (addresses.find(road.first.GetName()) == addresses.end()) {
-                addresses[road.first.GetName()] = vector<shared_ptr<Plot>>();
+                addresses[road.first.GetName()] = vector<Plot *>();
             }
             addresses[road.first.GetName()].push_back(plot);
 		}
 	}
 }
 
-shared_ptr<Plot> Roadnet::LocatePlot(const string& road, int id) const {
+Plot* Roadnet::LocatePlot(const string& road, int id) const {
     if (addresses.find(road) == addresses.end()) {
         return nullptr;
     }
@@ -240,7 +254,7 @@ const vector<Connection> Roadnet::AutoNavigate(vector<pair<Connection, float>> s
     return path;
 }
 
-const vector<Connection> Roadnet::AutoNavigate(shared_ptr<Plot> start, shared_ptr<Plot> end) const {
+const vector<Connection> Roadnet::AutoNavigate(Plot* start, Plot* end) const {
     if (!start || !end) return {};
     if (start == end) return {};
 
@@ -250,14 +264,14 @@ const vector<Connection> Roadnet::AutoNavigate(shared_ptr<Plot> start, shared_pt
     return AutoNavigate(startRoads, endRoads);
 }
 
-const vector<Connection> Roadnet::AutoNavigate(vector<pair<Connection, float>> startRoads, shared_ptr<Plot> endPlot) const {
+const vector<Connection> Roadnet::AutoNavigate(vector<pair<Connection, float>> startRoads, Plot* endPlot) const {
     if (!endPlot) return {};
 
     auto endRoads = endPlot->GetRoads();
 	return AutoNavigate(startRoads, endRoads);
 }
 
-const vector<Connection> Roadnet::AutoNavigate(shared_ptr<Plot> startPlot, vector<pair<Connection, float>> endRoads) const {
+const vector<Connection> Roadnet::AutoNavigate(Plot* startPlot, vector<pair<Connection, float>> endRoads) const {
     if (!startPlot) return {};
 
     auto startRoads = startPlot->GetRoads();
@@ -265,6 +279,9 @@ const vector<Connection> Roadnet::AutoNavigate(shared_ptr<Plot> startPlot, vecto
 }
 
 void RoadnetFactory::RegisterRoadnet(const string& id, function<Roadnet* ()> creator) {
+    if (registries.find(id) != registries.end()) {
+        return;
+    }
     registries[id] = creator;
 }
 

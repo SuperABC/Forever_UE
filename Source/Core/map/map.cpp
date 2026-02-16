@@ -13,6 +13,7 @@
 using namespace std;
 
 TerrainFactory* Map::terrainFactory = nullptr;
+RoadnetFactory* Map::roadnetFactory = nullptr;
 
 Element::Element() {
 
@@ -110,10 +111,17 @@ Map::Map() {
     if (!terrainFactory) {
         terrainFactory = new TerrainFactory();
     }
+    if (!roadnetFactory) {
+        roadnetFactory = new RoadnetFactory();
+    }
 }
 
 Map::~Map() {
     Destroy();
+
+    if (roadnet) {
+        delete roadnet;
+    }
 }
 
 void Map::SetResourcePath(string path) {
@@ -166,6 +174,50 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
 
 }
 
+void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
+    roadnetFactory->RegisterRoadnet(JingRoadnet::GetId(),
+        []() { return new JingRoadnet(); });
+
+    string modPath = "Mod.dll";
+    HMODULE modHandle;
+    if (modHandles.find(modPath) != modHandles.end()) {
+        modHandle = modHandles[modPath];
+    }
+    else {
+        modHandle = LoadLibraryA(modPath.data());
+        modHandles[modPath] = modHandle;
+    }
+    if (modHandle) {
+        debugf("Mod dll loaded successfully.\n");
+
+        RegisterModRoadnetsFunc registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
+        if (registerFunc) {
+            registerFunc(roadnetFactory);
+        }
+        else {
+            debugf("Incorrect dll content.\n");
+        }
+    }
+    else {
+        debugf("Failed to load mod.dll.\n");
+    }
+
+#ifdef MOD_TEST
+    auto roadnetList = { "mod" };
+    for (const auto& roadnetId : roadnetList) {
+        if (roadnetFactory->CheckRegistered(roadnetId)) {
+            auto roadnet = roadnetFactory->CreateRoadnet(roadnetId);
+            debugf("Created roadnet: mod.\n");
+            delete roadnet;
+        }
+        else {
+            debugf("Roadnet not registered: %s.\n", roadnetId);
+        }
+    }
+#endif // MOD_TEST
+
+}
+
 void Map::ReadConfigs(string path) const {
 	path = resourcePath + path;
     if (!filesystem::exists(path)) {
@@ -183,6 +235,7 @@ void Map::ReadConfigs(string path) const {
         for (auto terrain : root["mods"]["terrain"]) {
             terrainFactory->SetConfig(terrain.AsString(), true);
         }
+        roadnetFactory->SetConfig(root["mods"]["roadnet"].AsString(), true);
     }
     else {
         fin.close();
@@ -206,6 +259,7 @@ int Map::Init(int blockX, int blockY) {
     height = blockY * BLOCK_SIZE;
 
     // 构建区块
+	debugf("Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
     blocks = vector<vector<shared_ptr<Block>>>(blockY,
         vector<shared_ptr<Block>>(blockX, nullptr));
     for (int i = 0; i < blockX; i++) {
@@ -214,7 +268,8 @@ int Map::Init(int blockX, int blockY) {
         }
     }
 
-    // 生成地形
+    // 随机生成地形
+	debugf("Generate terrains.\n");
     auto getTerrain = [this](int x, int y) -> string {
         return this->GetTerrain(x, y);
         };
@@ -232,6 +287,15 @@ int Map::Init(int blockX, int blockY) {
     for(auto &terrain : terrains) {
         delete terrain;
 	}
+
+    // 随机生成路网
+	debugf("Generate roadnet.\n");
+    roadnet = roadnetFactory->GetRoadnet();
+    if (!roadnet) {
+        THROW_EXCEPTION(InvalidConfigException, "No enabled roadnet in config.\n");
+    }
+    roadnet->DistributeRoadnet(width, height, getTerrain);
+    roadnet->AllocateAddress();
 
     return 0;
 }

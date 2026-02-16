@@ -21,6 +21,8 @@ public:
 	void SetGlobal(AActor* g);
 	void MarkDirty();
 
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void GetRoadnet();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
 	void UpdateRoadnet();
 

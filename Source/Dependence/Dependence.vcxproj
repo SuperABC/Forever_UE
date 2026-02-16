@@ -127,13 +127,19 @@
   <ItemGroup>
     <ClCompile Include="common\error.cpp" />
     <ClCompile Include="common\json.cpp" />
+    <ClCompile Include="common\plot.cpp" />
+    <ClCompile Include="common\quad.cpp" />
     <ClCompile Include="common\utility.cpp" />
+    <ClCompile Include="map\roadnet_base.cpp" />
     <ClCompile Include="map\terrain_base.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\error.h" />
     <ClInclude Include="common\json.h" />
+    <ClInclude Include="common\plot.h" />
+    <ClInclude Include="common\quad.h" />
     <ClInclude Include="common\utility.h" />
+    <ClInclude Include="map\roadnet_base.h" />
     <ClInclude Include="map\terrain_base.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

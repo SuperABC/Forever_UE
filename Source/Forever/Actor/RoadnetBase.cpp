@@ -1,4 +1,5 @@
 #include "Actor/RoadnetBase.h"
+#include "Actor/GlobalBase.h"
 
 
 using namespace std;
@@ -30,4 +31,8 @@ void ARoadnetBase::SetGlobal(AActor* g) {
 
 void ARoadnetBase::MarkDirty() {
 	dirty = true;
+}
+
+void ARoadnetBase::GetRoadnet() {
+
 }
