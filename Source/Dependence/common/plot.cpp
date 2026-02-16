@@ -21,15 +21,9 @@ float Node::GetY() const {
     return posY;
 }
 
-Connection::Connection(string name, Roadnet *roadnet, int n1, int n2, float begin, float end) :
-    name(name), roadnet(roadnet), vertices(n1, n2), begin(begin), end(end) {
+Connection::Connection(string name, Roadnet *roadnet, int n1, int n2, float width, float begin, float end) :
+    name(name), roadnet(roadnet), vertices(n1, n2), width(width), begin(begin), end(end) {
 
-}
-
-float Connection::distance() const {
-    float dx = roadnet->GetNodes()[vertices.first].GetX() - roadnet->GetNodes()[vertices.second].GetX();
-    float dy = roadnet->GetNodes()[vertices.first].GetY() - roadnet->GetNodes()[vertices.second].GetY();
-    return sqrt(dx * dx + dy * dy);
 }
 
 bool Connection::operator==(Connection& other) const {
@@ -46,12 +40,22 @@ Roadnet* Connection::GetRoadnet() const {
     return roadnet;
 }
 
+float Connection::GetWidth() const {
+    return width;
+}
+
 int Connection::GetV1() const {
     return vertices.first;
 }
 
 int Connection::GetV2() const {
     return vertices.second;
+}
+
+float Connection::distance() const {
+    float dx = roadnet->GetNodes()[vertices.first].GetX() - roadnet->GetNodes()[vertices.second].GetX();
+    float dy = roadnet->GetNodes()[vertices.first].GetY() - roadnet->GetNodes()[vertices.second].GetY();
+    return sqrt(dx * dx + dy * dy);
 }
 
 Plot::Plot() : Quad(), rotation(0.f) {

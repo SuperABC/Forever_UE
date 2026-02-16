@@ -109,6 +109,9 @@ public:
 	std::string GetTerrain(int x, int y) const;
 	bool SetTerrain(int x, int y, std::string terrain);
 
+	// 获取路网
+	Roadnet* GetRoadnet() const;
+
 private:
 	// 资源路径
 	std::string resourcePath;

@@ -27,10 +27,10 @@ void ATerrainBase::Tick(float DeltaTime) {
 		location /= 1000.f;
 
 		auto size = ((AGlobalBase*)global)->GetMap()->GetSize();
-		UpdateTerrain(FMath::Clamp(int(location.X - 10), 0, size.first),
-			FMath::Clamp(int(location.Y - 10), 0, size.second),
-			FMath::Clamp(int(location.X + 10), 0, size.first),
-			FMath::Clamp(int(location.Y + 10), 0, size.second));
+		UpdateTerrain(FMath::Clamp(int(location.X - 20), 0, size.first),
+			FMath::Clamp(int(location.Y - 20), 0, size.second),
+			FMath::Clamp(int(location.X + 20), 0, size.first),
+			FMath::Clamp(int(location.Y + 20), 0, size.second));
 	}
 }
 
@@ -44,6 +44,8 @@ void ATerrainBase::MarkDirty() {
 
 void ATerrainBase::LookupTerrain(int x, int y, FString& type, float& height) {
 	Map* map = ((AGlobalBase*)global)->GetMap();
+	if (!map)return;
+
 	type = FString(map->GetTerrain(x, y).data());
 	height = map->GetElement(x, y)->GetHeight();
 }

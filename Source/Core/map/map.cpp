@@ -384,4 +384,8 @@ bool Map::SetTerrain(int x, int y, string terrain) {
     return blocks[blockY][blockX]->SetTerrain(x, y, terrain);
 }
 
+Roadnet* Map::GetRoadnet() const {
+    return roadnet;
+}
+
 

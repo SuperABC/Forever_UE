@@ -8,6 +8,18 @@
 #include "RoadnetBase.generated.h"
 
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FConnection {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector v1;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector v2;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	float width;
+};
+
 UCLASS()
 class FOREVER_API ARoadnetBase : public AActor {
 	GENERATED_BODY()
@@ -22,7 +34,7 @@ public:
 	void MarkDirty();
 
 	UFUNCTION(BlueprintCallable, Category = "Updating")
-	void GetRoadnet();
+	TArray<FConnection> GetRoadnet();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
 	void UpdateRoadnet();
 

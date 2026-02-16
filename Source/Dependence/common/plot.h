@@ -23,13 +23,14 @@ private:
 
 class Connection {
 public:
-	Connection(std::string name, Roadnet* roadnet, int n1, int n2, float begin = 0.0f, float end = 1.0f);
+	Connection(std::string name, Roadnet* roadnet, int n1, int n2, float width = 1.0f, float begin = 0.0f, float end = 1.0f);
 	~Connection() = default;
 
 	bool operator==(Connection& other) const;
 
 	std::string GetName() const;
 	Roadnet* GetRoadnet() const;
+	float GetWidth() const;
 
 	int GetV1() const;
 	int GetV2() const;
@@ -41,6 +42,7 @@ private:
 
 	std::pair<int, int> vertices;
 	float begin, end;
+	float width;
 };
 
 enum AREA_TYPE {

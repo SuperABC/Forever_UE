@@ -42,7 +42,7 @@ public:
 	Player* GetPlayer();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Status")
-	void GetLocation(FVector location);
+	void GetLocation(FVector& location);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> TerrainClass;
