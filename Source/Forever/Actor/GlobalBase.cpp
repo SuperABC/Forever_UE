@@ -89,6 +89,7 @@ void AGlobalBase::BeginPlay() {
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	terrainActor = GetWorld()->SpawnActor<ATerrainBase>(TerrainClass, Location, Rotation);
 	terrainActor->SetGlobal(this);
+	terrainActor->InitInstances(size * BLOCK_SIZE, size * BLOCK_SIZE);
 	roadnetActor = GetWorld()->SpawnActor<ARoadnetBase>(RoadnetClass, Location, Rotation);
 	roadnetActor->SetGlobal(this);
 	zoneActor = GetWorld()->SpawnActor<AZoneBase>(ZoneClass, Location, Rotation);

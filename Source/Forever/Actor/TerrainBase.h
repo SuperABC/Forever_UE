@@ -8,6 +8,16 @@
 #include "TerrainBase.generated.h"
 
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FCoordinate {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IntPair")
+	int32 x;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IntPair")
+	int32 y;
+};
+
 UCLASS()
 class FOREVER_API ATerrainBase : public AActor {
 	GENERATED_BODY()
@@ -18,13 +28,15 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void InitInstances(int width, int height);
 	void SetGlobal(AActor* g);
-	void MarkDirty();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	void UpdateTerrain(const TArray<FCoordinate> &coordinates);
 	UFUNCTION(BlueprintCallable, Category = "Updating")
 	void LookupTerrain(int x, int y, FString &type, float &height);
-	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
-	void UpdateTerrain(int x1, int y1, int x2, int y2);
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void SetInstance(int x, int y, int id);
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,5 +44,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Global")
 	AActor* global;
 
-	bool dirty = true;
+	std::vector<std::vector<int>> terrainInstances;
 };
