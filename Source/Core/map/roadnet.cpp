@@ -101,7 +101,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height, function<string(int, 
         connections.push_back(Connection("城南东路", this, verticalNode2s[i].second, verticalNode2s[i - 1].second));
     }
 
-    plots.push_back(new Plot(northWest, northEast, southEast, southWest));
+    plots.push_back(new Plot(northWest, northEast, southEast, southWest, { 0.5f, 0.5f, 0.5f, 0.5f }));
     plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
     plots.back()->SetRoads({
         {connections[0], 0.5f},
@@ -115,7 +115,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height, function<string(int, 
         if (get((int)horizontalNode2w[i].first.GetX(), (int)horizontalNode2w[i].first.GetY()) != "plain")continue;
         if (get((int)horizontalNode2w[i - 1].first.GetX(), (int)horizontalNode2w[i - 1].first.GetY()) != "plain")continue;
         plots.push_back(new Plot(
-            horizontalNode1w[i].first, horizontalNode1w[i - 1].first, horizontalNode2w[i - 1].first, horizontalNode2w[i].first));
+            horizontalNode1w[i].first, horizontalNode1w[i - 1].first, horizontalNode2w[i - 1].first, horizontalNode2w[i].first,
+            { 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f }));
         plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
         plots.back()->SetRoads({
             {Connection("城西北路", this, horizontalNode1w[i].second, horizontalNode1w[i - 1].second), 0.5f},
@@ -128,7 +129,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height, function<string(int, 
         if (get((int)horizontalNode2e[i].first.GetX(), (int)horizontalNode2e[i].first.GetY()) != "plain")continue;
         if (get((int)horizontalNode2e[i - 1].first.GetX(), (int)horizontalNode2e[i - 1].first.GetY()) != "plain")continue;
         plots.push_back(new Plot(
-            horizontalNode1e[i - 1].first, horizontalNode1e[i].first, horizontalNode2e[i].first, horizontalNode2e[i - 1].first));
+            horizontalNode1e[i - 1].first, horizontalNode1e[i].first, horizontalNode2e[i].first, horizontalNode2e[i - 1].first,
+            { 0.5f, 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f) }));
         plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
         plots.back()->SetRoads({
             {Connection("城东北路", this, horizontalNode1e[i].second, horizontalNode1e[i - 1].second), 0.5f},
@@ -141,7 +143,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height, function<string(int, 
         if (get((int)verticalNode2n[i].first.GetX(), (int)verticalNode2n[i].first.GetY()) != "plain")continue;
         if (get((int)verticalNode2n[i - 1].first.GetX(), (int)verticalNode2n[i - 1].first.GetY()) != "plain")continue;
         plots.push_back(new Plot(
-            verticalNode1n[i].first, verticalNode2n[i].first, verticalNode2n[i - 1].first, verticalNode1n[i - 1].first));
+            verticalNode1n[i].first, verticalNode2n[i].first, verticalNode2n[i - 1].first, verticalNode1n[i - 1].first,
+            { 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f }));
         plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
         plots.back()->SetRoads({
             {Connection("城北西路", this, verticalNode1n[i].second, verticalNode1n[i - 1].second), 0.5f},
@@ -154,7 +157,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height, function<string(int, 
         if (get((int)verticalNode2s[i].first.GetX(), (int)verticalNode2s[i].first.GetY()) != "plain")continue;
         if (get((int)verticalNode2s[i - 1].first.GetX(), (int)verticalNode2s[i - 1].first.GetY()) != "plain")continue;
         plots.push_back(new Plot(
-            verticalNode1s[i - 1].first, verticalNode2s[i - 1].first, verticalNode2s[i].first, verticalNode1s[i].first));
+            verticalNode1s[i - 1].first, verticalNode2s[i - 1].first, verticalNode2s[i].first, verticalNode1s[i].first,
+            { (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f, 0.5f }));
         plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
         plots.back()->SetRoads({
             {Connection("城南西路", this, verticalNode1s[i].second, verticalNode1s[i - 1].second), 0.5f},

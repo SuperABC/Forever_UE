@@ -66,8 +66,8 @@ class Plot : public Quad {
 public:
 	Plot();
 	Plot(float x, float y, float w, float h, float r);
-	Plot(Node n1, Node n2, Node n3);
-	Plot(Node n1, Node n2, Node n3, Node n4);
+	Plot(Node n1, Node n2, Node n3, std::vector<float> margin = std::vector<float>(4, 0.f));
+	Plot(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin = std::vector<float>(4, 0.f));
 
 	// 获取/设置属性
 	float GetRotation() const;
@@ -82,10 +82,10 @@ public:
 	std::pair<float, float> GetPosition(float x, float y) const;
 
 	// 通过逆时针顺序三个顶点设置矩形
-	void SetPosition(Node n1, Node n2, Node n3);
+	void SetPosition(Node n1, Node n2, Node n3, std::vector<float> margin);
 
 	// 通过顺序无关四个顶点设置矩形
-	void SetPosition(Node n1, Node n2, Node n3, Node n4);
+	void SetPosition(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin);
 
 protected:
 	float rotation;

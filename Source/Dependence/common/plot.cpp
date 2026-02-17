@@ -66,12 +66,12 @@ Plot::Plot(float x, float y, float w, float h, float r) : Quad(x, y, w, h), rota
 
 }
 
-Plot::Plot(Node n1, Node n2, Node n3) {
-    SetPosition(n1, n2, n3);
+Plot::Plot(Node n1, Node n2, Node n3, vector<float> margin) {
+    SetPosition(n1, n2, n3, margin);
 }
 
-Plot::Plot(Node n1, Node n2, Node n3, Node n4) {
-    SetPosition(n1, n2, n3, n4);
+Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
+    SetPosition(n1, n2, n3, n4, margin);
 }
 
 float Plot::GetRotation() const {
@@ -142,7 +142,11 @@ pair<float, float> Plot::GetPosition(float x, float y) const {
     return { posX + rotatedX , posY + rotatedY };
 }
 
-void Plot::SetPosition(Node n1, Node n2, Node n3) {
+void Plot::SetPosition(Node n1, Node n2, Node n3, vector<float> margin) {
+    if (margin.size() != 4) {
+        THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
+    }
+
     float x1 = n1.GetX(), y1 = n1.GetY();
     float x2 = n2.GetX(), y2 = n2.GetY();
     float x3 = n3.GetX(), y3 = n3.GetY();
@@ -162,9 +166,13 @@ void Plot::SetPosition(Node n1, Node n2, Node n3) {
     float sx = sqrt(ux * ux + uy * uy);
     float sy = sqrt(vx * vx + vy * vy);
 
+	// 应用边距
+	sx -= margin[1] + margin[3];
+	sy -= margin[0] + margin[2];
+
     // 计算中心点：p1 和 p3 的对角线中心
-    float cx = (x1 + x3) / 2.0f;
-    float cy = (y1 + y3) / 2.0f;
+    float cx = (x1 + x3) / 2.0f + (margin[3] - margin[1]) * ux / (2.0f * sx) + (margin[0] - margin[2]) * vx / (2.0f * sy);
+	float cy = (y1 + y3) / 2.0f + (margin[3] - margin[1]) * uy / (2.0f * sx) + (margin[0] - margin[2]) * vy / (2.0f * sy);
 
     // 计算旋转角度（p1p2 与 x 轴夹角）
     float rot = atan2(uy, ux);
@@ -177,7 +185,12 @@ void Plot::SetPosition(Node n1, Node n2, Node n3) {
     rotation = rot;
     acreage = sx * sy * 100.f;
 }
-void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4) {
+
+void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
+    if (margin.size() != 4) {
+        THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
+    }
+
     vector<Node> nodes = { n1, n2, n3, n4 };
 
     // 计算中心点
@@ -189,14 +202,12 @@ void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4) {
     cx /= 4.0f;
     cy /= 4.0f;
 
-    // 按极角排序（逆时针）
+    // 按顺时针排序
     sort(nodes.begin(), nodes.end(),
         [cx, cy](const Node& a, const Node& b) {
-            return atan2(a.GetY() - cy, a.GetX() - cx) <
+            return atan2(a.GetY() - cy, a.GetX() - cx) >
                 atan2(b.GetY() - cy, b.GetX() - cx);
         });
-
-    // 现在 nodes[0], nodes[1], nodes[2], nodes[3] 是逆时针顺序
 
     // 检查矩形条件
     const float eps = 1e-2f;
@@ -238,6 +249,12 @@ void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4) {
 
     // 计算旋转角度（使用第一条边 nodes[0]->nodes[1]）
     float rot = atan2(u1y, u1x);
+
+	// 应用边距
+	sx -= margin[1] + margin[3];
+	sy -= margin[0] + margin[2];
+	cx += (margin[3] - margin[1]) * u1x / (2.0f * sx) + (margin[0] - margin[2]) * u2x / (2.0f * sy);
+	cy += (margin[3] - margin[1]) * u1y / (2.0f * sx) + (margin[0] - margin[2]) * u2y / (2.0f * sy);
 
     // 更新成员变量
     posX = cx;
