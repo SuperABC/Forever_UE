@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "../populace/person.h"
+
 #include "terrain.h"
 #include "roadnet.h"
 #include "zone.h"
@@ -14,6 +16,8 @@
 
 #define BLOCK_SIZE 256
 
+
+class Person;
 
 class Element {
 public:
@@ -87,6 +91,9 @@ public:
 
 	// 初始化全部地图
 	int Init(int blockX, int blockY);
+
+	// 市民入驻
+	void Checkin(std::vector<Person*> citizens, Time* time) const;
 
 	// 释放空间
 	void Destroy();

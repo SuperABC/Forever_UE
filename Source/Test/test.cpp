@@ -32,7 +32,8 @@ int main() {
 	std::unordered_map<string, HMODULE> modHandles;
 
 	// 读取Map相关类及Mod
-	::map->ReadConfigs(REPLACE_PATH("../Resources/configs/config_map.json"));
+	::map->SetResourcePath(REPLACE_PATH("../Resources/"));
+	::map->ReadConfigs("configs/config_map.json");
 	::map->InitTerrains(modHandles);
 	::map->InitRoadnets(modHandles);
 	::map->InitZones(modHandles);
@@ -41,22 +42,29 @@ int main() {
 	::map->InitRooms(modHandles);
 
 	// 读取Populace相关类及Mod
-	populace->ReadConfigs(REPLACE_PATH("../Resources/configs/config_populace.json"));
+	populace->SetResourcePath(REPLACE_PATH("../Resources/"));
+	populace->ReadConfigs("configs/config_populace.json");
+	populace->InitNames(modHandles);
 
 	// 读取Society相关类及Mod
-	society->ReadConfigs(REPLACE_PATH("../Resources/configs/config_society.json"));
+	society->SetResourcePath(REPLACE_PATH("../Resources/"));
+	society->ReadConfigs("configs/config_society.json");
 
 	// 读取Story相关类及Mod
-	story->ReadConfigs(REPLACE_PATH("../Resources/configs/config_story.json"));
+	story->SetResourcePath(REPLACE_PATH("../Resources/"));
+	story->ReadConfigs("configs/config_story.json");
 
 	// 读取Industry相关类及Mod
-	industry->ReadConfigs(REPLACE_PATH("../Resources/configs/config_industry.json"));
+	industry->SetResourcePath(REPLACE_PATH("../Resources/"));
+	industry->ReadConfigs("configs/config_industry.json");
 
 	// 读取Traffic相关类及Mod
-	traffic->ReadConfigs(REPLACE_PATH("../Resources/configs/config_traffic.json"));
+	traffic->SetResourcePath(REPLACE_PATH("../Resources/"));
+	traffic->ReadConfigs("configs/config_traffic.json");
 
 	// 读取Player相关类及Mod
-	traffic->ReadConfigs(REPLACE_PATH("../Resources/configs/config_player.json"));
+	traffic->SetResourcePath(REPLACE_PATH("../Resources/"));
+	traffic->ReadConfigs("configs/config_player.json");
 
 	// 读取命令行
 	string cmd;
@@ -83,6 +91,7 @@ int main() {
 				int size = atoi(parser.GetOption("--block").data());
 				auto accomodation = ::map->Init(size, size);
 				populace->Init(accomodation, {}, player->GetTime());
+				::map->Checkin(populace->GetCitizens(), player->GetTime());
 				break;
 			}
 			case CMD_PASS: { // 时间流逝

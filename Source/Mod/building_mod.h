@@ -33,9 +33,9 @@ public:
         ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) override {
         int direction = GetRandom(4);
 
-        //auto component = CreateComponent<ModComponent>();
-        //ReadFloor(0, direction, "single_room", layout);
-        //AssignRoom(0, 0, "mod", component, factory);
+        auto component = CreateComponent("mod", componentFactory);
+        ReadFloor(0, direction, "single_room", layout);
+        AssignRoom(0, 0, "mod", component, roomFactory);
     }
 
 private:

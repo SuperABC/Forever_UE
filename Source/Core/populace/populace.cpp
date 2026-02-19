@@ -34,6 +34,8 @@ void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
     nameFactory->RegisterName(ChineseName::GetId(),
         []() { return new ChineseName(); });
 
+	return;
+
     string modPath = "Mod.dll";
     HMODULE modHandle;
     if (modHandles.find(modPath) != modHandles.end()) {
@@ -88,7 +90,7 @@ void Populace::ReadConfigs(string path) const {
         THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
     }
     if (reader.Parse(fin, root)) {
-
+		nameFactory->SetConfig(root["mods"]["name"].AsString(), true);
     }
     else {
         fin.close();
@@ -132,6 +134,19 @@ void Populace::Save(string path) const {
 
 }
 
+vector<Person*>& Populace::GetCitizens() {
+	return citizens;
+}
+
+Person* Populace::GetCitizen(string name) {
+	if (ids.find(name) == ids.end()) {
+		return nullptr;
+	}
+	else {
+		return citizens[ids[name]];
+	}
+}
+
 void Populace::GenerateCitizens(int num, vector<string> nameholders, Time* time) {
 	enum LIFE_TYPE {
 		LIFE_SINGLE,
@@ -173,12 +188,14 @@ void Populace::GenerateCitizens(int num, vector<string> nameholders, Time* time)
 	int year = 1;
 	for (int i = 1; i <= 100; i++) {
 		auto n = names->GenerateName(false, true);
+		if (n.size() == 0)continue;
 		females.push_back({ -1, n, GetRandom(20), -1, LIFE_SINGLE, GENDER_FEMALE, -1, -1, -1, {} });
 		chronology[females.back().birth + 20 + GetRandom(15)].push_back(make_pair((int)females.size() - 1, LIFE_MARRY));
 		chronology[females.back().birth + 60 + GetRandom(40)].push_back(make_pair((int)females.size() - 1, LIFE_DEAD));
 	}
 	for (int i = 1; i <= 100; i++) {
 		auto n = names->GenerateName(true, false);
+		if (n.size() == 0)continue;
 		males.push_back({ -1, n, GetRandom(20), -1, LIFE_SINGLE, GENDER_MALE, -1, -1, -1, {} });
 	}
 	sort(males.begin(), males.end(), [](Human x, Human y) {return x.birth < y.birth; });
@@ -234,6 +251,7 @@ void Populace::GenerateCitizens(int num, vector<string> nameholders, Time* time)
 					int gender = GetRandom(2);
 					auto n = names->GenerateName(names->GetSurname(males[females[event.first].spouse].name),
 						gender == GENDER_MALE, gender == GENDER_FEMALE);
+					if (n.size() == 0)break;
 					if (gender == GENDER_FEMALE) {
 						females[event.first].childs.push_back(make_pair(GENDER_FEMALE, (int)females.size()));
 						males[females[event.first].spouse].childs.push_back(make_pair(GENDER_FEMALE, (int)females.size()));

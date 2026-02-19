@@ -52,7 +52,7 @@ public:
 	void SetWeight(float weight);
 	const Time& GetBirthday() const;
 	void SetBirthday(const Time& birthday);
-	int GetAge(const Time& currentTime) const;
+	int GetAge(const Time* currentTime) const;
 	const Time& GetMarryday() const;
 	void SetMarryday(const Time& marryday);
 	const std::string& GetNick() const;

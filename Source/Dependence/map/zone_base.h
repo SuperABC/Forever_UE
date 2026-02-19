@@ -53,6 +53,9 @@ public:
     // 自动分布建筑
     void ArrangeBuildings();
 
+    // 动态位置
+    std::pair<float, float> GetPosition() const;
+
 protected:
     Plot* parentPlot;
 

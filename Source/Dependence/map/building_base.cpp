@@ -130,8 +130,34 @@ Floor* Building::GetFloor(int level) const {
 
 void Building::FinishInit() {
 	construction = LayoutConstruction();
-    //floors = vector<Floor*>(basements + layers);
+
+    floors = vector<Floor*>(basements + layers);
 }
+
+pair<float, float> Building::GetPosition() const {
+	auto zone = GetParentZone();
+    if(zone) {
+        auto plot = zone->GetParent();
+        if(plot) {
+            auto center = plot->GetPosition(
+                zone->GetPosX() - zone->GetSizeX() / 2 + GetPosX() - GetSizeX() / 2.f + construction.GetPosX(),
+                zone->GetPosY() - zone->GetSizeY() / 2 + GetPosY() - GetSizeY() / 2.f + construction.GetPosY());
+            return center;
+        }
+	}
+    else {
+        auto plot = GetParentPlot();
+        if(plot) {
+            auto center = plot->GetPosition(
+                GetPosX() - GetSizeX() / 2.f + construction.GetPosX(),
+                GetPosY() - GetSizeY() / 2.f + construction.GetPosY());
+            return center;
+		}
+    }
+
+	return { 0.f, 0.f };
+}
+
 
 Layout* Building::ReadTemplates(string path) {
     if (!filesystem::exists(REPLACE_PATH(path))) {

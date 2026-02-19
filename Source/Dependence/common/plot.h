@@ -50,7 +50,7 @@ private:
 	float width;
 };
 
-enum AREA_TYPE {
+enum AREA_TYPE : int {
 	AREA_NONE,
 	AREA_RESIDENTIAL_HIGH,
 	AREA_RESIDENTIAL_MIDDLE,

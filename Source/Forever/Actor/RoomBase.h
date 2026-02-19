@@ -19,7 +19,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
-	void MarkDirty();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
 	void UpdateRoom();
@@ -29,6 +28,4 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Global")
 	AActor* global;
-
-	bool dirty = true;
 };

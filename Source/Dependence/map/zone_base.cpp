@@ -256,6 +256,17 @@ void Zone::ArrangeBuildings() {
     }
 }
 
+pair<float, float> Zone::GetPosition() const {
+    auto plot = GetParent();
+    if (plot) {
+        auto center = plot->GetPosition(
+            GetPosX() - GetSizeX() / 2.f,
+            GetPosY() - GetSizeY() / 2.f);
+        return center;
+    }
+
+    return { 0.f, 0.f };
+}
 
 void ZoneFactory::RegisterZone(const string& id,
     function<Zone* ()> creator,  GeneratorFunc generator) {

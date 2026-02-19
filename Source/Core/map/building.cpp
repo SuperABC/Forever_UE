@@ -72,14 +72,14 @@ void DefaultResidentialBuilding::LayoutRooms(
         }
     }
 
-    //auto component = CreateComponent<DefaultResidentialComponent>();
-    //ReadFloor(-1, direction, "single_room", layout);
-    //AssignRoom(-1, 0, "default_residential", component, factory);
-    //for (int i = 0; i < layers; i++) {
-    //    ReadFloor(i, direction, "straight_linear", layout);
-    //    ArrangeRow(i, 0, "default_residential", 100.f, component, factory);
-    //    ArrangeRow(i, 1, "default_residential", 100.f, component, factory);
-    //}
+    auto component = CreateComponent("default_residential", componentFactory);
+    ReadFloor(-1, direction, "single_room", layout);
+    AssignRoom(-1, 0, "default_residential", component, roomFactory);
+    for (int i = 0; i < layers; i++) {
+        ReadFloor(i, direction, "straight_linear", layout);
+        ArrangeRow(i, 0, "default_residential", 100.f, component, roomFactory);
+        ArrangeRow(i, 1, "default_residential", 100.f, component, roomFactory);
+    }
 }
 
 int DefaultWorkingBuilding::count = 0;
@@ -151,18 +151,18 @@ void DefaultWorkingBuilding::LayoutRooms(
         }
     }
 
-    //auto component = CreateComponent<DefaultWorkingComponent>();
-    //ReadFloor(-1, direction, "single_room", layout);
-    //AssignRoom(-1, 0, "default_working", component, factory);
-    //ReadFloor(0, direction, "lobby_linear", layout);
-    //AssignRoom(0, 0, "default_working", component, factory);
-    //ArrangeRow(0, 0, "default_working", 100.f, component, factory);
-    //ArrangeRow(0, 1, "default_working", 100.f, component, factory);
-    //for (int i = 1; i < layers; i++) {
-    //    ReadFloor(i, direction, "straight_linear", layout);
-    //    ArrangeRow(i, 0, "default_working", 100.f, component, factory);
-    //    ArrangeRow(i, 1, "default_working", 100.f, component, factory);
-    //}
+    auto component = CreateComponent("default_working", componentFactory);
+    ReadFloor(-1, direction, "single_room", layout);
+    AssignRoom(-1, 0, "default_working", component, roomFactory);
+    ReadFloor(0, direction, "lobby_linear", layout);
+    AssignRoom(0, 0, "default_working", component, roomFactory);
+    ArrangeRow(0, 0, "default_working", 100.f, component, roomFactory);
+    ArrangeRow(0, 1, "default_working", 100.f, component, roomFactory);
+    for (int i = 1; i < layers; i++) {
+        ReadFloor(i, direction, "straight_linear", layout);
+        ArrangeRow(i, 0, "default_working", 100.f, component, roomFactory);
+        ArrangeRow(i, 1, "default_working", 100.f, component, roomFactory);
+    }
 }
 
 

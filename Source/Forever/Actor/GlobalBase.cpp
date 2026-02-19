@@ -66,6 +66,7 @@ void AGlobalBase::BeginPlay() {
 	// 读取Populace相关类及Mod
 	populace->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
 	populace->ReadConfigs("configs/config_populace.json");
+	populace->InitNames(modHandles);
 
 	// 读取Society相关类及Mod
 	society->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
@@ -87,7 +88,10 @@ void AGlobalBase::BeginPlay() {
 	player->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
 	player->ReadConfigs("configs/config_player.json");
 
-	int size = 4; map->Init(size, size);
+	int size = 4;
+	auto accomodation = map->Init(size, size);
+	populace->Init(accomodation, {}, player->GetTime());
+	map->Checkin(populace->GetCitizens(), player->GetTime());
 
 	FVector Location(0.0f, 0.0f, 0.0f);
 	FRotator Rotation(0.0f, 0.0f, 0.0f);

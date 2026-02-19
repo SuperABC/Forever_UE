@@ -2,6 +2,7 @@
 
 #include "person.h"
 #include "name.h"
+#include "error.h"
 
 #include <windows.h>
 #include <vector>
@@ -41,6 +42,10 @@ public:
 	// 保存/加载人口
 	void Load(std::string path);
 	void Save(std::string path) const;
+
+	// 获取市民
+	std::vector<Person*>& GetCitizens();
+	Person* GetCitizen(std::string name);
 
 private:
 	// 生成市民

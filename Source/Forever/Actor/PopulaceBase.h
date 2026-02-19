@@ -8,6 +8,16 @@
 #include "PopulaceBase.generated.h"
 
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FPerson {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FString name;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector pos;
+};
+
 UCLASS()
 class FOREVER_API APopulaceBase : public AActor {
 	GENERATED_BODY()
@@ -19,10 +29,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
-	void MarkDirty();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
-	void UpdatePopulace();
+	void UpdatePopulace(const TArray<FPerson>& citizens);
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void SetInstance(FString name, AActor* actor);
 
 protected:
 	virtual void BeginPlay() override;
@@ -30,5 +41,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Global")
 	AActor* global;
 
-	bool dirty = true;
+	std::unordered_map<std::string, AActor*> personInstances;
 };

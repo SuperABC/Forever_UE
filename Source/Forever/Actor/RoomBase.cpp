@@ -18,17 +18,11 @@ void ARoomBase::BeginPlay() {
 void ARoomBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	if (dirty) {
-		dirty = false;
-		UpdateRoom();
-	}
+	UpdateRoom();
 }
 
 void ARoomBase::SetGlobal(AActor* g) {
 	this->global = g;
 }
 
-void ARoomBase::MarkDirty() {
-	dirty = true;
-}
 

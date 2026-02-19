@@ -131,6 +131,9 @@ public:
 	// 补充初始化
 	void FinishInit();
 
+	// 动态位置
+	std::pair<float, float> GetPosition() const;
+
 	// 读入布局模板
 	static Layout* ReadTemplates(std::string path);
 

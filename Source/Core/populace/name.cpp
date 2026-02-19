@@ -138,7 +138,29 @@ void ChineseName::InitializeNames() {
 }
 
 string ChineseName::GetSurname(string name) {
-    return name.substr(0, 2);
+    if (name.empty()) return "";
+
+    const unsigned char* s = reinterpret_cast<const unsigned char*>(name.data());
+    size_t len = name.size();
+
+    unsigned char first = s[0];
+    size_t charLen = 0;
+
+    if (first < 0x80)charLen = 1;
+    else if ((first & 0xE0) == 0xC0)charLen = 2;
+    else if ((first & 0xF0) == 0xE0)charLen = 3;
+    else if ((first & 0xF8) == 0xF0)charLen = 4;
+    else return "";
+
+    if (len < charLen) return "";
+
+    for (size_t i = 1; i < charLen; ++i) {
+        if ((s[i] & 0xC0) != 0x80) {
+            return "";
+        }
+    }
+
+    return name.substr(0, charLen);
 }
 
 string ChineseName::GenerateName(bool male, bool female, bool neutral) {
@@ -167,7 +189,7 @@ string ChineseName::GenerateName(string surname, bool male, bool female, bool ne
     int attempt = 0;
     while (true) {
         if (attempt++ > 16) {
-            THROW_EXCEPTION(DeadLoopException, "Cannot find a name with no conflict.");
+            return "";
         }
         givenName.clear();
         for (int i = 0; i < nameLength; ++i) {
