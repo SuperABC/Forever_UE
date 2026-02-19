@@ -31,6 +31,8 @@ public:
     }
     virtual void LayoutRooms(
         ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) override {
+        floors.resize(basements + layers);
+
         int direction = GetRandom(4);
 
         auto component = CreateComponent("mod", componentFactory);

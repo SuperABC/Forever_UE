@@ -26,15 +26,15 @@ vector<float> DefaultResidentialBuilding::GetPower() {
 }
 
 float DefaultResidentialBuilding::RandomAcreage() const {
-    return 600.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
+    return 1200.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
 }
 
 float DefaultResidentialBuilding::GetAcreageMin() const {
-    return 600.f;
+    return 1200.f;
 }
 
 float DefaultResidentialBuilding::GetAcreageMax() const {
-    return 9600.f;
+    return 19200.f;
 }
 
 Quad DefaultResidentialBuilding::LayoutConstruction() {
@@ -54,6 +54,8 @@ Quad DefaultResidentialBuilding::LayoutConstruction() {
 
 void DefaultResidentialBuilding::LayoutRooms(
     ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) {
+    floors.resize(basements + layers);
+
     int direction = 0;
     if (GetSizeX() > GetSizeY()) {
         if (GetSizeY() > 3.f) {
@@ -105,15 +107,15 @@ vector<float> DefaultWorkingBuilding::GetPower() {
 }
 
 float DefaultWorkingBuilding::RandomAcreage() const {
-    return 1000.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
+    return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
 }
 
 float DefaultWorkingBuilding::GetAcreageMin() const {
-    return 1000.f;
+    return 2000.f;
 }
 
 float DefaultWorkingBuilding::GetAcreageMax() const {
-    return 16000.f;
+    return 32000.f;
 }
 
 Quad DefaultWorkingBuilding::LayoutConstruction() {
@@ -133,6 +135,8 @@ Quad DefaultWorkingBuilding::LayoutConstruction() {
 
 void DefaultWorkingBuilding::LayoutRooms(
     ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) {
+    floors.resize(basements + layers);
+
     int direction = 0;
     if (GetSizeX() > GetSizeY()) {
         if (GetSizeY() > 3.f) {

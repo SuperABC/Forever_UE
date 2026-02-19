@@ -130,8 +130,6 @@ Floor* Building::GetFloor(int level) const {
 
 void Building::FinishInit() {
 	construction = LayoutConstruction();
-
-    floors = vector<Floor*>(basements + layers);
 }
 
 pair<float, float> Building::GetPosition() const {

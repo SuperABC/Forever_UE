@@ -2,9 +2,6 @@
 
 #include "building_base.h"
 
-//#include "room.h"
-//#include "component.h"
-
 
 // 子类注册函数
 typedef void (*RegisterModBuildingsFunc)(BuildingFactory* factory);
