@@ -3,19 +3,19 @@
 
 using namespace std;
 
-void Room::SetParent(shared_ptr<Building> building) {
+void Room::SetParent(Building* building) {
     parentBuilding = building;
 }
 
-void Room::SetParent(shared_ptr<Component> component) {
+void Room::SetParent(Component* component) {
     parentComponent = component;
 }
 
-shared_ptr<Building> Room::GetParentBuilding() const {
+Building* Room::GetParentBuilding() const {
     return parentBuilding;
 }
 
-shared_ptr<Component> Room::GetParentComponent() const {
+Component* Room::GetParentComponent() const {
     return parentComponent;
 }
 

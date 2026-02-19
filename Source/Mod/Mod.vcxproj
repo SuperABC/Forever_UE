@@ -136,7 +136,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="building_mod.h" />
+    <ClInclude Include="component_mod.h" />
     <ClInclude Include="roadnet_mod.h" />
+    <ClInclude Include="room_mod.h" />
     <ClInclude Include="terrain_mod.h" />
     <ClInclude Include="zone_mod.h" />
   </ItemGroup>

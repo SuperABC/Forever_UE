@@ -54,6 +54,12 @@
     <ClCompile Include="map\zone_base.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="map\room_base.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\component_base.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -81,6 +87,12 @@
       <Filter>map</Filter>
     </ClInclude>
     <ClInclude Include="map\zone_base.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\component_base.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\room_base.h">
       <Filter>map</Filter>
     </ClInclude>
   </ItemGroup>

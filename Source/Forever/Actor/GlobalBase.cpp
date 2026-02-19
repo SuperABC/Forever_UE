@@ -60,6 +60,8 @@ void AGlobalBase::BeginPlay() {
 	map->InitRoadnets(modHandles);
 	map->InitZones(modHandles);
 	map->InitBuildings(modHandles);
+	map->InitComponents(modHandles);
+	map->InitRooms(modHandles);
 
 	// 读取Populace相关类及Mod
 	populace->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");

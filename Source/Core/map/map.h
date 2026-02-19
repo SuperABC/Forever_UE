@@ -4,6 +4,8 @@
 #include "roadnet.h"
 #include "zone.h"
 #include "building.h"
+#include "component.h"
+#include "room.h"
 
 #include <windows.h>
 #include <vector>
@@ -77,6 +79,8 @@ public:
 	void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitZones(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitComponents(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitRooms(std::unordered_map<std::string, HMODULE>& modHandles);
 
 	// 读取配置文件
 	void ReadConfigs(std::string path) const;
@@ -132,6 +136,8 @@ private:
 	static RoadnetFactory* roadnetFactory;
 	static ZoneFactory* zoneFactory;
 	static BuildingFactory* buildingFactory;
+	static ComponentFactory* componentFactory;
+	static RoomFactory* roomFactory;
 
 	// 基础内容
 	int width = 0, height = 0;
@@ -141,5 +147,6 @@ private:
 	Roadnet* roadnet = nullptr;
 	std::unordered_map<std::string, Zone*> zones;
 	std::unordered_map<std::string, Building*> buildings;
+	Layout* layout = nullptr;
 };
 

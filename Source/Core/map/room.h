@@ -1,0 +1,41 @@
+﻿#pragma once
+
+#include "room_base.h"
+
+
+// 子类注册函数
+typedef void (*RegisterModRoomsFunc)(RoomFactory* factory);
+
+// 默认住宅房间
+class DefaultResidentialRoom : public Room {
+public:
+    static std::string GetId();
+    virtual std::string GetType() const override;
+    virtual std::string GetName() const override;
+
+    virtual bool IsResidential() const override;
+    virtual bool IsWorkspace() const override;
+    virtual bool IsStorage() const override;
+    virtual bool IsManufacture() const override;
+    virtual int GetLivingCapacity() const override;
+    virtual int GetPersonnelCapacity() const override;
+    virtual std::pair<std::string, float> GetIndustryCapacity() const override;
+    virtual std::string GetFactoryPipeline() const override;
+};
+
+// 默认工作房间
+class DefaultWorkingRoom : public Room {
+public:
+    static std::string GetId();
+    virtual std::string GetType() const override;
+    virtual std::string GetName() const override;
+
+    virtual bool IsResidential() const override;
+    virtual bool IsWorkspace() const override;
+    virtual bool IsStorage() const override;
+    virtual bool IsManufacture() const override;
+    virtual int GetLivingCapacity() const override;
+    virtual int GetPersonnelCapacity() const override;
+    virtual std::pair<std::string, float> GetIndustryCapacity() const override;
+    virtual std::string GetFactoryPipeline() const override;
+};

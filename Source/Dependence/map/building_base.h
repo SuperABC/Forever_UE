@@ -3,8 +3,8 @@
 #include "../common/quad.h"
 #include "../common/plot.h"
 
-//#include "room_base.h"
-//#include "component_base.h"
+#include "room_base.h"
+#include "component_base.h"
 
 #include <string>
 #include <functional>
@@ -81,8 +81,8 @@ public:
 
 class Building : public Quad {
 public:
-    Building() = default;
-    virtual ~Building() = default;
+    Building();
+	virtual ~Building();;
 
 	// 子类实现方法
 
@@ -124,9 +124,9 @@ public:
 	const Quad GetConstruction() const;
 
 	// 获取/设置组织/房间/楼层
-	//std::vector<Component*>& GetComponents();
-	//std::vector<Room*>& GetRooms();
-	//Floor* GetFloor(int level) const;
+	std::vector<Component*>& GetComponents();
+	std::vector<Room*>& GetRooms();
+	Floor* GetFloor(int level) const;
 
 	// 补充初始化
 	void FinishInit();
@@ -136,24 +136,24 @@ public:
 
 protected:
 	// 根据布局文件分配房间
-	//void ReadFloor(int level, int face, std::string name, Layout* layout);
-	//void ReadFloors(int face, std::string name, Layout* layout);
-	//void ReadFloors(int face, std::vector<std::string> names, Layout* layout);
-	//void AssignRoom(int level, int slot, std::string name, Component* component, RoomFactory* factory);
-	//void ArrangeRow(int level, int slot, std::string name, float acreage, Component* component, RoomFactory* factory);
+	void ReadFloor(int level, int face, std::string name, Layout* layout);
+	void ReadFloors(int face, std::string name, Layout* layout);
+	void ReadFloors(int face, std::vector<std::string> names, Layout* layout);
+	void AssignRoom(int level, int slot, std::string name, Component* component, RoomFactory* factory);
+	void ArrangeRow(int level, int slot, std::string name, float acreage, Component* component, RoomFactory* factory);
 
 	// 建筑中添加组织
-	//Component* CreateComponent(std::string name, ComponentFactory* factory);
+	Component* CreateComponent(std::string name, ComponentFactory* factory);
 
-	Zone* parentZone;
-	Plot* parentPlot;
+	Zone* parentZone = nullptr;
+	Plot* parentPlot = nullptr;
 
 	bool stateOwned = false;
 	int ownerId = -1;
 
-	//std::vector<Floor*> floors;
-	//std::vector<Component*> components;
-	//std::vector<Room*> rooms;
+	std::vector<Floor*> floors;
+	std::vector<Component*> components;
+	std::vector<Room*> rooms;
 
 	int layers = 1;
 	int basements = 0;

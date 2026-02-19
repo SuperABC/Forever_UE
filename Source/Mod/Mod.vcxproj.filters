@@ -27,6 +27,12 @@
     <ClInclude Include="building_mod.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="component_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="room_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mod.cpp">

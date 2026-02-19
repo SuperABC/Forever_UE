@@ -39,10 +39,10 @@ public:
 	// 父类实现方法
 
     // 关联建筑
-    void SetParent(std::shared_ptr<Building> building);
-    void SetParent(std::shared_ptr<Component> component);
-    std::shared_ptr<Building> GetParentBuilding() const;
-    std::shared_ptr<Component> GetParentComponent() const;
+    void SetParent(Building* building);
+    void SetParent(Component* component);
+    Building* GetParentBuilding() const;
+    Component* GetParentComponent() const;
 
     // 获取/设置房东
     int GetOwner() const;
@@ -57,8 +57,8 @@ public:
     void SetFace(int face);
 
 protected:
-    std::shared_ptr<Building> parentBuilding;
-    std::shared_ptr<Component> parentComponent;
+    Building* parentBuilding;
+    Component* parentComponent;
 
     bool stateOwned = false;
 	int ownerId = -1;

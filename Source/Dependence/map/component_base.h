@@ -27,17 +27,17 @@ public:
 	// 父类实现方法
 
     // 关联建筑
-    void SetParent(std::shared_ptr<Building> building);
-    std::shared_ptr<Building> GetParent() const;
+    void SetParent(Building* building);
+    Building* GetParent() const;
 
     // 获取/添加房间
-    std::vector<std::shared_ptr<Room>>& GetRooms();
-    void AddRoom(std::shared_ptr<Room> room);
+    std::vector<Room *>& GetRooms();
+    void AddRoom(Room* room);
 
 protected:
-    std::shared_ptr<Building> parentBuilding;
+    Building* parentBuilding;
 
-    std::vector<std::shared_ptr<Room>> rooms;
+    std::vector<Room*> rooms;
 };
 
 class ComponentFactory {

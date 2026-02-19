@@ -54,6 +54,22 @@ vector<pair<Quad, int>>& Floor::GetRooms() {
     return rooms;
 }
 
+Building::Building() {
+
+}
+
+Building::~Building() {
+    for(auto floor : floors) {
+        if(floor)delete floor;
+    }
+     for(auto component : components) {
+        if(component)delete component;
+    }
+     for(auto room : rooms) {
+        if(room)delete room;
+	 }
+}
+
 void Building::SetParent(Plot* plot) {
     parentPlot = plot;
 }
@@ -98,19 +114,19 @@ const Quad Building::GetConstruction() const {
 	return construction;
 }
 
-//vector<Component*>& Building::GetComponents() {
-//    return components;
-//}
-//
-//vector<Room*>& Building::GetRooms() {
-//    return rooms;
-//}
-//
-//Floor* Building::GetFloor(int level) const {
-//    if (basements + level >= 0 && basements + level < floors.size())
-//        return floors[basements + level];
-//    else return nullptr;
-//}
+vector<Component*>& Building::GetComponents() {
+    return components;
+}
+
+vector<Room*>& Building::GetRooms() {
+    return rooms;
+}
+
+Floor* Building::GetFloor(int level) const {
+    if (basements + level >= 0 && basements + level < floors.size())
+        return floors[basements + level];
+    else return nullptr;
+}
 
 void Building::FinishInit() {
 	construction = LayoutConstruction();
@@ -262,109 +278,109 @@ Layout* Building::ReadTemplates(string path) {
     return layout;
 }
 
-//void Building::ReadFloor(int level, int face, string name, Layout* layout) {
-//    auto width = construction.GetSizeX();
-//    auto height = construction.GetSizeY();
-//    auto floor = make_shared<Floor>(level, width, height);
-//
-//    for (auto facility : layout->templateFacilities[name][face]) {
-//        float x = (facility.second[0] * width + facility.second[1] + facility.second[4] * width + facility.second[5]) / 2.f;
-//        float y = (facility.second[2] * height + facility.second[3] + facility.second[6] * height + facility.second[7]) / 2.f;
-//        float w = abs(facility.second[4] * width + facility.second[5] - facility.second[0] * width - facility.second[1]);
-//        float h = abs(facility.second[6] * height + facility.second[7] - facility.second[2] * height - facility.second[3]);
-//        floor->AddFacility(Facility(facility.first, x, y, w, h));
-//    }
-//
-//    for (auto row : layout->templateRows[name][face]) {
-//        float x = (row.second[0] * width + row.second[1] + row.second[4] * width + row.second[5]) / 2.f;
-//        float y = (row.second[2] * height + row.second[3] + row.second[6] * height + row.second[7]) / 2.f;
-//        float w = abs(row.second[4] * width + row.second[5] - row.second[0] * width - row.second[1]);
-//        float h = abs(row.second[6] * height + row.second[7] - row.second[2] * height - row.second[3]);
-//        floor->AddRow(make_pair(Quad(x, y, w, h), row.first));
-//    }
-//
-//    for (auto room : layout->templateRooms[name][face]) {
-//        float x = (room.second[0] * width + room.second[1] + room.second[4] * width + room.second[5]) / 2.f;
-//        float y = (room.second[2] * height + room.second[3] + room.second[6] * height + room.second[7]) / 2.f;
-//        float w = abs(room.second[4] * width + room.second[5] - room.second[0] * width - room.second[1]);
-//        float h = abs(room.second[6] * height + room.second[7] - room.second[2] * height - room.second[3]);
-//        floor->AddRoom(make_pair(Quad(x, y, w, h), room.first));
-//    }
-//
-//    floors[basements + level] = floor;
-//}
-//
-//void Building::ReadFloors(int face, string name, Layout* layout) {
-//    for (int i = 0; i < basements + layers; i++) {
-//        ReadFloor(i, face, name, layout);
-//    }
-//}
-//
-//void Building::ReadFloors(int face, vector<string> names, Layout* layout) {
-//    if (names.size() != basements + layers) {
-//        THROW_EXCEPTION(InvalidArgumentException, "Template number and building layers mismatch.\n");
-//    }
-//
-//    for (int i = 0; i < basements + layers; i++) {
-//        ReadFloor(i, face, names[i], layout);
-//    }
-//}
-//
-//void Building::AssignRoom(int level, int slot, string name, Component* component, RoomFactory* factory) {
-//    Room* room = factory->CreateRoom(name);
-//    room->SetLayer(level);
-//    room->SetPosition(
-//        floors[basements + level]->GetRooms()[slot].first.GetPosX(),
-//        floors[basements + level]->GetRooms()[slot].first.GetPosY(),
-//        floors[basements + level]->GetRooms()[slot].first.GetSizeX(),
-//        floors[basements + level]->GetRooms()[slot].first.GetSizeY());
-//    room->SetFace(floors[basements + level]->GetRooms()[slot].second);
-//    component->AddRoom(room);
-//    rooms.push_back(room);
-//}
-//
-//void Building::ArrangeRow(int level, int slot, string name, float acreage, Component* component, RoomFactory* factory) {
-//    auto row = floors[basements + level]->GetRows()[slot];
-//
-//    float num = row.first.GetAcreage() / acreage;
-//    if (num - (int)num >= 0.5f)num = num + 1;
-//
-//    if (row.second == 0 || row.second == 1) {
-//        float div = row.first.GetSizeY() / (int)num;
-//        for (int i = 0; i < (int)num; i++) {
-//            Room* room = factory->CreateRoom(name);
-//            room->SetLayer(level);
-//            room->SetVertices(row.first.GetLeft(), row.first.GetBottom() + div * i,
-//                row.first.GetRight(), row.first.GetBottom() + div * (i + 1));
-//            room->SetFace(floors[basements + level]->GetRows()[slot].second);
-//            component->AddRoom(room);
-//            rooms.push_back(move(room));
-//        }
-//    }
-//    else {
-//        float div = row.first.GetSizeX() / (int)num;
-//        for (int i = 0; i < (int)num; i++) {
-//            Room* room = factory->CreateRoom(name);
-//            room->SetLayer(level);
-//            room->SetVertices(row.first.GetLeft() + div * i, row.first.GetBottom(),
-//                row.first.GetLeft() + div * (i + 1), row.first.GetTop());
-//            room->SetFace(floors[basements + level]->GetRows()[slot].second);
-//            component->AddRoom(room);
-//            rooms.push_back(move(room));
-//        }
-//    }
-//}
-//
-//Component* Building::CreateComponent(string name, ComponentFactory* factory) {
-//    Component* component = factory->CreateComponent(name);
-//
-//    if (!component) {
-//        return nullptr;
-//    }
-//
-//    components.push_back(component);
-//    return component;
-//}
+void Building::ReadFloor(int level, int face, string name, Layout* layout) {
+    auto width = construction.GetSizeX();
+    auto height = construction.GetSizeY();
+    auto floor = new Floor(level, width, height);
+
+    for (auto facility : layout->templateFacilities[name][face]) {
+        float x = (facility.second[0] * width + facility.second[1] + facility.second[4] * width + facility.second[5]) / 2.f;
+        float y = (facility.second[2] * height + facility.second[3] + facility.second[6] * height + facility.second[7]) / 2.f;
+        float w = abs(facility.second[4] * width + facility.second[5] - facility.second[0] * width - facility.second[1]);
+        float h = abs(facility.second[6] * height + facility.second[7] - facility.second[2] * height - facility.second[3]);
+        floor->AddFacility(Facility(facility.first, x, y, w, h));
+    }
+
+    for (auto row : layout->templateRows[name][face]) {
+        float x = (row.second[0] * width + row.second[1] + row.second[4] * width + row.second[5]) / 2.f;
+        float y = (row.second[2] * height + row.second[3] + row.second[6] * height + row.second[7]) / 2.f;
+        float w = abs(row.second[4] * width + row.second[5] - row.second[0] * width - row.second[1]);
+        float h = abs(row.second[6] * height + row.second[7] - row.second[2] * height - row.second[3]);
+        floor->AddRow(make_pair(Quad(x, y, w, h), row.first));
+    }
+
+    for (auto room : layout->templateRooms[name][face]) {
+        float x = (room.second[0] * width + room.second[1] + room.second[4] * width + room.second[5]) / 2.f;
+        float y = (room.second[2] * height + room.second[3] + room.second[6] * height + room.second[7]) / 2.f;
+        float w = abs(room.second[4] * width + room.second[5] - room.second[0] * width - room.second[1]);
+        float h = abs(room.second[6] * height + room.second[7] - room.second[2] * height - room.second[3]);
+        floor->AddRoom(make_pair(Quad(x, y, w, h), room.first));
+    }
+
+    floors[basements + level] = floor;
+}
+
+void Building::ReadFloors(int face, string name, Layout* layout) {
+    for (int i = 0; i < basements + layers; i++) {
+        ReadFloor(i, face, name, layout);
+    }
+}
+
+void Building::ReadFloors(int face, vector<string> names, Layout* layout) {
+    if (names.size() != basements + layers) {
+        THROW_EXCEPTION(InvalidArgumentException, "Template number and building layers mismatch.\n");
+    }
+
+    for (int i = 0; i < basements + layers; i++) {
+        ReadFloor(i, face, names[i], layout);
+    }
+}
+
+void Building::AssignRoom(int level, int slot, string name, Component* component, RoomFactory* factory) {
+    Room* room = factory->CreateRoom(name);
+    room->SetLayer(level);
+    room->SetPosition(
+        floors[basements + level]->GetRooms()[slot].first.GetPosX(),
+        floors[basements + level]->GetRooms()[slot].first.GetPosY(),
+        floors[basements + level]->GetRooms()[slot].first.GetSizeX(),
+        floors[basements + level]->GetRooms()[slot].first.GetSizeY());
+    room->SetFace(floors[basements + level]->GetRooms()[slot].second);
+    component->AddRoom(room);
+    rooms.push_back(room);
+}
+
+void Building::ArrangeRow(int level, int slot, string name, float acreage, Component* component, RoomFactory* factory) {
+    auto row = floors[basements + level]->GetRows()[slot];
+
+    float num = row.first.GetAcreage() / acreage;
+    if (num - (int)num >= 0.5f)num = num + 1;
+
+    if (row.second == 0 || row.second == 1) {
+        float div = row.first.GetSizeY() / (int)num;
+        for (int i = 0; i < (int)num; i++) {
+            Room* room = factory->CreateRoom(name);
+            room->SetLayer(level);
+            room->SetVertices(row.first.GetLeft(), row.first.GetBottom() + div * i,
+                row.first.GetRight(), row.first.GetBottom() + div * (i + 1));
+            room->SetFace(floors[basements + level]->GetRows()[slot].second);
+            component->AddRoom(room);
+            rooms.push_back(move(room));
+        }
+    }
+    else {
+        float div = row.first.GetSizeX() / (int)num;
+        for (int i = 0; i < (int)num; i++) {
+            Room* room = factory->CreateRoom(name);
+            room->SetLayer(level);
+            room->SetVertices(row.first.GetLeft() + div * i, row.first.GetBottom(),
+                row.first.GetLeft() + div * (i + 1), row.first.GetTop());
+            room->SetFace(floors[basements + level]->GetRows()[slot].second);
+            component->AddRoom(room);
+            rooms.push_back(move(room));
+        }
+    }
+}
+
+Component* Building::CreateComponent(string name, ComponentFactory* factory) {
+    Component* component = factory->CreateComponent(name);
+
+    if (!component) {
+        return nullptr;
+    }
+
+    components.push_back(component);
+    return component;
+}
 
 vector<float> Building::InverseParams(vector<float>& params, int face) {
     if (face < 0 || face >= 4) {

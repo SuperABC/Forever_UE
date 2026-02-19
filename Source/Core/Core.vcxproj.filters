@@ -57,6 +57,12 @@
     <ClCompile Include="map\building.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="map\room.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\component.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -90,6 +96,12 @@
       <Filter>map</Filter>
     </ClInclude>
     <ClInclude Include="map\zone.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\component.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\room.h">
       <Filter>map</Filter>
     </ClInclude>
   </ItemGroup>
