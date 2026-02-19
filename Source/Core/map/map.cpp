@@ -14,6 +14,8 @@ using namespace std;
 
 TerrainFactory* Map::terrainFactory = nullptr;
 RoadnetFactory* Map::roadnetFactory = nullptr;
+ZoneFactory* Map::zoneFactory = nullptr;
+BuildingFactory* Map::buildingFactory = nullptr;
 
 Element::Element() {
 
@@ -114,14 +116,20 @@ Map::Map() {
     if (!roadnetFactory) {
         roadnetFactory = new RoadnetFactory();
     }
+    if (!zoneFactory) {
+        zoneFactory = new ZoneFactory();
+    }
+    if (!buildingFactory) {
+        buildingFactory = new BuildingFactory();
+    }
 }
 
 Map::~Map() {
     Destroy();
 
-    if (roadnet) {
-        delete roadnet;
-    }
+    // if (roadnet) {
+    //     delete roadnet;
+    // }
 }
 
 void Map::SetResourcePath(string path) {
@@ -218,6 +226,96 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
 
 }
 
+void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
+    zoneFactory->RegisterZone(DefaultZone::GetId(),
+        []() { return new DefaultZone(); }, DefaultZone::ZoneGenerator);
+
+    string modPath = "Mod.dll";
+    HMODULE modHandle;
+    if (modHandles.find(modPath) != modHandles.end()) {
+        modHandle = modHandles[modPath];
+    }
+    else {
+        modHandle = LoadLibraryA(modPath.data());
+        modHandles[modPath] = modHandle;
+    }
+    if (modHandle) {
+        debugf("Mod dll loaded successfully.\n");
+
+        RegisterModZonesFunc registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
+        if (registerFunc) {
+            registerFunc(zoneFactory);
+        }
+        else {
+            debugf("Incorrect dll content.\n");
+        }
+    }
+    else {
+        debugf("Failed to load mod.dll.\n");
+    }
+
+#ifdef MOD_TEST
+    auto zoneList = { "mod" };
+    for (const auto& zoneId : zoneList) {
+        if (zoneFactory->CheckRegistered(zoneId)) {
+            auto zone = zoneFactory->CreateZone(zoneId);
+            debugf(("Created zone: " + zone->GetName() + " (ID: " + zoneId + ").\n").data());
+            delete zone;
+        }
+        else {
+            debugf("Zone not registered: %s.\n", zoneId);
+        }
+    }
+#endif // MOD_TEST
+
+}
+
+void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
+    buildingFactory->RegisterBuilding(DefaultResidentialBuilding::GetId(),
+        []() { return new DefaultResidentialBuilding(); }, DefaultResidentialBuilding::GetPower());
+    buildingFactory->RegisterBuilding(DefaultWorkingBuilding::GetId(),
+        []() { return new DefaultWorkingBuilding(); }, DefaultWorkingBuilding::GetPower());
+
+    string modPath = "Mod.dll";
+    HMODULE modHandle;
+    if (modHandles.find(modPath) != modHandles.end()) {
+        modHandle = modHandles[modPath];
+    }
+    else {
+        modHandle = LoadLibraryA(modPath.data());
+        modHandles[modPath] = modHandle;
+    }
+    if (modHandle) {
+        debugf("Mod dll loaded successfully.\n");
+
+        RegisterModBuildingsFunc registerFunc = (RegisterModBuildingsFunc)GetProcAddress(modHandle, "RegisterModBuildings");
+        if (registerFunc) {
+            registerFunc(buildingFactory);
+        }
+        else {
+            debugf("Incorrect dll content.\n");
+        }
+    }
+    else {
+        debugf("Failed to load mod.dll.\n");
+    }
+
+#ifdef MOD_TEST
+    auto buildingList = { "mod" };
+    for (const auto& buildingId : buildingList) {
+        if (buildingFactory->CheckRegistered(buildingId)) {
+            auto building = buildingFactory->CreateBuilding(buildingId);
+            debugf(("Created building: " + building->GetName() + " (ID: " + buildingId + ").\n").data());
+			delete building;
+        }
+        else {
+            debugf("Building not registered: %s.\n", buildingId);
+        }
+    }
+#endif // MOD_TEST
+
+}
+
 void Map::ReadConfigs(string path) const {
 	path = resourcePath + path;
     if (!filesystem::exists(path)) {
@@ -236,6 +334,12 @@ void Map::ReadConfigs(string path) const {
             terrainFactory->SetConfig(terrain.AsString(), true);
         }
         roadnetFactory->SetConfig(root["mods"]["roadnet"].AsString(), true);
+        for (auto zone : root["mods"]["zone"]) {
+            zoneFactory->SetConfig(zone.AsString(), true);
+        }
+        for (auto building : root["mods"]["building"]) {
+            buildingFactory->SetConfig(building.AsString(), true);
+        }
     }
     else {
         fin.close();
@@ -296,6 +400,128 @@ int Map::Init(int blockX, int blockY) {
     }
     roadnet->DistributeRoadnet(width, height, getTerrain);
     roadnet->AllocateAddress();
+
+    // 随机生成园区
+    zoneFactory->GenerateAll(roadnet->GetPlots(), buildingFactory);
+    for (auto plot : roadnet->GetPlots()) {
+        auto zs = plot->GetZones();
+        for (auto z : zs) {
+            z.second->SetParent(plot);
+            for (auto b : z.second->GetBuildings()) {
+                b.second->SetParent(z.second);
+                b.second->SetParent(plot);
+            }
+            if (zones.find(z.first) != zones.end()) {
+                THROW_EXCEPTION(InvalidConfigException, "Duplicate zone name: " + z.first + ".\n");
+            }
+            zones[z.first] = z.second;
+        }
+    }
+
+    // 随机生成建筑
+    auto powers = buildingFactory->GetPowers();
+    vector<vector<pair<string, float>>> cdfs(AREA_GREEN);
+    for (int area = 1; area <= AREA_GREEN; area++) {
+        float sum = 0.f;
+        for (auto power : powers) {
+            sum += power.second[area - 1];
+            cdfs[area - 1].emplace_back(power.first, sum);
+        }
+        if (sum == 0.f) {
+			cdfs[area - 1].clear();
+            continue;
+        }
+        for (auto& cdf : cdfs[area - 1]) {
+            cdf.second /= sum;
+        }
+    }
+    for (auto plot : roadnet->GetPlots()) {
+        float acreagePlot = plot->GetAcreage();
+        for (auto zone : plot->GetZones()) {
+            acreagePlot -= zone.second->GetAcreage();
+        }
+        if (acreagePlot <= 0.f)continue;
+
+        float acreageTmp = 0.f;
+        int attempt = 0;
+        while (acreageTmp < acreagePlot) {
+            if (attempt > 16)break;
+
+            Building* building = nullptr;
+
+            float rand = GetRandom(int(1e5)) / 1e5f;
+            for (auto cdf : cdfs[plot->GetArea()]) {
+                if (rand < cdf.second) {
+                    building = buildingFactory->CreateBuilding(cdf.first);
+                    break;
+                }
+            }
+
+            if (!building) {
+                attempt++;
+                continue;
+            }
+
+            float acreageBuilding = building->RandomAcreage();
+            float acreageMin = building->GetAcreageMin();
+            float acreageMax = building->GetAcreageMax();
+            if (acreagePlot - acreageTmp < acreageMin) {
+                attempt++;
+                continue;
+            }
+            else if (acreagePlot - acreageTmp < acreageBuilding) {
+                acreageBuilding = acreagePlot - acreageTmp;
+            }
+
+            acreageTmp += acreageBuilding;
+            building->SetAcreage(acreageBuilding);
+            building->SetParent(plot);
+            plot->AddBuilding(building->GetName(), building);
+            if (buildings.find(building->GetName()) != buildings.end()) {
+                THROW_EXCEPTION(InvalidConfigException, "Duplicate building name: " + building->GetName() + ".\n");
+            }
+            buildings[building->GetName()] = building;
+        }
+    }
+
+    // 随机分布建筑与园区
+    ArrangePlots();
+    for (auto plot : roadnet->GetPlots()) {
+        auto zones = plot->GetZones();
+        for (auto zone : zones) {
+            zone.second->ArrangeBuildings();
+        }
+    }
+
+    // 随机生成组合与房间
+	int capacity = 0;
+    //layout = Building::ReadTemplates(REPLACE_PATH("../Resources/layouts/"));
+    for (auto &building : buildings) {
+        building.second->FinishInit();
+        // building.second->LayoutRooms(roomFactory.get(), layout);
+        // for (auto component : building.second->GetComponents()) {
+        //     component->SetParent(building.second);
+        //     for (auto room : component->GetRooms()) {
+        //         room->SetParent(component);
+        //         room->SetParent(building.second);
+		// 		capacity += room->GetLivingCapacity();
+        //     }
+        // }
+    }
+    for (auto zone : zones) {
+        for (auto& building : zone.second->GetBuildings()) {
+            building.second->FinishInit();
+            // building.second->LayoutRooms(roomFactory.get(), layout);
+            // for (auto component : building.second->GetComponents()) {
+            //     component->SetParent(building.second);
+            //     for (auto room : component->GetRooms()) {
+            //         room->SetParent(component);
+            //         room->SetParent(building.second);
+			// 		capacity += room->GetLivingCapacity();
+            //     }
+            // }
+        }
+    }
 
     return 0;
 }
@@ -386,6 +612,197 @@ bool Map::SetTerrain(int x, int y, string terrain) {
 
 Roadnet* Map::GetRoadnet() const {
     return roadnet;
+}
+
+unordered_map<string, Zone*>& Map::GetZones() {
+    return zones;
+}
+
+unordered_map<string, Building*>& Map::GetBuildings() {
+    return buildings;
+}
+
+void Map::ArrangePlots() {
+    auto plots = roadnet->GetPlots();
+    for (auto plot : plots) {
+        auto zones = plot->GetZones();
+        auto buildings = plot->GetBuildings();
+
+        if (zones.empty() && buildings.empty()) continue;
+
+        float acreageTotal = plot->GetAcreage();
+        float acreageUsed = 0.f;
+
+        for (const auto& zone : zones) {
+            acreageUsed += zone.second->GetAcreage();
+        }
+        for (const auto& building : buildings) {
+            acreageUsed += building.second->GetAcreage();
+        }
+        float acreageRemain = acreageTotal - acreageUsed;
+
+        bool acreageAllocate = false;
+        if (acreageRemain > 0) {
+            for (auto& building : buildings) {
+                float acreageTmp = building.second->GetAcreage();
+                float acreageMax = building.second->GetAcreageMax();
+                float acreageMin = building.second->GetAcreageMin();
+
+                float acreageExpand = acreageMax - acreageTmp;
+
+                if (acreageExpand > acreageRemain && acreageRemain > 0) {
+                    float acreageNew = acreageTmp + acreageRemain;
+                    if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
+                        building.second->SetAcreage(acreageNew);
+                        acreageUsed += acreageRemain;
+                        acreageRemain = 0.f;
+                        acreageAllocate = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+		Quad* emptyRect = nullptr;
+        vector<Quad *> elements;
+        if (acreageRemain > 0 && !acreageAllocate) {
+            emptyRect = new Plot();
+            emptyRect->SetAcreage(acreageRemain);
+            elements.push_back(emptyRect);
+        }
+
+        for (const auto& zone : zones) {
+            elements.push_back(zone.second);
+        }
+        for (const auto& building : buildings) {
+            elements.push_back(building.second);
+        }
+
+        if (elements.empty()) continue;
+
+        sort(elements.begin(), elements.end(), [](Quad* a, Quad* b) {
+            return a->GetAcreage() > b->GetAcreage();
+            });
+
+        Quad container = Quad(plot->GetSizeX() / 2, plot->GetSizeY() / 2, plot->GetSizeX(), plot->GetSizeY());
+        if (elements.size() == 1) {
+            elements[0]->SetPosition(container.GetPosX(), container.GetPosY(), container.GetSizeX(), container.GetSizeY());
+        }
+        else {
+            class Chunk : public Quad {
+            public:
+                Chunk(Quad* r1, Quad* r2) : r1(r1), r2(r2) { acreage = r1->GetAcreage() + r2->GetAcreage(); }
+                Quad *r1, *r2;
+            };
+            while (elements.size() > 2) {
+                Chunk* tmp = new Chunk(elements[elements.size() - 1], elements[elements.size() - 2]);
+                elements.pop_back();
+                int i = (int)elements.size() - 2;
+                for (; i >= 0; i--) {
+                    if (tmp->GetAcreage() > elements[i]->GetAcreage()) {
+                        elements[i + 1] = elements[i];
+                    }
+                    else {
+                        elements[i + 1] = tmp;
+                        break;
+                    }
+                }
+                if (i < 0)elements[0] = tmp;
+            }
+
+            if (container.GetSizeX() > container.GetSizeY()) {
+                if (GetRandom(2)) {
+                    int divX = int(container.GetLeft() +
+                        (container.GetRight() - container.GetLeft()) * elements[0]->GetAcreage() / container.GetAcreage());
+                    if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
+                    if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                    elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
+                    elements[1]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
+                }
+                else {
+                    int divX = int(container.GetLeft() +
+                        (container.GetRight() - container.GetLeft()) * elements[1]->GetAcreage() / container.GetAcreage());
+                    if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
+                    if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                    elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
+                    elements[0]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
+                }
+            }
+            else {
+                if (GetRandom(2)) {
+                    int divY = int(container.GetBottom() +
+                        (container.GetTop() - container.GetBottom()) * elements[0]->GetAcreage() / container.GetAcreage());
+                    if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
+                    if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                    elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
+                    elements[1]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
+                }
+                else {
+                    int divY = int(container.GetBottom() +
+                        (container.GetTop() - container.GetBottom()) * elements[1]->GetAcreage() / container.GetAcreage());
+                    if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
+                    if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                    elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
+                    elements[0]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
+                }
+            }
+
+            while (elements.size() > 0) {
+                auto tmp = elements.back();
+                elements.pop_back();
+                if (auto chunk = dynamic_cast<Chunk *>(tmp)) {
+                    Quad* rect1 = chunk->r1;
+                    Quad* rect2 = chunk->r2;
+
+                    if (tmp->GetAcreage() > 0) {
+                        if (tmp->GetSizeX() > tmp->GetSizeY()) {
+                            if (GetRandom(2)) {
+                                int divX = int(tmp->GetLeft() +
+                                    tmp->GetSizeX() * rect1->GetAcreage() / tmp->GetAcreage());
+                                if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
+                                if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                                rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
+                                rect2->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
+                            }
+                            else {
+                                int divX = int(tmp->GetLeft() +
+                                    tmp->GetSizeX() * rect2->GetAcreage() / tmp->GetAcreage());
+                                if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
+                                if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                                rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
+                                rect1->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
+                            }
+                        }
+                        else {
+                            if (GetRandom(2)) {
+                                int divY = int(tmp->GetBottom() +
+                                    tmp->GetSizeY() * rect1->GetAcreage() / tmp->GetAcreage());
+                                if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
+                                if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                                rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
+                                rect2->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
+                            }
+                            else {
+                                int divY = int(tmp->GetBottom() +
+                                    tmp->GetSizeY() * rect2->GetAcreage() / tmp->GetAcreage());
+                                if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
+                                if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                                rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
+                                rect1->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
+                            }
+                        }
+                        if (dynamic_cast<Chunk *>(rect1))elements.push_back(rect1);
+                        if (dynamic_cast<Chunk *>(rect2))elements.push_back(rect2);
+                    }
+                    delete chunk;
+                }
+            }
+        }
+
+        if(emptyRect) {
+            delete emptyRect;
+		}
+    }
 }
 
 

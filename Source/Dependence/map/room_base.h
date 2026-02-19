@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../common/rect.h"
+#include "../common/quad.h"
 
 #include "component_base.h"
 #include "building_base.h"

@@ -103,6 +103,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -118,6 +119,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,8 +132,10 @@
     <ClCompile Include="common\plot.cpp" />
     <ClCompile Include="common\quad.cpp" />
     <ClCompile Include="common\utility.cpp" />
+    <ClCompile Include="map\building_base.cpp" />
     <ClCompile Include="map\roadnet_base.cpp" />
     <ClCompile Include="map\terrain_base.cpp" />
+    <ClCompile Include="map\zone_base.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\error.h" />
@@ -139,8 +143,10 @@
     <ClInclude Include="common\plot.h" />
     <ClInclude Include="common\quad.h" />
     <ClInclude Include="common\utility.h" />
+    <ClInclude Include="map\building_base.h" />
     <ClInclude Include="map\roadnet_base.h" />
     <ClInclude Include="map\terrain_base.h" />
+    <ClInclude Include="map\zone_base.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

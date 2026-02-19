@@ -27,11 +27,8 @@ Roadnet::Roadnet() {
 }
 
 Roadnet::~Roadnet() {
-     for (auto plot : plots) {
-         if (plot) {
-             delete plot;
-             plot = nullptr;
-         }
+    for (auto &plot : plots) {
+        delete plot;
     }
      plots.clear();
 }

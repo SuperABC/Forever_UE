@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "../map/zone_base.h"
+#include "../map/building_base.h"
+
 #include "utility.h"
 #include "quad.h"
 
@@ -8,6 +11,8 @@
 
 
 class Roadnet;
+class Zone;
+class Building;
 
 class Node {
 public:
@@ -68,6 +73,7 @@ public:
 	Plot(float x, float y, float w, float h, float r);
 	Plot(Node n1, Node n2, Node n3, std::vector<float> margin = std::vector<float>(4, 0.f));
 	Plot(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin = std::vector<float>(4, 0.f));
+	~Plot();
 
 	// 获取/设置属性
 	float GetRotation() const;
@@ -87,9 +93,22 @@ public:
 	// 通过顺序无关四个顶点设置矩形
 	void SetPosition(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin);
 
+	// 内部Quad管理
+	std::unordered_map<std::string, Zone*>& GetZones();
+	std::unordered_map<std::string, Building*>& GetBuildings();
+	void AddZone(std::string name, Zone* zone);
+	void AddBuilding(std::string name, Building* building);
+	Zone* GetZone(std::string name) const;
+	Building* GetBuilding(std::string name) const;
+	void RemoveZone(std::string name);
+	void RemoveBuilding(std::string name);
+
 protected:
 	float rotation;
 	AREA_TYPE area = AREA_GREEN;
 
 	std::vector<std::pair<Connection, float>> roads;
+
+	std::unordered_map<std::string, Zone*> zones;
+	std::unordered_map<std::string, Building*> buildings;
 };

@@ -74,6 +74,21 @@ Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
     SetPosition(n1, n2, n3, n4, margin);
 }
 
+Plot::~Plot() {
+    for(auto& zone : zones) {
+        if (zone.second) {
+            delete zone.second;
+            zone.second = nullptr;
+        }
+	}
+    for (auto& building : buildings) {
+        if (building.second) {
+            delete building.second;
+            building.second = nullptr;
+        }
+    }
+}
+
 float Plot::GetRotation() const {
 	return rotation;
 }
@@ -263,4 +278,66 @@ void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4, vector<float> margin)
     sizeY = sy;
     rotation = rot;
     acreage = sx * sy * 100.f;
+}
+
+unordered_map<string, Zone*>& Plot::GetZones() {
+    return zones;
+}
+
+unordered_map<string, Building*>& Plot::GetBuildings() {
+    return buildings;
+}
+
+void Plot::AddZone(string name, Zone* zone) {
+    if (zones.find(name) != zones.end()) {
+        THROW_EXCEPTION(InvalidArgumentException, "Duplicate zone name: " + name + ".\n");
+    }
+    zones[name] = zone;
+}
+
+void Plot::AddBuilding(string name, Building* building) {
+    if (buildings.find(name) != buildings.end()) {
+        THROW_EXCEPTION(InvalidArgumentException, "Duplicate building name: " + name + ".\n");
+    }
+    buildings[name] = building;
+}
+
+Zone* Plot::GetZone(string name) const {
+    for (auto& zone : zones) {
+        if (zone.first == name) {
+            return zone.second;
+        }
+    }
+    return nullptr;
+}
+
+Building* Plot::GetBuilding(string name) const {
+    for (auto& building : buildings) {
+        if (building.first == name) {
+            return building.second;
+        }
+    }
+    return nullptr;
+}
+
+void Plot::RemoveZone(string name) {
+    for (auto it = zones.begin(); it != zones.end(); ) {
+        if (it->first == name) {
+            it = zones.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+}
+
+void Plot::RemoveBuilding(string name) {
+    for (auto it = buildings.begin(); it != buildings.end(); ) {
+        if (it->first == name) {
+            it = buildings.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
 }

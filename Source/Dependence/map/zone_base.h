@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "../common/rect.h"
+#include "../common/quad.h"
 #include "../common/plot.h"
 
 #include "building_base.h"
@@ -31,13 +31,13 @@ public:
     virtual std::string GetName() const = 0;
 
     // 在地图中生成园区
-    static std::function<void(ZoneFactory*, const std::vector<std::shared_ptr<Plot>>&)> ZoneGenerator;
+    static std::function<void(ZoneFactory*, const std::vector<Plot*>&)> ZoneGenerator;
 
 	// 父类实现方法
 
     // 关联地块
-    void SetParent(std::shared_ptr<Plot> plot);
-    std::shared_ptr<Plot> GetParent() const;
+    void SetParent(Plot* plot);
+    Plot* GetParent() const;
 
     // 获取/设置房东
     int GetOwner() const;
@@ -54,7 +54,7 @@ public:
     void ArrangeBuildings();
 
 protected:
-    std::shared_ptr<Plot> parentPlot;
+    Plot* parentPlot;
 
 	bool stateOwned = false;
     int ownerId = -1;
@@ -65,14 +65,14 @@ protected:
 class ZoneFactory {
 public:
     using GeneratorFunc = std::function<void(
-        ZoneFactory *, BuildingFactory*, const std::vector<std::shared_ptr<Plot>>&)>;
+        ZoneFactory *, BuildingFactory*, const std::vector<Plot*>&)>;
 
     void RegisterZone(const std::string& id,
         std::function<Zone* ()> creator, GeneratorFunc generator = nullptr);
     Zone* CreateZone(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
-    void GenerateAll(const std::vector<std::shared_ptr<Plot>>& plots, BuildingFactory* factory);
+    void GenerateAll(const std::vector<Plot*>& plots, BuildingFactory* factory);
 
 private:
     std::unordered_map<std::string, std::function<Zone* ()>> registries;

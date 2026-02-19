@@ -51,6 +51,12 @@
     <ClCompile Include="map\roadnet.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="map\zone.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\building.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -78,6 +84,12 @@
       <Filter>populace</Filter>
     </ClInclude>
     <ClInclude Include="map\roadnet.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\building.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\zone.h">
       <Filter>map</Filter>
     </ClInclude>
   </ItemGroup>

@@ -58,6 +58,8 @@ void AGlobalBase::BeginPlay() {
 	map->ReadConfigs("configs/config_map.json");
 	map->InitTerrains(modHandles);
 	map->InitRoadnets(modHandles);
+	map->InitZones(modHandles);
+	map->InitBuildings(modHandles);
 
 	// 读取Populace相关类及Mod
 	populace->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");

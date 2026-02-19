@@ -1,5 +1,7 @@
 ﻿#include "terrain_mod.h"
 #include "roadnet_mod.h"
+#include "zone_mod.h"
+#include "building_mod.h"
 
 #pragma comment(lib, "Dependence.lib")
 
@@ -16,6 +18,16 @@ extern "C" __declspec(dllexport) void RegisterModRoadnets(RoadnetFactory* factor
     factory->RegisterRoadnet(ModRoadnet::GetId(), []() {
         return new ModRoadnet();
         });
+}
+
+extern "C" __declspec(dllexport) void RegisterModZones(ZoneFactory* factory) {
+    factory->RegisterZone(ModZone::GetId(),
+        []() { return new ModZone(); }, ModZone::ZoneGenerator);
+}
+
+extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* factory) {
+    factory->RegisterBuilding(ModZone::GetId(),
+        []() { return new ModBuilding(); }, ModBuilding::GetPower());
 }
 
 

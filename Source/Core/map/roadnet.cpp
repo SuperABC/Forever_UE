@@ -12,7 +12,7 @@ string JingRoadnet::GetType() const {
 }
 
 string JingRoadnet::GetName() const {
-    return "井字路网";
+    return"井字路网";
 }
 
 void JingRoadnet::DistributeRoadnet(int width, int height, function<string(int, int)> get) {

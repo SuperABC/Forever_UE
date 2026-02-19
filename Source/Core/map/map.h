@@ -2,6 +2,8 @@
 
 #include "terrain.h"
 #include "roadnet.h"
+#include "zone.h"
+#include "building.h"
 
 #include <windows.h>
 #include <vector>
@@ -73,6 +75,8 @@ public:
 	// 读取Mods
 	void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitZones(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles);
 
 	// 读取配置文件
 	void ReadConfigs(std::string path) const;
@@ -112,13 +116,22 @@ public:
 	// 获取路网
 	Roadnet* GetRoadnet() const;
 
+	// 获取园区/建筑
+	std::unordered_map<std::string, Zone*>& GetZones();
+	std::unordered_map<std::string, Building*>& GetBuildings();
+
 private:
+	// 排列地块中的园区与建筑
+	void ArrangePlots();
+
 	// 资源路径
 	std::string resourcePath;
 
 	// Mod管理
 	static TerrainFactory* terrainFactory;
 	static RoadnetFactory* roadnetFactory;
+	static ZoneFactory* zoneFactory;
+	static BuildingFactory* buildingFactory;
 
 	// 基础内容
 	int width = 0, height = 0;
@@ -126,5 +139,7 @@ private:
 
 	// 地图架构
 	Roadnet* roadnet = nullptr;
+	std::unordered_map<std::string, Zone*> zones;
+	std::unordered_map<std::string, Building*> buildings;
 };
 

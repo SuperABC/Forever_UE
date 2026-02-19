@@ -21,6 +21,12 @@
     <ClInclude Include="roadnet_mod.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="zone_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="building_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mod.cpp">

@@ -1,0 +1,7126 @@
+// ===== .\Core\industry\industry.cpp =====
+
+﻿#include "industry.h"
+#include "utility.h"
+#include "error.h"
+#include "json.h"
+
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+
+using namespace std;
+
+Industry::Industry() {
+
+}
+
+Industry::~Industry() {
+
+}
+
+void Industry::SetResourcePath(string path) {
+	resourcePath = path;
+}
+
+void Industry::Init() {
+
+}
+
+void Industry::ReadConfigs(string path) const {
+	path = resourcePath + path;
+	if (!filesystem::exists(path)) {
+		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+	}
+
+	JsonReader reader;
+	JsonValue root;
+
+	ifstream fin(path);
+	if (!fin.is_open()) {
+		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+	}
+	if (reader.Parse(fin, root)) {
+
+	}
+	else {
+		fin.close();
+		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+	}
+	fin.close();
+}
+
+void Industry::Destroy() {
+
+}
+
+void Industry::Tick(int day, int hour, int min, int sec) {
+
+}
+
+void Industry::Print() const {
+
+}
+
+void Industry::Load(string path) {
+
+}
+
+void Industry::Save(string path) const {
+
+}
+
+
+
+
+// ===== .\Core\industry\industry.h =====
+
+﻿#pragma once
+
+#include <windows.h>
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+
+class Industry {
+public:
+	Industry();
+	~Industry();
+
+	// 设置资源路径
+	void SetResourcePath(std::string path);
+
+	// 读取Mods
+
+	// 初始化全部工业
+	void Init();
+
+	// 读取配置文件
+	void ReadConfigs(std::string path) const;
+
+	// 释放空间
+	void Destroy();
+
+	// 时钟前进
+	void Tick(int day, int hour, int min, int sec);
+
+	// 输出当前工业
+	void Print() const;
+
+	// 保存/加载工业
+	void Load(std::string path);
+	void Save(std::string path) const;
+
+private:
+	// 资源路径
+	std::string resourcePath;
+
+	// Mod管理
+
+};
+
+
+
+// ===== .\Core\map\building.cpp =====
+
+﻿#include "building.h"
+
+
+using namespace std;
+
+int DefaultResidentialBuilding::count = 0;
+
+DefaultResidentialBuilding::DefaultResidentialBuilding() {
+    name = count++;
+}
+
+string DefaultResidentialBuilding::GetId() {
+    return "default_residential";
+}
+
+string DefaultResidentialBuilding::GetType() const {
+    return "default_residential";
+}
+
+string DefaultResidentialBuilding::GetName() const {
+    return"默认住宅建筑" + to_string(name);
+}
+
+vector<float> DefaultResidentialBuilding::GetPower() {
+    return { 0.f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+}
+
+float DefaultResidentialBuilding::RandomAcreage() const {
+    return 600.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
+}
+
+float DefaultResidentialBuilding::GetAcreageMin() const {
+    return 600.f;
+}
+
+float DefaultResidentialBuilding::GetAcreageMax() const {
+    return 9600.f;
+}
+
+Quad DefaultResidentialBuilding::LayoutConstruction() {
+    if (GetAcreage() < 1000) {
+        layers = 1 + GetRandom(2);
+    }
+    else if (GetAcreage() < 4000) {
+        layers = 2 + GetRandom(3);
+    }
+    else {
+        layers = 4 + GetRandom(4);
+    }
+    basements = 1;
+
+    return Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.5f * GetSizeX(), 0.5f * GetSizeY());
+}
+
+void DefaultResidentialBuilding::LayoutRooms(
+    ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) {
+    int direction = 0;
+    if (GetSizeX() > GetSizeY()) {
+        if (GetSizeY() > 3.f) {
+            direction = GetRandom(2);
+        }
+        else {
+            direction = 2 + GetRandom(2);
+        }
+    }
+    else {
+        if (GetSizeX() > 3.f) {
+            direction = 2 + GetRandom(2);
+        }
+        else {
+            direction = GetRandom(2);
+        }
+    }
+
+    //auto component = CreateComponent<DefaultResidentialComponent>();
+    //ReadFloor(-1, direction, "single_room", layout);
+    //AssignRoom(-1, 0, "default_residential", component, factory);
+    //for (int i = 0; i < layers; i++) {
+    //    ReadFloor(i, direction, "straight_linear", layout);
+    //    ArrangeRow(i, 0, "default_residential", 100.f, component, factory);
+    //    ArrangeRow(i, 1, "default_residential", 100.f, component, factory);
+    //}
+}
+
+int DefaultWorkingBuilding::count = 0;
+
+DefaultWorkingBuilding::DefaultWorkingBuilding() {
+    name = count++;
+}
+
+string DefaultWorkingBuilding::GetId() {
+    return "default_working";
+}
+
+string DefaultWorkingBuilding::GetType() const {
+    return "default_working";
+}
+
+string DefaultWorkingBuilding::GetName() const {
+    return "默认工作建筑" + to_string(name);
+}
+
+vector<float> DefaultWorkingBuilding::GetPower() {
+    return { 0.f, .5f, .5f, .5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+}
+
+float DefaultWorkingBuilding::RandomAcreage() const {
+    return 1000.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
+}
+
+float DefaultWorkingBuilding::GetAcreageMin() const {
+    return 1000.f;
+}
+
+float DefaultWorkingBuilding::GetAcreageMax() const {
+    return 16000.f;
+}
+
+Quad DefaultWorkingBuilding::LayoutConstruction() {
+    if (GetAcreage() < 3000) {
+        layers = 1 + GetRandom(2);
+    }
+    else if (GetAcreage() < 10000) {
+        layers = 2 + GetRandom(3);
+    }
+    else {
+        layers = 4 + GetRandom(4);
+    }
+    basements = 1;
+
+    return Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.5f * GetSizeX(), 0.5f * GetSizeY());
+}
+
+void DefaultWorkingBuilding::LayoutRooms(
+    ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) {
+    int direction = 0;
+    if (GetSizeX() > GetSizeY()) {
+        if (GetSizeY() > 3.f) {
+            direction = GetRandom(2);
+        }
+        else {
+            direction = 2 + GetRandom(2);
+        }
+    }
+    else {
+        if (GetSizeX() > 3.f) {
+            direction = 2 + GetRandom(2);
+        }
+        else {
+            direction = GetRandom(2);
+        }
+    }
+
+    //auto component = CreateComponent<DefaultWorkingComponent>();
+    //ReadFloor(-1, direction, "single_room", layout);
+    //AssignRoom(-1, 0, "default_working", component, factory);
+    //ReadFloor(0, direction, "lobby_linear", layout);
+    //AssignRoom(0, 0, "default_working", component, factory);
+    //ArrangeRow(0, 0, "default_working", 100.f, component, factory);
+    //ArrangeRow(0, 1, "default_working", 100.f, component, factory);
+    //for (int i = 1; i < layers; i++) {
+    //    ReadFloor(i, direction, "straight_linear", layout);
+    //    ArrangeRow(i, 0, "default_working", 100.f, component, factory);
+    //    ArrangeRow(i, 1, "default_working", 100.f, component, factory);
+    //}
+}
+
+
+
+
+
+// ===== .\Core\map\building.h =====
+
+﻿#pragma once
+
+#include "building_base.h"
+
+//#include "room.h"
+//#include "component.h"
+
+
+// 子类注册函数
+typedef void (*RegisterModBuildingsFunc)(BuildingFactory* factory);
+
+// 默认住宅建筑
+class DefaultResidentialBuilding : public Building {
+public:
+    DefaultResidentialBuilding();
+
+    static std::string GetId();
+    virtual std::string GetType() const override;
+    virtual std::string GetName() const override;
+
+    static std::vector<float> GetPower();
+
+    virtual float RandomAcreage() const override;
+    virtual float GetAcreageMin() const override;
+    virtual float GetAcreageMax() const override;
+
+    virtual Quad LayoutConstruction() override;
+    virtual void LayoutRooms(
+        ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) override;
+
+private:
+    static int count;
+
+    int name;
+};
+
+// 默认工作建筑
+class DefaultWorkingBuilding : public Building {
+public:
+    DefaultWorkingBuilding();
+
+    static std::string GetId();
+    virtual std::string GetType() const override;
+    virtual std::string GetName() const override;
+
+    static std::vector<float> GetPower();
+
+    virtual float RandomAcreage() const override;
+    virtual float GetAcreageMin() const override;
+    virtual float GetAcreageMax() const override;
+
+    virtual Quad LayoutConstruction() override;
+    virtual void LayoutRooms(
+        ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) override;
+
+private:
+    static int count;
+
+    int name;
+};
+
+
+// ===== .\Core\map\map.cpp =====
+
+﻿#include "map.h"
+#include "utility.h"
+#include "error.h"
+#include "json.h"
+
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+
+using namespace std;
+
+TerrainFactory* Map::terrainFactory = nullptr;
+RoadnetFactory* Map::roadnetFactory = nullptr;
+ZoneFactory* Map::zoneFactory = nullptr;
+BuildingFactory* Map::buildingFactory = nullptr;
+
+Element::Element() {
+
+}
+
+Element::~Element() {
+
+}
+
+string Element::GetTerrain() const {
+    return terrain;
+}
+
+bool Element::SetTerrain(string terrain) {
+    this->terrain = terrain;
+
+    return true;
+}
+
+float Element::GetHeight() const {
+    return height;
+}
+
+bool Element::SetHeight(float height) {
+    this->height = height;
+    return true;
+}
+
+string Element::GetZone() const {
+    return this->zone;
+}
+
+bool Element::SetZone(string zone) {
+    this->zone = zone;
+
+    return true;
+}
+
+string Element::GetBuilding() const {
+    return this->building;
+}
+
+bool Element::SetBuilding(string building) {
+    this->building = building;
+
+    return true;
+}
+
+Block::Block(int x, int y) : offsetX(x), offsetY(y) {
+    elements = vector<vector<shared_ptr<Element>>>(BLOCK_SIZE,
+        vector<shared_ptr<Element>>(BLOCK_SIZE, nullptr));
+
+    for (int i = 0; i < BLOCK_SIZE; i++) {
+        for (int j = 0; j < BLOCK_SIZE; j++) {
+            elements[j][i] = make_shared<Element>();
+        }
+    }
+}
+
+Block::~Block() {
+
+}
+
+string Block::GetTerrain(int x, int y) const {
+    if (!CheckXY(x, y))
+        return "";
+
+    return elements[y - offsetY][x - offsetX]->GetTerrain();
+}
+
+bool Block::SetTerrain(int x, int y, string terrain) {
+    if (!CheckXY(x, y)) {
+        return false;
+    }
+
+    return elements[y - offsetY][x - offsetX]->SetTerrain(terrain);
+}
+
+bool Block::CheckXY(int x, int y) const {
+    if (x < offsetX)return false;
+    if (y < offsetY)return false;
+    if (x >= offsetX + BLOCK_SIZE)return false;
+    if (y >= offsetY + BLOCK_SIZE)return false;
+    return true;
+}
+
+shared_ptr<Element> Block::GetElement(int x, int y) {
+    if (CheckXY(x, y))
+        return elements[y - offsetY][x - offsetX];
+    else
+        return nullptr;
+}
+
+Map::Map() {
+    if (!terrainFactory) {
+        terrainFactory = new TerrainFactory();
+    }
+    if (!roadnetFactory) {
+        roadnetFactory = new RoadnetFactory();
+    }
+    if (!zoneFactory) {
+        zoneFactory = new ZoneFactory();
+    }
+    if (!buildingFactory) {
+        buildingFactory = new BuildingFactory();
+    }
+}
+
+Map::~Map() {
+    Destroy();
+
+    if (roadnet) {
+        delete roadnet;
+    }
+    for (auto& [id, zone] : zones) {
+        delete zone;
+	}
+    for (auto& [id, building] : buildings) {
+        delete building;
+	}
+}
+
+void Map::SetResourcePath(string path) {
+    resourcePath = path;
+}
+
+void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
+    terrainFactory->RegisterTerrain(OceanTerrain::GetId(),
+        []() { return new OceanTerrain(); });
+    terrainFactory->RegisterTerrain(MountainTerrain::GetId(),
+        []() { return new MountainTerrain(); });
+    
+	string modPath = "Mod.dll";
+    HMODULE modHandle;
+    if(modHandles.find(modPath) != modHandles.end()) {
+        modHandle = modHandles[modPath];
+    }
+    else {
+        modHandle = LoadLibraryA(modPath.data());
+		modHandles[modPath] = modHandle;
+    }
+    if (modHandle) {
+        debugf("Mod dll loaded successfully.\n");
+
+        RegisterModTerrainsFunc registerFunc = (RegisterModTerrainsFunc)GetProcAddress(modHandle, "RegisterModTerrains");
+        if (registerFunc) {
+            registerFunc(terrainFactory);
+        }
+        else {
+            debugf("Incorrect dll content.\n");
+        }
+    }
+    else {
+        debugf("Failed to load mod.dll.\n");
+    }
+
+#ifdef MOD_TEST
+    auto terrainList = { "mod" };
+    for (const auto& terrainId : terrainList) {
+        if (terrainFactory->CheckRegistered(terrainId)) {
+            auto terrain = terrainFactory->CreateTerrain(terrainId);
+            debugf(("Created terrain: " + terrain->GetName() + " (ID: " + terrainId + ").\n").data());
+            delete terrain;
+        }
+        else {
+            debugf("Terrain not registered: %s.\n", terrainId);
+        }
+    }
+#endif // MOD_TEST
+
+}
+
+void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
+    roadnetFactory->RegisterRoadnet(JingRoadnet::GetId(),
+        []() { return new JingRoadnet(); });
+
+    string modPath = "Mod.dll";
+    HMODULE modHandle;
+    if (modHandles.find(modPath) != modHandles.end()) {
+        modHandle = modHandles[modPath];
+    }
+    else {
+        modHandle = LoadLibraryA(modPath.data());
+        modHandles[modPath] = modHandle;
+    }
+    if (modHandle) {
+        debugf("Mod dll loaded successfully.\n");
+
+        RegisterModRoadnetsFunc registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
+        if (registerFunc) {
+            registerFunc(roadnetFactory);
+        }
+        else {
+            debugf("Incorrect dll content.\n");
+        }
+    }
+    else {
+        debugf("Failed to load mod.dll.\n");
+    }
+
+#ifdef MOD_TEST
+    auto roadnetList = { "mod" };
+    for (const auto& roadnetId : roadnetList) {
+        if (roadnetFactory->CheckRegistered(roadnetId)) {
+            auto roadnet = roadnetFactory->CreateRoadnet(roadnetId);
+            debugf("Created roadnet: mod.\n");
+            delete roadnet;
+        }
+        else {
+            debugf("Roadnet not registered: %s.\n", roadnetId);
+        }
+    }
+#endif // MOD_TEST
+
+}
+
+void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
+    zoneFactory->RegisterZone(DefaultZone::GetId(),
+        []() { return new DefaultZone(); }, DefaultZone::ZoneGenerator);
+
+    string modPath = "Mod.dll";
+    HMODULE modHandle;
+    if (modHandles.find(modPath) != modHandles.end()) {
+        modHandle = modHandles[modPath];
+    }
+    else {
+        modHandle = LoadLibraryA(modPath.data());
+        modHandles[modPath] = modHandle;
+    }
+    if (modHandle) {
+        debugf("Mod dll loaded successfully.\n");
+
+        RegisterModZonesFunc registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
+        if (registerFunc) {
+            registerFunc(zoneFactory);
+        }
+        else {
+            debugf("Incorrect dll content.\n");
+        }
+    }
+    else {
+        debugf("Failed to load mod.dll.\n");
+    }
+
+#ifdef MOD_TEST
+    auto zoneList = { "mod" };
+    for (const auto& zoneId : zoneList) {
+        if (zoneFactory->CheckRegistered(zoneId)) {
+            auto zone = zoneFactory->CreateZone(zoneId);
+            debugf(("Created zone: " + zone->GetName() + " (ID: " + zoneId + ").\n").data());
+            delete zone;
+        }
+        else {
+            debugf("Zone not registered: %s.\n", zoneId);
+        }
+    }
+#endif // MOD_TEST
+
+}
+
+void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
+    buildingFactory->RegisterBuilding(DefaultResidentialBuilding::GetId(),
+        []() { return new DefaultResidentialBuilding(); }, DefaultResidentialBuilding::GetPower());
+    buildingFactory->RegisterBuilding(DefaultWorkingBuilding::GetId(),
+        []() { return new DefaultWorkingBuilding(); }, DefaultWorkingBuilding::GetPower());
+
+    string modPath = "Mod.dll";
+    HMODULE modHandle;
+    if (modHandles.find(modPath) != modHandles.end()) {
+        modHandle = modHandles[modPath];
+    }
+    else {
+        modHandle = LoadLibraryA(modPath.data());
+        modHandles[modPath] = modHandle;
+    }
+    if (modHandle) {
+        debugf("Mod dll loaded successfully.\n");
+
+        RegisterModBuildingsFunc registerFunc = (RegisterModBuildingsFunc)GetProcAddress(modHandle, "RegisterModBuildings");
+        if (registerFunc) {
+            registerFunc(buildingFactory);
+        }
+        else {
+            debugf("Incorrect dll content.\n");
+        }
+    }
+    else {
+        debugf("Failed to load mod.dll.\n");
+    }
+
+#ifdef MOD_TEST
+    auto buildingList = { "mod" };
+    for (const auto& buildingId : buildingList) {
+        if (buildingFactory->CheckRegistered(buildingId)) {
+            auto building = buildingFactory->CreateBuilding(buildingId);
+            debugf(("Created building: " + building->GetName() + " (ID: " + buildingId + ").\n").data());
+			delete building;
+        }
+        else {
+            debugf("Building not registered: %s.\n", buildingId);
+        }
+    }
+#endif // MOD_TEST
+
+}
+
+void Map::ReadConfigs(string path) const {
+	path = resourcePath + path;
+    if (!filesystem::exists(path)) {
+        THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+    }
+
+    JsonReader reader;
+    JsonValue root;
+
+    ifstream fin(path);
+    if (!fin.is_open()) {
+        THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+    }
+    if (reader.Parse(fin, root)) {
+        for (auto terrain : root["mods"]["terrain"]) {
+            terrainFactory->SetConfig(terrain.AsString(), true);
+        }
+        roadnetFactory->SetConfig(root["mods"]["roadnet"].AsString(), true);
+        for (auto zone : root["mods"]["zone"]) {
+            zoneFactory->SetConfig(zone.AsString(), true);
+        }
+        for (auto building : root["mods"]["building"]) {
+            buildingFactory->SetConfig(building.AsString(), true);
+        }
+    }
+    else {
+        fin.close();
+        THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+    }
+    fin.close();
+}
+
+int Map::Init(int blockX, int blockY) {
+    // 清除已有内容
+    Destroy();
+
+    // 地图尺寸需要为正
+    if (blockX < 1 || blockY < 1) {
+        THROW_EXCEPTION(InvalidArgumentException, "Invalid map size.\n");
+        return 0;
+    }
+
+    // 计算地图实际长宽
+    width = blockX * BLOCK_SIZE;
+    height = blockY * BLOCK_SIZE;
+
+    // 构建区块
+	debugf("Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
+    blocks = vector<vector<shared_ptr<Block>>>(blockY,
+        vector<shared_ptr<Block>>(blockX, nullptr));
+    for (int i = 0; i < blockX; i++) {
+        for (int j = 0; j < blockY; j++) {
+            blocks[j][i] = make_shared<Block>(i * BLOCK_SIZE, j * BLOCK_SIZE);
+        }
+    }
+
+    // 随机生成地形
+	debugf("Generate terrains.\n");
+    auto getTerrain = [this](int x, int y) -> string {
+        return this->GetTerrain(x, y);
+        };
+    auto setTerrain = [this](int x, int y, const string terrain) -> bool {
+        return this->SetTerrain(x, y, terrain);
+        };
+    auto terrains = terrainFactory->GetTerrains();
+    sort(terrains.begin(), terrains.end(),
+        [](const Terrain* a, const Terrain* b) {
+            return a->GetPriority() > b->GetPriority();
+        });
+    for (auto& terrain : terrains) {
+        terrain->DistributeTerrain(width, height, setTerrain, getTerrain);
+    }
+    for(auto &terrain : terrains) {
+        delete terrain;
+	}
+
+    // 随机生成路网
+	debugf("Generate roadnet.\n");
+    roadnet = roadnetFactory->GetRoadnet();
+    if (!roadnet) {
+        THROW_EXCEPTION(InvalidConfigException, "No enabled roadnet in config.\n");
+    }
+    roadnet->DistributeRoadnet(width, height, getTerrain);
+    roadnet->AllocateAddress();
+
+    // 随机生成园区
+    zoneFactory->GenerateAll(roadnet->GetPlots(), buildingFactory);
+    for (auto plot : roadnet->GetPlots()) {
+        auto zs = plot->GetZones();
+        for (auto z : zs) {
+            z.second->SetParent(plot);
+            for (auto b : z.second->GetBuildings()) {
+                b.second->SetParent(z.second);
+                b.second->SetParent(plot);
+            }
+            if (zones.find(z.first) != zones.end()) {
+                THROW_EXCEPTION(InvalidConfigException, "Duplicate zone name: " + z.first + ".\n");
+            }
+            zones[z.first] = z.second;
+        }
+    }
+
+    // 随机生成建筑
+    auto powers = buildingFactory->GetPowers();
+    vector<vector<pair<string, float>>> cdfs(AREA_GREEN);
+    for (int area = 1; area <= AREA_GREEN; area++) {
+        float sum = 0.f;
+        for (auto power : powers) {
+            sum += power.second[area - 1];
+            cdfs[area - 1].emplace_back(power.first, sum);
+        }
+        if (sum == 0.f) {
+			cdfs[area - 1].clear();
+            continue;
+        }
+        for (auto& cdf : cdfs[area - 1]) {
+            cdf.second /= sum;
+        }
+    }
+    for (auto plot : roadnet->GetPlots()) {
+        float acreagePlot = plot->GetAcreage();
+        for (auto zone : plot->GetZones()) {
+            acreagePlot -= zone.second->GetAcreage();
+        }
+        if (acreagePlot <= 0.f)continue;
+
+        float acreageTmp = 0.f;
+        int attempt = 0;
+        while (acreageTmp < acreagePlot) {
+            if (attempt > 16)break;
+
+            Building* building = nullptr;
+
+            float rand = GetRandom(int(1e5)) / 1e5f;
+            for (auto cdf : cdfs[plot->GetArea()]) {
+                if (rand < cdf.second) {
+                    building = buildingFactory->CreateBuilding(cdf.first);
+                    break;
+                }
+            }
+
+            if (!building) {
+                attempt++;
+                continue;
+            }
+
+            float acreageBuilding = building->RandomAcreage();
+            float acreageMin = building->GetAcreageMin();
+            float acreageMax = building->GetAcreageMax();
+            if (acreagePlot - acreageTmp < acreageMin) {
+                attempt++;
+                continue;
+            }
+            else if (acreagePlot - acreageTmp < acreageBuilding) {
+                acreageBuilding = acreagePlot - acreageTmp;
+            }
+
+            acreageTmp += acreageBuilding;
+            building->SetAcreage(acreageBuilding);
+            building->SetParent(plot);
+            plot->AddBuilding(building->GetName(), building);
+            if (buildings.find(building->GetName()) != buildings.end()) {
+                THROW_EXCEPTION(InvalidConfigException, "Duplicate building name: " + building->GetName() + ".\n");
+            }
+            buildings[building->GetName()] = building;
+        }
+    }
+
+    // 随机分布建筑与园区
+    ArrangePlots();
+    for (auto plot : roadnet->GetPlots()) {
+        auto zones = plot->GetZones();
+        for (auto zone : zones) {
+            zone.second->ArrangeBuildings();
+        }
+    }
+
+    return 0;
+}
+
+void Map::Destroy() {
+    blocks.clear();
+}
+
+void Map::Tick(int day, int hour, int min, int sec) {
+
+}
+
+void Map::Print() const {
+
+}
+
+void Map::Load(string path) {
+
+}
+
+void Map::Save(string path) const {
+
+}
+
+pair<int, int> Map::GetSize() const {
+    return make_pair(width, height);
+}
+
+bool Map::CheckXY(int x, int y) const {
+    if (x < 0)return false;
+    if (y < 0)return false;
+    if (x >= width)return false;
+    if (y >= height)return false;
+    return true;
+}
+
+shared_ptr<Block> Map::GetBlock(int x, int y) const {
+    if (!CheckXY(x, y)) {
+        THROW_EXCEPTION(InvalidArgumentException, "invalid block query position.\n");
+    }
+
+    int blockX = x / BLOCK_SIZE;
+    int blockY = y / BLOCK_SIZE;
+
+    return blocks[blockY][blockX];
+}
+
+shared_ptr<Element> Map::GetElement(int x, int y) const {
+    if (!CheckXY(x, y)) {
+        THROW_EXCEPTION(InvalidArgumentException, "invalid block query position.\n");
+    }
+
+    int blockX = x / BLOCK_SIZE;
+    int blockY = y / BLOCK_SIZE;
+
+    return blocks[blockY][blockX]->GetElement(x, y);
+}
+
+string Map::GetTerrain(int x, int y) const {
+    if (!CheckXY(x, y)) {
+        return "";
+    }
+
+    int blockX = x / BLOCK_SIZE;
+    int blockY = y / BLOCK_SIZE;
+
+    if (blockY >= blocks.size() || blockX >= blocks[0].size()) {
+        return "";
+    }
+
+    return blocks[blockY][blockX]->GetTerrain(x, y);
+}
+
+bool Map::SetTerrain(int x, int y, string terrain) {
+    if (!CheckXY(x, y)) {
+        return false;
+    }
+
+    int blockX = x / BLOCK_SIZE;
+    int blockY = y / BLOCK_SIZE;
+
+    if (blockY >= blocks.size() || blockX >= blocks[0].size()) {
+        return false;
+    }
+
+    return blocks[blockY][blockX]->SetTerrain(x, y, terrain);
+}
+
+Roadnet* Map::GetRoadnet() const {
+    return roadnet;
+}
+
+unordered_map<string, Zone*>& Map::GetZones() {
+    return zones;
+}
+
+unordered_map<string, Building*>& Map::GetBuildings() {
+    return buildings;
+}
+
+void Map::ArrangePlots() {
+    auto plots = roadnet->GetPlots();
+    for (auto plot : plots) {
+        auto zones = plot->GetZones();
+        auto buildings = plot->GetBuildings();
+
+        if (zones.empty() && buildings.empty()) continue;
+
+        float acreageTotal = plot->GetAcreage();
+        float acreageUsed = 0.f;
+
+        for (const auto& zone : zones) {
+            acreageUsed += zone.second->GetAcreage();
+        }
+        for (const auto& building : buildings) {
+            acreageUsed += building.second->GetAcreage();
+        }
+        float acreageRemain = acreageTotal - acreageUsed;
+
+        bool acreageAllocate = false;
+        if (acreageRemain > 0) {
+            for (auto& building : buildings) {
+                float acreageTmp = building.second->GetAcreage();
+                float acreageMax = building.second->GetAcreageMax();
+                float acreageMin = building.second->GetAcreageMin();
+
+                float acreageExpand = acreageMax - acreageTmp;
+
+                if (acreageExpand > acreageRemain && acreageRemain > 0) {
+                    float acreageNew = acreageTmp + acreageRemain;
+                    if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
+                        building.second->SetAcreage(acreageNew);
+                        acreageUsed += acreageRemain;
+                        acreageRemain = 0.f;
+                        acreageAllocate = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+		Quad* emptyRect = nullptr;
+        vector<Quad *> elements;
+        if (acreageRemain > 0 && !acreageAllocate) {
+            emptyRect = new Plot();
+            emptyRect->SetAcreage(acreageRemain);
+            elements.push_back(emptyRect);
+        }
+
+        for (const auto& zone : zones) {
+            elements.push_back(zone.second);
+        }
+        for (const auto& building : buildings) {
+            elements.push_back(building.second);
+        }
+
+        if (elements.empty()) continue;
+
+        sort(elements.begin(), elements.end(), [](Quad* a, Quad* b) {
+            return a->GetAcreage() > b->GetAcreage();
+            });
+
+        Quad container = Quad(plot->GetSizeX() / 2, plot->GetSizeY() / 2, plot->GetSizeX(), plot->GetSizeY());
+        if (elements.size() == 1) {
+            elements[0]->SetPosition(container.GetPosX(), container.GetPosY(), container.GetSizeX(), container.GetSizeY());
+        }
+        else {
+            class Chunk : public Quad {
+            public:
+                Chunk(Quad* r1, Quad* r2) : r1(r1), r2(r2) { acreage = r1->GetAcreage() + r2->GetAcreage(); }
+                Quad *r1, *r2;
+            };
+            while (elements.size() > 2) {
+                Chunk* tmp = new Chunk(elements[elements.size() - 1], elements[elements.size() - 2]);
+                elements.pop_back();
+                int i = (int)elements.size() - 2;
+                for (; i >= 0; i--) {
+                    if (tmp->GetAcreage() > elements[i]->GetAcreage()) {
+                        elements[i + 1] = elements[i];
+                    }
+                    else {
+                        elements[i + 1] = tmp;
+                        break;
+                    }
+                }
+                if (i < 0)elements[0] = tmp;
+            }
+
+            if (container.GetSizeX() > container.GetSizeY()) {
+                if (GetRandom(2)) {
+                    int divX = int(container.GetLeft() +
+                        (container.GetRight() - container.GetLeft()) * elements[0]->GetAcreage() / container.GetAcreage());
+                    if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
+                    if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                    elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
+                    elements[1]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
+                }
+                else {
+                    int divX = int(container.GetLeft() +
+                        (container.GetRight() - container.GetLeft()) * elements[1]->GetAcreage() / container.GetAcreage());
+                    if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
+                    if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                    elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
+                    elements[0]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
+                }
+            }
+            else {
+                if (GetRandom(2)) {
+                    int divY = int(container.GetBottom() +
+                        (container.GetTop() - container.GetBottom()) * elements[0]->GetAcreage() / container.GetAcreage());
+                    if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
+                    if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                    elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
+                    elements[1]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
+                }
+                else {
+                    int divY = int(container.GetBottom() +
+                        (container.GetTop() - container.GetBottom()) * elements[1]->GetAcreage() / container.GetAcreage());
+                    if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
+                    if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                    elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
+                    elements[0]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
+                }
+            }
+
+            while (elements.size() > 0) {
+                auto tmp = elements.back();
+                elements.pop_back();
+                if (auto chunk = dynamic_cast<Chunk *>(tmp)) {
+                    Quad* rect1 = chunk->r1;
+                    Quad* rect2 = chunk->r2;
+
+                    if (tmp->GetAcreage() > 0) {
+                        if (tmp->GetSizeX() > tmp->GetSizeY()) {
+                            if (GetRandom(2)) {
+                                int divX = int(tmp->GetLeft() +
+                                    tmp->GetSizeX() * rect1->GetAcreage() / tmp->GetAcreage());
+                                if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
+                                if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                                rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
+                                rect2->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
+                            }
+                            else {
+                                int divX = int(tmp->GetLeft() +
+                                    tmp->GetSizeX() * rect2->GetAcreage() / tmp->GetAcreage());
+                                if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
+                                if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                                rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
+                                rect1->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
+                            }
+                        }
+                        else {
+                            if (GetRandom(2)) {
+                                int divY = int(tmp->GetBottom() +
+                                    tmp->GetSizeY() * rect1->GetAcreage() / tmp->GetAcreage());
+                                if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
+                                if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                                rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
+                                rect2->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
+                            }
+                            else {
+                                int divY = int(tmp->GetBottom() +
+                                    tmp->GetSizeY() * rect2->GetAcreage() / tmp->GetAcreage());
+                                if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
+                                if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                                rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
+                                rect1->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
+                            }
+                        }
+                        if (dynamic_cast<Chunk *>(rect1))elements.push_back(rect1);
+                        if (dynamic_cast<Chunk *>(rect2))elements.push_back(rect2);
+                    }
+                    delete chunk;
+                }
+            }
+        }
+
+        if(emptyRect) {
+            delete emptyRect;
+		}
+    }
+}
+
+
+
+
+// ===== .\Core\map\map.h =====
+
+﻿#pragma once
+
+#include "terrain.h"
+#include "roadnet.h"
+#include "zone.h"
+#include "building.h"
+
+#include <windows.h>
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+#define BLOCK_SIZE 256
+
+
+class Element {
+public:
+	Element();
+	~Element();
+
+	//获取/设置地形名称
+	std::string GetTerrain() const;
+	bool SetTerrain(std::string terrain);
+
+	float GetHeight() const;
+	bool SetHeight(float height);
+
+	//获取/设置园区标识
+	std::string GetZone() const;
+	bool SetZone(std::string zone);
+
+	//获取/设置建筑标识
+	std::string GetBuilding() const;
+	bool SetBuilding(std::string building);
+
+private:
+	// 基础属性
+	std::string terrain = "plain";
+	float height = 0.f;
+
+	std::string zone;
+	std::string building;
+};
+
+class Block {
+public:
+	Block() = delete;
+	Block(int x, int y);
+	~Block();
+
+	//获取/设置地形名称
+	std::string GetTerrain(int x, int y) const;
+	bool SetTerrain(int x, int y, std::string terrain);
+
+	//检查全局坐标是否在地块内
+	bool CheckXY(int x, int y) const;
+
+	//获取地块内某全局坐标的信息
+	std::shared_ptr<Element> GetElement(int x, int y);
+
+private:
+	// 基础内容
+	int offsetX, offsetY;
+	std::vector<std::vector<std::shared_ptr<Element>>> elements;
+};
+
+class Map {
+public:
+	Map();
+	~Map();
+
+	// 设置资源路径
+	void SetResourcePath(std::string path);
+
+	// 读取Mods
+	void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitZones(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles);
+
+	// 读取配置文件
+	void ReadConfigs(std::string path) const;
+
+	// 初始化全部地图
+	int Init(int blockX, int blockY);
+
+	// 释放空间
+	void Destroy();
+
+	// 时钟前进
+	void Tick(int day, int hour, int min, int sec);
+
+	// 输出当前地图
+	void Print() const;
+
+	// 保存/加载地图
+	void Load(std::string path);
+	void Save(std::string path) const;
+
+	// 获取地图尺寸
+	std::pair<int, int> GetSize() const;
+
+	// 检查全局坐标是否在地图内
+	bool CheckXY(int x, int y) const;
+
+	// 获取地块
+	std::shared_ptr<Block> GetBlock(int x, int y) const;
+
+	// 获取元素
+	std::shared_ptr<Element> GetElement(int x, int y) const;
+
+	// 获取/设置地形名称
+	std::string GetTerrain(int x, int y) const;
+	bool SetTerrain(int x, int y, std::string terrain);
+
+	// 获取路网
+	Roadnet* GetRoadnet() const;
+
+	// 获取园区/建筑
+	std::unordered_map<std::string, Zone*>& GetZones();
+	std::unordered_map<std::string, Building*>& GetBuildings();
+
+private:
+	// 排列地块中的园区与建筑
+	void ArrangePlots();
+
+	// 资源路径
+	std::string resourcePath;
+
+	// Mod管理
+	static TerrainFactory* terrainFactory;
+	static RoadnetFactory* roadnetFactory;
+	static ZoneFactory* zoneFactory;
+	static BuildingFactory* buildingFactory;
+
+	// 基础内容
+	int width = 0, height = 0;
+	std::vector<std::vector<std::shared_ptr<Block>>> blocks;
+
+	// 地图架构
+	Roadnet* roadnet = nullptr;
+	std::unordered_map<std::string, Zone*> zones;
+	std::unordered_map<std::string, Building*> buildings;
+};
+
+
+
+// ===== .\Core\map\roadnet.cpp =====
+
+﻿#include "roadnet.h"
+
+
+using namespace std;
+
+string JingRoadnet::GetId() {
+    return "jing";
+}
+
+string JingRoadnet::GetType() const {
+    return "jing";
+}
+
+string JingRoadnet::GetName() const {
+    return"井字路网";
+}
+
+void JingRoadnet::DistributeRoadnet(int width, int height, function<string(int, int)> get) {
+    vector<pair<Node, int>> horizontalNode1w;
+    vector<pair<Node, int>> horizontalNode1e;
+    vector<pair<Node, int>> horizontalNode2w;
+    vector<pair<Node, int>> horizontalNode2e;
+    vector<pair<Node, int>> verticalNode1n;
+    vector<pair<Node, int>> verticalNode1s;
+    vector<pair<Node, int>> verticalNode2n;
+    vector<pair<Node, int>> verticalNode2s;
+
+    float theta = GetRandom(1000) / 1000.f * 0.4f - 0.2f;
+
+    Node northWest(width / 2.f + 32.f * (sin(theta) - cos(theta)), height / 2.f + 32.f * (-cos(theta) - sin(theta)));
+    Node northEast(width / 2.f + 32.f * (sin(theta) + cos(theta)), height / 2.f + 32.f * (-cos(theta) + sin(theta)));
+    Node southWest(width / 2.f + 32.f * (-sin(theta) - cos(theta)), height / 2.f + 32.f * (cos(theta) - sin(theta)));
+    Node southEast(width / 2.f + 32.f * (-sin(theta) + cos(theta)), height / 2.f + 32.f * (cos(theta) + sin(theta)));
+    nodes.push_back(northWest);
+    nodes.push_back(northEast);
+    nodes.push_back(southWest);
+    nodes.push_back(southEast);
+
+    float s = northEast.GetY() - northWest.GetY();
+    float c = northEast.GetX() - northWest.GetX();
+    
+    for (float x = northWest.GetX(), y = northWest.GetY(); get((int)x, (int)y) != ""; x -= c, y -= s) {
+        nodes.emplace_back(x, y);
+        horizontalNode1w.emplace_back(nodes.back(), (int)nodes.size() - 1);
+    }
+    for (float x = northEast.GetX(), y = northEast.GetY(); get((int)x, (int)y) != ""; x += c, y += s) {
+        nodes.emplace_back(x, y);
+        horizontalNode1e.emplace_back(nodes.back(), (int)nodes.size() - 1);
+    }
+    for (float x = southWest.GetX(), y = southWest.GetY(); get((int)x, (int)y) != ""; x -= c, y -= s) {
+        nodes.emplace_back(x, y);
+        horizontalNode2w.emplace_back(nodes.back(), (int)nodes.size() - 1);
+    }
+    for (float x = southEast.GetX(), y = southEast.GetY(); get((int)x, (int)y) != ""; x += c, y += s) {
+        nodes.emplace_back(x, y);
+        horizontalNode2e.emplace_back(nodes.back(), (int)nodes.size() - 1);
+    }
+    for (float x = northWest.GetX(), y = northWest.GetY(); get((int)x, (int)y) != ""; x += s, y -= c) {
+        nodes.emplace_back(x, y);
+        verticalNode1n.emplace_back(nodes.back(), (int)nodes.size() - 1);
+    }
+    for (float x = southWest.GetX(), y = southWest.GetY(); get((int)x, (int)y) != ""; x -= s, y += c) {
+        nodes.emplace_back(x, y);
+        verticalNode1s.emplace_back(nodes.back(), (int)nodes.size() - 1);
+    }
+    for (float x = northEast.GetX(), y = northEast.GetY(); get((int)x, (int)y) != ""; x += s, y -= c) {
+        nodes.emplace_back(x, y);
+        verticalNode2n.emplace_back(nodes.back(), (int)nodes.size() - 1);
+    }
+    for (float x = southEast.GetX(), y = southEast.GetY(); get((int)x, (int)y) != ""; x -= s, y += c) {
+        nodes.emplace_back(x, y);
+        verticalNode2s.emplace_back(nodes.back(), (int)nodes.size() - 1);
+    }
+
+    connections.push_back(Connection("中山北路", this, 0, 1));
+    connections.push_back(Connection("中山东路", this, 1, 3));
+    connections.push_back(Connection("中山南路", this, 3, 2));
+    connections.push_back(Connection("中山西路", this, 2, 0));
+    for (int i = 1; i < horizontalNode1w.size(); i++) {
+        connections.push_back(Connection("城西北路", this, horizontalNode1w[i].second, horizontalNode1w[i - 1].second));
+    }
+    for (int i = 1; i < horizontalNode1e.size(); i++) {
+        connections.push_back(Connection("城东北路", this, horizontalNode1e[i].second, horizontalNode1e[i - 1].second));
+    }
+    for (int i = 1; i < horizontalNode2w.size(); i++) {
+        connections.push_back(Connection("城西南路", this, horizontalNode2w[i].second, horizontalNode2w[i - 1].second));
+    }
+    for (int i = 1; i < horizontalNode2e.size(); i++) {
+        connections.push_back(Connection("城东南路", this, horizontalNode2e[i].second, horizontalNode2e[i - 1].second));
+    }
+    for (int i = 1; i < verticalNode1n.size(); i++) {
+        connections.push_back(Connection("城北西路", this, verticalNode1n[i].second, verticalNode1n[i - 1].second));
+    }
+    for (int i = 1; i < verticalNode1s.size(); i++) {
+        connections.push_back(Connection("城南西路", this, verticalNode1s[i].second, verticalNode1s[i - 1].second));
+    }
+    for (int i = 1; i < verticalNode2n.size(); i++) {
+        connections.push_back(Connection("城北东路", this, verticalNode2n[i].second, verticalNode2n[i - 1].second));
+    }
+    for (int i = 1; i < verticalNode2s.size(); i++) {
+        connections.push_back(Connection("城南东路", this, verticalNode2s[i].second, verticalNode2s[i - 1].second));
+    }
+
+    plots.push_back(new Plot(northWest, northEast, southEast, southWest, { 0.5f, 0.5f, 0.5f, 0.5f }));
+    plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
+    plots.back()->SetRoads({
+        {connections[0], 0.5f},
+        {connections[1], 0.5f},
+        {connections[2], 0.5f},
+        {connections[3], 0.5f}
+        });
+    for (int i = 1; i < min(horizontalNode1w.size(), horizontalNode2w.size()); i++) {
+        if (get((int)horizontalNode1w[i].first.GetX(), (int)horizontalNode1w[i].first.GetY()) != "plain")continue;
+        if (get((int)horizontalNode1w[i - 1].first.GetX(), (int)horizontalNode1w[i - 1].first.GetY()) != "plain")continue;
+        if (get((int)horizontalNode2w[i].first.GetX(), (int)horizontalNode2w[i].first.GetY()) != "plain")continue;
+        if (get((int)horizontalNode2w[i - 1].first.GetX(), (int)horizontalNode2w[i - 1].first.GetY()) != "plain")continue;
+        plots.push_back(new Plot(
+            horizontalNode1w[i].first, horizontalNode1w[i - 1].first, horizontalNode2w[i - 1].first, horizontalNode2w[i].first,
+            { 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f }));
+        plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
+        plots.back()->SetRoads({
+            {Connection("城西北路", this, horizontalNode1w[i].second, horizontalNode1w[i - 1].second), 0.5f},
+            {Connection("城西南路", this, horizontalNode2w[i].second, horizontalNode2w[i - 1].second), 0.5f}
+        });
+    }
+    for (int i = 1; i < min(horizontalNode1e.size(), horizontalNode2e.size()); i++) {
+        if (get((int)horizontalNode1e[i].first.GetX(), (int)horizontalNode1e[i].first.GetY()) != "plain")continue;
+        if (get((int)horizontalNode1e[i - 1].first.GetX(), (int)horizontalNode1e[i - 1].first.GetY()) != "plain")continue;
+        if (get((int)horizontalNode2e[i].first.GetX(), (int)horizontalNode2e[i].first.GetY()) != "plain")continue;
+        if (get((int)horizontalNode2e[i - 1].first.GetX(), (int)horizontalNode2e[i - 1].first.GetY()) != "plain")continue;
+        plots.push_back(new Plot(
+            horizontalNode1e[i - 1].first, horizontalNode1e[i].first, horizontalNode2e[i].first, horizontalNode2e[i - 1].first,
+            { 0.5f, 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f) }));
+        plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
+        plots.back()->SetRoads({
+            {Connection("城东北路", this, horizontalNode1e[i].second, horizontalNode1e[i - 1].second), 0.5f},
+            {Connection("城东南路", this, horizontalNode2e[i].second, horizontalNode2e[i - 1].second), 0.5f}
+        });
+    }
+    for (int i = 1; i < min(verticalNode1n.size(), verticalNode2n.size()); i++) {
+        if (get((int)verticalNode1n[i].first.GetX(), (int)verticalNode1n[i].first.GetY()) != "plain")continue;
+        if (get((int)verticalNode1n[i - 1].first.GetX(), (int)verticalNode1n[i - 1].first.GetY()) != "plain")continue;
+        if (get((int)verticalNode2n[i].first.GetX(), (int)verticalNode2n[i].first.GetY()) != "plain")continue;
+        if (get((int)verticalNode2n[i - 1].first.GetX(), (int)verticalNode2n[i - 1].first.GetY()) != "plain")continue;
+        plots.push_back(new Plot(
+            verticalNode1n[i].first, verticalNode2n[i].first, verticalNode2n[i - 1].first, verticalNode1n[i - 1].first,
+            { 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f }));
+        plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
+        plots.back()->SetRoads({
+            {Connection("城北西路", this, verticalNode1n[i].second, verticalNode1n[i - 1].second), 0.5f},
+            {Connection("城北东路", this, verticalNode2n[i].second, verticalNode2n[i - 1].second), 0.5f}
+        });
+    }
+    for (int i = 1; i < min(verticalNode1s.size(), verticalNode2s.size()); i++) {
+        if (get((int)verticalNode1s[i].first.GetX(), (int)verticalNode1s[i].first.GetY()) != "plain")continue;
+        if (get((int)verticalNode1s[i - 1].first.GetX(), (int)verticalNode1s[i - 1].first.GetY()) != "plain")continue;
+        if (get((int)verticalNode2s[i].first.GetX(), (int)verticalNode2s[i].first.GetY()) != "plain")continue;
+        if (get((int)verticalNode2s[i - 1].first.GetX(), (int)verticalNode2s[i - 1].first.GetY()) != "plain")continue;
+        plots.push_back(new Plot(
+            verticalNode1s[i - 1].first, verticalNode2s[i - 1].first, verticalNode2s[i].first, verticalNode1s[i].first,
+            { (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f, 0.5f }));
+        plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
+        plots.back()->SetRoads({
+            {Connection("城南西路", this, verticalNode1s[i].second, verticalNode1s[i - 1].second), 0.5f},
+            {Connection("城南东路", this, verticalNode2s[i].second, verticalNode2s[i - 1].second), 0.5f}
+        });
+    }
+}
+
+
+// ===== .\Core\map\roadnet.h =====
+
+﻿#pragma once
+
+#include "roadnet_base.h"
+
+
+// 子类注册函数
+typedef void (*RegisterModRoadnetsFunc)(RoadnetFactory* factory);
+
+// 井字路网
+class JingRoadnet : public Roadnet {
+public:
+    static std::string GetId();
+    virtual std::string GetType() const override;
+    virtual std::string GetName() const override;
+
+    virtual void DistributeRoadnet(int width, int height, std::function<std::string(int, int)> get) override;
+};
+
+
+// ===== .\Core\map\terrain.cpp =====
+
+﻿#include "terrain.h"
+#include "utility.h"
+
+
+using namespace std;
+
+string OceanTerrain::GetId() {
+    return "ocean";
+}
+
+string OceanTerrain::GetType() const {
+    return "ocean";
+}
+
+string OceanTerrain::GetName() const {
+    return "海洋地形";
+}
+
+float OceanTerrain::GetPriority() const {
+    return 1.0f;
+};
+
+void OceanTerrain::DistributeTerrain(int width, int height,
+    function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+	// 随机生成四个方向是否临海，并保证至少有一面临海
+	int distribute = 0;
+	while (distribute == 0) {
+		distribute = GetRandom(16);
+	}
+
+	// 处理西面海面区域
+	if (distribute & 1) {
+		int distance = width / 16 + GetRandom(width / 16);
+		debugf("Sea in the west %d.\n", distance);
+		float shift = 0.0f, slope = 0.0f;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < distance + shift; x++) {
+				set(x, y, GetType());
+			}
+			slope += float(GetRandom(33) - 16) / 256.0f;
+			shift += slope;
+			if (distance + shift <= width / 64) {
+				slope = 0.0f;
+				shift = width / 64 - (float)distance;
+			}
+			if (distance + shift >= width / 8) {
+				slope = 0.0f;
+				shift = width / 8 - (float)distance;
+			}
+		}
+	}
+
+	// 处理东面海面区域
+	if (distribute & 2) {
+		int distance = width / 16 + GetRandom(width / 16);
+		debugf("Sea in the east %d.\n", distance);
+		float shift = 0.0f, slope = 0.0f;
+		for (int y = 0; y < height; y++) {
+			for (int x = width - 1; x >= width - distance - shift; x--) {
+				set(x, y, GetType());
+			}
+			slope += float(GetRandom(33) - 16) / 256.0f;
+			shift += slope;
+			if (distance + shift <= width / 64) {
+				slope = 0.0f;
+				shift = width / 64.f - distance;
+			}
+			if (distance + shift >= width / 8) {
+				slope = 0.0f;
+				shift = width / 8.f - distance;
+			}
+		}
+	}
+
+	// 处理北面海面区域
+	if (distribute & 4) {
+		int distance = height / 16 + GetRandom(height / 16);
+		debugf("Sea in the north %d.\n", distance);
+		float shift = 0.0f, slope = 0.0f;
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < distance + shift; y++) {
+				set(x, y, GetType());
+			}
+			slope += float(GetRandom(33) - 16) / 256.0f;
+			shift += slope;
+			if (distance + shift <= width / 64) {
+				slope = 0.0f;
+				shift = width / 64.f - distance;
+			}
+			if (distance + shift >= width / 8) {
+				slope = 0.0f;
+				shift = width / 8.f - distance;
+			}
+		}
+	}
+
+	// 处理南面海面区域
+	if (distribute & 8) {
+		int distance = height / 16 + GetRandom(height / 16);
+		debugf("Sea in the south %d.\n", distance);
+		float shift = 0.0f, slope = 0.0f;
+		for (int x = 0; x < width; x++) {
+			for (int y = height - 1; y >= height - distance - shift; y--) {
+				set(x, y, GetType());
+			}
+			slope += float(GetRandom(33) - 16) / 256.0f;
+			shift += slope;
+			if (distance + shift <= width / 64) {
+				slope = 0.0f;
+				shift = width / 64.f - distance;
+			}
+			if (distance + shift >= width / 8) {
+				slope = 0.0f;
+				shift = width / 8.f - distance;
+			}
+		}
+	}
+}
+
+string MountainTerrain::GetId() {
+	return "mountain";
+}
+
+string MountainTerrain::GetType() const {
+	return "mountain";
+}
+
+string MountainTerrain::GetName() const {
+	return "山区地形";
+}
+
+float MountainTerrain::GetPriority() const {
+	return 0.9f;
+};
+
+void MountainTerrain::DistributeTerrain(int width, int height,
+	function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+	int scalar = width * height / (512 * 512);
+	int num = scalar > 1 ? (4 + GetRandom(scalar * 2)) : 0;
+
+	Counter counter(100);
+	int mountain = 0;
+	for (int i = 0; i < num; i++) {
+		int x = width / 8 + GetRandom(width * 3 / 4);
+		int y = height / 8 + GetRandom(height * 3 / 4);
+
+		if (get(x, y) != "plain" ||
+			sqrt(pow(x - width / 2, 2) + pow(y - height / 2, 2)) < 128) {
+			if (!counter.count())i--;
+			continue;
+		}
+		FloodTerrain(x, y, (int)(64 * 64 + scalar * 0.2f * ((GetRandom(4) ? 0 : 1) * GetRandom(512 * 512)) + GetRandom(128 * 128)),
+			false, width, height, set, get);
+		mountain++;
+	}
+	for (int i = 2; i < width - 2; i++) {
+		for (int j = 2; j < height - 2; j++) {
+			ShapeFilter(i, j, width, height, set, get, 2, 0.5f);
+		}
+	}
+	debugf("Generate mountain %d.\n", mountain);
+}
+
+
+
+// ===== .\Core\map\terrain.h =====
+
+﻿#pragma once
+
+#include "terrain_base.h"
+
+
+// 子类注册函数
+typedef void (*RegisterModTerrainsFunc)(TerrainFactory* factory);
+
+// 海洋地形
+class OceanTerrain : public Terrain {
+public:
+    static std::string GetId();
+    virtual std::string GetType() const override;
+    virtual std::string GetName() const override;
+
+    virtual float GetPriority() const override;
+
+    virtual void DistributeTerrain(int width, int height,
+        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get) const override;
+};
+
+// 山区地形
+class MountainTerrain : public Terrain {
+public:
+    static std::string GetId();
+    virtual std::string GetType() const override;
+    virtual std::string GetName() const override;
+
+    virtual float GetPriority() const override;
+
+    virtual void DistributeTerrain(int width, int height,
+        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get) const override;
+};
+
+
+
+
+
+// ===== .\Core\map\zone.cpp =====
+
+﻿#include "zone.h"
+
+
+using namespace std;
+
+int DefaultZone::count = 0;
+
+DefaultZone::DefaultZone() {
+    name = count++;
+}
+
+string DefaultZone::GetId() {
+    return "default";
+}
+
+string DefaultZone::GetType() const {
+    return "default";
+}
+
+string DefaultZone::GetName() const {
+    return "默认园区" + to_string(name);
+}
+
+function<void(ZoneFactory*, BuildingFactory*, const vector<Plot*>&)> DefaultZone::ZoneGenerator =
+    [](ZoneFactory* zoneFactory, BuildingFactory* buildingFactory, const vector<Plot *>& plots) {
+        for (const auto& plot : plots) {
+            auto zone = zoneFactory->CreateZone(DefaultZone::GetId());
+            if (zone) {
+                zone->SetAcreage(40000.f);
+
+                vector<pair<string, float>> buildings;
+                int num = 40;
+                for (int i = 0; i < num; i++) {
+					buildings.push_back({ "default_residential", 1.f });
+                    buildings.push_back({ "default_working", 1.f });
+                }
+				zone->AddBuildings(buildingFactory, buildings);
+
+                string name = zone->GetName();
+                plot->AddZone(name, move(zone));
+            }
+        }
+    };
+
+// ===== .\Core\map\zone.h =====
+
+﻿#pragma once
+
+#include "zone_base.h"
+
+
+// 子类注册函数
+typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
+
+// 默认园区
+class DefaultZone : public Zone {
+public:
+    DefaultZone();
+
+    static std::string GetId();
+    virtual std::string GetType() const;
+    virtual std::string GetName() const;
+
+    static std::function<void(ZoneFactory*, BuildingFactory*, const std::vector<Plot*>&)> ZoneGenerator;
+    
+private:
+    static int count;
+
+    int name;
+};
+
+
+
+// ===== .\Core\player\player.cpp =====
+
+﻿#include "player.h"
+#include "utility.h"
+#include "error.h"
+#include "json.h"
+
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+
+using namespace std;
+
+Player::Player() {
+
+}
+
+Player::~Player() {
+
+}
+
+void Player::SetResourcePath(string path) {
+	resourcePath = path;
+}
+
+void Player::Init() {
+
+}
+
+void Player::ReadConfigs(string path) const {
+	path = resourcePath + path;
+	if (!filesystem::exists(path)) {
+		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+	}
+
+	JsonReader reader;
+	JsonValue root;
+
+	ifstream fin(path);
+	if (!fin.is_open()) {
+		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+	}
+	if (reader.Parse(fin, root)) {
+
+	}
+	else {
+		fin.close();
+		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+	}
+	fin.close();
+}
+
+void Player::Destroy() {
+
+}
+
+void Player::Tick(int day, int hour, int min, int sec) {
+
+}
+
+void Player::Print() const {
+
+}
+
+void Player::Load(string path) {
+
+}
+
+void Player::Save(string path) const {
+
+}
+
+
+
+
+// ===== .\Core\player\player.h =====
+
+﻿#pragma once
+
+#include <windows.h>
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+
+class Player {
+public:
+	Player();
+	~Player();
+
+	// 设置资源路径
+	void SetResourcePath(std::string path);
+
+	// 读取Mods
+
+	// 初始化全部交通
+	void Init();
+
+	// 读取配置文件
+	void ReadConfigs(std::string path) const;
+
+	// 释放空间
+	void Destroy();
+
+	// 时钟前进
+	void Tick(int day, int hour, int min, int sec);
+
+	// 输出当前交通
+	void Print() const;
+
+	// 保存/加载交通
+	void Load(std::string path);
+	void Save(std::string path) const;
+
+private:
+	// 资源路径
+	std::string resourcePath;
+
+	// Mod管理
+
+};
+
+
+
+// ===== .\Core\populace\populace.cpp =====
+
+﻿#include "populace.h"
+#include "utility.h"
+#include "error.h"
+#include "json.h"
+
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+
+using namespace std;
+
+Populace::Populace() {
+
+}
+
+Populace::~Populace() {
+
+}
+
+void Populace::SetResourcePath(string path) {
+	resourcePath = path;
+}
+
+void Populace::ReadConfigs(string path) const {
+	path = resourcePath + path;
+    if (!filesystem::exists(path)) {
+        THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+    }
+
+    JsonReader reader;
+    JsonValue root;
+
+    ifstream fin(path);
+    if (!fin.is_open()) {
+        THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+    }
+    if (reader.Parse(fin, root)) {
+
+    }
+    else {
+        fin.close();
+        THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+    }
+    fin.close();
+}
+
+void Populace::Init(int accomodation, vector<string> nameholders) {
+
+}
+
+void Populace::Destroy() {
+
+}
+
+void Populace::Tick(int day, int hour, int min, int sec) {
+
+}
+
+void Populace::Print() const {
+
+}
+
+void Populace::Load(string path) {
+
+}
+
+void Populace::Save(string path) const {
+
+}
+
+
+// ===== .\Core\populace\populace.h =====
+
+﻿#pragma once
+
+#include <windows.h>
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+
+class Map;
+class Story;
+
+class Populace {
+public:
+	Populace();
+	~Populace();
+
+	// 设置资源路径
+	void SetResourcePath(std::string path);
+
+	// 读取Mods
+
+	// 读取配置文件
+	void ReadConfigs(std::string path) const;
+
+	// 初始化全部人口
+	void Init(int accomodation, std::vector<std::string> nameholders);
+
+	// 释放空间
+	void Destroy();
+
+	// 时钟前进
+	void Tick(int day, int hour, int min, int sec);
+
+	// 输出当前人口
+	void Print() const;
+
+	// 保存/加载人口
+	void Load(std::string path);
+	void Save(std::string path) const;
+
+private:
+	// 资源路径
+	std::string resourcePath;
+
+	// Mod管理
+
+};
+
+
+
+// ===== .\Core\society\society.cpp =====
+
+﻿#include "society.h"
+#include "utility.h"
+#include "error.h"
+#include "json.h"
+
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+
+using namespace std;
+
+Society::Society() {
+
+}
+
+Society::~Society() {
+
+}
+
+void Society::SetResourcePath(string path) {
+    resourcePath = path;
+}
+
+void Society::ReadConfigs(string path) const {
+    path = resourcePath + path;
+    if (!filesystem::exists(path)) {
+        THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+    }
+
+    JsonReader reader;
+    JsonValue root;
+
+    ifstream fin(path);
+    if (!fin.is_open()) {
+        THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+    }
+    if (reader.Parse(fin, root)) {
+
+    }
+    else {
+        fin.close();
+        THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+    }
+    fin.close();
+}
+
+void Society::Init() {
+
+}
+
+void Society::Destroy() {
+
+}
+
+void Society::Tick(int day, int hour, int min, int sec) {
+
+}
+
+void Society::Print() const {
+
+}
+
+void Society::Load(string path) {
+
+}
+
+void Society::Save(string path) const {
+
+}
+
+
+
+
+
+// ===== .\Core\society\society.h =====
+
+﻿#pragma once
+
+#include <windows.h>
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+
+class Society {
+public:
+	Society();
+	~Society();
+
+	// 设置资源路径
+	void SetResourcePath(std::string path);
+
+	// 读取Mods
+
+	// 初始化全部组织
+	void Init();
+
+	// 读取配置文件
+	void ReadConfigs(std::string path) const;
+
+	// 释放空间
+	void Destroy();
+
+	// 时钟前进
+	void Tick(int day, int hour, int min, int sec);
+
+	// 输出当前组织
+	void Print() const;
+
+	// 保存/加载组织
+	void Load(std::string path);
+	void Save(std::string path) const;
+
+private:
+	// 资源路径
+	std::string resourcePath;
+
+	// Mod管理
+
+};
+
+
+
+// ===== .\Core\story\story.cpp =====
+
+﻿#include "story.h"
+#include "utility.h"
+#include "error.h"
+#include "json.h"
+
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+
+using namespace std;
+
+Story::Story() {
+
+}
+
+Story::~Story() {
+
+}
+
+void Story::SetResourcePath(string path) {
+	resourcePath = path;
+}
+
+void Story::ReadConfigs(string path) const {
+	path = resourcePath + path;
+	if (!filesystem::exists(path)) {
+		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+	}
+
+	JsonReader reader;
+	JsonValue root;
+
+	ifstream fin(path);
+	if (!fin.is_open()) {
+		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+	}
+	if (reader.Parse(fin, root)) {
+
+	}
+	else {
+		fin.close();
+		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+	}
+	fin.close();
+}
+
+void Story::Init() {
+
+}
+
+void Story::Destroy() {
+
+}
+
+void Story::Tick(int day, int hour, int min, int sec) {
+
+}
+
+void Story::Print() const {
+
+}
+
+void Story::Load(string path) {
+
+}
+
+void Story::Save(string path) const {
+
+}
+
+
+
+// ===== .\Core\story\story.h =====
+
+﻿#pragma once
+
+#include <windows.h>
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+
+class Story {
+public:
+	Story();
+	~Story();
+
+	// 设置资源路径
+	void SetResourcePath(std::string path);
+
+	// 读取Mods
+
+	// 读取配置文件
+	void ReadConfigs(std::string path) const;
+
+	// 初始化全部剧情
+	void Init();
+
+	// 释放空间
+	void Destroy();
+
+	// 时钟前进
+	void Tick(int day, int hour, int min, int sec);
+
+	// 输出当前剧情
+	void Print() const;
+
+	// 保存/读取剧情
+	void Load(std::string path);
+	void Save(std::string path) const;
+
+private:
+	// 资源路径
+	std::string resourcePath;
+
+	// Mod管理
+
+};
+
+
+
+// ===== .\Core\traffic\traffic.cpp =====
+
+﻿#include "traffic.h"
+#include "utility.h"
+#include "error.h"
+#include "json.h"
+
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
+#include <random>
+
+
+using namespace std;
+
+Traffic::Traffic() {
+
+}
+
+Traffic::~Traffic() {
+
+}
+
+void Traffic::SetResourcePath(string path) {
+	resourcePath = path;
+}
+
+void Traffic::Init() {
+
+}
+
+void Traffic::ReadConfigs(string path) const {
+	path = resourcePath + path;
+	if (!filesystem::exists(path)) {
+		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+	}
+
+	JsonReader reader;
+	JsonValue root;
+
+	ifstream fin(path);
+	if (!fin.is_open()) {
+		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+	}
+	if (reader.Parse(fin, root)) {
+
+	}
+	else {
+		fin.close();
+		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+	}
+	fin.close();
+}
+
+void Traffic::Destroy() {
+
+}
+
+void Traffic::Tick(int day, int hour, int min, int sec) {
+
+}
+
+void Traffic::Print() const {
+
+}
+
+void Traffic::Load(string path) {
+
+}
+
+void Traffic::Save(string path) const {
+
+}
+
+
+
+
+// ===== .\Core\traffic\traffic.h =====
+
+﻿#pragma once
+
+#include <windows.h>
+#include <vector>
+#include <string>
+#include <unordered_map>
+
+
+class Traffic {
+public:
+	Traffic();
+	~Traffic();
+
+	// 设置资源路径
+	void SetResourcePath(std::string path);
+
+	// 读取Mods
+
+	// 初始化全部交通
+	void Init();
+
+	// 读取配置文件
+	void ReadConfigs(std::string path) const;
+
+	// 释放空间
+	void Destroy();
+
+	// 时钟前进
+	void Tick(int day, int hour, int min, int sec);
+
+	// 输出当前交通
+	void Print() const;
+
+	// 保存/加载交通
+	void Load(std::string path);
+	void Save(std::string path) const;
+
+private:
+	// 资源路径
+	std::string resourcePath;
+
+	// Mod管理
+
+};
+
+
+
+// ===== .\Dependence\common\error.cpp =====
+
+﻿#include "error.h"
+
+
+using namespace std;
+
+ExceptionBase::ExceptionBase(const string& message,
+    const string& file,
+    int line,
+    const string& function) noexcept
+    : m_message(message)
+    , m_file(file)
+    , m_line(line)
+    , m_function(function) {
+    formatWhat();
+}
+
+const char* ExceptionBase::what() const noexcept {
+    return m_what.data();
+}
+
+string ExceptionBase::GetDetailedInfo() const {
+    ostringstream oss;
+    oss << "Exception: " << m_message << "\n"
+        << "File: " << m_file << "\n"
+        << "Line: " << m_line << "\n"
+        << "Function: " << (m_function.empty() ? "Unknown" : m_function);
+    return oss.str();
+}
+
+void ExceptionBase::formatWhat() {
+    m_what = m_message + " [at " + m_file + ":" + to_string(m_line) + "]";
+    if (!m_function.empty()) {
+        m_what += " in " + m_function;
+    }
+}
+
+// ===== .\Dependence\common\error.h =====
+
+﻿#pragma once
+
+#include <string>
+#include <sstream>
+#include <exception>
+
+
+class ExceptionBase : public std::exception {
+public:
+    ExceptionBase(const std::string& message,
+        const std::string& file,
+        int line,
+        const std::string& function = "") noexcept;
+
+    virtual ~ExceptionBase() noexcept = default;
+
+    // 获取报错信息
+    const char* what() const noexcept override;
+    virtual std::string GetDetailedInfo() const;
+    const std::string& getMessage() const noexcept { return m_message; }
+    const std::string& getFile() const noexcept { return m_file; }
+    int getLine() const noexcept { return m_line; }
+    const std::string& getFunction() const noexcept { return m_function; }
+
+protected:
+    virtual void formatWhat();
+
+    std::string m_message;
+    std::string m_file;
+    int m_line;
+    std::string m_function;
+    std::string m_what;
+};
+
+class NullPointerException : public ExceptionBase {
+public:
+    using ExceptionBase::ExceptionBase;
+};
+
+class CommandException : public ExceptionBase {
+public:
+    using ExceptionBase::ExceptionBase;
+};
+
+class StructureCrashException : public ExceptionBase {
+public:
+    using ExceptionBase::ExceptionBase;
+};
+
+class InvalidArgumentException : public ExceptionBase {
+public:
+    using ExceptionBase::ExceptionBase;
+};
+
+class InvalidConfigException : public ExceptionBase {
+public:
+    using ExceptionBase::ExceptionBase;
+};
+
+class ArithmeticException : public ExceptionBase {
+    using ExceptionBase::ExceptionBase;
+};
+
+class IOException : public ExceptionBase {
+public:
+    using ExceptionBase::ExceptionBase;
+};
+
+class OutOfRangeException : public ExceptionBase {
+    using ExceptionBase::ExceptionBase;
+};
+
+class DeadLoopException : public ExceptionBase {
+    using ExceptionBase::ExceptionBase;
+};
+
+class NetworkException : public ExceptionBase {
+    using ExceptionBase::ExceptionBase;
+};
+
+class MemoryException : public ExceptionBase {
+    using ExceptionBase::ExceptionBase;
+};
+
+class JsonFormatException : public ExceptionBase {
+    using ExceptionBase::ExceptionBase;
+};
+
+class InvalidInputException : public ExceptionBase {
+    using ExceptionBase::ExceptionBase;
+};
+
+class RuntimeException : public ExceptionBase {
+    using ExceptionBase::ExceptionBase;
+};
+
+template<typename ExceptionClass>
+[[noreturn]] void ThrowException(const std::string& message,
+    const char* file,
+    int line,
+    const char* function = "") {
+    throw ExceptionClass(message, file, line, function);
+}
+
+#define THROW_EXCEPTION(ExceptionClass, message) \
+    ThrowException<ExceptionClass>(message, __FILE__, __LINE__, __FUNCTION__)
+
+// ===== .\Dependence\common\plot.cpp =====
+
+﻿#include "plot.h"
+#include "error.h"
+#include "../map/roadnet_base.h"
+
+#include <cmath>
+#include <utility>
+#include <algorithm>
+
+
+using namespace std;
+
+Node::Node(float x, float y) : posX(x), posY(y) {
+
+}
+
+float Node::GetX() const {
+    return posX;
+}
+
+float Node::GetY() const {
+    return posY;
+}
+
+Connection::Connection(string name, Roadnet *roadnet, int n1, int n2, float width, float begin, float end) :
+    name(name), roadnet(roadnet), vertices(n1, n2), width(width), begin(begin), end(end) {
+
+}
+
+bool Connection::operator==(Connection& other) const {
+    if (vertices.first == other.vertices.first && vertices.second == other.vertices.second)return true;
+    if (vertices.first == other.vertices.second && vertices.second == other.vertices.first)return true;
+    return false;
+}
+
+string Connection::GetName() const {
+    return name;
+}
+
+Roadnet* Connection::GetRoadnet() const {
+    return roadnet;
+}
+
+float Connection::GetWidth() const {
+    return width;
+}
+
+int Connection::GetV1() const {
+    return vertices.first;
+}
+
+int Connection::GetV2() const {
+    return vertices.second;
+}
+
+float Connection::distance() const {
+    float dx = roadnet->GetNodes()[vertices.first].GetX() - roadnet->GetNodes()[vertices.second].GetX();
+    float dy = roadnet->GetNodes()[vertices.first].GetY() - roadnet->GetNodes()[vertices.second].GetY();
+    return sqrt(dx * dx + dy * dy);
+}
+
+Plot::Plot() : Quad(), rotation(0.f) {
+
+}
+
+Plot::Plot(float x, float y, float w, float h, float r) : Quad(x, y, w, h), rotation(r) {
+
+}
+
+Plot::Plot(Node n1, Node n2, Node n3, vector<float> margin) {
+    SetPosition(n1, n2, n3, margin);
+}
+
+Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
+    SetPosition(n1, n2, n3, n4, margin);
+}
+
+float Plot::GetRotation() const {
+	return rotation;
+}
+
+void Plot::SetRotation(float r) {
+    rotation = r;
+}
+
+AREA_TYPE Plot::GetArea() const {
+    return area;
+}
+
+void Plot::SetArea(AREA_TYPE area) {
+    this->area = area;
+}
+
+vector<pair<Connection, float>> Plot::GetRoads() {
+    return roads;
+}
+
+void Plot::SetRoads(vector<pair<Connection, float>> roads) {
+    this->roads = roads;
+}
+
+pair<float, float> Plot::GetVertex(int idx) const {
+	if (idx < 1 || idx > 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Plot has only 4 vertices.\n");
+	}
+
+    float hx = sizeX / 2.0f;
+    float hy = sizeY / 2.0f;
+    float c = cos(rotation);
+    float s = sin(rotation);
+
+    switch (idx) {
+    case 1: // 右上
+        return { posX + hx * c - hy * s,
+                 posY + hx * s + hy * c };
+    case 2: // 左上
+        return { posX - hx * c - hy * s,
+                 posY - hx * s + hy * c };
+    case 3: // 左下
+        return { posX - hx * c + hy * s,
+                 posY - hx * s - hy * c };
+    case 4: // 右下
+        return { posX + hx * c + hy * s,
+                 posY + hx * s - hy * c };
+    default:
+        return { 0.f, 0.f };
+    }
+}
+
+pair<float, float> Plot::GetPosition(float x, float y) const {
+    float cosR = cos(rotation);
+    float sinR = sin(rotation);
+
+    float originX = posX - sizeX / 2.0f;
+    float originY = posY - sizeY / 2.0f;
+
+    float relativeX = x - sizeX / 2.0f;
+    float relativeY = y - sizeY / 2.0f;
+
+    float rotatedX = relativeX * cosR - relativeY * sinR;
+    float rotatedY = relativeX * sinR + relativeY * cosR;
+
+    return { posX + rotatedX , posY + rotatedY };
+}
+
+void Plot::SetPosition(Node n1, Node n2, Node n3, vector<float> margin) {
+    if (margin.size() != 4) {
+        THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
+    }
+
+    float x1 = n1.GetX(), y1 = n1.GetY();
+    float x2 = n2.GetX(), y2 = n2.GetY();
+    float x3 = n3.GetX(), y3 = n3.GetY();
+
+    // 向量 u = p2 - p1, v = p3 - p2
+    float ux = x2 - x1, uy = y2 - y1;
+    float vx = x3 - x2, vy = y3 - y2;
+
+    // 检查垂直
+    float dot = ux * vx + uy * vy;
+    const float eps = 1e-5f;
+    if (abs(dot) > eps) {
+        THROW_EXCEPTION(InvalidArgumentException, "The given edges are not perpendicular.\n");
+    }
+
+    // 计算尺寸
+    float sx = sqrt(ux * ux + uy * uy);
+    float sy = sqrt(vx * vx + vy * vy);
+
+	// 应用边距
+	sx -= margin[1] + margin[3];
+	sy -= margin[0] + margin[2];
+
+    // 计算中心点：p1 和 p3 的对角线中心
+    float cx = (x1 + x3) / 2.0f + (margin[3] - margin[1]) * ux / (2.0f * sx) + (margin[0] - margin[2]) * vx / (2.0f * sy);
+	float cy = (y1 + y3) / 2.0f + (margin[3] - margin[1]) * uy / (2.0f * sx) + (margin[0] - margin[2]) * vy / (2.0f * sy);
+
+    // 计算旋转角度（p1p2 与 x 轴夹角）
+    float rot = atan2(uy, ux);
+
+    // 更新成员变量
+    posX = cx;
+    posY = cy;
+    sizeX = sx;
+    sizeY = sy;
+    rotation = rot;
+    acreage = sx * sy * 100.f;
+}
+
+void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
+    if (margin.size() != 4) {
+        THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
+    }
+
+    vector<Node> nodes = { n1, n2, n3, n4 };
+
+    // 计算中心点
+    float cx = 0.0f, cy = 0.0f;
+    for (const auto& node : nodes) {
+        cx += node.GetX();
+        cy += node.GetY();
+    }
+    cx /= 4.0f;
+    cy /= 4.0f;
+
+    // 按顺时针排序
+    sort(nodes.begin(), nodes.end(),
+        [cx, cy](const Node& a, const Node& b) {
+            return atan2(a.GetY() - cy, a.GetX() - cx) >
+                atan2(b.GetY() - cy, b.GetX() - cx);
+        });
+
+    // 检查矩形条件
+    const float eps = 1e-2f;
+
+    // 计算四个边向量
+    float u1x = nodes[1].GetX() - nodes[0].GetX();
+    float u1y = nodes[1].GetY() - nodes[0].GetY();
+    float u2x = nodes[2].GetX() - nodes[1].GetX();
+    float u2y = nodes[2].GetY() - nodes[1].GetY();
+    float u3x = nodes[3].GetX() - nodes[2].GetX();
+    float u3y = nodes[3].GetY() - nodes[2].GetY();
+    float u4x = nodes[0].GetX() - nodes[3].GetX();
+    float u4y = nodes[0].GetY() - nodes[3].GetY();
+
+    // 检查邻边垂直（点积为0）
+    float dot1 = u1x * u2x + u1y * u2y;
+    float dot2 = u2x * u3x + u2y * u3y;
+    float dot3 = u3x * u4x + u3y * u4y;
+    float dot4 = u4x * u1x + u4y * u1y;
+
+    if (abs(dot1) > eps || abs(dot2) > eps ||
+        abs(dot3) > eps || abs(dot4) > eps) {
+        THROW_EXCEPTION(InvalidArgumentException, "The given points do not form a rectangle (not all angles are 90 degrees).\n");
+    }
+
+    // 检查对边长度相等
+    float len1 = sqrt(u1x * u1x + u1y * u1y);
+    float len2 = sqrt(u2x * u2x + u2y * u2y);
+    float len3 = sqrt(u3x * u3x + u3y * u3y);
+    float len4 = sqrt(u4x * u4x + u4y * u4y);
+
+    if (abs(len1 - len3) > eps || abs(len2 - len4) > eps) {
+        THROW_EXCEPTION(InvalidArgumentException, "The given points do not form a rectangle (opposite sides not equal).\n");
+    }
+
+    // 计算尺寸（取相邻两边长度）
+    float sx = len1;
+    float sy = len2;
+
+    // 计算旋转角度（使用第一条边 nodes[0]->nodes[1]）
+    float rot = atan2(u1y, u1x);
+
+	// 应用边距
+	sx -= margin[1] + margin[3];
+	sy -= margin[0] + margin[2];
+	cx += (margin[3] - margin[1]) * u1x / (2.0f * sx) + (margin[0] - margin[2]) * u2x / (2.0f * sy);
+	cy += (margin[3] - margin[1]) * u1y / (2.0f * sx) + (margin[0] - margin[2]) * u2y / (2.0f * sy);
+
+    // 更新成员变量
+    posX = cx;
+    posY = cy;
+    sizeX = sx;
+    sizeY = sy;
+    rotation = rot;
+    acreage = sx * sy * 100.f;
+}
+
+unordered_map<string, Zone*>& Plot::GetZones() {
+    return zones;
+}
+
+unordered_map<string, Building*>& Plot::GetBuildings() {
+    return buildings;
+}
+
+void Plot::AddZone(string name, Zone* zone) {
+    if (zones.find(name) != zones.end()) {
+        THROW_EXCEPTION(InvalidArgumentException, "Duplicate zone name: " + name + ".\n");
+    }
+    zones[name] = zone;
+}
+
+void Plot::AddBuilding(string name, Building* building) {
+    if (buildings.find(name) != buildings.end()) {
+        THROW_EXCEPTION(InvalidArgumentException, "Duplicate building name: " + name + ".\n");
+    }
+    buildings[name] = building;
+}
+
+Zone* Plot::GetZone(string name) const {
+    for (auto& zone : zones) {
+        if (zone.first == name) {
+            return zone.second;
+        }
+    }
+    return nullptr;
+}
+
+Building* Plot::GetBuilding(string name) const {
+    for (auto& building : buildings) {
+        if (building.first == name) {
+            return building.second;
+        }
+    }
+    return nullptr;
+}
+
+void Plot::RemoveZone(string name) {
+    for (auto it = zones.begin(); it != zones.end(); ) {
+        if (it->first == name) {
+            it = zones.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+}
+
+void Plot::RemoveBuilding(string name) {
+    for (auto it = buildings.begin(); it != buildings.end(); ) {
+        if (it->first == name) {
+            it = buildings.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+}
+
+
+// ===== .\Dependence\common\plot.h =====
+
+﻿#pragma once
+
+#include "../map/zone_base.h"
+#include "../map/building_base.h"
+
+#include "utility.h"
+#include "quad.h"
+
+#include <vector>
+#include <unordered_map>
+
+
+class Roadnet;
+class Zone;
+class Building;
+
+class Node {
+public:
+	Node(float x, float y);
+	~Node() = default;
+
+	float GetX() const;
+	float GetY() const;
+
+private:
+	float posX, posY;
+};
+
+class Connection {
+public:
+	Connection(std::string name, Roadnet* roadnet, int n1, int n2, float width = 1.0f, float begin = 0.0f, float end = 1.0f);
+	~Connection() = default;
+
+	bool operator==(Connection& other) const;
+
+	std::string GetName() const;
+	Roadnet* GetRoadnet() const;
+	float GetWidth() const;
+
+	int GetV1() const;
+	int GetV2() const;
+	float distance() const;
+
+private:
+	std::string name;
+	Roadnet* roadnet;
+
+	std::pair<int, int> vertices;
+	float begin, end;
+	float width;
+};
+
+enum AREA_TYPE {
+	AREA_NONE,
+	AREA_RESIDENTIAL_HIGH,
+	AREA_RESIDENTIAL_MIDDLE,
+	AREA_RESIDENTIAL_LOW,
+	AREA_COMMERCIAL_HIGH,
+	AREA_COMMERCIAL_MIDDLE,
+	AREA_COMMERCIAL_LOW,
+	AREA_INDUSTRIAL_HIGH,
+	AREA_INDUSTRIAL_MIDDLE,
+	AREA_INDUSTRIAL_LOW,
+	AREA_OFFICIAL_HIGH,
+	AREA_OFFICIAL_MIDDLE,
+	AREA_OFFICIAL_LOW,
+	AREA_GREEN,
+};
+
+class Plot : public Quad {
+public:
+	Plot();
+	Plot(float x, float y, float w, float h, float r);
+	Plot(Node n1, Node n2, Node n3, std::vector<float> margin = std::vector<float>(4, 0.f));
+	Plot(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin = std::vector<float>(4, 0.f));
+
+	// 获取/设置属性
+	float GetRotation() const;
+	void SetRotation(float r);
+	AREA_TYPE GetArea() const;
+	void SetArea(AREA_TYPE area);
+	std::vector<std::pair<Connection, float>> GetRoads();
+	void SetRoads(std::vector<std::pair<Connection, float>> roads);
+
+	// 世界坐标变换
+	std::pair<float, float> GetVertex(int idx) const;
+	std::pair<float, float> GetPosition(float x, float y) const;
+
+	// 通过逆时针顺序三个顶点设置矩形
+	void SetPosition(Node n1, Node n2, Node n3, std::vector<float> margin);
+
+	// 通过顺序无关四个顶点设置矩形
+	void SetPosition(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin);
+
+	// 内部Quad管理
+	std::unordered_map<std::string, Zone*>& GetZones();
+	std::unordered_map<std::string, Building*>& GetBuildings();
+	void AddZone(std::string name, Zone* zone);
+	void AddBuilding(std::string name, Building* building);
+	Zone* GetZone(std::string name) const;
+	Building* GetBuilding(std::string name) const;
+	void RemoveZone(std::string name);
+	void RemoveBuilding(std::string name);
+
+protected:
+	float rotation;
+	AREA_TYPE area = AREA_GREEN;
+
+	std::vector<std::pair<Connection, float>> roads;
+
+	std::unordered_map<std::string, Zone*> zones;
+	std::unordered_map<std::string, Building*> buildings;
+};
+
+
+// ===== .\Dependence\common\quad.cpp =====
+
+﻿#include "quad.h"
+
+#include <algorithm>
+
+
+using namespace std;
+
+Quad::Quad() : posX(0.f), posY(0.f), sizeX(0.f), sizeY(0.f), acreage(0.f) {
+
+}
+
+Quad::Quad(float x, float y, float w, float h) : posX(x), posY(y), sizeX(w), sizeY(h), acreage(w * h * 100.f) {
+    
+}
+
+float Quad::GetPosX() const {
+    return posX;
+}
+
+void Quad::SetPosX(float x) {
+    posX = x;
+}
+
+float Quad::GetPosY() const {
+    return posY;
+}
+
+void Quad::SetPosY(float y) {
+    posY = y;
+}
+
+float Quad::GetSizeX() const {
+    return sizeX;
+}
+
+void Quad::SetSizeX(float w) {
+    sizeX = w;
+}
+
+float Quad::GetSizeY() const {
+    return sizeY;
+}
+
+void Quad::SetSizeY(float h) {
+    sizeY = h;
+}
+
+float Quad::GetLeft() const {
+    return posX - sizeX / 2.f;
+}
+
+float Quad::GetRight() const {
+    return posX + sizeX / 2.f;
+}
+
+float Quad::GetBottom() const {
+    return posY - sizeY / 2.f;
+}
+
+float Quad::GetTop() const {
+    return posY + sizeY / 2.f;
+}
+
+void Quad::SetVertices(float x1, float y1, float x2, float y2) {
+    if (x1 > x2) {
+        swap(x1, x2);
+    }
+    if (y1 > y2) {
+        swap(y1, y2);
+    }
+
+    posX = (x1 + x2) / 2.f;
+    posY = (y1 + y2) / 2.f;
+    sizeX = x2 - x1;
+    sizeY = y2 - y1;
+	acreage = sizeX * sizeY * 100.f;
+}
+
+void Quad::SetPosition(float x, float y, float w, float h) {
+    posX = x;
+    posY = y;
+    sizeX = w;
+    sizeY = h;
+    acreage = sizeX * sizeY * 100.f;
+}
+
+float Quad::GetAcreage() const {
+    return acreage;
+}
+
+void Quad::SetAcreage(float a) {
+    acreage = a;
+}
+
+
+// ===== .\Dependence\common\quad.h =====
+
+﻿#pragma once
+
+
+class Quad {
+public:
+	Quad();
+	Quad(float x, float y, float w, float h);
+	virtual ~Quad() = default;
+
+	// 获取/设置属性
+	float GetPosX() const;
+	void SetPosX(float x);
+	float GetPosY() const;
+	void SetPosY(float y);
+	float GetSizeX() const;
+	void SetSizeX(float w);
+	float GetSizeY() const;
+	void SetSizeY(float h);
+	float GetLeft() const;
+	float GetRight() const;
+	float GetBottom() const;
+	float GetTop() const;
+	void SetVertices(float x1, float y1, float x2, float y2);
+	void SetPosition(float x, float y, float w, float h);
+	float GetAcreage() const;
+	void SetAcreage(float a);
+
+protected:
+	float posX, posY;
+	float sizeX, sizeY;
+
+	float acreage;
+};
+
+
+// ===== .\Dependence\common\utility.cpp =====
+
+﻿#include "utility.h"
+
+#include <ctime>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
+#include <stdexcept>
+#include <cmath>
+#include <random>
+#include <regex>
+
+
+using namespace std;
+
+void debugf(LPCSTR format, ...) {
+    va_list args;
+    va_start(args, format);
+    int len = _vscprintf(format, args);
+    vector<char> buf(len + 1);
+    vsprintf_s(buf.data(), buf.size(), format, args);
+    OutputDebugStringA(buf.data());
+    va_end(args);
+}
+
+int GetRandom(int range) {
+	if (range <= 0)return 0;
+
+	mt19937 rng(random_device{}());
+	uniform_int_distribution<int> dist(0, range - 1);
+	int ret = dist(rng);
+
+	return ret;
+}
+
+
+Time::Time(bool online) {
+    if (online) {
+        SetToCurrentTime();
+    }
+}
+
+Time::Time(int y, int mon, int d, int h, int min, int s, int ms)
+    : year(y), month(mon), day(d), hour(h), minute(min), second(s), millisecond(ms) {
+    Validate();
+}
+
+Time::Time(string time) {
+    time.erase(0, time.find_first_not_of(" \t\n\r\f\v"));
+    time.erase(time.find_last_not_of(" \t\n\r\f\v") + 1);
+
+    if (time.empty()) {
+        return;
+    }
+
+    // 尝试匹配 ISO 8601 格式: YYYY-MM-DD HH:MM:SS.sss
+    regex iso_pattern(R"(^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T ](\d{1,2}):(\d{1,2}):(\d{1,2})(?:\.(\d{1,3}))?)?$)");
+    smatch match;
+
+    if (regex_match(time, match, iso_pattern)) {
+        year = stoi(match[1]);
+        month = stoi(match[2]);
+        day = stoi(match[3]);
+
+        // 如果有时间部分
+        if (match[4].matched) {
+            hour = stoi(match[4]);
+            minute = stoi(match[5]);
+            second = stoi(match[6]);
+
+            if (match[7].matched) {
+                millisecond = stoi(match[7]);
+                // 补齐毫秒位数
+                if (match[7].length() == 1) millisecond *= 100;
+                else if (match[7].length() == 2) millisecond *= 10;
+            }
+        }
+
+        Validate();
+        return;
+    }
+
+    // 尝试匹配常见的中文格式: YYYY年MM月DD日 HH:MM:SS
+    regex chinese_pattern(R"(^(\d{4})年(\d{1,2})月(\d{1,2})日(?:\s+(\d{1,2}):(\d{1,2}):(\d{1,2})(?:\.(\d{1,3}))?)?$)");
+
+    if (regex_match(time, match, chinese_pattern)) {
+        year = stoi(match[1]);
+        month = stoi(match[2]);
+        day = stoi(match[3]);
+
+        if (match[4].matched) {
+            hour = stoi(match[4]);
+            minute = stoi(match[5]);
+            second = stoi(match[6]);
+
+            if (match[7].matched) {
+                millisecond = stoi(match[7]);
+                if (match[7].length() == 1) millisecond *= 100;
+                else if (match[7].length() == 2) millisecond *= 10;
+            }
+        }
+
+        Validate();
+        return;
+    }
+
+    // 尝试匹配美国格式: MM/DD/YYYY HH:MM:SS
+    regex us_pattern(R"(^(\d{1,2})/(\d{1,2})/(\d{4})(?:\s+(\d{1,2}):(\d{1,2}):(\d{1,2})(?:\.(\d{1,3}))?)?$)");
+
+    if (regex_match(time, match, us_pattern)) {
+        month = stoi(match[1]);
+        day = stoi(match[2]);
+        year = stoi(match[3]);
+
+        if (match[4].matched) {
+            hour = stoi(match[4]);
+            minute = stoi(match[5]);
+            second = stoi(match[6]);
+
+            if (match[7].matched) {
+                millisecond = stoi(match[7]);
+                if (match[7].length() == 1) millisecond *= 100;
+                else if (match[7].length() == 2) millisecond *= 10;
+            }
+        }
+
+        Validate();
+        return;
+    }
+
+    // 尝试只包含时间的格式: HH:MM:SS.sss
+    regex day_pattern(R"(^(\d{1,2}):(\d{1,2}):(\d{1,2})(?:\.(\d{1,3}))?$)");
+
+    if (regex_match(time, match, day_pattern)) {
+        hour = stoi(match[1]);
+        minute = stoi(match[2]);
+        second = stoi(match[3]);
+
+        if (match[4].matched) {
+            millisecond = stoi(match[4]);
+            if (match[4].length() == 1) millisecond *= 100;
+            else if (match[4].length() == 2) millisecond *= 10;
+        }
+
+        Validate();
+        return;
+    }
+
+    // 如果所有格式都不匹配，抛出异常
+    throw invalid_argument("无法解析时间字符串: " + time);
+}
+
+bool Time::IsValid() const {
+    return year > 0;
+}
+
+void Time::SetYear(int y) {
+    year = y; Validate();
+}
+void Time::SetMonth(int m) {
+    month = m; Validate();
+}
+void Time::SetDay(int d) {
+    day = d; Validate();
+}
+void Time::SetHour(int h) {
+    hour = h; Validate();
+}
+void Time::SetMinute(int m) {
+    minute = m; Validate();
+}
+void Time::SetSecond(int s) {
+    second = s; Validate();
+}
+void Time::SetMillisecond(int ms) {
+    millisecond = ms; Validate();
+}
+
+void Time::SetDate(int y, int m, int d) {
+    year = y; month = m; day = d;
+    Validate();
+}
+
+void Time::SetTime(int h, int m, int s, int ms) {
+    hour = h; minute = m; second = s; millisecond = ms;
+    Validate();
+}
+
+int Time::GetYear() const {
+    return year;
+}
+int Time::GetMonth() const {
+    return month;
+}
+int Time::GetDay() const {
+    return day;
+}
+int Time::GetHour() const {
+    return hour;
+}
+int Time::GetMinute() const {
+    return minute;
+}
+int Time::GetSecond() const {
+    return second;
+}
+int Time::GetMillisecond() const {
+    return millisecond;
+}
+
+void Time::SetToCurrentTime() {
+    auto now = chrono::system_clock::now();
+    auto now_time = chrono::system_clock::to_time_t(now);
+    auto ms = chrono::duration_cast<chrono::milliseconds>(
+        now.time_since_epoch()) % 1000;
+
+    struct tm tm;
+    time_t t = time(nullptr);
+    if (localtime_s(&tm, &t) == 0) {
+        year = tm.tm_year + 1900;
+        month = tm.tm_mon + 1;
+        day = tm.tm_mday;
+        hour = tm.tm_hour;
+        minute = tm.tm_min;
+        second = tm.tm_sec;
+        millisecond = static_cast<int>(ms.count());
+    }
+}
+
+void Time::AddYears(int years) {
+    year += years;
+}
+
+void Time::AddMonths(int months) {
+    month += months;
+    while (month > 12) {
+        month -= 12;
+        year++;
+    }
+    while (month < 1) {
+        month += 12;
+        year--;
+    }
+}
+
+void Time::AddDays(int days) {
+    day += days;
+    while (day > DaysInMonth(year, month)) {
+        day -= DaysInMonth(year, month);
+        AddMonths(1);
+    }
+    while (day < 1) {
+        AddMonths(-1);
+        day += DaysInMonth(year, month);
+    }
+}
+
+void Time::AddHours(int hours) {
+    hour += hours;
+    NormalizeTime();
+}
+
+void Time::AddMinutes(int minutes) {
+    minute += minutes;
+    NormalizeTime();
+}
+
+void Time::AddSeconds(int seconds) {
+    second += seconds;
+    NormalizeTime();
+}
+
+void Time::AddMilliseconds(int ms) {
+    millisecond += ms;
+    NormalizeTime();
+}
+
+string Time::ToString() const {
+    return Format("YYYY-MM-DD HH:mm:ss.zzz");
+}
+
+string Time::Format(const string& fmt) const {
+    ostringstream oss;
+    for (size_t i = 0; i < fmt.size(); ++i) {
+        if (fmt[i] == 'Y') {
+            if (fmt.substr(i, 4) == "YYYY") {
+                oss << setw(4) << setfill('0') << year;
+                i += 3;
+            }
+            else if (fmt.substr(i, 2) == "YY") {
+                oss << setw(2) << setfill('0') << (year % 100);
+                i += 1;
+            }
+        }
+        else if (fmt[i] == 'M') {
+            if (fmt.substr(i, 2) == "MM") {
+                oss << setw(2) << setfill('0') << month;
+                i += 1;
+            }
+        }
+        else if (fmt[i] == 'D') {
+            if (fmt.substr(i, 2) == "DD") {
+                oss << setw(2) << setfill('0') << day;
+                i += 1;
+            }
+        }
+        else if (fmt[i] == 'H') {
+            if (fmt.substr(i, 2) == "HH") {
+                oss << setw(2) << setfill('0') << hour;
+                i += 1;
+            }
+        }
+        else if (fmt[i] == 'm') {
+            if (fmt.substr(i, 2) == "mm") {
+                oss << setw(2) << setfill('0') << minute;
+                i += 1;
+            }
+        }
+        else if (fmt[i] == 's') {
+            if (fmt.substr(i, 2) == "ss") {
+                oss << setw(2) << setfill('0') << second;
+                i += 1;
+            }
+        }
+        else if (fmt[i] == 'z') {
+            if (fmt.substr(i, 3) == "zzz") {
+                oss << setw(3) << setfill('0') << millisecond;
+                i += 2;
+            }
+        }
+        else {
+            oss << fmt[i];
+        }
+    }
+    return oss.str();
+}
+
+bool Time::operator==(const Time& other) const {
+    return year == other.year &&
+        month == other.month &&
+        day == other.day &&
+        hour == other.hour &&
+        minute == other.minute &&
+        second == other.second &&
+        millisecond == other.millisecond;
+}
+
+bool Time::operator<(const Time& other) const {
+    if (year != other.year) return year < other.year;
+    if (month != other.month) return month < other.month;
+    if (day != other.day) return day < other.day;
+    if (hour != other.hour) return hour < other.hour;
+    if (minute != other.minute) return minute < other.minute;
+    if (second != other.second) return second < other.second;
+    return millisecond < other.millisecond;
+}
+
+bool Time::operator>(const Time& other) const { return other < *this; }
+bool Time::operator<=(const Time& other) const { return !(*this > other); }
+bool Time::operator>=(const Time& other) const { return !(*this < other); }
+bool Time::operator!=(const Time& other) const { return !(*this == other); }
+
+Time Time::operator+(const Time& other) const {
+    Time result = *this;
+    result.AddYears(other.year);
+    result.AddMonths(other.month);
+    result.AddDays(other.day);
+    result.AddHours(other.hour);
+    result.AddMinutes(other.minute);
+    result.AddSeconds(other.second);
+    result.AddMilliseconds(other.millisecond);
+    return result;
+}
+
+Time Time::operator-(const Time& other) const {
+    Time result = *this;
+    result.AddYears(-other.year);
+    result.AddMonths(-(other.month - 1));
+    result.AddDays(-(other.day - 1));
+    result.AddHours(-other.hour);
+    result.AddMinutes(-other.minute);
+    result.AddSeconds(-other.second);
+    result.AddMilliseconds(-other.millisecond);
+    return result;
+}
+
+Time& Time::operator+=(const Time& other) {
+    *this = *this + other;
+    return *this;
+}
+
+Time& Time::operator-=(const Time& other) {
+    *this = *this - other;
+    return *this;
+}
+
+double Time::DifferenceInSeconds(const Time& other) const {
+    if (*this == other) return 0.0;
+
+    const Time* earlier = this;
+    const Time* later = &other;
+    bool inverted = false;
+    if (*this > other) {
+        earlier = &other;
+        later = this;
+        inverted = true;
+    }
+
+    int yearDays = 0;
+    if (earlier->year != later->year) {
+        yearDays = DaysBetweenYears(earlier->year, later->year);
+    }
+
+    int earlierDayOfYear = earlier->OrdinalDate();
+    int laterDayOfYear = later->OrdinalDate();
+
+    int dayDifference = laterDayOfYear - earlierDayOfYear + yearDays;
+
+    int secondsEarlier = earlier->hour * 3600 + earlier->minute * 60 + earlier->second;
+    int secondsLater = later->hour * 3600 + later->minute * 60 + later->second;
+
+    double totalSeconds = dayDifference * 86400.0 + (secondsLater - secondsEarlier);
+
+    totalSeconds += (later->millisecond - earlier->millisecond) / 1000.0;
+
+    return inverted ? totalSeconds : -totalSeconds;
+}
+
+bool Time::IsLeapYear() const {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+
+int Time::DayOfWeek() const {
+    int m = month;
+    int y = year;
+    if (m < 3) {
+        m += 12;
+        y--;
+    }
+    int q = day;
+    int k = y % 100;
+    int j = y / 100;
+    int h = (q + 13 * (m + 1) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
+    return (h + 6) % 7;
+}
+
+string Time::DayOfWeekName() const {
+    static const string names[] = {
+        "Sunday", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday"
+    };
+    return names[DayOfWeek()];
+}
+
+void Time::Validate() const {
+    if (month < 1 || month > 12)
+        throw out_of_range("Month must be between 1-12.\n");
+    if (day < 1 || day > DaysInMonth(year, month))
+        throw out_of_range("Invalid day for given month and year.\n");
+    if (hour < 0 || hour > 23)
+        throw out_of_range("Hour must be between 0-23.\n");
+    if (minute < 0 || minute > 59)
+        throw out_of_range("Minute must be between 0-59.\n");
+    if (second < 0 || second > 59)
+        throw out_of_range("Second must be between 0-59.\n");
+    if (millisecond < 0 || millisecond > 999)
+        throw out_of_range("Millisecond must be between 0-999.\n");
+}
+
+int Time::DaysInMonth(int year, int month) {
+    static const int days[] = {
+        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    };
+    if (month == 2 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
+        return 29;
+    }
+    return days[month - 1];
+}
+
+int Time::DaysInYear(int year) {
+    return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) ? 366 : 365;
+}
+
+int Time::DaysBetweenYears(int startYear, int endYear) {
+    if (startYear > endYear) return -DaysBetweenYears(endYear, startYear);
+
+    int totalDays = 0;
+    for (int year = startYear; year < endYear; year++) {
+        totalDays += DaysInYear(year);
+    }
+    return totalDays;
+}
+
+int Time::DaysBetween(const Time& start, const Time& end) {
+    // 确保开始日期不晚于结束日期
+    if (start > end) {
+        return -DaysBetween(end, start);
+    }
+
+    // 计算年份差的天数
+    int totalDays = 0;
+    for (int year = start.GetYear(); year < end.GetYear(); year++) {
+        totalDays += Time::DaysInYear(year);
+    }
+
+    // 计算开始日期在当年的天数
+    Time startYearStart(start.GetYear(), 1, 1);
+    int startDays = (start - startYearStart).GetDay();
+
+    // 计算结束日期在当年的天数
+    Time endYearStart(end.GetYear(), 1, 1);
+    int endDays = (end - endYearStart).GetDay();
+
+    return totalDays + endDays - startDays;
+}
+
+void Time::NormalizeTime() {
+    while (millisecond >= 1000) {
+        millisecond -= 1000;
+        second++;
+    }
+    while (millisecond < 0) {
+        millisecond += 1000;
+        second--;
+    }
+
+    while (second >= 60) {
+        second -= 60;
+        minute++;
+    }
+    while (second < 0) {
+        second += 60;
+        minute--;
+    }
+
+    while (minute >= 60) {
+        minute -= 60;
+        hour++;
+    }
+    while (minute < 0) {
+        minute += 60;
+        hour--;
+    }
+
+    while (hour >= 24) {
+        hour -= 24;
+        day++;
+    }
+    while (hour < 0) {
+        hour += 24;
+        day--;
+    }
+
+    while (day > DaysInMonth(year, month)) {
+        day -= DaysInMonth(year, month);
+        month++;
+        if (month > 12) {
+            month = 1;
+            year++;
+        }
+    }
+    while (day < 1) {
+        month--;
+        if (month < 1) {
+            month = 12;
+            year--;
+        }
+        day += DaysInMonth(year, month);
+    }
+
+    Validate();
+}
+
+int Time::OrdinalDate() const {
+    int days = day;
+    for (int m = 1; m < month; m++) {
+        days += DaysInMonth(year, m);
+    }
+    return days;
+}
+
+Time GetRandom(Time begin, Time end) {
+    // 矫正起始与结束时间
+    if (begin > end) {
+        swap(begin, end);
+    }
+    else if (begin == end) {
+        return begin;
+    }
+
+    // 将时间归一化到当天0点
+    begin.SetTime(0, 0, 0, 0);
+    end.SetTime(0, 0, 0, 0);
+
+    // 计算总天数
+    int totalDays = Time::DaysBetween(begin, end) + 1;
+
+    // 生成随机偏移天数
+    int randomDays = GetRandom(totalDays);
+
+    // 创建结果时间
+    Time result = begin;
+    result.AddDays(randomDays);
+
+    return result;
+}
+
+Counter::Counter(int count) : num(count) {
+
+}
+
+bool Counter::count() {
+    return --num <= 0;
+}
+
+
+// ===== .\Dependence\common\utility.h =====
+
+﻿#pragma once
+
+#include <string>
+#include <memory>
+#include <set>
+#include <mutex>
+#include <codecvt>
+#include <locale>
+#include <exception>
+
+#include <windows.h>
+#include <strsafe.h>
+
+#define REPLACE_PATH(path) (path)
+
+#ifdef _DEBUG
+#define MOD_TEST
+#endif // DEBUG
+
+
+// 调试控制台输出
+void debugf(LPCSTR format, ...);
+
+// 获取[0, range - 1]的随机整数
+int GetRandom(int range);
+
+class Time {
+public:
+    Time() = default;
+    Time(bool online);
+    Time(int y, int mon = 1, int d = 1, int h = 0, int min = 0, int s = 0, int ms = 0);
+    Time(std::string time);
+
+    // 判断是否为空
+    bool IsValid() const;
+
+    // 获取/设置时间
+    int GetYear() const;
+    int GetMonth() const;
+    int GetDay() const;
+    int GetHour() const;
+    int GetMinute() const;
+    int GetSecond() const;
+    int GetMillisecond() const;
+    void SetYear(int y);
+    void SetMonth(int m);
+    void SetDay(int d);
+    void SetHour(int h);
+    void SetMinute(int m);
+    void SetSecond(int s);
+    void SetMillisecond(int ms);
+    void SetDate(int y, int m, int d);
+    void SetTime(int h, int m, int s, int ms = 0);
+
+    // 使用在线时间
+    void SetToCurrentTime();
+
+    // 时间偏移
+    void AddYears(int years);
+    void AddMonths(int months);
+    void AddDays(int days);
+    void AddHours(int hours);
+    void AddMinutes(int minutes);
+    void AddSeconds(int seconds);
+    void AddMilliseconds(int ms);
+
+    // 输出时间
+    std::string ToString() const;
+    std::string Format(const std::string& fmt) const;
+
+    // 时间比较与计算
+    bool operator==(const Time& other) const;
+    bool operator<(const Time& other) const;
+    bool operator>(const Time& other) const;
+    bool operator<=(const Time& other) const;
+    bool operator>=(const Time& other) const;
+    bool operator!=(const Time& other) const;
+    Time operator+(const Time& other) const;
+    Time operator-(const Time& other) const;
+    Time& operator+=(const Time& other);
+    Time& operator-=(const Time& other);
+    double DifferenceInSeconds(const Time& other) const;
+
+    // 日期属性
+    bool IsLeapYear() const;
+    int DayOfWeek() const;
+    std::string DayOfWeekName() const;
+
+    // 天数计算
+    static int DaysInMonth(int year, int month);
+    static int DaysInYear(int year);
+    static int DaysBetweenYears(int startYear, int endYear);
+    static int DaysBetween(const Time& start, const Time& end);
+
+private:
+    int year = 0;
+    int month = 1;
+    int day = 1;
+    int hour = 0;
+    int minute = 0;
+    int second = 0;
+    int millisecond = 0;
+
+    // 检查各项数值范围
+    void Validate() const;
+
+    // 时间进位
+    void NormalizeTime();
+
+    // 当前为当年第几天
+    int OrdinalDate() const;
+};
+
+// 时间范围内随机采样
+Time GetRandom(Time begin, Time end);
+
+// 计数器
+class Counter {
+public:
+    Counter(int count);
+
+    bool count();
+
+private:
+    int num;
+};
+
+
+// ===== .\Dependence\map\building_base.cpp =====
+
+﻿#include "../common/error.h"
+
+#include "building_base.h"
+
+#include <filesystem>
+#include <string>
+#include <fstream>
+
+
+using namespace std;
+
+Facility::Facility(FACILITY_TYPE type, float x, float y, float w, float h)
+    : Quad(x, y, w, h), type(type) {
+
+}
+
+Facility::FACILITY_TYPE Facility::getType() const {
+    return type;
+}
+
+Floor::Floor(int level, float width, float height) : level(level) {
+    SetVertices(0, 0, width, height);
+}
+
+Floor::~Floor() {
+
+}
+
+void Floor::AddFacility(Facility facility) {
+    facilities.push_back(facility);
+}
+
+void Floor::AddRow(pair<Quad, int> row) {
+    rows.push_back(row);
+}
+
+void Floor::AddRoom(pair<Quad, int> room) {
+    rooms.push_back(room);
+}
+
+int Floor::GetLevel() const {
+    return level;
+}
+
+vector<Facility>& Floor::GetFacilities() {
+    return facilities;
+}
+
+vector<pair<Quad, int>>& Floor::GetRows() {
+    return rows;
+}
+
+vector<pair<Quad, int>>& Floor::GetRooms() {
+    return rooms;
+}
+
+void Building::SetParent(Plot* plot) {
+    parentPlot = plot;
+}
+
+void Building::SetParent(Zone* zone) {
+    parentZone = zone;
+}
+
+Plot* Building::GetParentPlot() const {
+    return parentPlot;
+}
+
+Zone* Building::GetParentZone() const {
+    return parentZone;
+}
+
+int Building::GetOwner() const {
+    return ownerId;
+}
+
+void Building::SetOwner(int id) {
+    ownerId = id;
+}
+
+bool Building::GetStateOwned() const {
+    return stateOwned;
+}
+
+void Building::SetStateOwned(bool state) {
+    stateOwned = state;
+}
+
+int Building::GetLayers() const {
+    return layers;
+}
+
+int Building::GetBasements() const {
+    return basements;
+}
+
+const Quad Building::GetConstruction() const {
+	return construction;
+}
+
+//vector<Component*>& Building::GetComponents() {
+//    return components;
+//}
+//
+//vector<Room*>& Building::GetRooms() {
+//    return rooms;
+//}
+//
+//Floor* Building::GetFloor(int level) const {
+//    if (basements + level >= 0 && basements + level < floors.size())
+//        return floors[basements + level];
+//    else return nullptr;
+//}
+
+void Building::FinishInit() {
+	construction = LayoutConstruction();
+    //floors = vector<Floor*>(basements + layers);
+}
+
+Layout* Building::ReadTemplates(string path) {
+    if (!filesystem::exists(REPLACE_PATH(path))) {
+        THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+    }
+
+    auto layout = new Layout();
+
+    for (const auto& entry : filesystem::directory_iterator(path)) {
+        if (entry.is_regular_file()) {
+            string filename = entry.path().filename().string();
+            string basename = filename.substr(0, filename.length() - 4);
+            string extension = filename.substr(filename.length() - 3, filename.length());
+            if (extension != "txt")continue;
+
+            ifstream fin(entry.path());
+            if (!fin.is_open()) {
+                THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+            }
+
+            // 初始化当前文件的模板存储
+            layout->templateFacilities[basename] = vector<vector<pair<Facility::FACILITY_TYPE, vector<float>>>>(4);
+            layout->templateRows[basename] = vector<vector<pair<FACE_DIRECTION, vector<float>>>>(4);
+            layout->templateRooms[basename] = vector<vector<pair<FACE_DIRECTION, vector<float>>>>(4);
+
+            string type;
+            while (fin >> type) {
+                // 处理注释行
+                if (type == "#") {
+                    fin.ignore((numeric_limits<streamsize>::max)(), '\n');
+                    continue;
+                }
+
+                // 处理设施
+                if (type == "corridor" || type == "stair" || type == "elevator") {
+                    vector<float> params(8);
+                    bool readError = false;
+
+                    for (int i = 0; i < 8; i++) {
+                        if (!(fin >> params[i])) {
+                            readError = true;
+                            break;
+                        }
+                    }
+
+                    if (readError) {
+                        THROW_EXCEPTION(InvalidConfigException, "Incomplete parameters for " + type +
+                            " in file: " + filename + "\n");
+                    }
+
+                    // 转换为枚举类型
+                    Facility::FACILITY_TYPE facType;
+                    if (type == "corridor")facType = Facility::FACILITY_CORRIDOR;
+                    else if (type == "stair")facType = Facility::FACILITY_STAIR;
+                    else facType = Facility::FACILITY_ELEVATOR;
+
+                    layout->templateFacilities[basename][0].push_back({ facType, InverseParams(params, 0) });
+                    layout->templateFacilities[basename][1].push_back({ facType, InverseParams(params, 1) });
+                    layout->templateFacilities[basename][2].push_back({ facType, InverseParams(params, 2) });
+                    layout->templateFacilities[basename][3].push_back({ facType, InverseParams(params, 3) });
+                }
+                // 处理房间排
+                else if (type == "row") {
+                    int directionInt;
+                    if (!(fin >> directionInt)) {
+                        THROW_EXCEPTION(InvalidConfigException, "Failed to read direction for row in file: " + filename + "\n");
+                    }
+
+                    // 验证方向值有效性
+                    if (directionInt < 0 || directionInt > 3) {
+                        THROW_EXCEPTION(InvalidConfigException, "Invalid direction value " + to_string(directionInt) +
+                            " in file: " + filename + "\n");
+                    }
+                    FACE_DIRECTION direction = static_cast<FACE_DIRECTION>(directionInt);
+
+                    vector<float> params(8);
+                    bool readError = false;
+                    for (int i = 0; i < 8; i++) {
+                        if (!(fin >> params[i])) {
+                            readError = true;
+                            break;
+                        }
+                    }
+
+                    if (readError) {
+                        THROW_EXCEPTION(InvalidConfigException, "Incomplete parameters for row in file: " + filename + "\n");
+                    }
+
+                    layout->templateRows[basename][0].push_back({ 
+                        (FACE_DIRECTION)InverseDirection(direction, 0), InverseParams(params, 0) });
+                    layout->templateRows[basename][1].push_back({ 
+                        (FACE_DIRECTION)InverseDirection(direction, 1), InverseParams(params, 1) });
+                    layout->templateRows[basename][2].push_back({ 
+                        (FACE_DIRECTION)InverseDirection(direction, 2), InverseParams(params, 2) });
+                    layout->templateRows[basename][3].push_back({ 
+                        (FACE_DIRECTION)InverseDirection(direction, 3), InverseParams(params, 3) });
+                }
+                // 处理房间
+                else if (type == "room") {
+                    int directionInt;
+                    if (!(fin >> directionInt)) {
+                        THROW_EXCEPTION(InvalidConfigException, "Failed to read direction for room in file: " + filename + "\n");
+                    }
+
+                    // 验证方向值有效性
+                    if (directionInt < 0 || directionInt > 3) {
+                        THROW_EXCEPTION(InvalidConfigException, "Invalid direction value " + to_string(directionInt) +
+                            " in file: " + filename + "\n");
+                    }
+                    FACE_DIRECTION direction = static_cast<FACE_DIRECTION>(directionInt);
+
+                    vector<float> params(8);
+                    bool readError = false;
+                    for (int i = 0; i < 8; i++) {
+                        if (!(fin >> params[i])) {
+                            readError = true;
+                            break;
+                        }
+                    }
+
+                    if (readError) {
+                        THROW_EXCEPTION(InvalidConfigException, "Incomplete parameters for room in file: " + filename + "\n");
+                    }
+
+                    layout->templateRooms[basename][0].push_back({
+                        (FACE_DIRECTION)InverseDirection(direction, 0), InverseParams(params, 0) });
+                    layout->templateRooms[basename][1].push_back({
+                        (FACE_DIRECTION)InverseDirection(direction, 1), InverseParams(params, 1) });
+                    layout->templateRooms[basename][2].push_back({
+                        (FACE_DIRECTION)InverseDirection(direction, 2), InverseParams(params, 2) });
+                    layout->templateRooms[basename][3].push_back({
+                        (FACE_DIRECTION)InverseDirection(direction, 3), InverseParams(params, 3) });
+                }
+                // 处理未知类型
+                else {
+                    fin.ignore((numeric_limits<streamsize>::max)(), '\n');
+                    THROW_EXCEPTION(InvalidConfigException, "Unknown type identifier '" + type +
+                        "' in file: " + filename + "\n");\
+                }
+            }
+        }
+    }
+
+    return layout;
+}
+
+//void Building::ReadFloor(int level, int face, string name, Layout* layout) {
+//    auto width = construction.GetSizeX();
+//    auto height = construction.GetSizeY();
+//    auto floor = make_shared<Floor>(level, width, height);
+//
+//    for (auto facility : layout->templateFacilities[name][face]) {
+//        float x = (facility.second[0] * width + facility.second[1] + facility.second[4] * width + facility.second[5]) / 2.f;
+//        float y = (facility.second[2] * height + facility.second[3] + facility.second[6] * height + facility.second[7]) / 2.f;
+//        float w = abs(facility.second[4] * width + facility.second[5] - facility.second[0] * width - facility.second[1]);
+//        float h = abs(facility.second[6] * height + facility.second[7] - facility.second[2] * height - facility.second[3]);
+//        floor->AddFacility(Facility(facility.first, x, y, w, h));
+//    }
+//
+//    for (auto row : layout->templateRows[name][face]) {
+//        float x = (row.second[0] * width + row.second[1] + row.second[4] * width + row.second[5]) / 2.f;
+//        float y = (row.second[2] * height + row.second[3] + row.second[6] * height + row.second[7]) / 2.f;
+//        float w = abs(row.second[4] * width + row.second[5] - row.second[0] * width - row.second[1]);
+//        float h = abs(row.second[6] * height + row.second[7] - row.second[2] * height - row.second[3]);
+//        floor->AddRow(make_pair(Quad(x, y, w, h), row.first));
+//    }
+//
+//    for (auto room : layout->templateRooms[name][face]) {
+//        float x = (room.second[0] * width + room.second[1] + room.second[4] * width + room.second[5]) / 2.f;
+//        float y = (room.second[2] * height + room.second[3] + room.second[6] * height + room.second[7]) / 2.f;
+//        float w = abs(room.second[4] * width + room.second[5] - room.second[0] * width - room.second[1]);
+//        float h = abs(room.second[6] * height + room.second[7] - room.second[2] * height - room.second[3]);
+//        floor->AddRoom(make_pair(Quad(x, y, w, h), room.first));
+//    }
+//
+//    floors[basements + level] = floor;
+//}
+//
+//void Building::ReadFloors(int face, string name, Layout* layout) {
+//    for (int i = 0; i < basements + layers; i++) {
+//        ReadFloor(i, face, name, layout);
+//    }
+//}
+//
+//void Building::ReadFloors(int face, vector<string> names, Layout* layout) {
+//    if (names.size() != basements + layers) {
+//        THROW_EXCEPTION(InvalidArgumentException, "Template number and building layers mismatch.\n");
+//    }
+//
+//    for (int i = 0; i < basements + layers; i++) {
+//        ReadFloor(i, face, names[i], layout);
+//    }
+//}
+//
+//void Building::AssignRoom(int level, int slot, string name, Component* component, RoomFactory* factory) {
+//    Room* room = factory->CreateRoom(name);
+//    room->SetLayer(level);
+//    room->SetPosition(
+//        floors[basements + level]->GetRooms()[slot].first.GetPosX(),
+//        floors[basements + level]->GetRooms()[slot].first.GetPosY(),
+//        floors[basements + level]->GetRooms()[slot].first.GetSizeX(),
+//        floors[basements + level]->GetRooms()[slot].first.GetSizeY());
+//    room->SetFace(floors[basements + level]->GetRooms()[slot].second);
+//    component->AddRoom(room);
+//    rooms.push_back(room);
+//}
+//
+//void Building::ArrangeRow(int level, int slot, string name, float acreage, Component* component, RoomFactory* factory) {
+//    auto row = floors[basements + level]->GetRows()[slot];
+//
+//    float num = row.first.GetAcreage() / acreage;
+//    if (num - (int)num >= 0.5f)num = num + 1;
+//
+//    if (row.second == 0 || row.second == 1) {
+//        float div = row.first.GetSizeY() / (int)num;
+//        for (int i = 0; i < (int)num; i++) {
+//            Room* room = factory->CreateRoom(name);
+//            room->SetLayer(level);
+//            room->SetVertices(row.first.GetLeft(), row.first.GetBottom() + div * i,
+//                row.first.GetRight(), row.first.GetBottom() + div * (i + 1));
+//            room->SetFace(floors[basements + level]->GetRows()[slot].second);
+//            component->AddRoom(room);
+//            rooms.push_back(move(room));
+//        }
+//    }
+//    else {
+//        float div = row.first.GetSizeX() / (int)num;
+//        for (int i = 0; i < (int)num; i++) {
+//            Room* room = factory->CreateRoom(name);
+//            room->SetLayer(level);
+//            room->SetVertices(row.first.GetLeft() + div * i, row.first.GetBottom(),
+//                row.first.GetLeft() + div * (i + 1), row.first.GetTop());
+//            room->SetFace(floors[basements + level]->GetRows()[slot].second);
+//            component->AddRoom(room);
+//            rooms.push_back(move(room));
+//        }
+//    }
+//}
+//
+//Component* Building::CreateComponent(string name, ComponentFactory* factory) {
+//    Component* component = factory->CreateComponent(name);
+//
+//    if (!component) {
+//        return nullptr;
+//    }
+//
+//    components.push_back(component);
+//    return component;
+//}
+
+vector<float> Building::InverseParams(vector<float>& params, int face) {
+    if (face < 0 || face >= 4) {
+        THROW_EXCEPTION(InvalidArgumentException, "Wrong facing direction.\n");
+    }
+    auto inversed = params;
+    switch (face) {
+    case 0:
+        inversed[0] = params[2];
+        inversed[1] = params[3];
+        inversed[2] = params[0];
+        inversed[3] = params[1];
+        inversed[4] = params[6];
+        inversed[5] = params[7];
+        inversed[6] = params[4];
+        inversed[7] = params[5];
+        break;
+    case 1:
+        inversed[0] = 1.f - params[2];
+        inversed[1] = -params[3];
+        inversed[2] = 1.f - params[0];
+        inversed[3] = -params[1];
+        inversed[4] = 1.f - params[6];
+        inversed[5] = -params[7];
+        inversed[6] = 1.f - params[4];
+        inversed[7] = -params[5];
+        break;
+    case 2:
+        break;
+    case 3:
+        inversed[0] = 1.f - params[0];
+        inversed[1] = -params[1];
+        inversed[2] = 1.f - params[2];
+        inversed[3] = -params[3];
+        inversed[4] = 1.f - params[4];
+        inversed[5] = -params[5];
+        inversed[6] = 1.f - params[6];
+        inversed[7] = -params[7];
+        break;
+    default:
+        break;
+    }
+
+    return inversed;
+}
+
+int Building::InverseDirection(int direction, int face) {
+    if (face < 0 || face >= 4) {
+        THROW_EXCEPTION(InvalidArgumentException, "Wrong facing direction.\n");
+    }
+    switch (face) {
+    case 0:
+        return (direction + 2) % 4;
+    case 1:
+        if (direction >= 2)return 3 - direction;
+        else return direction + 2;
+    case 2:
+        return direction;
+    case 3:
+        if (direction >= 2)return -direction;
+        else return direction;
+    }
+
+    return direction;
+}
+
+void BuildingFactory::RegisterBuilding(const string& id, function<Building* ()> creator, vector<float> power) {
+    registries[id] = creator;
+    powers[id] = power;
+}
+
+Building* BuildingFactory::CreateBuilding(const string& id) {
+    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+
+    auto it = registries.find(id);
+    if (it != registries.end()) {
+        return it->second();
+    }
+    return nullptr;
+}
+
+bool BuildingFactory::CheckRegistered(const string& id) {
+    return registries.find(id) != registries.end();
+}
+
+void BuildingFactory::SetConfig(string name, bool config) {
+    configs[name] = config;
+}
+
+const unordered_map<string, vector<float>>& BuildingFactory::GetPowers() const {
+    return powers;
+}
+
+
+
+// ===== .\Dependence\map\building_base.h =====
+
+﻿#pragma once
+
+#include "../common/quad.h"
+#include "../common/plot.h"
+
+//#include "room_base.h"
+//#include "component_base.h"
+
+#include <string>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+
+
+enum AREA_TYPE : int;
+
+class Plot;
+class Zone;
+class Component;
+class Room;
+
+class ComponentFactory;
+class RoomFactory;
+
+// 建筑方向
+enum FACE_DIRECTION {
+	FACE_WEST,
+	FACE_EAST,
+	FACE_NORTH,
+	FACE_SOUTH
+};
+static char faceAbbr[4] = { 'w', 'e', 'n', 's' };
+
+// 走廊&电梯&楼梯
+class Facility : public Quad {
+public:
+	enum FACILITY_TYPE { FACILITY_CORRIDOR, FACILITY_STAIR, FACILITY_ELEVATOR };
+
+	Facility(FACILITY_TYPE type, float x, float y, float w, float h);
+
+	FACILITY_TYPE getType() const;
+
+private:
+	FACILITY_TYPE type;
+};
+
+// 楼层
+class Floor : public Quad {
+public:
+	Floor(int level, float width, float height);
+	~Floor();
+
+	void AddFacility(Facility facility);
+
+	void AddRow(std::pair<Quad, int> row);
+
+	void AddRoom(std::pair<Quad, int> room);
+
+	// 获取楼层
+	int GetLevel() const;
+
+	// 访问组件
+	std::vector<Facility>& GetFacilities();
+	std::vector<std::pair<Quad, int>>& GetRows();
+	std::vector<std::pair<Quad, int>>& GetRooms();
+
+private:
+	int level;
+
+	std::vector<Facility> facilities;
+	std::vector<std::pair<Quad, int>> rows;
+	std::vector<std::pair<Quad, int>> rooms;
+};
+
+class Layout {
+public:
+	std::unordered_map<std::string, std::vector<std::vector<std::pair<Facility::FACILITY_TYPE, std::vector<float>>>>> templateFacilities;
+	std::unordered_map<std::string, std::vector<std::vector<std::pair<FACE_DIRECTION, std::vector<float>>>>> templateRows;
+	std::unordered_map<std::string, std::vector<std::vector<std::pair<FACE_DIRECTION, std::vector<float>>>>> templateRooms;
+};
+
+class Building : public Quad {
+public:
+    Building() = default;
+    virtual ~Building() = default;
+
+	// 子类实现方法
+
+    // 动态返回建筑静态信息
+    static std::string GetId();
+    virtual std::string GetType() const = 0;
+    virtual std::string GetName() const = 0;
+
+    // 功能区中的建筑权重
+    static std::vector<float> GetPower();
+
+    // 建筑面积范围
+    virtual float RandomAcreage() const = 0;
+    virtual float GetAcreageMin() const = 0;
+    virtual float GetAcreageMax() const = 0;
+
+    // 建筑房间布局
+	virtual Quad LayoutConstruction() = 0;
+    virtual void LayoutRooms(
+		ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) = 0;
+
+	// 父类实现方法
+
+	// 关联地块
+	void SetParent(Plot* plot);
+	void SetParent(Zone* zone);
+	Plot* GetParentPlot() const;
+	Zone* GetParentZone() const;
+
+	// 获取/设置房东
+	int GetOwner() const;
+	void SetOwner(int id);
+	bool GetStateOwned() const;
+	void SetStateOwned(bool state);
+
+	// 获取/设置属性
+	int GetLayers() const;
+	int GetBasements() const;
+	const Quad GetConstruction() const;
+
+	// 获取/设置组织/房间/楼层
+	//std::vector<Component*>& GetComponents();
+	//std::vector<Room*>& GetRooms();
+	//Floor* GetFloor(int level) const;
+
+	// 补充初始化
+	void FinishInit();
+
+	// 读入布局模板
+	static Layout* ReadTemplates(std::string path);
+
+protected:
+	// 根据布局文件分配房间
+	//void ReadFloor(int level, int face, std::string name, Layout* layout);
+	//void ReadFloors(int face, std::string name, Layout* layout);
+	//void ReadFloors(int face, std::vector<std::string> names, Layout* layout);
+	//void AssignRoom(int level, int slot, std::string name, Component* component, RoomFactory* factory);
+	//void ArrangeRow(int level, int slot, std::string name, float acreage, Component* component, RoomFactory* factory);
+
+	// 建筑中添加组织
+	//Component* CreateComponent(std::string name, ComponentFactory* factory);
+
+	Zone* parentZone;
+	Plot* parentPlot;
+
+	bool stateOwned = false;
+	int ownerId = -1;
+
+	//std::vector<Floor*> floors;
+	//std::vector<Component*> components;
+	//std::vector<Room*> rooms;
+
+	int layers = 1;
+	int basements = 0;
+	Quad construction;
+
+private:
+	static std::vector<float> InverseParams(std::vector<float>& params, int face);
+	static int InverseDirection(int direction, int face);
+};
+
+class BuildingFactory {
+public:
+    void RegisterBuilding(const std::string& id,
+		std::function<Building* ()> creator, std::vector<float> powers);
+	Building* CreateBuilding(const std::string& id);
+    bool CheckRegistered(const std::string& id);
+    void SetConfig(std::string name, bool config);
+    const std::unordered_map<std::string, std::vector<float>>& GetPowers() const;
+
+private:
+    std::unordered_map<std::string, std::function<Building *()>> registries;
+    std::unordered_map<std::string, bool> configs;
+    std::unordered_map<std::string, std::vector<float>> powers;
+};
+
+// ===== .\Dependence\map\component_base.cpp =====
+
+﻿#include "component_base.h"
+#include "building_base.h"
+
+
+using namespace std;
+
+void Component::SetParent(shared_ptr<Building> building) {
+    parentBuilding = building;
+}
+
+shared_ptr<Building> Component::GetParent() const {
+    return parentBuilding;
+}
+
+vector<shared_ptr<Room>>& Component::GetRooms() {
+    return rooms;
+}
+
+void Component::AddRoom(shared_ptr<Room> room) {
+    rooms.push_back(room);
+}
+
+void ComponentFactory::RegisterComponent(const string& id, function<Component* ()> creator) {
+    registries[id] = creator;
+}
+
+Component* ComponentFactory::CreateComponent(const string& id) {
+    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+
+    auto it = registries.find(id);
+    if (it != registries.end()) {
+        return it->second();
+    }
+    return nullptr;
+}
+
+bool ComponentFactory::CheckRegistered(const string& id) {
+    return registries.find(id) != registries.end();
+}
+
+void ComponentFactory::SetConfig(string name, bool config) {
+    configs[name] = config;
+}
+
+
+
+// ===== .\Dependence\map\component_base.h =====
+
+﻿#pragma once
+
+#include "room_base.h"
+#include "building_base.h"
+
+#include <string>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+
+
+class Building;
+class Room;
+
+class Component {
+public:
+    Component() = default;
+    virtual ~Component() = default;
+
+	// 子类实现方法
+
+    // 动态返回组合静态信息
+    static std::string GetId();
+    virtual std::string GetType() const = 0;
+    virtual std::string GetName() const = 0;
+
+	// 父类实现方法
+
+    // 关联建筑
+    void SetParent(std::shared_ptr<Building> building);
+    std::shared_ptr<Building> GetParent() const;
+
+    // 获取/添加房间
+    std::vector<std::shared_ptr<Room>>& GetRooms();
+    void AddRoom(std::shared_ptr<Room> room);
+
+protected:
+    std::shared_ptr<Building> parentBuilding;
+
+    std::vector<std::shared_ptr<Room>> rooms;
+};
+
+class ComponentFactory {
+public:
+    void RegisterComponent(const std::string& id, std::function<Component* ()> creator);
+    Component* CreateComponent(const std::string& id);
+    bool CheckRegistered(const std::string& id);
+    void SetConfig(std::string name, bool config);
+
+private:
+    std::unordered_map<std::string, std::function<Component* ()>> registries;
+    std::unordered_map<std::string, bool> configs;
+};
+
+// ===== .\Dependence\map\roadnet_base.cpp =====
+
+﻿#include "roadnet_base.h"
+#include "../common/error.h"
+
+#include <queue>
+#include <unordered_map>
+#include <limits>
+#include <algorithm>
+#include <functional>
+
+#undef max
+
+
+using namespace std;
+
+struct pair_hash {
+    template <class T1, class T2>
+    size_t operator()(const pair<T1, T2>& p) const {
+        auto hash1 = hash<T1>{}(p.first);
+        auto hash2 = hash<T2>{}(p.second);
+
+        return hash1 ^ (hash2 << 1) ^ (hash2 >> 31);
+    }
+};
+
+Roadnet::Roadnet() {
+
+}
+
+Roadnet::~Roadnet() {
+    for (auto &plot : plots) {
+        delete plot;
+    }
+     plots.clear();
+}
+
+const vector<Node>& Roadnet::GetNodes() const {
+    return nodes;
+}
+
+const vector<Connection>& Roadnet::GetConnections() const {
+    return connections;
+}
+
+const vector<Plot *>& Roadnet::GetPlots() const {
+    return plots;
+}
+
+void Roadnet::AllocateAddress() {
+    addresses.clear();
+
+    for (const auto& plot : plots) {
+		auto roads = plot->GetRoads();
+        for (const auto& road : roads) {
+            if (addresses.find(road.first.GetName()) == addresses.end()) {
+                addresses[road.first.GetName()] = vector<Plot *>();
+            }
+            addresses[road.first.GetName()].push_back(plot);
+		}
+	}
+}
+
+Plot* Roadnet::LocatePlot(const string& road, int id) const {
+    if (addresses.find(road) == addresses.end()) {
+        return nullptr;
+    }
+    auto plots = addresses.at(road);
+    if (id < 0 || id >= (int)plots.size()) {
+        return nullptr;
+    }
+    return plots[id];
+}
+
+const vector<Connection> Roadnet::AutoNavigate(vector<pair<Connection, float>> startRoads, vector<pair<Connection, float>> endRoads) const {
+    if (startRoads.empty() || endRoads.empty()) return {};
+    for (auto startRoad : startRoads) {
+        for (auto endRoad : endRoads) {
+            if (startRoad.first == endRoad.first) {
+                if (startRoad.first.GetV1() == endRoad.first.GetV1()) {
+                    return { Connection(startRoad.first.GetName(), startRoad.first.GetRoadnet(),
+                        startRoad.first.GetV1(), startRoad.first.GetV2(), startRoad.second, endRoad.second) };
+                }
+                else {
+                    return { Connection(startRoad.first.GetName(), startRoad.first.GetRoadnet(),
+                        startRoad.first.GetV1(), startRoad.first.GetV2(), startRoad.second, 1.0f - endRoad.second) };
+                }
+            }
+        }
+    }
+
+    unordered_map<int, vector<pair<int, float>>> graph;
+    unordered_map<pair<int, int>, int, pair_hash> connectionMap;
+    unordered_map<int, unordered_map<int, int>> connectionIndexMap;
+
+    // 添加已有道路到图
+    for (size_t i = 0; i < connections.size(); i++) {
+        const auto& conn = connections[i];
+        int v1 = conn.GetV1();
+        int v2 = conn.GetV2();
+        float dist = conn.distance();
+
+        graph[v1].push_back({ v2, dist });
+        graph[v2].push_back({ v1, dist });
+
+        connectionMap[{v1, v2}] = (int)i;
+        connectionMap[{v2, v1}] = (int)i;
+
+        connectionIndexMap[v1][v2] = (int)i;
+        connectionIndexMap[v2][v1] = (int)i;
+    }
+
+    const int START_VIRTUAL = -1;
+    const int END_VIRTUAL = -2;
+
+    // 添加起点到节点的虚拟道路到图
+    for (const auto& road : startRoads) {
+        const Connection& connection = road.first;
+        float position = road.second;
+
+        int v1 = connection.GetV1();
+        int v2 = connection.GetV2();
+
+        float dist_v1 = position * connection.distance();
+        float dist_v2 = (1.0f - position) * connection.distance();
+
+        graph[START_VIRTUAL].push_back({ v1, dist_v1 });
+        graph[START_VIRTUAL].push_back({ v2, dist_v2 });
+        graph[v1].push_back({ START_VIRTUAL, dist_v1 });
+        graph[v2].push_back({ START_VIRTUAL, dist_v2 });
+    }
+
+    // 添加终点到节点的虚拟道路到图
+    for (const auto& road : endRoads) {
+        const Connection& connection = road.first;
+        float position = road.second;
+
+        int v1 = connection.GetV1();
+        int v2 = connection.GetV2();
+
+        float dist_v1 = position * connection.distance();
+        float dist_v2 = (1.0f - position) * connection.distance();
+
+        graph[v1].push_back({ END_VIRTUAL, dist_v1 });
+        graph[v2].push_back({ END_VIRTUAL, dist_v2 });
+        graph[END_VIRTUAL].push_back({ v1, dist_v1 });
+        graph[END_VIRTUAL].push_back({ v2, dist_v2 });
+    }
+
+    // Dijkstra算法
+    unordered_map<int, float> dist;
+    unordered_map<int, int> prev;
+    unordered_map<int, int> prevConnection;
+    for (const auto& node : graph) {
+        dist[node.first] = numeric_limits<float>::max();
+    }
+    dist[START_VIRTUAL] = 0.0f;
+
+    using QueueItem = pair<float, int>;
+    priority_queue<QueueItem, vector<QueueItem>, greater<QueueItem>> pq;
+    pq.push({ 0.0f, START_VIRTUAL });
+
+    while (!pq.empty()) {
+        auto [currentDist, currentNode] = pq.top();
+        pq.pop();
+
+        if (currentDist > dist[currentNode]) {
+            continue;
+        }
+
+        if (currentNode == END_VIRTUAL) break;
+
+        for (const auto& neighbor : graph[currentNode]) {
+            int neighborId = neighbor.first;
+            float weight = neighbor.second;
+
+            float newDist = currentDist + weight;
+
+            if (newDist < dist[neighborId]) {
+                dist[neighborId] = newDist;
+                prev[neighborId] = currentNode;
+
+                if (currentNode != START_VIRTUAL && neighborId != END_VIRTUAL) {
+                    auto it = connectionIndexMap[currentNode].find(neighborId);
+                    if (it != connectionIndexMap[currentNode].end()) {
+                        prevConnection[neighborId] = it->second;
+                    }
+                }
+
+                pq.push({ newDist, neighborId });
+            }
+        }
+    }
+    if (dist[END_VIRTUAL] == numeric_limits<float>::max())return {};
+
+    // 提取路线
+    vector<int> nodePath;
+    int current = END_VIRTUAL;
+    while (current != START_VIRTUAL) {
+        nodePath.push_back(current);
+        current = prev[current];
+    }
+    nodePath.push_back(START_VIRTUAL);
+    reverse(nodePath.begin(), nodePath.end());
+
+    if (nodePath.size() < 3) {
+        THROW_EXCEPTION(RuntimeException, "auto navigation crash.\n");
+    }
+
+    vector<Connection> path;
+    int firstRealNode = nodePath[1];
+    for (const auto& road : startRoads) {
+        const Connection& connection = road.first;
+        if (connection.GetV1() == firstRealNode || connection.GetV2() == firstRealNode) {
+            float begin = road.second;
+            float end = (connection.GetV1() == firstRealNode) ? 0.0f : 1.0f;
+
+            path.push_back(Connection(road.first.GetName(), road.first.GetRoadnet(),
+                connection.GetV1(),
+                connection.GetV2(),
+                begin, end));
+            break;
+        }
+    }
+    for (size_t i = 2; i < nodePath.size() - 1; i++) {
+        int from = nodePath[i - 1];
+        int to = nodePath[i];
+
+        auto it = connectionMap.find({ from, to });
+        if (it != connectionMap.end()) {
+            const Connection& original = connections[it->second];
+            path.push_back(Connection(original.GetName(), original.GetRoadnet(),
+                original.GetV1(),
+                original.GetV2(),
+                0.0f, 1.0f));
+        }
+    }
+    int lastRealNode = nodePath[nodePath.size() - 2];
+    for (const auto& road : endRoads) {
+        const Connection& connection = road.first;
+        if (connection.GetV1() == lastRealNode || connection.GetV2() == lastRealNode) {
+            float begin = (connection.GetV1() == lastRealNode) ? 0.0f : 1.0f;
+            float end = road.second;
+
+            path.push_back(Connection(road.first.GetName(), road.first.GetRoadnet(),
+                connection.GetV1(),
+                connection.GetV2(),
+                begin, end));
+            break;
+        }
+    }
+
+    return path;
+}
+
+const vector<Connection> Roadnet::AutoNavigate(Plot* start, Plot* end) const {
+    if (!start || !end) return {};
+    if (start == end) return {};
+
+    auto startRoads = start->GetRoads();
+    auto endRoads = end->GetRoads();
+    
+    return AutoNavigate(startRoads, endRoads);
+}
+
+const vector<Connection> Roadnet::AutoNavigate(vector<pair<Connection, float>> startRoads, Plot* endPlot) const {
+    if (!endPlot) return {};
+
+    auto endRoads = endPlot->GetRoads();
+	return AutoNavigate(startRoads, endRoads);
+}
+
+const vector<Connection> Roadnet::AutoNavigate(Plot* startPlot, vector<pair<Connection, float>> endRoads) const {
+    if (!startPlot) return {};
+
+    auto startRoads = startPlot->GetRoads();
+    return AutoNavigate(startRoads, endRoads);
+}
+
+void RoadnetFactory::RegisterRoadnet(const string& id, function<Roadnet* ()> creator) {
+    if (registries.find(id) != registries.end()) {
+        return;
+    }
+    registries[id] = creator;
+}
+
+Roadnet* RoadnetFactory::CreateRoadnet(const string& id) {
+    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+    
+    auto it = registries.find(id);
+    if (it != registries.end()) {
+        return it->second();
+    }
+    return nullptr;
+}
+
+bool RoadnetFactory::CheckRegistered(const string& id) {
+    return registries.find(id) != registries.end();
+}
+
+void RoadnetFactory::SetConfig(string name, bool config) {
+    configs[name] = config;
+}
+
+Roadnet* RoadnetFactory::GetRoadnet() const {
+    for (auto config : configs) {
+        if (config.second)return registries.find(config.first)->second();
+    }
+    return nullptr;
+}
+
+
+// ===== .\Dependence\map\roadnet_base.h =====
+
+﻿#pragma once
+
+#include "../common/plot.h"
+
+#include <string>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+
+
+class Roadnet {
+public:
+    Roadnet();
+    virtual ~Roadnet();
+
+	// 子类实现方法
+
+    // 动态返回路网名称
+    static std::string GetId();
+    virtual std::string GetType() const = 0;
+    virtual std::string GetName() const = 0;
+
+    // 在平原上生成路网
+    virtual void DistributeRoadnet(int width, int height,
+        std::function<std::string(int, int)> get) = 0;
+
+	// 父类实现方法
+
+    // 提供只读访问接口
+    const std::vector<Node>& GetNodes() const;
+    const std::vector<Connection>& GetConnections() const;
+    const std::vector<Plot*>& GetPlots() const;
+
+    // 分配地址
+	void AllocateAddress();
+    Plot* LocatePlot(const std::string& road, int id) const;
+
+    // 自动寻路
+    const std::vector<Connection> AutoNavigate(
+        std::vector<std::pair<Connection, float>> startRoads, std::vector<std::pair<Connection, float>> endRoads) const;
+    const std::vector<Connection> AutoNavigate(
+        Plot* startPlot, Plot* endPlot) const;
+    const std::vector<Connection> AutoNavigate(
+        std::vector<std::pair<Connection, float>> startRoads, Plot* endPlot) const;
+    const std::vector<Connection> AutoNavigate(
+        Plot* startPlot, std::vector<std::pair<Connection, float>> endRoads) const;
+
+protected:
+    std::vector<Node> nodes;
+    std::vector<Connection> connections;
+    std::vector<Plot*> plots;
+
+    std::unordered_map<std::string, std::vector<Plot*>> addresses;
+};
+
+class RoadnetFactory {
+public:
+    void RegisterRoadnet(const std::string& id, std::function<Roadnet* ()> creator);
+    Roadnet* CreateRoadnet(const std::string& id);
+    bool CheckRegistered(const std::string& id);
+    void SetConfig(std::string name, bool config);
+    Roadnet* GetRoadnet() const;
+
+private:
+    std::unordered_map<std::string, std::function<Roadnet* ()>> registries;
+    std::unordered_map<std::string, bool> configs;
+};
+
+
+
+
+// ===== .\Dependence\map\room_base.cpp =====
+
+﻿#include "room_base.h"
+
+
+using namespace std;
+
+void Room::SetParent(shared_ptr<Building> building) {
+    parentBuilding = building;
+}
+
+void Room::SetParent(shared_ptr<Component> component) {
+    parentComponent = component;
+}
+
+shared_ptr<Building> Room::GetParentBuilding() const {
+    return parentBuilding;
+}
+
+shared_ptr<Component> Room::GetParentComponent() const {
+    return parentComponent;
+}
+
+int Room::GetOwner() const {
+    return ownerId;
+}
+
+void Room::SetOwner(int id) {
+    this->ownerId = id;
+}
+
+bool Room::GetStateOwned() const {
+    return stateOwned;
+}
+
+void Room::SetStateOwned(bool state) {
+    this->stateOwned = state;
+}
+
+int Room::GetLayer() const {
+    return layer;
+}
+
+void Room::SetLayer(int layer) {
+    this->layer = layer;
+}
+
+int Room::GetFace() const {
+    return face;
+}
+
+void Room::SetFace(int face) {
+    this->face = face;
+}
+
+void RoomFactory::RegisterRoom(const string& id, function<Room* ()> creator) {
+    registries[id] = creator;
+}
+
+Room* RoomFactory::CreateRoom(const string& id) {
+    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+    
+    auto it = registries.find(id);
+    if (it != registries.end()) {
+        return it->second();
+    }
+    return nullptr;
+}
+
+bool RoomFactory::CheckRegistered(const string& id) {
+    return registries.find(id) != registries.end();
+}
+
+void RoomFactory::SetConfig(string name, bool config) {
+    configs[name] = config;
+}
+
+
+
+// ===== .\Dependence\map\room_base.h =====
+
+﻿#pragma once
+
+#include "../common/quad.h"
+
+#include "component_base.h"
+#include "building_base.h"
+
+#include <string>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+
+
+class Building;
+class Component;
+
+class Room : public Quad {
+public:
+    Room() = default;
+    virtual ~Room() = default;
+
+	// 子类实现方法
+
+    // 动态返回房间静态信息
+    static std::string GetId();
+    virtual std::string GetType() const = 0;
+    virtual std::string GetName() const = 0;
+
+    // 房间类型
+    virtual bool IsResidential() const = 0;
+    virtual bool IsWorkspace() const = 0;
+    virtual bool IsStorage() const = 0;
+    virtual bool IsManufacture() const = 0;
+    virtual int GetLivingCapacity() const = 0;
+    virtual int GetPersonnelCapacity() const = 0;
+    virtual std::pair<std::string, float> GetIndustryCapacity() const = 0;
+    virtual std::string GetFactoryPipeline() const = 0;
+
+	// 父类实现方法
+
+    // 关联建筑
+    void SetParent(std::shared_ptr<Building> building);
+    void SetParent(std::shared_ptr<Component> component);
+    std::shared_ptr<Building> GetParentBuilding() const;
+    std::shared_ptr<Component> GetParentComponent() const;
+
+    // 获取/设置房东
+    int GetOwner() const;
+    void SetOwner(int id);
+    bool GetStateOwned() const;
+    void SetStateOwned(bool state);
+
+    // 获取/设置属性
+    int GetLayer() const;
+    void SetLayer(int layer);
+    int GetFace() const;
+    void SetFace(int face);
+
+protected:
+    std::shared_ptr<Building> parentBuilding;
+    std::shared_ptr<Component> parentComponent;
+
+    bool stateOwned = false;
+	int ownerId = -1;
+
+    int layer;
+    int face;
+};
+
+class RoomFactory {
+public:
+    void RegisterRoom(const std::string& id, std::function<Room* ()> creator);
+    Room* CreateRoom(const std::string& id);
+    bool CheckRegistered(const std::string& id);
+    void SetConfig(std::string name, bool config);
+
+private:
+    std::unordered_map<std::string, std::function<Room* ()>> registries;
+    std::unordered_map<std::string, bool> configs;
+};
+
+// ===== .\Dependence\map\terrain_base.cpp =====
+
+﻿#include "terrain_base.h"
+#include "../common/utility.h"
+
+
+using namespace std;
+
+Terrain::Terrain() {
+
+}
+
+Terrain::~Terrain() {
+
+}
+
+int Terrain::FloodTerrain(int x, int y, int num, bool overwrite, int width, int height,
+    function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+    vector<pair<int, int>> q;
+
+    if (x < 0 || x >= width - 1 || y < 0 || y >= width - 1)return 0;
+    if (get(x, y) == GetType())return 0;
+
+    set(x, y, GetType());
+    int count = 1;
+
+    for (int i = 0; i < 4; ++i) {
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+        if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+            q.push_back(make_pair(nx, ny));
+        }
+    }
+
+    while (count < num && !q.empty()) {
+        int idx = GetRandom((int)q.size());
+        pair<int, int> current = q[idx];
+        int cx = current.first;
+        int cy = current.second;
+
+        q[idx] = q.back();
+        q.pop_back();
+
+        set(cx, cy, GetType());
+        ++count;
+
+        UpdateBoundary(cx, cy, q, overwrite, width, height, set, get);
+    }
+
+    return count;
+}
+
+bool Terrain::CheckBoundary(int x, int y, bool overwrite, int width, int height,
+    function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+    if (x == 0 || x == width - 1 || y == 0 || y == height - 1) return true;
+    for (int i = 0; i < 4; ++i) {
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+        if (overwrite) {
+            if (get(nx, ny) != GetType()) return true;
+        }
+        else {
+            if (get(nx, ny) == "plain") return true;
+        }
+    }
+    return false;
+}
+
+void Terrain::UpdateBoundary(int x, int y, vector<pair<int, int>>& q, bool overwrite, int width, int height,
+    function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+    for (int i = 0; i < 4; ++i) {
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+        if (nx >= 0 && nx < width &&
+            ny >= 0 && ny < height &&
+            CheckBoundary(nx, ny, overwrite, width, height, set, get)) {
+            bool overlap = false;
+            for (auto b : q) {
+                if (b.first == nx && b.second == ny)overlap = true;
+            }
+            if (!overlap)q.push_back(make_pair(nx, ny));
+        }
+    }
+}
+
+void Terrain::ShapeFilter(int x, int y, int width, int height,
+    function<bool(int, int, const string)> set, function<string(int, int)> get, int side, float threshold) const {
+    if (get(x, y) == GetType())return;
+
+    int count = 0;
+    for (int i = x - side; i <= x + side; i++) {
+        for (int j = y - side; j <= y + side; j++) {
+            if (get(i, j) == GetType())count++;
+        }
+    }
+    if (count > (side * 2 + 1) * (side * 2 + 1) * threshold)set(x, y, GetType());
+}
+
+void TerrainFactory::RegisterTerrain(const string& id, function<Terrain* ()> creator) {
+    if(registries.find(id) != registries.end()) {
+        return;
+	}
+    registries[id] = creator;
+}
+
+Terrain* TerrainFactory::CreateTerrain(const string& id) const {
+    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+    
+    auto it = registries.find(id);
+    if (it != registries.end()) {
+        return it->second();
+    }
+    return nullptr;
+}
+
+bool TerrainFactory::CheckRegistered(const string& id) const {
+    return registries.find(id) != registries.end();
+}
+
+void TerrainFactory::SetConfig(string name, bool config) {
+    configs[name] = config;
+}
+
+vector<Terrain*> TerrainFactory::GetTerrains() const {
+    vector<Terrain*> terrains;
+    for (auto &r : registries) {
+        if (configs.find(r.first)->second) {
+            terrains.push_back(r.second());
+        }
+    }
+    return terrains;
+}
+
+
+
+// ===== .\Dependence\map\terrain_base.h =====
+
+﻿#pragma once
+
+#include <string>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+
+
+class Terrain {
+public:
+    Terrain();
+    virtual ~Terrain();
+
+	// 子类实现方法
+
+    // 动态返回地形静态信息
+    static std::string GetId();
+    virtual std::string GetType() const = 0;
+    virtual std::string GetName() const = 0;
+
+    // 动态返回生成优先级，高优先级会被低优先级覆盖
+    virtual float GetPriority() const = 0;
+
+    // 在地图上生成地形
+    virtual void DistributeTerrain(int width, int height,
+        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get) const = 0;
+
+	// 父类实现方法
+
+    // 地形填充，若ovewrite为true，则全图填充，否则只填充平原
+    int FloodTerrain(int x, int y, int num, bool overwrite, int width, int height,
+        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get) const;
+
+protected:
+    // 地形填充辅助内容
+    std::vector<int> dx = { -1, 1, 0, 0 };
+    std::vector<int> dy = { 0, 0, -1, 1 };
+    bool CheckBoundary(int x, int y, bool overwrite, int width, int height,
+        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get) const;
+    void UpdateBoundary(int x, int y, std::vector<std::pair<int, int>>& q, bool overwrite, int width, int height,
+        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get) const;
+    void ShapeFilter(int x, int y, int width, int height,
+        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get, int side = 1, float threshold = 0.5f) const;
+};
+
+class TerrainFactory {
+public:
+    void RegisterTerrain(const std::string& id, std::function<Terrain* ()> creator);
+    Terrain* CreateTerrain(const std::string& id) const;
+    bool CheckRegistered(const std::string& id) const;
+    void SetConfig(std::string name, bool config);
+    std::vector<Terrain*> GetTerrains() const;
+
+private:
+    std::unordered_map<std::string, std::function<Terrain* ()>> registries;
+    std::unordered_map<std::string, bool> configs;
+};
+
+// ===== .\Dependence\map\zone_base.cpp =====
+
+﻿#include "zone_base.h"
+
+#include "../common/error.h"
+
+#include <algorithm>
+
+
+using namespace std;
+
+Zone::~Zone() {
+    for (auto& building : buildings) {
+        if (building.second) {
+            delete building.second;
+            building.second = nullptr;
+        }
+    }
+}
+
+void Zone::SetParent(Plot* plot) {
+    parentPlot = plot;
+}
+
+Plot* Zone::GetParent() const {
+    return parentPlot;
+}
+
+int Zone::GetOwner() const {
+    return ownerId;
+}
+
+void Zone::SetOwner(int id) {
+    ownerId = id;
+}
+
+bool Zone::GetStateOwned() const {
+    return stateOwned;
+}
+
+void Zone::SetStateOwned(bool state) {
+    stateOwned = state;
+}
+
+Building* Zone::GetBuilding(string name) {
+    return buildings[name];
+}
+
+unordered_map<string, Building*>& Zone::GetBuildings() {
+    return buildings;
+}
+
+void Zone::AddBuildings(BuildingFactory* factory, vector<pair<string, float>> list) {
+    float acreageTmp = 0.f;
+    int attempt = 0;
+    for (size_t i = 0; i < list.size(); i++) {
+        if (acreageTmp >= GetAcreage() || attempt > 16)break;
+
+        Building* building = factory->CreateBuilding(list[i].first);
+        if (!building) {
+            attempt++;
+            i--;
+            continue;
+        }
+
+        float acreageBuilding = building->RandomAcreage() * list[i].second;
+        float acreageMin = building->GetAcreageMin() * list[i].second;
+        float acreageMax = building->GetAcreageMax() * list[i].second;
+        if (GetAcreage() - acreageTmp < acreageMin) {
+            attempt++;
+            i--;
+            continue;
+        }
+        else if (GetAcreage() - acreageTmp < acreageBuilding) {
+            acreageBuilding = GetAcreage() - acreageTmp;
+        }
+
+        acreageTmp += acreageBuilding;
+        building->SetAcreage(acreageBuilding);
+        if(buildings.find(building->GetName()) != buildings.end()) {
+            THROW_EXCEPTION(InvalidConfigException, "Duplicate building name: " + building->GetName() + ".\n");
+		}
+        buildings[building->GetName()] = building;
+    }
+}
+
+void Zone::ArrangeBuildings() {
+    if (buildings.empty()) return;
+
+    float acreageTotal = GetAcreage();
+    float acreageUsed = 0.f;
+
+    for (const auto& building : buildings) {
+        acreageUsed += building.second->GetAcreage();
+    }
+    float acreageRemain = acreageTotal - acreageUsed;
+
+    bool acreageAllocate = false;
+    if (acreageRemain > 0) {
+        for (auto& building : buildings) {
+            float acreageTmp = building.second->GetAcreage();
+            float acreageMax = building.second->GetAcreageMax();
+            float acreageMin = building.second->GetAcreageMin();
+
+            float acreageExpand = acreageMax - acreageTmp;
+
+            if (acreageExpand > acreageRemain && acreageRemain > 0) {
+                float acreageNew = acreageTmp + acreageRemain;
+                if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
+                    building.second->SetAcreage(acreageNew);
+                    acreageUsed += acreageRemain;
+                    acreageRemain = 0.f;
+                    acreageAllocate = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    vector<Quad*> elements;
+    Quad* emptyRect = nullptr;
+    if (acreageRemain > 0 && !acreageAllocate) {
+        emptyRect = new Plot();
+        emptyRect->SetAcreage(acreageRemain);
+        elements.push_back(emptyRect);
+    }
+
+    for (const auto& building : buildings) {
+        elements.push_back(static_cast<Quad*>(building.second));
+    }
+
+    if (elements.empty()) return;
+
+    sort(elements.begin(), elements.end(), [](Quad* a, Quad* b) {
+        return a->GetAcreage() > b->GetAcreage();
+        });
+
+    Quad container = Quad(GetSizeX() / 2, GetSizeY() / 2, GetSizeX(), GetSizeY());
+    if (elements.size() == 1) {
+        elements[0]->SetPosition(container.GetPosX(), container.GetPosY(), container.GetSizeX(), container.GetSizeY());
+    }
+    else {
+        class Chunk : public Quad {
+        public:
+            Chunk(Quad* r1, Quad* r2) : r1(r1), r2(r2) { acreage = r1->GetAcreage() + r2->GetAcreage(); }
+            Quad *r1, *r2;
+        };
+        while (elements.size() > 2) {
+            Chunk* tmp = new Chunk(elements[elements.size() - 1], elements[elements.size() - 2]);
+            elements.pop_back();
+            int i = (int)elements.size() - 2;
+            for (; i >= 0; i--) {
+                if (tmp->GetAcreage() > elements[i]->GetAcreage()) {
+                    elements[i + 1] = elements[i];
+                }
+                else {
+                    elements[i + 1] = tmp;
+                    break;
+                }
+            }
+            if (i < 0)elements[0] = tmp;
+        }
+
+        if (container.GetSizeX() > container.GetSizeY()) {
+            if (GetRandom(2)) {
+                int divX = int(container.GetLeft() +
+                    (container.GetRight() - container.GetLeft()) * elements[0]->GetAcreage() / container.GetAcreage());
+                if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
+                if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
+                elements[1]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
+            }
+            else {
+                int divX = int(container.GetLeft() +
+                    (container.GetRight() - container.GetLeft()) * elements[1]->GetAcreage() / container.GetAcreage());
+                if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
+                if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
+                elements[0]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
+            }
+        }
+        else {
+            if (GetRandom(2)) {
+                int divY = int(container.GetBottom() +
+                    (container.GetTop() - container.GetBottom()) * elements[0]->GetAcreage() / container.GetAcreage());
+                if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
+                if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
+                elements[1]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
+            }
+            else {
+                int divY = int(container.GetBottom() +
+                    (container.GetTop() - container.GetBottom()) * elements[1]->GetAcreage() / container.GetAcreage());
+                if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
+                if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
+                elements[0]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
+            }
+        }
+
+        while (elements.size() > 0) {
+            auto tmp = elements.back();
+            elements.pop_back();
+            if (auto chunk = dynamic_cast<Chunk *>(tmp)) {
+                Quad* rect1 = chunk->r1;
+                Quad* rect2 = chunk->r2;
+
+                if (tmp->GetAcreage() > 0) {
+                    if (tmp->GetSizeX() > tmp->GetSizeY()) {
+                        if (GetRandom(2)) {
+                            int divX = int(tmp->GetLeft() +
+                                tmp->GetSizeX() * rect1->GetAcreage() / tmp->GetAcreage());
+                            if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
+                            if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                            rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
+                            rect2->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
+                        }
+                        else {
+                            int divX = int(tmp->GetLeft() +
+                                tmp->GetSizeX() * rect2->GetAcreage() / tmp->GetAcreage());
+                            if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
+                            if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                            rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
+                            rect1->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
+                        }
+                    }
+                    else {
+                        if (GetRandom(2)) {
+                            int divY = int(tmp->GetBottom() +
+                                tmp->GetSizeY() * rect1->GetAcreage() / tmp->GetAcreage());
+                            if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
+                            if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                            rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
+                            rect2->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
+                        }
+                        else {
+                            int divY = int(tmp->GetBottom() +
+                                tmp->GetSizeY() * rect2->GetAcreage() / tmp->GetAcreage());
+                            if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
+                            if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                            rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
+                            rect1->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
+                        }
+                    }
+                    if (dynamic_cast<Chunk *>(rect1))elements.push_back(rect1);
+                    if (dynamic_cast<Chunk *>(rect2))elements.push_back(rect2);
+                }
+
+				delete chunk;
+            }
+        }
+    }
+
+    if (emptyRect) {
+		delete emptyRect;
+    }
+}
+
+
+void ZoneFactory::RegisterZone(const string& id,
+    function<Zone* ()> creator,  GeneratorFunc generator) {
+    registries[id] = creator;
+    generators[id] = generator;
+}
+
+Zone* ZoneFactory::CreateZone(const string& id) {
+    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+    
+    auto it = registries.find(id);
+    if (it != registries.end()) {
+        return it->second();
+    }
+    return nullptr;
+}
+
+bool ZoneFactory::CheckRegistered(const string& id) {
+    return registries.find(id) != registries.end();
+}
+
+void ZoneFactory::SetConfig(string name, bool config) {
+    configs[name] = config;
+}
+
+void ZoneFactory::GenerateAll(const vector<Plot*>& plots, BuildingFactory* factory) {
+    for (const auto& [id, generator] : generators) {
+        if (generator && configs[id]) {
+            generator(this, factory, plots);
+        }
+    }
+}
+
+
+
+// ===== .\Dependence\map\zone_base.h =====
+
+﻿#pragma once
+
+#include "../common/quad.h"
+#include "../common/plot.h"
+
+#include "building_base.h"
+
+#include <string>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+
+
+class Quad;
+class Plot;
+class Building;
+class ZoneFactory;
+class BuildingFactory;
+
+class Zone : public Quad {
+public:
+    Zone() = default;
+    virtual ~Zone();
+
+	// 子类实现方法
+
+    // 动态返回园区静态信息
+    static std::string GetId();
+    virtual std::string GetType() const = 0;
+    virtual std::string GetName() const = 0;
+
+    // 在地图中生成园区
+    static std::function<void(ZoneFactory*, const std::vector<Plot*>&)> ZoneGenerator;
+
+	// 父类实现方法
+
+    // 关联地块
+    void SetParent(Plot* plot);
+    Plot* GetParent() const;
+
+    // 获取/设置房东
+    int GetOwner() const;
+    void SetOwner(int id);
+	bool GetStateOwned() const;
+	void SetStateOwned(bool state);
+
+    // 获取/添加园区内建筑
+    Building* GetBuilding(std::string name);
+    std::unordered_map<std::string, Building*>& GetBuildings();
+    void AddBuildings(BuildingFactory* factory, std::vector<std::pair<std::string, float>> list);
+
+    // 自动分布建筑
+    void ArrangeBuildings();
+
+protected:
+    Plot* parentPlot;
+
+	bool stateOwned = false;
+    int ownerId = -1;
+
+    std::unordered_map<std::string, Building*> buildings;
+};
+
+class ZoneFactory {
+public:
+    using GeneratorFunc = std::function<void(
+        ZoneFactory *, BuildingFactory*, const std::vector<Plot*>&)>;
+
+    void RegisterZone(const std::string& id,
+        std::function<Zone* ()> creator, GeneratorFunc generator = nullptr);
+    Zone* CreateZone(const std::string& id);
+    bool CheckRegistered(const std::string& id);
+    void SetConfig(std::string name, bool config);
+    void GenerateAll(const std::vector<Plot*>& plots, BuildingFactory* factory);
+
+private:
+    std::unordered_map<std::string, std::function<Zone* ()>> registries;
+    std::unordered_map<std::string, bool> configs;
+    std::unordered_map<std::string, GeneratorFunc> generators;
+};
+
+
+// ===== .\Forever\Actor\BuildingBase.cpp =====
+
+#include "Actor/BuildingBase.h"
+#include "Actor/GlobalBase.h"
+
+#include "utility.h"
+#include "error.h"
+
+
+using namespace std;
+
+ABuildingBase::ABuildingBase() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+ABuildingBase::~ABuildingBase() {
+
+}
+
+void ABuildingBase::BeginPlay() {
+	Super::BeginPlay();
+}
+
+void ABuildingBase::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	FVector location = FVector(0.f, 0.f, 0.f);
+	((AGlobalBase*)global)->GetLocation(location);
+	location /= 1000.f;
+
+	TArray<FBuilding> buildings;
+	auto plots = ((AGlobalBase*)global)->GetMap()->GetRoadnet()->GetPlots();
+	for (auto plot : plots) {
+		auto plotBuildings = plot->GetBuildings();
+		for (auto plotBuilding : plotBuildings) {
+			if (plotBuilding.second->GetAcreage() <= 0.f)continue;
+			if (buildingInstances.find(plotBuilding.first) != buildingInstances.end()) {
+				continue;
+			}
+			auto building = plotBuilding.second;
+			FBuilding buildingInfo;
+			buildingInfo.name = UTF8_TO_TCHAR(plotBuilding.first.data());
+			buildingInfo.center = FVector(plot->GetPosX() + building->GetPosX(), plot->GetPosY() + building->GetPosY(), 0.f);
+			buildingInfo.size = FVector(building->GetSizeX(), building->GetSizeY(), 1.f);
+			buildingInfo.rotation = plot->GetRotation();
+			buildings.Add(buildingInfo);
+		}
+		auto plotZones = plot->GetZones();
+		for (auto plotZone : plotZones) {
+			auto zone = plotZone.second;
+			for(auto zoneBuilding : zone->GetBuildings()) {
+				if (zoneBuilding.second->GetAcreage() <= 0.f)continue;
+				if (buildingInstances.find(zoneBuilding.first) != buildingInstances.end()) {
+					continue;
+				}
+				auto building = zoneBuilding.second;
+				FBuilding buildingInfo;
+				buildingInfo.name = UTF8_TO_TCHAR(zoneBuilding.first.data());
+				buildingInfo.center = FVector(
+					plot->GetPosX() + zone->GetPosX() + building->GetPosX(),
+					plot->GetPosY() + zone->GetPosY() + building->GetPosY(), 0.f);
+				buildingInfo.size = FVector(building->GetSizeX(), building->GetSizeY(), 1.f);
+				buildingInfo.rotation = plot->GetRotation();
+				buildings.Add(buildingInfo);
+			}
+		}
+	}
+	UpdateBuilding(buildings);
+}
+
+void ABuildingBase::SetGlobal(AActor* g) {
+	this->global = g;
+}
+
+void ABuildingBase::SetInstance(FString name, AActor* actor) {
+	if (buildingInstances.find(TCHAR_TO_UTF8(*name)) == buildingInstances.end()) {
+		buildingInstances[TCHAR_TO_UTF8(*name)] = actor;
+	}
+	else {
+		THROW_EXCEPTION(InvalidConfigException, string("Duplicate building name: ") + TCHAR_TO_UTF8(*name) + ".\n");
+	}
+}
+
+
+
+// ===== .\Forever\Actor\BuildingBase.h =====
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "map/map.h"
+
+#include "BuildingBase.generated.h"
+
+
+USTRUCT(Blueprintable, BlueprintType)
+struct FBuilding {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FString name;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector center;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector size;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	float rotation;
+};
+
+UCLASS()
+class FOREVER_API ABuildingBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	ABuildingBase();
+	~ABuildingBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	void SetGlobal(AActor* g);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	void UpdateBuilding(const TArray<FBuilding>& buildings);
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void SetInstance(FString name, AActor* actor);
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	AActor* global;
+
+	std::unordered_map<std::string, AActor*> buildingInstances;
+};
+
+
+// ===== .\Forever\Actor\GlobalBase.cpp =====
+
+﻿#include "GlobalBase.h"
+
+#include "utility.h"
+
+
+using namespace std;
+
+unordered_map<string, HMODULE> AGlobalBase::modHandles = {};
+
+AGlobalBase::AGlobalBase() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+AGlobalBase::~AGlobalBase() {
+	if (map) {
+		delete map;
+		map = nullptr;
+	}
+	if (populace) {
+		delete populace;
+		populace = nullptr;
+	}
+	if (society) {
+		delete society;
+		society = nullptr;
+	}
+	if (story) {
+		delete story;
+		story = nullptr;
+	}
+	if (industry) {
+		delete industry;
+		industry = nullptr;
+	}
+	if (traffic) {
+		delete traffic;
+		traffic = nullptr;
+	}
+	if (player) {
+		delete player;
+		player = nullptr;
+	}
+}
+
+void AGlobalBase::BeginPlay() {
+	Super::BeginPlay();
+
+	map = new Map();
+	populace = new Populace();
+	society = new Society();
+	story = new Story();
+	industry = new Industry();
+	traffic = new Traffic();
+	player = new Player();
+
+	// 读取Map相关类及Mod
+	map->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
+	map->ReadConfigs("configs/config_map.json");
+	map->InitTerrains(modHandles);
+	map->InitRoadnets(modHandles);
+	map->InitZones(modHandles);
+	map->InitBuildings(modHandles);
+
+	// 读取Populace相关类及Mod
+	populace->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
+	populace->ReadConfigs("configs/config_populace.json");
+
+	// 读取Society相关类及Mod
+	society->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
+	society->ReadConfigs("configs/config_society.json");
+
+	// 读取Story相关类及Mod
+	story->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
+	story->ReadConfigs("configs/config_story.json");
+
+	// 读取Industry相关类及Mod
+	industry->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
+	industry->ReadConfigs("configs/config_industry.json");
+
+	// 读取Traffic相关类及Mod
+	traffic->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
+	traffic->ReadConfigs("configs/config_traffic.json");
+
+	// 读取Player相关类及Mod
+	player->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
+	player->ReadConfigs("configs/config_player.json");
+
+	int size = 4; map->Init(size, size);
+
+	FVector Location(0.0f, 0.0f, 0.0f);
+	FRotator Rotation(0.0f, 0.0f, 0.0f);
+	terrainActor = GetWorld()->SpawnActor<ATerrainBase>(TerrainClass, Location, Rotation);
+	terrainActor->SetGlobal(this);
+	terrainActor->InitInstances(size * BLOCK_SIZE, size * BLOCK_SIZE);
+	roadnetActor = GetWorld()->SpawnActor<ARoadnetBase>(RoadnetClass, Location, Rotation);
+	roadnetActor->SetGlobal(this);
+	zoneActor = GetWorld()->SpawnActor<AZoneBase>(ZoneClass, Location, Rotation);
+	zoneActor->SetGlobal(this);
+	buildingActor = GetWorld()->SpawnActor<ABuildingBase>(BuildingClass, Location, Rotation);
+	buildingActor->SetGlobal(this);
+	roomActor = GetWorld()->SpawnActor<ARoomBase>(RoomClass, Location, Rotation);
+	roomActor->SetGlobal(this);
+	populaceActor = GetWorld()->SpawnActor<APopulaceBase>(PopulaceClass, Location, Rotation);
+	populaceActor->SetGlobal(this);
+	trafficActor = GetWorld()->SpawnActor<ATrafficBase>(TrafficClass, Location, Rotation);
+	trafficActor->SetGlobal(this);
+}
+
+void AGlobalBase::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+}
+
+Map* AGlobalBase::GetMap() {
+	return map;
+}
+
+Populace* AGlobalBase::GetPopulace() {
+	return populace;
+}
+
+Society* AGlobalBase::GetSociety() {
+	return society;
+}
+
+Story* AGlobalBase::GetStory() {
+	return story;
+}
+
+Industry* AGlobalBase::GetIndustry() {
+	return industry;
+}
+
+Traffic *AGlobalBase::GetTraffic() {
+	return traffic;
+}
+
+Player* AGlobalBase::GetPlayer() {
+	return player;
+}
+
+
+
+// ===== .\Forever\Actor\GlobalBase.h =====
+
+﻿#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "Engine/World.h"
+
+#include "TerrainBase.h"
+#include "RoadnetBase.h"
+#include "ZoneBase.h"
+#include "BuildingBase.h"
+#include "RoomBase.h"
+#include "TrafficBase.h"
+#include "PopulaceBase.h"
+
+#include "map/map.h"
+#include "populace/populace.h"
+#include "society/society.h"
+#include "story/story.h"
+#include "industry/industry.h"
+#include "traffic/traffic.h"
+#include "player/player.h"
+
+#include "GlobalBase.generated.h"
+
+
+UCLASS()
+class FOREVER_API AGlobalBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	AGlobalBase();
+	~AGlobalBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	Map* GetMap();
+	Populace* GetPopulace();
+	Society* GetSociety();
+	Story* GetStory();
+	Industry* GetIndustry();
+	Traffic* GetTraffic();
+	Player* GetPlayer();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Status")
+	void GetLocation(FVector& location);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> TerrainClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> RoadnetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> ZoneClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> BuildingClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> RoomClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> TrafficClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> PopulaceClass;
+
+protected:
+	virtual void BeginPlay() override;
+
+	static std::unordered_map<std::string, HMODULE> modHandles;
+
+	Map* map = nullptr;
+	Populace* populace = nullptr;
+	Society* society = nullptr;
+	Story* story = nullptr;
+	Industry* industry = nullptr;
+	Traffic* traffic = nullptr;
+	Player* player = nullptr;
+
+	ATerrainBase* terrainActor = nullptr;
+	ARoadnetBase* roadnetActor = nullptr;
+	AZoneBase* zoneActor = nullptr;
+	ABuildingBase* buildingActor = nullptr;
+	ARoomBase* roomActor = nullptr;
+	APopulaceBase* populaceActor = nullptr;
+	ATrafficBase* trafficActor = nullptr;
+};
+
+
+// ===== .\Forever\Actor\PopulaceBase.cpp =====
+
+#include "Actor/PopulaceBase.h"
+
+
+using namespace std;
+
+APopulaceBase::APopulaceBase() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+APopulaceBase::~APopulaceBase() {
+
+}
+
+void APopulaceBase::BeginPlay() {
+	Super::BeginPlay();
+}
+
+void APopulaceBase::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	if (dirty) {
+		dirty = false;
+		UpdatePopulace();
+	}
+}
+
+void APopulaceBase::SetGlobal(AActor* g) {
+	this->global = g;
+}
+
+void APopulaceBase::MarkDirty() {
+	dirty = true;
+}
+
+
+
+// ===== .\Forever\Actor\PopulaceBase.h =====
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "populace/populace.h"
+
+#include "PopulaceBase.generated.h"
+
+
+UCLASS()
+class FOREVER_API APopulaceBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	APopulaceBase();
+	~APopulaceBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	void SetGlobal(AActor* g);
+	void MarkDirty();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	void UpdatePopulace();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	AActor* global;
+
+	bool dirty = true;
+};
+
+
+// ===== .\Forever\Actor\RoadnetBase.cpp =====
+
+#include "Actor/RoadnetBase.h"
+#include "Actor/GlobalBase.h"
+
+
+using namespace std;
+
+ARoadnetBase::ARoadnetBase() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+ARoadnetBase::~ARoadnetBase() {
+
+}
+
+void ARoadnetBase::BeginPlay() {
+	Super::BeginPlay();
+}
+
+void ARoadnetBase::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	if (dirty) {
+		dirty = false;
+		UpdateRoadnet();
+	}
+}
+
+void ARoadnetBase::SetGlobal(AActor* g) {
+	this->global = g;
+}
+
+void ARoadnetBase::MarkDirty() {
+	dirty = true;
+}
+
+TArray<FConnection> ARoadnetBase::GetRoadnet() {
+	Map* map = ((AGlobalBase*)global)->GetMap();
+	if (!map)return {};
+
+	TArray<FConnection> connections;
+	for (auto connection : map->GetRoadnet()->GetConnections()) {
+		Node n1 = connection.GetRoadnet()->GetNodes()[connection.GetV1()];
+		Node n2 = connection.GetRoadnet()->GetNodes()[connection.GetV2()];
+		connections.Add(FConnection(
+			FVector(n1.GetX(), n1.GetY(), 0.f), FVector(n2.GetX(), n2.GetY(), 0.f), connection.GetWidth()));
+	}
+
+	return connections;
+}
+
+// ===== .\Forever\Actor\RoadnetBase.h =====
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "map/map.h"
+
+#include "RoadnetBase.generated.h"
+
+
+USTRUCT(Blueprintable, BlueprintType)
+struct FConnection {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector v1;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector v2;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	float width;
+};
+
+UCLASS()
+class FOREVER_API ARoadnetBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	ARoadnetBase();
+	~ARoadnetBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	void SetGlobal(AActor* g);
+	void MarkDirty();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	void UpdateRoadnet();
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	TArray<FConnection> GetRoadnet();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	AActor* global;
+
+	bool dirty = true;
+};
+
+
+// ===== .\Forever\Actor\RoomBase.cpp =====
+
+#include "Actor/RoomBase.h"
+
+
+using namespace std;
+
+ARoomBase::ARoomBase() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+ARoomBase::~ARoomBase() {
+
+}
+
+void ARoomBase::BeginPlay() {
+	Super::BeginPlay();
+}
+
+void ARoomBase::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	if (dirty) {
+		dirty = false;
+		UpdateRoom();
+	}
+}
+
+void ARoomBase::SetGlobal(AActor* g) {
+	this->global = g;
+}
+
+void ARoomBase::MarkDirty() {
+	dirty = true;
+}
+
+
+
+// ===== .\Forever\Actor\RoomBase.h =====
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "map/map.h"
+
+#include "RoomBase.generated.h"
+
+
+UCLASS()
+class FOREVER_API ARoomBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	ARoomBase();
+	~ARoomBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	void SetGlobal(AActor* g);
+	void MarkDirty();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	void UpdateRoom();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	AActor* global;
+
+	bool dirty = true;
+};
+
+
+// ===== .\Forever\Actor\TerrainBase.cpp =====
+
+#include "Actor/TerrainBase.h"
+#include "Actor/GlobalBase.h"
+
+
+using namespace std;
+
+ATerrainBase::ATerrainBase() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+ATerrainBase::~ATerrainBase() {
+
+}
+
+void ATerrainBase::BeginPlay() {
+	Super::BeginPlay();
+}
+
+void ATerrainBase::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	FVector location = FVector(0.f, 0.f, 0.f);
+	((AGlobalBase*)global)->GetLocation(location);
+	location /= 1000.f;
+
+	auto size = ((AGlobalBase*)global)->GetMap()->GetSize();
+	TArray<FCoordinate> coordinates;
+	for(auto j = FMath::Clamp(int(location.Y - 20), 0, size.second); j <= FMath::Clamp(int(location.Y + 20), 0, size.second); j++) {
+		for (auto i = FMath::Clamp(int(location.X - 20), 0, size.first); i <= FMath::Clamp(int(location.X + 20), 0, size.first); i++) {
+			if(terrainInstances[j][i] == -1) {
+				coordinates.Add(FCoordinate(i, j));
+			}
+		}
+	}
+	UpdateTerrain(coordinates);
+}
+
+void ATerrainBase::InitInstances(int width, int height) {
+	terrainInstances = vector<vector<int>>(height, vector<int>(width, -1));
+}
+
+void ATerrainBase::SetGlobal(AActor* g) {
+	this->global = g;
+}
+
+void ATerrainBase::LookupTerrain(int x, int y, FString& type, float& height) {
+	Map* map = ((AGlobalBase*)global)->GetMap();
+	if (!map)return;
+
+	type = FString(map->GetTerrain(x, y).data());
+	height = map->GetElement(x, y)->GetHeight();
+}
+
+void ATerrainBase::SetInstance(int x, int y, int id) {
+	auto size = ((AGlobalBase*)global)->GetMap()->GetSize();
+	if (x < 0 || y < 0 || x >= size.first || y >= size.second) {
+		return;
+	}
+	terrainInstances[y][x] = id;
+}
+
+
+
+// ===== .\Forever\Actor\TerrainBase.h =====
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "map/map.h"
+
+#include "TerrainBase.generated.h"
+
+
+USTRUCT(Blueprintable, BlueprintType)
+struct FCoordinate {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IntPair")
+	int32 x;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "IntPair")
+	int32 y;
+};
+
+UCLASS()
+class FOREVER_API ATerrainBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	ATerrainBase();
+	~ATerrainBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	void InitInstances(int width, int height);
+	void SetGlobal(AActor* g);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	void UpdateTerrain(const TArray<FCoordinate> &coordinates);
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void LookupTerrain(int x, int y, FString &type, float &height);
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void SetInstance(int x, int y, int id);
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	AActor* global;
+
+	std::vector<std::vector<int>> terrainInstances;
+};
+
+
+// ===== .\Forever\Actor\TrafficBase.cpp =====
+
+#include "Actor/TrafficBase.h"
+
+
+using namespace std;
+
+ATrafficBase::ATrafficBase() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+ATrafficBase::~ATrafficBase() {
+
+}
+
+void ATrafficBase::BeginPlay() {
+	Super::BeginPlay();
+}
+
+void ATrafficBase::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	if (dirty) {
+		dirty = false;
+		UpdateTraffic();
+	}
+}
+
+void ATrafficBase::SetGlobal(AActor* g) {
+	this->global = g;
+}
+
+void ATrafficBase::MarkDirty() {
+	dirty = true;
+}
+
+
+
+// ===== .\Forever\Actor\TrafficBase.h =====
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "map/map.h"
+
+#include "TrafficBase.generated.h"
+
+
+UCLASS()
+class FOREVER_API ATrafficBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	ATrafficBase();
+	~ATrafficBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	void SetGlobal(AActor* g);
+	void MarkDirty();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	void UpdateTraffic();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	AActor* global;
+
+	bool dirty = true;
+};
+
+
+// ===== .\Forever\Actor\ZoneBase.cpp =====
+
+#include "Actor/ZoneBase.h"
+#include "Actor/GlobalBase.h"
+
+#include "utility.h"
+#include "error.h"
+
+
+using namespace std;
+
+AZoneBase::AZoneBase() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+AZoneBase::~AZoneBase() {
+
+}
+
+void AZoneBase::BeginPlay() {
+	Super::BeginPlay();
+}
+
+void AZoneBase::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	FVector location = FVector(0.f, 0.f, 0.f);
+	((AGlobalBase*)global)->GetLocation(location);
+	location /= 1000.f;
+
+	TArray<FZone> zones;
+	auto plots = ((AGlobalBase*)global)->GetMap()->GetRoadnet()->GetPlots();
+	for(auto plot : plots) {
+		auto plotZones = plot->GetZones();
+		for (auto plotZone : plotZones) {
+			if(zoneInstances.find(plotZone.first) != zoneInstances.end()) {
+				continue;
+			}
+			auto zone = plotZone.second;
+			FZone zoneInfo;
+			zoneInfo.name = UTF8_TO_TCHAR(plotZone.first.data());
+			zoneInfo.center = FVector(plot->GetPosX() + zone->GetPosX(), plot->GetPosY() + zone->GetPosY(), 0.f);
+			zoneInfo.size = FVector(zone->GetSizeX(), zone->GetSizeY(), 1.f);
+			zoneInfo.rotation = plot->GetRotation();
+			zones.Add(zoneInfo);
+		}
+	}
+	UpdateZone(zones);
+}
+
+void AZoneBase::SetGlobal(AActor* g) {
+	this->global = g;
+}
+
+void AZoneBase::SetInstance(FString name, AActor* actor) {
+	if (zoneInstances.find(TCHAR_TO_UTF8(*name)) == zoneInstances.end()) {
+		zoneInstances[TCHAR_TO_UTF8(*name)] = actor;
+	}
+	else {
+		THROW_EXCEPTION(InvalidConfigException, string("Duplicate zone name: ") + TCHAR_TO_UTF8(*name) + ".\n");
+	}
+}
+
+
+// ===== .\Forever\Actor\ZoneBase.h =====
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "map/map.h"
+
+#include "ZoneBase.generated.h"
+
+
+USTRUCT(Blueprintable, BlueprintType)
+struct FZone {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FString name;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector center;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector size;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	float rotation;
+};
+
+UCLASS()
+class FOREVER_API AZoneBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	AZoneBase();
+	~AZoneBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	void SetGlobal(AActor* g);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	void UpdateZone(const TArray<FZone>& zones);
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void SetInstance(FString name, AActor* actor);
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	AActor* global;
+
+	std::unordered_map<std::string, AActor*> zoneInstances;
+};
+
+
+// ===== .\Forever\Forever.cpp =====
+
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#include "Forever.h"
+#include "Modules/ModuleManager.h"
+
+IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Forever, "Forever" );
+
+DEFINE_LOG_CATEGORY(LogForever)
+
+#pragma comment(lib, "Core.lib")
+#pragma comment(lib, "Dependence.lib")
+
+
+
+// ===== .\Forever\Forever.h =====
+
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+/** Main log category used across the project */
+DECLARE_LOG_CATEGORY_EXTERN(LogForever, Log, All);
+
+// ===== .\Forever\ForeverCharacter.cpp =====
+
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#include "ForeverCharacter.h"
+#include "Engine/LocalPlayer.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/Controller.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputActionValue.h"
+#include "Forever.h"
+
+AForeverCharacter::AForeverCharacter()
+{
+	// Set size for collision capsule
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+		
+	// Don't rotate when the controller rotates. Let that just affect the camera.
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	// Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+
+	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
+	// instead of recompiling to adjust them
+	GetCharacterMovement()->JumpZVelocity = 2000.f;//500.f
+	GetCharacterMovement()->AirControl = 0.35f;
+	GetCharacterMovement()->MaxWalkSpeed = 5000.f;//500.f
+	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+
+	// Create a camera boom (pulls in towards the player if there is a collision)
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 400.0f;
+	CameraBoom->bUsePawnControlRotation = true;
+
+	// Create a follow camera
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
+
+	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void AForeverCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	// Set up action bindings
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
+		
+		// Jumping
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		// Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AForeverCharacter::Move);
+		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AForeverCharacter::Look);
+
+		// Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AForeverCharacter::Look);
+	}
+	else
+	{
+		UE_LOG(LogForever, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+}
+
+void AForeverCharacter::Move(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	// route the input
+	DoMove(MovementVector.X, MovementVector.Y);
+}
+
+void AForeverCharacter::Look(const FInputActionValue& Value)
+{
+	// input is a Vector2D
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	// route the input
+	DoLook(LookAxisVector.X, LookAxisVector.Y);
+}
+
+void AForeverCharacter::DoMove(float Right, float Forward)
+{
+	if (GetController() != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = GetController()->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		// get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, Forward);
+		AddMovementInput(RightDirection, Right);
+	}
+}
+
+void AForeverCharacter::DoLook(float Yaw, float Pitch)
+{
+	if (GetController() != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerYawInput(Yaw);
+		AddControllerPitchInput(Pitch);
+	}
+}
+
+void AForeverCharacter::DoJumpStart()
+{
+	// signal the character to jump
+	Jump();
+}
+
+void AForeverCharacter::DoJumpEnd()
+{
+	// signal the character to stop jumping
+	StopJumping();
+}
+
+
+// ===== .\Forever\ForeverCharacter.h =====
+
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Character.h"
+#include "Logging/LogMacros.h"
+#include "ForeverCharacter.generated.h"
+
+class USpringArmComponent;
+class UCameraComponent;
+class UInputAction;
+struct FInputActionValue;
+
+DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
+
+/**
+ *  A simple player-controllable third person character
+ *  Implements a controllable orbiting camera
+ */
+UCLASS(abstract)
+class AForeverCharacter : public ACharacter
+{
+	GENERATED_BODY()
+
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* FollowCamera;
+	
+protected:
+
+	/** Jump Input Action */
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* JumpAction;
+
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* MoveAction;
+
+	/** Look Input Action */
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* LookAction;
+
+	/** Mouse Look Input Action */
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* MouseLookAction;
+
+public:
+
+	/** Constructor */
+	AForeverCharacter();	
+
+protected:
+
+	/** Initialize input action bindings */
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+protected:
+
+	/** Called for movement input */
+	void Move(const FInputActionValue& Value);
+
+	/** Called for looking input */
+	void Look(const FInputActionValue& Value);
+
+public:
+
+	/** Handles move inputs from either controls or UI interfaces */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoMove(float Right, float Forward);
+
+	/** Handles look inputs from either controls or UI interfaces */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoLook(float Yaw, float Pitch);
+
+	/** Handles jump pressed inputs from either controls or UI interfaces */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoJumpStart();
+
+	/** Handles jump pressed inputs from either controls or UI interfaces */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoJumpEnd();
+
+public:
+
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+};
+
+
+
+// ===== .\Forever\ForeverGameMode.cpp =====
+
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#include "ForeverGameMode.h"
+
+AForeverGameMode::AForeverGameMode()
+{
+	// stub
+}
+
+
+// ===== .\Forever\ForeverGameMode.h =====
+
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/GameModeBase.h"
+#include "ForeverGameMode.generated.h"
+
+/**
+ *  Simple GameMode for a third person game
+ */
+UCLASS(abstract)
+class AForeverGameMode : public AGameModeBase
+{
+	GENERATED_BODY()
+
+public:
+	
+	/** Constructor */
+	AForeverGameMode();
+};
+
+
+
+
+
+// ===== .\Forever\ForeverPlayerController.cpp =====
+
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+
+#include "ForeverPlayerController.h"
+#include "EnhancedInputSubsystems.h"
+#include "Engine/LocalPlayer.h"
+#include "InputMappingContext.h"
+#include "Blueprint/UserWidget.h"
+#include "Forever.h"
+#include "Widgets/Input/SVirtualJoystick.h"
+
+void AForeverPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// only spawn touch controls on local player controllers
+	if (ShouldUseTouchControls() && IsLocalPlayerController())
+	{
+		// spawn the mobile controls widget
+		MobileControlsWidget = CreateWidget<UUserWidget>(this, MobileControlsWidgetClass);
+
+		if (MobileControlsWidget)
+		{
+			// add the controls to the player screen
+			MobileControlsWidget->AddToPlayerScreen(0);
+
+		} else {
+
+			UE_LOG(LogForever, Error, TEXT("Could not spawn mobile controls widget."));
+
+		}
+
+	}
+}
+
+void AForeverPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	// only add IMCs for local player controllers
+	if (IsLocalPlayerController())
+	{
+		// Add Input Mapping Contexts
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		{
+			for (UInputMappingContext* CurrentContext : DefaultMappingContexts)
+			{
+				Subsystem->AddMappingContext(CurrentContext, 0);
+			}
+
+			// only add these IMCs if we're not using mobile touch input
+			if (!ShouldUseTouchControls())
+			{
+				for (UInputMappingContext* CurrentContext : MobileExcludedMappingContexts)
+				{
+					Subsystem->AddMappingContext(CurrentContext, 0);
+				}
+			}
+		}
+	}
+}
+
+bool AForeverPlayerController::ShouldUseTouchControls() const
+{
+	// are we on a mobile platform? Should we force touch?
+	return SVirtualJoystick::ShouldDisplayTouchInterface() || bForceTouchControls;
+}
+
+
+// ===== .\Forever\ForeverPlayerController.h =====
+
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/PlayerController.h"
+#include "ForeverPlayerController.generated.h"
+
+class UInputMappingContext;
+class UUserWidget;
+
+/**
+ *  Basic PlayerController class for a third person game
+ *  Manages input mappings
+ */
+UCLASS(abstract)
+class AForeverPlayerController : public APlayerController
+{
+	GENERATED_BODY()
+	
+protected:
+
+	/** Input Mapping Contexts */
+	UPROPERTY(EditAnywhere, Category ="Input|Input Mappings")
+	TArray<UInputMappingContext*> DefaultMappingContexts;
+
+	/** Input Mapping Contexts */
+	UPROPERTY(EditAnywhere, Category="Input|Input Mappings")
+	TArray<UInputMappingContext*> MobileExcludedMappingContexts;
+
+	/** Mobile controls widget to spawn */
+	UPROPERTY(EditAnywhere, Category="Input|Touch Controls")
+	TSubclassOf<UUserWidget> MobileControlsWidgetClass;
+
+	/** Pointer to the mobile controls widget */
+	UPROPERTY()
+	TObjectPtr<UUserWidget> MobileControlsWidget;
+
+	/** If true, the player will use UMG touch controls even if not playing on mobile platforms */
+	UPROPERTY(EditAnywhere, Config, Category = "Input|Touch Controls")
+	bool bForceTouchControls = false;
+
+	/** Gameplay initialization */
+	virtual void BeginPlay() override;
+
+	/** Input mapping context setup */
+	virtual void SetupInputComponent() override;
+
+	/** Returns true if the player should use UMG touch controls */
+	bool ShouldUseTouchControls() const;
+
+};
+
+程序在Roadnet::~Roadnet()里的delete plot处崩溃，请找一下问题在哪
+

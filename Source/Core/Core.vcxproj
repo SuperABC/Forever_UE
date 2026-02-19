@@ -111,6 +111,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,6 +127,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,9 +136,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="industry\industry.cpp" />
+    <ClCompile Include="map\building.cpp" />
     <ClCompile Include="map\map.cpp" />
     <ClCompile Include="map\roadnet.cpp" />
     <ClCompile Include="map\terrain.cpp" />
+    <ClCompile Include="map\zone.cpp" />
     <ClCompile Include="player\player.cpp" />
     <ClCompile Include="populace\populace.cpp" />
     <ClCompile Include="society\society.cpp" />
@@ -145,9 +149,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h" />
+    <ClInclude Include="map\building.h" />
     <ClInclude Include="map\map.h" />
     <ClInclude Include="map\roadnet.h" />
     <ClInclude Include="map\terrain.h" />
+    <ClInclude Include="map\zone.h" />
     <ClInclude Include="player\player.h" />
     <ClInclude Include="populace\populace.h" />
     <ClInclude Include="society\society.h" />

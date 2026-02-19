@@ -8,6 +8,20 @@
 #include "BuildingBase.generated.h"
 
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FBuilding {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FString name;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector center;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector size;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	float rotation;
+};
+
 UCLASS()
 class FOREVER_API ABuildingBase : public AActor {
 	GENERATED_BODY()
@@ -19,10 +33,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
-	void MarkDirty();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
-	void UpdateBuilding();
+	void UpdateBuilding(const TArray<FBuilding>& buildings);
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void SetInstance(FString name, AActor* actor);
 
 protected:
 	virtual void BeginPlay() override;
@@ -30,5 +45,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Global")
 	AActor* global;
 
-	bool dirty = true;
+	std::unordered_map<std::string, AActor*> buildingInstances;
 };

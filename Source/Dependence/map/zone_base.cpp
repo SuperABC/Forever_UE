@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+#undef REPLACEMENT_OPERATOR_NEW_AND_DELETE
+
 
 using namespace std;
 
@@ -16,11 +18,11 @@ Zone::~Zone() {
     }
 }
 
-void Zone::SetParent(shared_ptr<Plot> plot) {
+void Zone::SetParent(Plot* plot) {
     parentPlot = plot;
 }
 
-shared_ptr<Plot> Zone::GetParent() const {
+Plot* Zone::GetParent() const {
     return parentPlot;
 }
 
@@ -279,7 +281,7 @@ void ZoneFactory::SetConfig(string name, bool config) {
     configs[name] = config;
 }
 
-void ZoneFactory::GenerateAll(const vector<shared_ptr<Plot>>& plots, BuildingFactory* factory) {
+void ZoneFactory::GenerateAll(const vector<Plot*>& plots, BuildingFactory* factory) {
     for (const auto& [id, generator] : generators) {
         if (generator && configs[id]) {
             generator(this, factory, plots);

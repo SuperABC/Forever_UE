@@ -20,7 +20,7 @@ def combine_code_files(output_file='combined_code.txt', extensions=None, ignore_
     if ignore_dirs is None:
         ignore_dirs = [
             'venv', '.git', '__pycache__', 'node_modules',
-            '.idea', '.vscode', 'build', 'dist', 'target', 'SGL', 'WXDJ'
+            '.idea', '.vscode', 'build', 'dist', 'target', 'SGL', 'WXDJ', 'Test', 'Mod'
         ]
 
     if ignore_files is None:

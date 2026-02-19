@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "../common/rect.h"
+#include "../common/quad.h"
 #include "../common/plot.h"
 
-#include "room_base.h"
-#include "component_base.h"
+//#include "room_base.h"
+//#include "component_base.h"
 
 #include <string>
 #include <functional>
@@ -102,15 +102,15 @@ public:
     // 建筑房间布局
 	virtual Quad LayoutConstruction() = 0;
     virtual void LayoutRooms(
-		ComponentFactory* componentFactory, RoomFactory* roomFactory, std::shared_ptr<Layout>& layout) = 0;
+		ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) = 0;
 
 	// 父类实现方法
 
 	// 关联地块
-	void SetParent(std::shared_ptr<Plot> plot);
-	void SetParent(std::shared_ptr<Zone> zone);
-	std::shared_ptr<Plot> GetParentPlot() const;
-	std::shared_ptr<Zone> GetParentZone() const;
+	void SetParent(Plot* plot);
+	void SetParent(Zone* zone);
+	Plot* GetParentPlot() const;
+	Zone* GetParentZone() const;
 
 	// 获取/设置房东
 	int GetOwner() const;
@@ -124,40 +124,40 @@ public:
 	const Quad GetConstruction() const;
 
 	// 获取/设置组织/房间/楼层
-	std::vector<std::shared_ptr<Component>>& GetComponents();
-	std::vector<std::shared_ptr<Room>>& GetRooms();
-	std::shared_ptr<Floor> GetFloor(int level) const;
+	//std::vector<Component*>& GetComponents();
+	//std::vector<Room*>& GetRooms();
+	//Floor* GetFloor(int level) const;
 
 	// 补充初始化
 	void FinishInit();
 
 	// 读入布局模板
-	static std::shared_ptr<Layout> ReadTemplates(std::string path);
+	static Layout* ReadTemplates(std::string path);
 
 protected:
-	std::shared_ptr<Zone> parentZone;
-	std::shared_ptr<Plot> parentPlot;
+	// 根据布局文件分配房间
+	//void ReadFloor(int level, int face, std::string name, Layout* layout);
+	//void ReadFloors(int face, std::string name, Layout* layout);
+	//void ReadFloors(int face, std::vector<std::string> names, Layout* layout);
+	//void AssignRoom(int level, int slot, std::string name, Component* component, RoomFactory* factory);
+	//void ArrangeRow(int level, int slot, std::string name, float acreage, Component* component, RoomFactory* factory);
+
+	// 建筑中添加组织
+	//Component* CreateComponent(std::string name, ComponentFactory* factory);
+
+	Zone* parentZone;
+	Plot* parentPlot;
 
 	bool stateOwned = false;
 	int ownerId = -1;
 
-	std::vector<std::shared_ptr<Floor>> floors;
-	std::vector<std::shared_ptr<Component>> components;
-	std::vector<std::shared_ptr<Room>> rooms;
+	//std::vector<Floor*> floors;
+	//std::vector<Component*> components;
+	//std::vector<Room*> rooms;
 
 	int layers = 1;
 	int basements = 0;
 	Quad construction;
-
-	// 根据布局文件分配房间
-	void ReadFloor(int level, int face, std::string name, std::shared_ptr<Layout>& layout);
-	void ReadFloors(int face, std::string name, std::shared_ptr<Layout>& layout);
-	void ReadFloors(int face, std::vector<std::string> names, std::shared_ptr<Layout>& layout);
-	void AssignRoom(int level, int slot, std::string name, std::shared_ptr<Component> component, RoomFactory* factory);
-	void ArrangeRow(int level, int slot, std::string name, float acreage, std::shared_ptr<Component> component, RoomFactory* factory);
-
-	// 建筑中添加组织
-	std::shared_ptr<Component> CreateComponent(std::string name, ComponentFactory* factory);
 
 private:
 	static std::vector<float> InverseParams(std::vector<float>& params, int face);

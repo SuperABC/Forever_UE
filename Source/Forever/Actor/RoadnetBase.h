@@ -33,10 +33,10 @@ public:
 	void SetGlobal(AActor* g);
 	void MarkDirty();
 
-	UFUNCTION(BlueprintCallable, Category = "Updating")
-	TArray<FConnection> GetRoadnet();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
 	void UpdateRoadnet();
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	TArray<FConnection> GetRoadnet();
 
 protected:
 	virtual void BeginPlay() override;
