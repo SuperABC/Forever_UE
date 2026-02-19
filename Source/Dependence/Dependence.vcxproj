@@ -138,6 +138,7 @@
     <ClCompile Include="map\room_base.cpp" />
     <ClCompile Include="map\terrain_base.cpp" />
     <ClCompile Include="map\zone_base.cpp" />
+    <ClCompile Include="populace\name_base.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\error.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="map\room_base.h" />
     <ClInclude Include="map\terrain_base.h" />
     <ClInclude Include="map\zone_base.h" />
+    <ClInclude Include="populace\name_base.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

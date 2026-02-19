@@ -60,6 +60,9 @@
     <ClCompile Include="map\component_base.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="populace\name_base.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="map\room_base.h">
       <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\name_base.h">
+      <Filter>populace</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

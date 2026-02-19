@@ -144,6 +144,9 @@
     <ClCompile Include="map\terrain.cpp" />
     <ClCompile Include="map\zone.cpp" />
     <ClCompile Include="player\player.cpp" />
+    <ClCompile Include="populace\experience.cpp" />
+    <ClCompile Include="populace\name.cpp" />
+    <ClCompile Include="populace\person.cpp" />
     <ClCompile Include="populace\populace.cpp" />
     <ClCompile Include="society\society.cpp" />
     <ClCompile Include="story\story.cpp" />
@@ -159,6 +162,9 @@
     <ClInclude Include="map\terrain.h" />
     <ClInclude Include="map\zone.h" />
     <ClInclude Include="player\player.h" />
+    <ClInclude Include="populace\experience.h" />
+    <ClInclude Include="populace\name.h" />
+    <ClInclude Include="populace\person.h" />
     <ClInclude Include="populace\populace.h" />
     <ClInclude Include="society\society.h" />
     <ClInclude Include="story\story.h" />

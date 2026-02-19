@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "utility.h"
+
 #include <windows.h>
 #include <vector>
 #include <string>
@@ -35,11 +37,16 @@ public:
 	void Load(std::string path);
 	void Save(std::string path) const;
 
+	// 获取时钟
+	Time* GetTime();
+
 private:
 	// 资源路径
 	std::string resourcePath;
 
 	// Mod管理
 
+	// 时钟
+	Time* time = nullptr;
 };
 

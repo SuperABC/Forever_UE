@@ -13,11 +13,11 @@
 using namespace std;
 
 Player::Player() {
-
+	time = new Time();
 }
 
 Player::~Player() {
-
+	delete time;
 }
 
 void Player::SetResourcePath(string path) {
@@ -71,4 +71,7 @@ void Player::Save(string path) const {
 
 }
 
+Time* Player::GetTime() {
+	return time;
+}
 

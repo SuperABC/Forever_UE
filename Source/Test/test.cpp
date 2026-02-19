@@ -81,7 +81,8 @@ int main() {
 				parser.AddOption("--block", 0, "Block num both horizontally and vertically.", true, "4");
 				parser.ParseCmd(cmd);
 				int size = atoi(parser.GetOption("--block").data());
-				::map->Init(size, size);
+				auto accomodation = ::map->Init(size, size);
+				populace->Init(accomodation, {}, player->GetTime());
 				break;
 			}
 			case CMD_PASS: { // 时间流逝

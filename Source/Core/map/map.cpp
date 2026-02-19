@@ -135,9 +135,13 @@ Map::Map() {
 Map::~Map() {
     Destroy();
 
-    // if (roadnet) {
-    //     delete roadnet;
-    // }
+     //if (roadnet) {
+     //    delete roadnet;
+     //}
+
+    for (auto plot : roadnet->GetPlots()) {
+        delete plot;
+    }
 }
 
 void Map::SetResourcePath(string path) {

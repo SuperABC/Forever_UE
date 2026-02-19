@@ -4,6 +4,7 @@
 #include "building_mod.h"
 #include "component_mod.h"
 #include "room_mod.h"
+#include "name_mod.h"
 
 #pragma comment(lib, "Dependence.lib")
 
@@ -41,6 +42,12 @@ extern "C" __declspec(dllexport) void RegisterModComponents(ComponentFactory* fa
 extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
     factory->RegisterRoom(ModRoom::GetId(), []() {
         return new ModRoom();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterModNames(NameFactory* factory) {
+    factory->RegisterName(ModName::GetId(), []() {
+        return new ModName();
         });
 }
 

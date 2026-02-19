@@ -63,6 +63,15 @@
     <ClCompile Include="map\component.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="populace\name.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\person.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\experience.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -103,6 +112,15 @@
     </ClInclude>
     <ClInclude Include="map\room.h">
       <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\name.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\person.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\experience.h">
+      <Filter>populace</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
