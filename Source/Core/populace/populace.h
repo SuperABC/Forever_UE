@@ -1,7 +1,10 @@
 ﻿#pragma once
 
 #include "person.h"
+#include "asset.h"
+#include "job.h"
 #include "name.h"
+#include "scheduler.h"
 #include "error.h"
 
 #include <windows.h>
@@ -22,7 +25,10 @@ public:
 	void SetResourcePath(std::string path);
 
 	// 读取Mods
+	void InitAssets(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitJobs(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitNames(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles);
 
 	// 读取配置文件
 	void ReadConfigs(std::string path) const;
@@ -47,6 +53,9 @@ public:
 	std::vector<Person*>& GetCitizens();
 	Person* GetCitizen(std::string name);
 
+	// 获取Job工厂
+	JobFactory* GetJobFactory();
+
 private:
 	// 生成市民
 	void GenerateCitizens(int num, std::vector<std::string> nameholders, Time* time);
@@ -58,7 +67,10 @@ private:
 	std::string resourcePath;
 
 	// Mod管理
+	static AssetFactory* assetFactory;
+	static JobFactory* jobFactory;
 	static NameFactory* nameFactory;
+	static SchedulerFactory* schedulerFactory;
 
 	// 市民管理
 	Name* names = nullptr;

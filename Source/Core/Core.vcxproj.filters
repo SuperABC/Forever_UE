@@ -72,6 +72,21 @@
     <ClCompile Include="populace\experience.cpp">
       <Filter>populace</Filter>
     </ClCompile>
+    <ClCompile Include="populace\job.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\scheduler.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\asset.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="society\organization.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
+    <ClCompile Include="society\calendar.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -121,6 +136,21 @@
     </ClInclude>
     <ClInclude Include="populace\experience.h">
       <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\asset.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\job.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\scheduler.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="society\calendar.h">
+      <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="society\organization.h">
+      <Filter>society</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

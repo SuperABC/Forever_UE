@@ -63,6 +63,21 @@
     <ClCompile Include="populace\name_base.cpp">
       <Filter>populace</Filter>
     </ClCompile>
+    <ClCompile Include="populace\job_base.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\scheduler_base.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\asset_base.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="society\organization_base.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
+    <ClCompile Include="society\calendar_base.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -100,6 +115,21 @@
     </ClInclude>
     <ClInclude Include="populace\name_base.h">
       <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\asset_base.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\job_base.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\scheduler_base.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="society\calendar_base.h">
+      <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="society\organization_base.h">
+      <Filter>society</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

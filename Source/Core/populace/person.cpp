@@ -142,61 +142,61 @@ vector<Person*> Person::GetChilds() {
 	return childs;
 }
 
-//void Person::AddAsset(shared_ptr<Asset> asset) {
-//	assets.push_back(asset);
-//}
-//
-//vector<shared_ptr<Asset>>& Person::GetAssets() {
-//	return assets;
-//}
-//
-//vector<shared_ptr<Asset>> Person::GetAssets(string type) {
-//	vector<shared_ptr<Asset>> results;
-//
-//	for (auto& asset : assets) {
-//		if (asset->GetType() == type) {
-//			results.push_back(asset);
-//		}
-//	}
-//
-//	return results;
-//}
-//
-//shared_ptr<Asset> Person::GetAsset(string name) {
-//	for (auto& asset : assets) {
-//		if (asset->GetName() == name) {
-//			return asset;
-//		}
-//	}
-//
-//	return nullptr;
-//}
-//
-//vector<shared_ptr<Job>> Person::GetJobs() {
-//	return jobs;
-//}
-//
-//void Person::AddJob(shared_ptr<Job> job) {
-//	jobs.push_back(job);
-//}
-//
-//void Person::RemoveJob(shared_ptr<Job> job) {
-//	for (auto &j : jobs) {
-//		if (j == job) {
-//			j = *jobs.end();
-//			jobs.pop_back();
-//			break;
-//		}
-//	}
-//}
-//
-//void Person::SetWork(int job) {
-//	working = job;
-//}
-//
-//shared_ptr<Job> Person::GetWork() {
-//	return jobs[working];
-//}
+void Person::AddAsset(Asset* asset) {
+	assets.push_back(asset);
+}
+
+vector<Asset*>& Person::GetAssets() {
+	return assets;
+}
+
+vector<Asset*> Person::GetAssets(string type) {
+	vector<Asset*> results;
+
+	for (auto& asset : assets) {
+		if (asset->GetType() == type) {
+			results.push_back(asset);
+		}
+	}
+
+	return results;
+}
+
+Asset* Person::GetAsset(string name) {
+	for (auto& asset : assets) {
+		if (asset->GetName() == name) {
+			return asset;
+		}
+	}
+
+	return nullptr;
+}
+
+vector<Job*> Person::GetJobs() {
+	return jobs;
+}
+
+void Person::AddJob(Job* job) {
+	jobs.push_back(job);
+}
+
+void Person::RemoveJob(Job* job) {
+	for (auto &j : jobs) {
+		if (j == job) {
+			j = *jobs.end();
+			jobs.pop_back();
+			break;
+		}
+	}
+}
+
+void Person::SetWork(int job) {
+	working = job;
+}
+
+Job* Person::GetWork() {
+	return jobs[working];
+}
 
 Room* Person::GetHome() {
 	return home;
@@ -210,13 +210,13 @@ void Person::RemoveHome() {
 	home = nullptr;
 }
 
-//shared_ptr<Scheduler> Person::GetScheduler() {
-//	return scheduler;
-//}
-//
-//void Person::SetScheduler(shared_ptr<Scheduler> scheduler) {
-//	this->scheduler = scheduler;
-//}
+Scheduler* Person::GetScheduler() {
+	return scheduler;
+}
+
+void Person::SetScheduler(Scheduler* scheduler) {
+	this->scheduler = scheduler;
+}
 
 void Person::AddEducationExperience(EducationExperience exp) {
 	educationExperiences.push_back(exp);

@@ -44,11 +44,16 @@ int main() {
 	// 读取Populace相关类及Mod
 	populace->SetResourcePath(REPLACE_PATH("../Resources/"));
 	populace->ReadConfigs("configs/config_populace.json");
+	populace->InitAssets(modHandles);
+	populace->InitJobs(modHandles);
 	populace->InitNames(modHandles);
+	populace->InitSchedulers(modHandles);
 
 	// 读取Society相关类及Mod
 	society->SetResourcePath(REPLACE_PATH("../Resources/"));
 	society->ReadConfigs("configs/config_society.json");
+	society->InitCalendars(modHandles);
+	society->InitOrganizations(modHandles);
 
 	// 读取Story相关类及Mod
 	story->SetResourcePath(REPLACE_PATH("../Resources/"));
@@ -89,9 +94,10 @@ int main() {
 				parser.AddOption("--block", 0, "Block num both horizontally and vertically.", true, "4");
 				parser.ParseCmd(cmd);
 				int size = atoi(parser.GetOption("--block").data());
-				auto accomodation = ::map->Init(size, size);
+				int accomodation = ::map->Init(size, size);
 				populace->Init(accomodation, {}, player->GetTime());
 				::map->Checkin(populace->GetCitizens(), player->GetTime());
+				society->Init(::map, populace, player->GetTime());
 				break;
 			}
 			case CMD_PASS: { // 时间流逝

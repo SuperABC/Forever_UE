@@ -66,11 +66,16 @@ void AGlobalBase::BeginPlay() {
 	// 读取Populace相关类及Mod
 	populace->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
 	populace->ReadConfigs("configs/config_populace.json");
+	populace->InitAssets(modHandles);
+	populace->InitJobs(modHandles);
 	populace->InitNames(modHandles);
+	populace->InitSchedulers(modHandles);
 
 	// 读取Society相关类及Mod
 	society->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
 	society->ReadConfigs("configs/config_society.json");
+	society->InitCalendars(modHandles);
+	society->InitOrganizations(modHandles);
 
 	// 读取Story相关类及Mod
 	story->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
@@ -89,9 +94,10 @@ void AGlobalBase::BeginPlay() {
 	player->ReadConfigs("configs/config_player.json");
 
 	int size = 4;
-	auto accomodation = map->Init(size, size);
+	int accomodation = map->Init(size, size);
 	populace->Init(accomodation, {}, player->GetTime());
 	map->Checkin(populace->GetCitizens(), player->GetTime());
+	society->Init(map, populace, player->GetTime());
 
 	FVector Location(0.0f, 0.0f, 0.0f);
 	FRotator Rotation(0.0f, 0.0f, 0.0f);

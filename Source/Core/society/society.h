@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+#include "calendar.h"
+#include "organization.h"
+#include "../map/map.h"
+#include "../populace/populace.h"
+
 #include <windows.h>
 #include <vector>
 #include <string>
@@ -15,9 +20,11 @@ public:
 	void SetResourcePath(std::string path);
 
 	// 读取Mods
+	void InitCalendars(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitOrganizations(std::unordered_map<std::string, HMODULE>& modHandles);
 
 	// 初始化全部组织
-	void Init();
+	void Init(Map* map, Populace* populace, Time* time);
 
 	// 读取配置文件
 	void ReadConfigs(std::string path) const;
@@ -40,6 +47,9 @@ private:
 	std::string resourcePath;
 
 	// Mod管理
+	static CalendarFactory* calendarFactory;
+	static OrganizationFactory* organizationFactory;
 
+	std::vector<Organization*> organizations;
 };
 

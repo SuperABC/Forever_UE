@@ -12,66 +12,205 @@
 
 using namespace std;
 
+AssetFactory* Populace::assetFactory = nullptr;
+JobFactory* Populace::jobFactory = nullptr;
 NameFactory* Populace::nameFactory = nullptr;
+SchedulerFactory* Populace::schedulerFactory = nullptr;
 
 Populace::Populace() {
-    if (!nameFactory) {
-        nameFactory = new NameFactory();
+    if (!assetFactory) {
+		assetFactory = new AssetFactory();
     }
+	if (!jobFactory) {
+		jobFactory = new JobFactory();
+	}
+	if (!nameFactory) {
+		nameFactory = new NameFactory();
+	}
+	if (!schedulerFactory) {
+		schedulerFactory = new SchedulerFactory();
+	}
 }
 
 Populace::~Populace() {
 	for(auto citizen : citizens) {
 		delete citizen;
 	}
+
+	delete names;
 }
 
 void Populace::SetResourcePath(string path) {
 	resourcePath = path;
 }
 
-void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
-    nameFactory->RegisterName(ChineseName::GetId(),
-        []() { return new ChineseName(); });
+void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
+	string modPath = "Mod.dll";
+	HMODULE modHandle;
+	if (modHandles.find(modPath) != modHandles.end()) {
+		modHandle = modHandles[modPath];
+	}
+	else {
+		modHandle = LoadLibraryA(modPath.data());
+		modHandles[modPath] = modHandle;
+	}
+	if (modHandle) {
+		debugf("Mod dll loaded successfully.\n");
 
-	return;
-
-    string modPath = "Mod.dll";
-    HMODULE modHandle;
-    if (modHandles.find(modPath) != modHandles.end()) {
-        modHandle = modHandles[modPath];
-    }
-    else {
-        modHandle = LoadLibraryA(modPath.data());
-        modHandles[modPath] = modHandle;
-    }
-    if (modHandle) {
-        debugf("Mod dll loaded successfully.\n");
-
-        RegisterModNamesFunc registerFunc = (RegisterModNamesFunc)GetProcAddress(modHandle, "RegisterModNames");
-        if (registerFunc) {
-            registerFunc(nameFactory);
-        }
-        else {
-            debugf("Incorrect dll content.\n");
-        }
-    }
-    else {
-        debugf("Failed to load mod.dll.\n");
-    }
+		RegisterModAssetsFunc registerFunc = (RegisterModAssetsFunc)GetProcAddress(modHandle, "RegisterModAssets");
+		if (registerFunc) {
+			registerFunc(assetFactory);
+		}
+		else {
+			debugf("Incorrect dll content.\n");
+		}
+	}
+	else {
+		debugf("Failed to load mod.dll.\n");
+	}
 
 #ifdef MOD_TEST
-    auto nameList = { "mod" };
-    for (const auto& nameId : nameList) {
-        if (nameFactory->CheckRegistered(nameId)) {
-            auto name = nameFactory->CreateName(nameId);
-            debugf("Created name: mod.\n");
-            delete name;
-        }
-        else {
-            debugf("Name not registered: %s.\n", nameId);
-        }
-    }
+	auto assetList = { "mod" };
+	for (const auto& assetId : assetList) {
+		if (assetFactory->CheckRegistered(assetId)) {
+			auto asset = assetFactory->CreateAsset(assetId);
+			debugf("Created asset: mod.\n");
+			delete asset;
+		}
+		else {
+			debugf("Asset not registered: %s.\n", assetId);
+		}
+	}
+#endif // MOD_TEST
+
+}
+
+void Populace::InitJobs(unordered_map<string, HMODULE>& modHandles) {
+	jobFactory->RegisterJob(DefaultJob::GetId(),
+		[]() { return new DefaultJob(); });
+
+	string modPath = "Mod.dll";
+	HMODULE modHandle;
+	if (modHandles.find(modPath) != modHandles.end()) {
+		modHandle = modHandles[modPath];
+	}
+	else {
+		modHandle = LoadLibraryA(modPath.data());
+		modHandles[modPath] = modHandle;
+	}
+	if (modHandle) {
+		debugf("Mod dll loaded successfully.\n");
+		RegisterModJobsFunc registerFunc = (RegisterModJobsFunc)GetProcAddress(modHandle, "RegisterModJobs");
+		if (registerFunc) {
+			registerFunc(jobFactory);
+		}
+		else {
+			debugf("Incorrect dll content.\n");
+		}
+	}
+	else {
+		debugf("Failed to load mod.dll.\n");
+	}
+
+#ifdef MOD_TEST
+	auto jobList = { "mod" };
+	for (const auto& jobId : jobList) {
+		if (jobFactory->CheckRegistered(jobId)) {
+			auto job = jobFactory->CreateJob(jobId);
+			debugf("Created job: mod.\n");
+			delete job;
+		}
+		else {
+			debugf("Job not registered: %s.\n", jobId);
+		}
+	}
+#endif // MOD_TEST
+
+}
+
+void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
+	nameFactory->RegisterName(ChineseName::GetId(),
+		[]() { return new ChineseName(); });
+
+	string modPath = "Mod.dll";
+	HMODULE modHandle;
+	if (modHandles.find(modPath) != modHandles.end()) {
+		modHandle = modHandles[modPath];
+	}
+	else {
+		modHandle = LoadLibraryA(modPath.data());
+		modHandles[modPath] = modHandle;
+	}
+	if (modHandle) {
+		debugf("Mod dll loaded successfully.\n");
+
+		RegisterModNamesFunc registerFunc = (RegisterModNamesFunc)GetProcAddress(modHandle, "RegisterModNames");
+		if (registerFunc) {
+			registerFunc(nameFactory);
+		}
+		else {
+			debugf("Incorrect dll content.\n");
+		}
+	}
+	else {
+		debugf("Failed to load mod.dll.\n");
+	}
+
+#ifdef MOD_TEST
+	auto nameList = { "mod" };
+	for (const auto& nameId : nameList) {
+		if (nameFactory->CheckRegistered(nameId)) {
+			auto name = nameFactory->CreateName(nameId);
+			debugf("Created name: mod.\n");
+			delete name;
+		}
+		else {
+			debugf("Name not registered: %s.\n", nameId);
+		}
+	}
+#endif // MOD_TEST
+
+}
+
+void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles) {
+	schedulerFactory->RegisterScheduler(WorkOnlyScheduler::GetId(),
+		[]() { return new WorkOnlyScheduler(); }, WorkOnlyScheduler::GetPower());
+
+	string modPath = "Mod.dll";
+	HMODULE modHandle;
+	if (modHandles.find(modPath) != modHandles.end()) {
+		modHandle = modHandles[modPath];
+	}
+	else {
+		modHandle = LoadLibraryA(modPath.data());
+		modHandles[modPath] = modHandle;
+	}
+	if (modHandle) {
+		debugf("Mod dll loaded successfully.\n");
+		RegisterModSchedulersFunc registerFunc = (RegisterModSchedulersFunc)GetProcAddress(modHandle, "RegisterModSchedulers");
+		if (registerFunc) {
+			registerFunc(schedulerFactory);
+		}
+		else {
+			debugf("Incorrect dll content.\n");
+		}
+	}
+	else {
+		debugf("Failed to load mod.dll.\n");
+	}
+
+#ifdef MOD_TEST
+	auto schedulerList = { "mod" };
+	for (const auto& schedulerId : schedulerList) {
+		if (schedulerFactory->CheckRegistered(schedulerId)) {
+			auto scheduler = schedulerFactory->CreateScheduler(schedulerId);
+			debugf("Created scheduler: mod.\n");
+			delete scheduler;
+		}
+		else {
+			debugf("Scheduler not registered: %s.\n", schedulerId);
+		}
+	}
 #endif // MOD_TEST
 
 }
@@ -145,6 +284,10 @@ Person* Populace::GetCitizen(string name) {
 	else {
 		return citizens[ids[name]];
 	}
+}
+
+JobFactory* Populace::GetJobFactory() {
+	return jobFactory;
 }
 
 void Populace::GenerateCitizens(int num, vector<string> nameholders, Time* time) {

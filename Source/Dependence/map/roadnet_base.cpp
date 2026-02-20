@@ -30,7 +30,6 @@ Roadnet::~Roadnet() {
     for (auto &plot : plots) {
         delete plot;
     }
-     plots.clear();
 }
 
 const vector<Node>& Roadnet::GetNodes() const {

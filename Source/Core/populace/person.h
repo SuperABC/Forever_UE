@@ -2,6 +2,9 @@
 
 #include "../map/room.h"
 
+#include "asset.h"
+#include "scheduler.h"
+#include "job.h"
 #include "experience.h"
 #include "utility.h"
 
@@ -74,17 +77,17 @@ public:
 	std::vector<Person*> GetChilds();
 
 	// 管理资产
-	//void AddAsset(std::shared_ptr<Asset> asset);
-	//std::vector<std::shared_ptr<Asset>>& GetAssets();
-	//std::vector<std::shared_ptr<Asset>> GetAssets(std::string name);
-	//std::shared_ptr<Asset> GetAsset(std::string name);
+	void AddAsset(Asset* asset);
+	std::vector<Asset*>& GetAssets();
+	std::vector<Asset*> GetAssets(std::string name);
+	Asset* GetAsset(std::string name);
 
 	// 管理职业
-	//std::vector<std::shared_ptr<Job>> GetJobs();
-	//void AddJob(std::shared_ptr<Job> job);
-	//void RemoveJob(std::shared_ptr<Job> job);
-	//void SetWork(int job);
-	//std::shared_ptr<Job> GetWork();
+	std::vector<Job*> GetJobs();
+	void AddJob(Job* job);
+	void RemoveJob(Job* job);
+	void SetWork(int job);
+	Job* GetWork();
 
 	// 管理住址
 	Room* GetHome();
@@ -92,8 +95,8 @@ public:
 	void RemoveHome();
 
 	// 管理调度
-	//std::shared_ptr<Scheduler> GetScheduler();
-	//void SetScheduler(std::shared_ptr<Scheduler> scheduler);
+	Scheduler* GetScheduler();
+	void SetScheduler(Scheduler* scheduler);
 
 	// 管理经历
 	void AddEducationExperience(EducationExperience exp);
@@ -142,12 +145,12 @@ private:
 	std::vector<std::pair<RELATIVE_TYPE, Person*>> relatives;
 	std::vector<std::pair<std::string, Person*>> acquaintances;
 
-	//std::vector<std::shared_ptr<Asset>> assets;
-	//std::vector<std::shared_ptr<Job>> jobs;
-	//int working = -1;
+	std::vector<Asset*> assets;
+	std::vector<Job*> jobs;
+	int working = -1;
 
 	Room* home;
-	//std::shared_ptr<Scheduler> scheduler;
+	Scheduler* scheduler;
 
 	std::vector<EducationExperience> educationExperiences;
 	std::vector<EmotionExperience> emotionExperiences;

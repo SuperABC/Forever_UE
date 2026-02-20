@@ -36,6 +36,21 @@
     <ClInclude Include="name_mod.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="job_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="scheduler_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="asset_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="calendar_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="organization_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mod.cpp">

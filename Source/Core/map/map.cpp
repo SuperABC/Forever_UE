@@ -676,7 +676,7 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
         if (GetRandom(100) < 2) {
             int index = GetRandom(int(adults.size()));
             zone.second->SetOwner(index);
-            //citizens[index]->AddAsset(make_shared<ZoneAsset>(zone.second));
+            citizens[index]->AddAsset(new ZoneAsset(zone.second));
             for (auto building : zone.second->GetBuildings()) {
                 building.second->SetOwner(index);
                 for (auto room : building.second->GetRooms()) {
@@ -694,7 +694,7 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
                 if (GetRandom(100) < 5) {
                     int index = GetRandom(int(adults.size()));
                     building.second->SetOwner(index);
-                    //citizens[index]->AddAsset(make_shared<BuildingAsset>(building.second));
+                    citizens[index]->AddAsset(new BuildingAsset(building.second));
                     for (auto room : building.second->GetRooms()) {
                         room->SetOwner(index);
                         if (room->IsResidential()) {
@@ -707,7 +707,7 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
                     for (auto room : building.second->GetRooms()) {
                         int index = GetRandom(int(adults.size()));
                         room->SetOwner(index);
-                        //citizens[index]->AddAsset(make_shared<RoomAsset>(room));
+                        citizens[index]->AddAsset(new RoomAsset(room));
                         if (room->IsResidential()) {
                             residences.push_back({ room, 0 });
                         }
@@ -732,7 +732,7 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
         if (GetRandom(100) < 5) {
             int index = GetRandom(int(adults.size()));
             building.second->SetOwner(index);
-            //citizens[index]->AddAsset(make_shared<BuildingAsset>(building.second));
+            citizens[index]->AddAsset(new BuildingAsset(building.second));
             for (auto room : building.second->GetRooms()) {
                 room->SetOwner(index);
                 if (room->IsResidential()) {
@@ -745,7 +745,7 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
             for (auto room : building.second->GetRooms()) {
                 int index = GetRandom(int(adults.size()));
                 room->SetOwner(index);
-                //citizens[index]->AddAsset(make_shared<RoomAsset>(room));
+                citizens[index]->AddAsset(new RoomAsset(room));
                 if (room->IsResidential()) {
                     residences.push_back({ room, 0 });
                 }
@@ -877,6 +877,36 @@ unordered_map<string, Zone*>& Map::GetZones() {
 
 unordered_map<string, Building*>& Map::GetBuildings() {
     return buildings;
+}
+
+vector<Component*> Map::GetComponents() const {
+    vector<Component*> components;
+    for (const auto& zone : zones) {
+        for (auto building : zone.second->GetBuildings()) {
+            const auto& current = building.second->GetComponents();
+            components.insert(components.end(), current.begin(), current.end());
+        }
+    }
+    for (const auto& building : buildings) {
+        const auto& current = building.second->GetComponents();
+        components.insert(components.end(), current.begin(), current.end());
+    }
+    return components;
+}
+
+vector<Room*> Map::GetRooms() const {
+    vector<Room*> rooms;
+    for (const auto& zone : zones) {
+        for (auto building : zone.second->GetBuildings()) {
+            const auto& current = building.second->GetRooms();
+            rooms.insert(rooms.end(), current.begin(), current.end());
+        }
+    }
+    for (const auto& building : buildings) {
+        const auto& current = building.second->GetRooms();
+        rooms.insert(rooms.end(), current.begin(), current.end());
+    }
+    return rooms;
 }
 
 void Map::ArrangePlots() {

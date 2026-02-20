@@ -131,6 +131,10 @@ public:
 	std::unordered_map<std::string, Zone*>& GetZones();
 	std::unordered_map<std::string, Building*>& GetBuildings();
 
+	// 获取组合/房间
+	std::vector<Component*> GetComponents() const;
+	std::vector<Room*> GetRooms() const;
+
 private:
 	// 排列地块中的园区与建筑
 	void ArrangePlots();
