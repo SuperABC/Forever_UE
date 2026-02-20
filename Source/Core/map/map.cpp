@@ -643,7 +643,7 @@ int Map::Init(int blockX, int blockY) {
         }
     }
 
-    return capacity;
+    return capacity / 4;
 }
 
 void Map::Checkin(vector<Person*> citizens, Time* time) const {

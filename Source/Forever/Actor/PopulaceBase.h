@@ -31,9 +31,11 @@ public:
 	void SetGlobal(AActor* g);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
-	void UpdatePopulace(const TArray<FPerson>& citizens);
+	void UpdatePopulace(const TArray<FPerson>& adds, const TMap<FString, AActor*>& removes);
 	UFUNCTION(BlueprintCallable, Category = "Updating")
-	void SetInstance(FString name, AActor* actor);
+	void AddInstance(FString name, AActor* actor);
+	UFUNCTION(BlueprintCallable, Category = "Updating")
+	void RemoveInstance(FString name);
 
 protected:
 	virtual void BeginPlay() override;

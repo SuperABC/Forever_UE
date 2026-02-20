@@ -23,7 +23,7 @@ void APopulaceBase::Tick(float DeltaTime) {
 	((AGlobalBase*)global)->GetLocation(location);
 	location /= 1000.f;
 
-	TArray<FPerson> citizens;
+	TArray<FPerson> adds;
 	auto populace = ((AGlobalBase*)global)->GetPopulace();
 	for (auto citizen : populace->GetCitizens()) {
 		if (personInstances.find(citizen->GetName()) != personInstances.end()) {
@@ -34,21 +34,40 @@ void APopulaceBase::Tick(float DeltaTime) {
 		if (!citizen->GetHome())continue;
 		auto pos = citizen->GetHome()->GetParentBuilding()->GetPosition();
 		citizenInfo.pos = FVector(pos.first, pos.second, 0.f);
-		citizens.Add(citizenInfo);
+		if ((location - citizenInfo.pos).Size() > 8.f) {
+			continue;
+		}
+		adds.Add(citizenInfo);
 	}
-	UpdatePopulace(citizens);
+
+	TMap<FString, AActor*> removes;
+	for(auto &[name, instance] : personInstances) {
+		if((instance->GetActorLocation() / 1000.f - location).Size() > 16.f) {
+			removes.Add(UTF8_TO_TCHAR(name.data()), instance);
+		}
+	}
+	UpdatePopulace(adds, removes);
 }
 
 void APopulaceBase::SetGlobal(AActor* g) {
 	this->global = g;
 }
 
-void APopulaceBase::SetInstance(FString name, AActor* actor) {
+void APopulaceBase::AddInstance(FString name, AActor* actor) {
 	if (personInstances.find(TCHAR_TO_UTF8(*name)) == personInstances.end()) {
 		personInstances[TCHAR_TO_UTF8(*name)] = actor;
 	}
 	else {
 		THROW_EXCEPTION(InvalidConfigException, string("Duplicate person name: ") + TCHAR_TO_UTF8(*name) + ".\n");
+	}
+}
+
+void APopulaceBase::RemoveInstance(FString name) {
+	if (personInstances.find(TCHAR_TO_UTF8(*name)) != personInstances.end()) {
+		personInstances.erase(TCHAR_TO_UTF8(*name));
+	}
+	else {
+		THROW_EXCEPTION(InvalidConfigException, string("Person not found: ") + TCHAR_TO_UTF8(*name) + ".\n");
 	}
 }
 

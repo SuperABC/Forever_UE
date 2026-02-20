@@ -38,10 +38,10 @@ float DefaultResidentialBuilding::GetAcreageMax() const {
 }
 
 Quad DefaultResidentialBuilding::LayoutConstruction() {
-    if (GetAcreage() < 1000) {
+    if (GetAcreage() < 2000) {
         layers = 1 + GetRandom(2);
     }
-    else if (GetAcreage() < 4000) {
+    else if (GetAcreage() < 8000) {
         layers = 2 + GetRandom(3);
     }
     else {
@@ -79,8 +79,8 @@ void DefaultResidentialBuilding::LayoutRooms(
     AssignRoom(-1, 0, "default_residential", component, roomFactory);
     for (int i = 0; i < layers; i++) {
         ReadFloor(i, direction, "straight_linear", layout);
-        ArrangeRow(i, 0, "default_residential", 100.f, component, roomFactory);
-        ArrangeRow(i, 1, "default_residential", 100.f, component, roomFactory);
+        ArrangeRow(i, 0, "default_residential", 200.f, component, roomFactory);
+        ArrangeRow(i, 1, "default_residential", 200.f, component, roomFactory);
     }
 }
 
@@ -119,10 +119,10 @@ float DefaultWorkingBuilding::GetAcreageMax() const {
 }
 
 Quad DefaultWorkingBuilding::LayoutConstruction() {
-    if (GetAcreage() < 3000) {
+    if (GetAcreage() < 6000) {
         layers = 1 + GetRandom(2);
     }
-    else if (GetAcreage() < 10000) {
+    else if (GetAcreage() < 20000) {
         layers = 2 + GetRandom(3);
     }
     else {
