@@ -1,0 +1,47 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+
+#include "story/story.h"
+
+#include <deque>
+
+#include "StoryBase.generated.h"
+
+
+UCLASS()
+class FOREVER_API AStoryBase : public AActor {
+	GENERATED_BODY()
+	
+public:	
+	AStoryBase();
+	~AStoryBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	void SetGlobal(AActor* g);
+	void AddFront(Dialog* dialog);
+	void AddBack(Dialog* dialog);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
+	void UpdateDialog(const FString& speaker, const FString& content);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
+	void UpdateDialogBranch(const TArray<FString>& options);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void FinishSection();
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void SelectOption(int index);
+
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void GameStart();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
+	AActor* global;
+
+	std::deque<Section> dialogQueue;
+	bool interacting = false;
+};

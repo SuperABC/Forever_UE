@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
-#include "map/map.h"
+#include "traffic/traffic.h"
 
 #include "TrafficBase.generated.h"
 

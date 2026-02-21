@@ -20,7 +20,7 @@ class ValueIteratorBase;
 class ValueIterator;
 class ValueConstIterator;
 
-enum DataType {
+enum DataType : int {
     DATA_NULL = 0,
     DATA_INT,
     DATA_UINT,
@@ -31,7 +31,7 @@ enum DataType {
     DATA_OBJECT
 };
 
-enum CommentPlacement {
+enum CommentPlacement : int {
     COMMENT_BEFORE = 0,
     COMMENT_LINE,
     COMMENT_AFTER,
@@ -250,7 +250,7 @@ public:
     std::vector<StructuredError> GetErrorStructures() const;
 
 private:
-    enum TokenType {
+    enum TokenType : int {
         TOKEN_END_OF_STREAM = 0,
         TOKEN_OBJECT_BEGIN,
         TOKEN_OBJECT_END,

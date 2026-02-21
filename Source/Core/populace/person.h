@@ -25,12 +25,12 @@ class EducationExperience;
 class EmotionExperience;
 class JobExperience;
 
-enum GENDER_TYPE {
+enum GENDER_TYPE : int {
 	GENDER_FEMALE, // 女性
 	GENDER_MALE // 男性
 };
 
-enum RELATIVE_TYPE {
+enum RELATIVE_TYPE : int {
 	RELATIVE_FATHER, // 父亲
 	RELATIVE_MOTHER, // 母亲
 	RELATIVE_WIFE, // 妻子

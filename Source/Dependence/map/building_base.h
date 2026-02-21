@@ -34,7 +34,7 @@ static char faceAbbr[4] = { 'w', 'e', 'n', 's' };
 // 走廊&电梯&楼梯
 class Facility : public Quad {
 public:
-	enum FACILITY_TYPE { FACILITY_CORRIDOR, FACILITY_STAIR, FACILITY_ELEVATOR };
+	enum FACILITY_TYPE : int { FACILITY_CORRIDOR, FACILITY_STAIR, FACILITY_ELEVATOR };
 
 	Facility(FACILITY_TYPE type, float x, float y, float w, float h);
 

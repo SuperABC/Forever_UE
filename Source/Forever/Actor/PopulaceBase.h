@@ -36,6 +36,7 @@ public:
 	void AddInstance(FString name, AActor* actor);
 	UFUNCTION(BlueprintCallable, Category = "World")
 	void RemoveInstance(FString name);
+
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	TArray<FString> GetOptions(FString name);
 

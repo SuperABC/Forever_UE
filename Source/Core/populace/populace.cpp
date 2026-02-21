@@ -370,7 +370,7 @@ JobFactory* Populace::GetJobFactory() {
 }
 
 void Populace::GenerateCitizens(int num, vector<string> nameholders, Time* time) {
-	enum LIFE_TYPE {
+	enum LIFE_TYPE : int {
 		LIFE_SINGLE,
 		LIFE_MARRY,
 		LIFE_BIRTH,
@@ -597,7 +597,7 @@ void Populace::GenerateCitizens(int num, vector<string> nameholders, Time* time)
 }
 
 void Populace::GenerateEducations(Time *time) {
-	enum EducationLevel {
+	enum EducationLevel : int {
 		EDUCATION_PRIMARY,
 		EDUCATION_JUNIOR,
 		EDUCATION_SENIOR,

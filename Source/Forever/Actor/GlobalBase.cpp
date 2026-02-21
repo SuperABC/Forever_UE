@@ -119,10 +119,12 @@ void AGlobalBase::BeginPlay() {
 	buildingActor->SetGlobal(this);
 	roomActor = GetWorld()->SpawnActor<ARoomBase>(RoomClass, Location, Rotation);
 	roomActor->SetGlobal(this);
-	populaceActor = GetWorld()->SpawnActor<APopulaceBase>(PopulaceClass, Location, Rotation);
-	populaceActor->SetGlobal(this);
 	trafficActor = GetWorld()->SpawnActor<ATrafficBase>(TrafficClass, Location, Rotation);
 	trafficActor->SetGlobal(this);
+	populaceActor = GetWorld()->SpawnActor<APopulaceBase>(PopulaceClass, Location, Rotation);
+	populaceActor->SetGlobal(this);
+	storyActor = GetWorld()->SpawnActor<AStoryBase>(StoryClass, Location, Rotation);
+	storyActor->SetGlobal(this);
 }
 
 void AGlobalBase::Tick(float DeltaTime) {

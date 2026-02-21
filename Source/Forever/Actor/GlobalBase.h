@@ -11,6 +11,7 @@
 #include "RoomBase.h"
 #include "TrafficBase.h"
 #include "PopulaceBase.h"
+#include "StoryBase.h"
 
 #include "map/map.h"
 #include "populace/populace.h"
@@ -58,6 +59,8 @@ public:
 	TSubclassOf<AActor> TrafficClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> PopulaceClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> StoryClass;
 
 protected:
 	virtual void BeginPlay() override;
@@ -77,6 +80,7 @@ protected:
 	AZoneBase* zoneActor = nullptr;
 	ABuildingBase* buildingActor = nullptr;
 	ARoomBase* roomActor = nullptr;
-	APopulaceBase* populaceActor = nullptr;
 	ATrafficBase* trafficActor = nullptr;
+	APopulaceBase* populaceActor = nullptr;
+	AStoryBase* storyActor = nullptr;
 };

@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 
-enum CMD_TYPE {
+enum CMD_TYPE : int {
 	CMD_UNKOWN, //未知命令
 	CMD_INIT, //全局初始化
 	CMD_PASS, //时钟前进

@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 
-enum class BinaryOperator {
+enum class BinaryOperator : int {
     EQUAL,
     NOT_EQUAL,
     GREATER,
@@ -30,7 +30,7 @@ enum class BinaryOperator {
     LOGICAL_OR
 };
 
-enum class UnaryOperator {
+enum class UnaryOperator : int {
     NEGATE,
     LOGICAL_NOT
 };
