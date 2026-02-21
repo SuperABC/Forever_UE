@@ -100,11 +100,11 @@ void AGlobalBase::BeginPlay() {
 
 	story->Init();
 	int accomodation = map->Init(size, size);
-	populace->Init(accomodation, story->ReadNames(path), player->GetTime());
+	populace->Init(accomodation, story->ReadNames("ys", path), player->GetTime());
 	map->Checkin(populace->GetCitizens(), player->GetTime());
 	society->Init(map, populace, player->GetTime());
 	story->InitVariables(player->GetTime());
-	story->ReadStory(path);
+	story->ReadStory("ys", path);
 
 	FVector Location(0.0f, 0.0f, 0.0f);
 	FRotator Rotation(0.0f, 0.0f, 0.0f);

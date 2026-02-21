@@ -14,8 +14,8 @@ class Change;
 
 class Milestone {
 public:
-    Milestone(std::string name, std::vector<Event*> triggers, bool visible, Condition keep,
-        std::string description, std::string goal, std::vector<Dialog> dialogs, std::vector<Change*> changes);
+    Milestone(std::string name, std::vector<Event*> triggers, bool visible, Condition keep, std::string description,
+        std::string goal, std::vector<Dialog> dialogs, std::vector<Change*> changes, std::vector<std::string> subsequences);
     ~Milestone();
 
     // 复合对象类型
@@ -33,6 +33,7 @@ public:
     bool DropSelf(std::function<std::pair<bool, ValueType>(const std::string&)> getValue);
     std::string GetDescription();
     std::string GetGoal();
+	std::vector<std::string> GetSubsequences();
 
 private:
     std::string name;
@@ -43,13 +44,15 @@ private:
     std::string goal;
     std::vector<Dialog> dialogs;
     std::vector<Change*> changes;
+	std::vector<std::string> subsequences;
 };
 
 class MilestoneNode {
 public:
-	MilestoneNode(Milestone milestone);
+    MilestoneNode();
+	MilestoneNode(Milestone* milestone);
 
-	Milestone content;
+	Milestone* content;
 
     // 前置数量
 	int premise = 0;

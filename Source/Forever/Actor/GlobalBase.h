@@ -41,7 +41,7 @@ public:
 	Traffic* GetTraffic();
 	Player* GetPlayer();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Status")
+	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void GetLocation(FVector& location);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")

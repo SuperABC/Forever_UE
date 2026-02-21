@@ -33,15 +33,15 @@ public:
 	void SetGlobal(AActor* g);
 	void MarkDirty();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdateRoadnet();
-	UFUNCTION(BlueprintCallable, Category = "Updating")
+	UFUNCTION(BlueprintCallable, Category = "World")
 	TArray<FConnection> GetRoadnet();
 
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
 	bool dirty = true;

@@ -200,20 +200,20 @@ ChangeFactory* Story::GetChangeFactory() {
 	return changeFactory;
 }
 
-vector<string> Story::ReadNames(string path) const {
+vector<string> Story::ReadNames(string name, string path) const {
 	if (!script) {
 		THROW_EXCEPTION(StructureCrashException, "Script not initialized.\n");
 	}
 
-	return script->ReadNames(resourcePath + path);
+	return script->ReadNames(name, resourcePath + path, eventFactory, changeFactory);
 }
 
-void Story::ReadStory(string path) {
+void Story::ReadStory(string name, string path) {
 	if (!script) {
 		THROW_EXCEPTION(StructureCrashException, "Script not initialized.\n");
 	}
 
-	script->ReadScript(resourcePath + path, eventFactory, changeFactory);
+	script->ReadMilestones(name, resourcePath + path, eventFactory, changeFactory);
 }
 
 bool Story::JudgeCondition(Condition& condition) const {

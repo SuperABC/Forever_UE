@@ -3,10 +3,10 @@
 
 using namespace std;
 
-Milestone::Milestone(string name, vector<Event*> triggers, bool visible, Condition drop,
-	string description, string goal, vector<Dialog> dialogs, vector<Change*> changes) :
-	name(name), triggers(triggers), visible(visible), drop(drop),
-	description(description), goal(goal), dialogs(dialogs), changes(changes) {
+Milestone::Milestone(string name, vector<Event*> triggers, bool visible, Condition drop, string description,
+	string goal, vector<Dialog> dialogs, vector<Change*> changes, vector<string> subsequences) :
+	name(name), triggers(triggers), visible(visible), drop(drop), description(description),
+	goal(goal), dialogs(dialogs), changes(changes), subsequences(subsequences) {
 
 }
 
@@ -64,7 +64,15 @@ string Milestone::GetGoal() {
 	return goal;
 }
 
-MilestoneNode::MilestoneNode(Milestone milestone) : content(milestone) {
+vector<string> Milestone::GetSubsequences() {
+	return subsequences;
+}
+
+MilestoneNode::MilestoneNode() : content(nullptr) {
+
+}
+
+MilestoneNode::MilestoneNode(Milestone* milestone) : content(milestone) {
 
 }
 

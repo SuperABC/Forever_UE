@@ -438,11 +438,11 @@ int main() {
 
 				story->Init();
 				int accomodation = ::map->Init(size, size);
-				populace->Init(accomodation, story->ReadNames(path), player->GetTime());
+				populace->Init(accomodation, story->ReadNames("ys", path), player->GetTime());
 				::map->Checkin(populace->GetCitizens(), player->GetTime());
 				society->Init(::map, populace, player->GetTime());
 				story->InitVariables(player->GetTime());
-				story->ReadStory(path);
+				story->ReadStory("ys", path);
 
 				break;
 			}

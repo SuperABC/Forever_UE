@@ -71,3 +71,16 @@ void APopulaceBase::RemoveInstance(FString name) {
 	}
 }
 
+TArray<FString> APopulaceBase::GetOptions(FString name) {
+	TArray<FString> options;
+	auto populace = ((AGlobalBase*)global)->GetPopulace();
+	auto citizen = populace->GetCitizen(TCHAR_TO_UTF8(*name));
+	if (!citizen) {
+		THROW_EXCEPTION(InvalidArgumentException, string("Citizen not found: ") + TCHAR_TO_UTF8(*name) + ".\n");
+	}
+	for(auto option : citizen->GetOptions()) {
+		options.Add(UTF8_TO_TCHAR(option.data()));
+	}
+	return options;
+}
+

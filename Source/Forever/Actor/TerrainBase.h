@@ -31,17 +31,17 @@ public:
 	void InitInstances(int width, int height);
 	void SetGlobal(AActor* g);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdateTerrain(const TArray<FCoordinate> &coordinates);
-	UFUNCTION(BlueprintCallable, Category = "Updating")
+	UFUNCTION(BlueprintCallable, Category = "World")
 	void LookupTerrain(int x, int y, FString &type, float &height);
-	UFUNCTION(BlueprintCallable, Category = "Updating")
+	UFUNCTION(BlueprintCallable, Category = "World")
 	void SetInstance(int x, int y, int id);
 
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
 	std::vector<std::vector<int>> terrainInstances;

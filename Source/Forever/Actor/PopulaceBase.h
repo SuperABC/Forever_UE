@@ -30,17 +30,19 @@ public:
 
 	void SetGlobal(AActor* g);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdatePopulace(const TArray<FPerson>& adds, const TMap<FString, AActor*>& removes);
-	UFUNCTION(BlueprintCallable, Category = "Updating")
+	UFUNCTION(BlueprintCallable, Category = "World")
 	void AddInstance(FString name, AActor* actor);
-	UFUNCTION(BlueprintCallable, Category = "Updating")
+	UFUNCTION(BlueprintCallable, Category = "World")
 	void RemoveInstance(FString name);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	TArray<FString> GetOptions(FString name);
 
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
 	std::unordered_map<std::string, AActor*> personInstances;

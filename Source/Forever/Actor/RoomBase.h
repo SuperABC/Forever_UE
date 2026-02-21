@@ -20,12 +20,12 @@ public:
 
 	void SetGlobal(AActor* g);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Updating")
+	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdateRoom();
 
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Global")
+	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 };

@@ -65,8 +65,8 @@ public:
 	ChangeFactory* GetChangeFactory();
 
 	// 读取剧本
-	std::vector<std::string> ReadNames(std::string path) const;
-	void ReadStory(std::string path);
+	std::vector<std::string> ReadNames(std::string name, std::string path) const;
+	void ReadStory(std::string name, std::string path);
 
 	// 判断条件
 	bool JudgeCondition(Condition& condition) const;

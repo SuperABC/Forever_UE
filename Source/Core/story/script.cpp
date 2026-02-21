@@ -9,168 +9,119 @@
 
 using namespace std;
 
+std::unordered_map<std::string, std::pair<std::vector<std::string>, std::unordered_map<std::string, Milestone*>>> Script::libraries = {};
+
 Script::Script() {
 
 }
 
-Script::Script(Script* script) {
-	unordered_map<string, int> hash;
-	hash["game_finish"] = -1;
-	hash["game_fail"] = -2;
-
-	for(auto& milestone : script->milestones) {
-		Milestone content(
-			milestone.content.GetName(),
-			milestone.content.GetTriggers(),
-			milestone.content.IsVisible(),
-			milestone.content.DropCondition(),
-			milestone.content.GetDescription(),
-			milestone.content.GetGoal(),
-			milestone.content.GetDialogs(),
-			milestone.content.GetChanges()
-		);
-		hash.insert(make_pair(content.GetName(), (int)milestones.size()));
-		milestones.push_back(MilestoneNode(content));
-	}
-	for (int i = 0; i < milestones.size(); i++) {
-		for (auto subsequence : script->milestones[i].subsequents) {
-			if (hash.find(subsequence->content.GetName()) == hash.end())continue;
-			if (hash[subsequence->content.GetName()] < 0)continue;
-
-			milestones[i].subsequents.push_back(&milestones[hash[subsequence->content.GetName()]]);
-			milestones[hash[subsequence->content.GetName()]].premise++;
-		}
-	}
-	for (auto& milestone : milestones) {
-		if (milestone.premise == 0) {
-			actives.push_back(&milestone);
-		}
-	}
-}
-
 Script::~Script() {
-    for(auto milestone : milestones) {
-        for(auto trigger : milestone.content.GetTriggers()) {
-            delete trigger;
-        }
-        for(auto change : milestone.content.GetChanges()) {
-            delete change;
-        }
-	}
+
 }
 
-vector<string> Script::ReadNames(string path) const {
-
-
-	if (!filesystem::exists(path)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
-	}
-
-	JsonReader reader;
-	JsonValue root;
-
-	ifstream fin(path);
-	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
-	}
-
-	if (reader.Parse(fin, root)) {
-		vector<string> results;
-
-		auto names = root["names"];
-		for (auto name : names) {
-			results.push_back(name.AsString());
-		}
-		return results;
-	}
-	else {
-		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
-	}
-}
-
-void Script::ReadScript(string path,
+void Script::ReadScript(string name, string path,
     EventFactory* eventFactory, ChangeFactory* changeFactory) {
-	if (!filesystem::exists(path)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+    if(libraries.find(name) != libraries.end()) {
+        return;
+    }
+
+    if (!filesystem::exists(path)) {
+        THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+    }
+
+    JsonReader reader;
+    JsonValue root;
+
+    ifstream fin(path);
+    if (!fin.is_open()) {
+        THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+    }
+
+    if (reader.Parse(fin, root)) {
+        unordered_map<string, int> hash;
+        hash["game_finish"] = -1;
+        hash["game_fail"] = -2;
+
+        auto item = make_pair(name, pair<vector<string>, unordered_map<string, Milestone*>>());
+        if (root.GetType() == DATA_ARRAY) {
+            for (auto milestone : root) {
+                Milestone *content = new Milestone(
+                    milestone["milestone"].AsString(),
+                    BuildEvent(milestone["triggers"], eventFactory),
+                    milestone["visible"].AsBool(),
+                    BuildCondition(milestone["drop"].AsString()),
+                    milestone["description"].AsString(),
+                    milestone["goal"].AsString(),
+                    BuildDialogs(milestone["dialogs"], changeFactory),
+                    BuildChanges(milestone["changes"], changeFactory),
+					BuildSubsequences(milestone["subsequences"])
+                );
+				item.second.second.insert(make_pair(content->GetName(), content));
+            }
+        }
+        else if (root.GetType() == DATA_OBJECT) {
+            vector<string> names;
+            for (auto name : root["names"]) {
+                names.push_back(name.AsString());
+            }
+			item.second.first = names;
+            for (auto milestone : root["milestones"]) {
+                Milestone* content = new Milestone(
+                    milestone["milestone"].AsString(),
+                    BuildEvent(milestone["triggers"], eventFactory),
+                    milestone["visible"].AsBool(),
+                    BuildCondition(milestone["drop"].AsString()),
+                    milestone["description"].AsString(),
+                    milestone["goal"].AsString(),
+                    BuildDialogs(milestone["dialogs"], changeFactory),
+                    BuildChanges(milestone["changes"], changeFactory),
+                    BuildSubsequences(milestone["subsequences"])
+                );
+                item.second.second.insert(make_pair(content->GetName(), content));
+            }
+        }
+        else {
+            THROW_EXCEPTION(JsonFormatException, "Json syntax error: Root element must be array or object.\n");
+        }
+		libraries.insert(item);
+    }
+    else {
+        THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+    }
+    fin.close();
+}
+
+vector<string> Script::ReadNames(string name, string path,
+    EventFactory* eventFactory, ChangeFactory* changeFactory) {
+	ReadScript(name, path, eventFactory, changeFactory);
+    if (libraries.find(name) == libraries.end()) {
+        THROW_EXCEPTION(RuntimeException, "Read script failed: " + path + "\n");
 	}
+	return libraries[name].first;
+}
 
-	JsonReader reader;
-	JsonValue root;
+void Script::ReadMilestones(string name, string path,
+    EventFactory* eventFactory, ChangeFactory* changeFactory) {
+    ReadScript(name, path, eventFactory, changeFactory);
+    if (libraries.find(name) == libraries.end()) {
+        THROW_EXCEPTION(RuntimeException, "Read script failed: " + path + "\n");
+    }
 
-	ifstream fin(path);
-	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
-	}
-
-	if (reader.Parse(fin, root)) {
-		unordered_map<string, int> hash;
-		hash["game_finish"] = -1;
-		hash["game_fail"] = -2;
-
-		if(root.GetType() == DATA_ARRAY) {
-			for (auto milestone : root) {
-				Milestone content(
-					milestone["milestone"].AsString(),
-					BuildEvent(milestone["triggers"], eventFactory),
-					milestone["visible"].AsBool(),
-					BuildCondition(milestone["drop"].AsString()),
-					milestone["description"].AsString(),
-					milestone["goal"].AsString(),
-					BuildDialogs(milestone["dialogs"], changeFactory),
-					BuildChanges(milestone["changes"], changeFactory)
-				);
-				hash.insert(make_pair(milestone["milestone"].AsString(), (int)milestones.size()));
-				milestones.push_back(MilestoneNode(content));
-			}
-			for (int i = 0; i < milestones.size(); i++) {
-				for (auto subsequence : root[i]["subsequences"]) {
-					if (hash.find(subsequence.AsString()) == hash.end())continue;
-					if (hash[subsequence.AsString()] < 0)continue;
-
-					milestones[i].subsequents.push_back(&milestones[hash[subsequence.AsString()]]);
-					milestones[hash[subsequence.AsString()]].premise++;
-				}
-			}
-		}
-		else if (root.GetType() == DATA_OBJECT) {
-			for (auto milestone : root["milestones"]) {
-				Milestone content(
-					milestone["milestone"].AsString(),
-					BuildEvent(milestone["triggers"], eventFactory),
-					milestone["visible"].AsBool(),
-					BuildCondition(milestone["drop"].AsString()),
-					milestone["description"].AsString(),
-					milestone["goal"].AsString(),
-					BuildDialogs(milestone["dialogs"], changeFactory),
-					BuildChanges(milestone["changes"], changeFactory)
-				);
-				hash.insert(make_pair(milestone["milestone"].AsString(), (int)milestones.size()));
-				milestones.push_back(MilestoneNode(content));
-			}
-			for (int i = 0; i < milestones.size(); i++) {
-				for (auto subsequence : root["milestones"][i]["subsequences"]) {
-					if (hash.find(subsequence.AsString()) == hash.end())continue;
-					if (hash[subsequence.AsString()] < 0)continue;
-
-					milestones[i].subsequents.push_back(&milestones[hash[subsequence.AsString()]]);
-					milestones[hash[subsequence.AsString()]].premise++;
-				}
-			}
-		}
-		else {
-			THROW_EXCEPTION(JsonFormatException, "Json syntax error: Root element must be array or object.\n");
-		}
-
-		for (auto& milestone : milestones) {
-			if (milestone.premise == 0) {
-				actives.push_back(&milestone);
-			}
-		}
-	}
-	else {
-		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
-	}
-	fin.close();
+    for (auto milestone : libraries[name].second) {
+        milestones[milestone.first] = MilestoneNode(milestone.second);
+    }
+    for (auto milestone : milestones) {
+        for (auto subsequence : milestone.second.content->GetSubsequences()) {
+            if (milestones.find(subsequence) == milestones.end())continue;
+			milestones[milestone.first].subsequents.push_back(&milestones[subsequence]);
+			milestones[subsequence].premise++;
+        }
+    }
+    for (auto& milestone : milestones) {
+        if (milestone.second.premise == 0) {
+            actives.push_back(&milestone.second);
+        }
+    }
 }
 
 pair<vector<Dialog>, vector<Change*>> Script::MatchEvent(
@@ -182,12 +133,12 @@ pair<vector<Dialog>, vector<Change*>> Script::MatchEvent(
 	vector<MilestoneNode*> tmps;
 	for (auto it = actives.begin(); it != actives.end(); ) {
 		bool match = false;
-		for (auto trigger : (*it)->content.GetTriggers()) {
+		for (auto trigger : (*it)->content->GetTriggers()) {
 			if (!story->JudgeCondition(trigger->GetCondition())) {
 				continue;
 			}
 
-			if ((*it)->content.MatchTrigger(event)) {
+			if ((*it)->content->MatchTrigger(event)) {
 				match = true;
 				break;
 			}
@@ -202,12 +153,12 @@ pair<vector<Dialog>, vector<Change*>> Script::MatchEvent(
 				}
 			}
 
-			auto dialogs = (*it)->content.GetDialogs();
+			auto dialogs = (*it)->content->GetDialogs();
 			results.first.insert(results.first.end(), dialogs.begin(), dialogs.end());
-			auto changes = (*it)->content.GetChanges();
+			auto changes = (*it)->content->GetChanges();
 			results.second.insert(results.second.end(), changes.begin(), changes.end());
 
-			if ((*it)->content.DropSelf([&story](string name) -> pair<bool, ValueType> {
+			if ((*it)->content->DropSelf([&story](string name) -> pair<bool, ValueType> {
 				return story->GetValue(name);
 				})) {
 				it = actives.erase(it);
@@ -234,12 +185,12 @@ pair<vector<Dialog>, vector<Change*>> Script::MatchEvent(
 	vector<MilestoneNode*> tmps;
 	for (auto it = actives.begin(); it != actives.end(); ) {
 		bool match = false;
-		for (auto trigger : (*it)->content.GetTriggers()) {
+		for (auto trigger : (*it)->content->GetTriggers()) {
 			if (!story->JudgeCondition(trigger->GetCondition(), person)) {
 				continue;
 			}
 
-			if ((*it)->content.MatchTrigger(event)) {
+			if ((*it)->content->MatchTrigger(event)) {
 				match = true;
 				break;
 			}
@@ -254,12 +205,12 @@ pair<vector<Dialog>, vector<Change*>> Script::MatchEvent(
 				}
 			}
 
-			auto dialogs = (*it)->content.GetDialogs();
+			auto dialogs = (*it)->content->GetDialogs();
 			results.first.insert(results.first.end(), dialogs.begin(), dialogs.end());
-			auto changes = (*it)->content.GetChanges();
+			auto changes = (*it)->content->GetChanges();
 			results.second.insert(results.second.end(), changes.begin(), changes.end());
 
-			if ((*it)->content.DropSelf([&story](string name) -> pair<bool, ValueType> {
+			if ((*it)->content->DropSelf([&story](string name) -> pair<bool, ValueType> {
 				return story->GetValue(name);
 				})) {
 				it = actives.erase(it);
@@ -279,7 +230,7 @@ pair<vector<Dialog>, vector<Change*>> Script::MatchEvent(
 
 void Script::DeactivateMilestone(const std::string& name) {
 	for (auto it = actives.begin(); it != actives.end(); ) {
-		if ((*it)->content.GetName() == name) {
+		if ((*it)->content->GetName() == name) {
 			it = actives.erase(it);
 			return;
 		}
@@ -894,4 +845,12 @@ Condition Script::BuildCondition(JsonValue root) const {
 	condition.ParseCondition(root.AsString());
 
 	return condition;
+}
+
+vector<string> Script::BuildSubsequences(JsonValue root) const {
+    vector<string> subsequences;
+    for (auto obj : root) {
+        subsequences.push_back(obj.AsString());
+    }
+    return subsequences;
 }
