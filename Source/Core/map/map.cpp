@@ -803,6 +803,11 @@ void Map::Save(string path) const {
 
 }
 
+void Map::ApplyChange(Change* change, Story* story,
+    vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+
+}
+
 pair<int, int> Map::GetSize() const {
     return make_pair(width, height);
 }

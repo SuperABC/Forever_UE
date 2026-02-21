@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "../populace/person.h"
+#include "../story/story.h"
 
 #include "terrain.h"
 #include "roadnet.h"
@@ -107,6 +108,10 @@ public:
 	// 保存/加载地图
 	void Load(std::string path);
 	void Save(std::string path) const;
+
+	// 应用变更
+	void ApplyChange(Change* change, Story* story,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	// 获取地图尺寸
 	std::pair<int, int> GetSize() const;

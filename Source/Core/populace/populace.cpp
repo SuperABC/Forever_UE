@@ -273,6 +273,85 @@ void Populace::Save(string path) const {
 
 }
 
+void Populace::ApplyChange(Change* change, Story* story,
+	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	auto type = change->GetType();
+
+	if (type == "add_option") {
+		auto obj = dynamic_cast<AddOptionChange*>(change);
+
+		Person* target;
+		Condition conditionTarget;
+		conditionTarget.ParseCondition(obj->GetTarget());
+		target = GetCitizen(ToString(conditionTarget.EvaluateValue(getValues)));
+		if (!target) {
+			THROW_EXCEPTION(InvalidArgumentException, "Target citizen not found.\n");
+		}
+
+		Condition conditionOption;
+		conditionOption.ParseCondition(obj->GetOption());
+		target->AddOption(ToString(conditionOption.EvaluateValue(getValues)));
+	}
+	else if (type == "remove_option") {
+		auto obj = dynamic_cast<RemoveOptionChange*>(change);
+
+		Person* target;
+		Condition conditionTarget;
+		conditionTarget.ParseCondition(obj->GetTarget());
+		target = GetCitizen(ToString(conditionTarget.EvaluateValue(getValues)));
+		if (!target) {
+			THROW_EXCEPTION(InvalidArgumentException, "Target citizen not found.\n");
+		}
+		Condition conditionOption;
+		conditionOption.ParseCondition(obj->GetOption());
+		target->RemoveOption(ToString(conditionOption.EvaluateValue([&](string name) -> pair<bool, ValueType> {
+			return story->GetValue(name);
+			})));
+	}
+	else if (type == "spawn_npc") {
+		auto obj = dynamic_cast<SpawnNpcChange*>(change);
+
+		Condition condition;
+		auto person = new Person();
+
+		person->SetId((int)citizens.size());
+		condition.ParseCondition(obj->GetTarget());
+		person->SetName(ToString(condition.EvaluateValue([&](string name) -> pair<bool, ValueType> {
+			return story->GetValue(name);
+			})));
+		condition.ParseCondition(obj->GetGender());
+		person->SetGender(ToString(condition.EvaluateValue([&](string name) -> pair<bool, ValueType> {
+			return story->GetValue(name);
+			})) == "male" ? GENDER_MALE : GENDER_FEMALE);
+		condition.ParseCondition(obj->GetBirthday());
+		person->SetBirthday(Time(ToString(condition.EvaluateValue([&](string name) -> pair<bool, ValueType> {
+			return story->GetValue(name);
+			}))));
+		citizens.push_back(person);
+		ids[person->GetName()] = person->GetId();
+	}
+	else if (type == "remove_npc") {
+		auto obj = dynamic_cast<RemoveNpcChange*>(change);
+
+		Condition conditionTarget;
+		conditionTarget.ParseCondition(obj->GetTarget());
+
+		auto person = GetCitizen(ToString(conditionTarget.EvaluateValue(
+			[&](string name) -> pair<bool, ValueType> {
+				return story->GetValue(name);
+			}
+		)));
+
+		if (!person) {
+			THROW_EXCEPTION(InvalidArgumentException, "Target citizen not found.\n");
+		}
+
+		delete citizens[person->GetId()];
+		citizens[person->GetId()] = nullptr;
+		ids[person->GetName()] = -1;
+	}
+}
+
 vector<Person*>& Populace::GetCitizens() {
 	return citizens;
 }

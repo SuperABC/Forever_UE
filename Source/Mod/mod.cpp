@@ -10,6 +10,8 @@
 #include "scheduler_mod.h"
 #include "calendar_mod.h"
 #include "organization_mod.h"
+#include "event_mod.h"
+#include "change_mod.h"
 
 #pragma comment(lib, "Dependence.lib")
 
@@ -86,4 +88,15 @@ extern "C" __declspec(dllexport) void RegisterModOrganizations(OrganizationFacto
         }, ModOrganization::GetPower());
 }
 
+extern "C" __declspec(dllexport) void RegisterModEvents(EventFactory* factory) {
+    factory->RegisterEvent(ModEvent::GetId(), []() {
+        return new ModEvent();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterModChanges(ChangeFactory* factory) {
+    factory->RegisterChange(ModChange::GetId(), []() {
+        return new ModChange();
+        });
+}
 

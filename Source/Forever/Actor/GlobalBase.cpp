@@ -80,6 +80,8 @@ void AGlobalBase::BeginPlay() {
 	// 读取Story相关类及Mod
 	story->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
 	story->ReadConfigs("configs/config_story.json");
+	story->InitEvents(modHandles);
+	story->InitChanges(modHandles);
 
 	// 读取Industry相关类及Mod
 	industry->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
@@ -94,10 +96,15 @@ void AGlobalBase::BeginPlay() {
 	player->ReadConfigs("configs/config_player.json");
 
 	int size = 4;
+	string path = "scripts/ys.json";
+
+	story->Init();
 	int accomodation = map->Init(size, size);
-	populace->Init(accomodation, {}, player->GetTime());
+	populace->Init(accomodation, story->ReadNames(path), player->GetTime());
 	map->Checkin(populace->GetCitizens(), player->GetTime());
 	society->Init(map, populace, player->GetTime());
+	story->InitVariables(player->GetTime());
+	story->ReadStory(path);
 
 	FVector Location(0.0f, 0.0f, 0.0f);
 	FRotator Rotation(0.0f, 0.0f, 0.0f);

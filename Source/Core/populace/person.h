@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "../map/room.h"
+#include "../story/script.h"
 
 #include "asset.h"
 #include "scheduler.h"
@@ -19,6 +20,7 @@
 
 class Script;
 class Story;
+class Event;
 class EducationExperience;
 class EmotionExperience;
 class JobExperience;
@@ -108,15 +110,15 @@ public:
 	void ExperienceComposition();
 
 	// 管理剧本
-	//void AddScript(std::shared_ptr<Script> script);
-	//std::pair<std::vector<Dialog>, std::vector<std::shared_ptr<Change>>> MatchEvent(
-	//	std::shared_ptr<Event> event, std::unique_ptr<Story>& story, Person* person);
-	//void SetValue(const std::string& name, ValueType value);
-	//std::pair<bool, ValueType> GetValue(const std::string& name);
-	//void UpdateValues(Time t);
-	//bool AddOption(std::string option);
-	//bool RemoveOption(std::string option);
-	//std::unordered_set<std::string> GetOptions();
+	void AddScript(Script* script);
+	std::pair<std::vector<Dialog>, std::vector<Change*>> MatchEvent(
+		Event* event, Story* story, Person* person);
+	void SetValue(const std::string& name, ValueType value);
+	std::pair<bool, ValueType> GetValue(const std::string& name);
+	void UpdateValues(Time *t);
+	bool AddOption(std::string option);
+	bool RemoveOption(std::string option);
+	std::unordered_set<std::string> GetOptions();
 
 	// 实时状态
 	//void SetStatus(std::shared_ptr<Zone> zone);
@@ -156,9 +158,9 @@ private:
 	std::vector<EmotionExperience> emotionExperiences;
 	std::vector<JobExperience> jobExperiences;
 
-	//std::vector<std::shared_ptr<Script>> scripts;
-	//std::unordered_map<std::string, ValueType> variables;
-	//std::unordered_set<std::string> options;
+	std::vector<Script*> scripts;
+	std::unordered_map<std::string, ValueType> variables;
+	std::unordered_set<std::string> options;
 
 	//std::shared_ptr<Plot> currentPlot;
 	//std::shared_ptr<Zone> currentZone;

@@ -71,6 +71,11 @@ void Player::Save(string path) const {
 
 }
 
+void Player::ApplyChange(Change* change, Story* story,
+	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+
+}
+
 Time* Player::GetTime() {
 	return time;
 }

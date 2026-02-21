@@ -154,6 +154,11 @@
     <ClCompile Include="society\calendar.cpp" />
     <ClCompile Include="society\organization.cpp" />
     <ClCompile Include="society\society.cpp" />
+    <ClCompile Include="story\change.cpp" />
+    <ClCompile Include="story\dialog.cpp" />
+    <ClCompile Include="story\event.cpp" />
+    <ClCompile Include="story\milestone.cpp" />
+    <ClCompile Include="story\script.cpp" />
     <ClCompile Include="story\story.cpp" />
     <ClCompile Include="traffic\traffic.cpp" />
   </ItemGroup>
@@ -177,6 +182,11 @@
     <ClInclude Include="society\calendar.h" />
     <ClInclude Include="society\organization.h" />
     <ClInclude Include="society\society.h" />
+    <ClInclude Include="story\change.h" />
+    <ClInclude Include="story\dialog.h" />
+    <ClInclude Include="story\event.h" />
+    <ClInclude Include="story\milestone.h" />
+    <ClInclude Include="story\script.h" />
     <ClInclude Include="story\story.h" />
     <ClInclude Include="traffic\traffic.h" />
   </ItemGroup>

@@ -1,9 +1,11 @@
 ﻿#pragma once
 
-#include "calendar.h"
-#include "organization.h"
 #include "../map/map.h"
 #include "../populace/populace.h"
+#include "../story/story.h"
+
+#include "calendar.h"
+#include "organization.h"
 
 #include <windows.h>
 #include <vector>
@@ -41,6 +43,10 @@ public:
 	// 保存/加载组织
 	void Load(std::string path);
 	void Save(std::string path) const;
+
+	// 应用变更
+	void ApplyChange(Change* change, Story* story,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 private:
 	// 资源路径

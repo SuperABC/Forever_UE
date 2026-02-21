@@ -78,6 +78,15 @@
     <ClCompile Include="society\calendar_base.cpp">
       <Filter>society</Filter>
     </ClCompile>
+    <ClCompile Include="story\event_base.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\change_base.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="common\condition.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -130,6 +139,15 @@
     </ClInclude>
     <ClInclude Include="society\organization_base.h">
       <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="story\change_base.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\event_base.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="common\condition.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

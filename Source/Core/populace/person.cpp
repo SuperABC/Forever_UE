@@ -8,7 +8,16 @@ Person::Person() {
 }
 
 Person::~Person() {
-
+	for(auto asset : assets) {
+		delete asset;
+	}
+	for(auto job : jobs) {
+		delete job;
+	}
+	delete scheduler;
+	for(auto script : scripts) {
+		delete script;
+	}
 }
 
 int Person::GetId() const {
@@ -262,59 +271,59 @@ void Person::ExperienceComposition() {
 	educationExperiences.resize(idx);
 }
 
-//void Person::AddScript(shared_ptr<Script> script) {
-//	scripts.push_back(script);
-//}
-//
-//pair<vector<Dialog>, vector<shared_ptr<Change>>> Person::MatchEvent(
-//	shared_ptr<Event> event, unique_ptr<Story>& story, Person* person) {
-//	pair<vector<Dialog>, vector<shared_ptr<Change>>> results;
-//	for (auto& script : scripts) {
-//		auto result = script->MatchEvent(event, story.get(), person);
-//		results.first.insert(results.first.end(), result.first.begin(), result.first.end());
-//		results.second.insert(results.second.end(), result.second.begin(), result.second.end());
-//	}
-//	return results;
-//}
-//
-//pair<bool, ValueType> Person::GetValue(const string& name) {
-//	auto it = variables.find(name);
-//	if (it != variables.end()) {
-//		return { true, it->second };
-//	}
-//	return { false, 0 };
-//}
-//
-//void Person::UpdateValues(Time t) {
-//	variables["self.name"] = name;
-//	variables["self.gender"] = gender == GENDER_FEMALE ? "female" : "male";
-//	variables["self.age"] = GetAge(t);
-//}
-//
-//void Person::SetValue(const string& name, ValueType value) {
-//	variables[name] = value;
-//}
-//
-//bool Person::AddOption(string option) {
-//	if (options.find(option) == options.end()) {
-//		options.insert(option);
-//		return true;
-//	}
-//	return false;
-//}
-//
-//bool Person::RemoveOption(string option) {
-//	if (options.find(option) != options.end()) {
-//		options.erase(option);
-//		return true;
-//	}
-//	return false;
-//}
-//
-//unordered_set<string> Person::GetOptions() {
-//	return options;
-//}
-//
+void Person::AddScript(Script* script) {
+	scripts.push_back(script);
+}
+
+pair<vector<Dialog>, vector<Change*>> Person::MatchEvent(
+	Event* event, Story* story, Person* person) {
+	pair<vector<Dialog>, vector<Change*>> results;
+	for (auto& script : scripts) {
+		auto result = script->MatchEvent(event, story, person);
+		results.first.insert(results.first.end(), result.first.begin(), result.first.end());
+		results.second.insert(results.second.end(), result.second.begin(), result.second.end());
+	}
+	return results;
+}
+
+pair<bool, ValueType> Person::GetValue(const string& name) {
+	auto it = variables.find(name);
+	if (it != variables.end()) {
+		return { true, it->second };
+	}
+	return { false, 0 };
+}
+
+void Person::UpdateValues(Time *t) {
+	variables["self.name"] = name;
+	variables["self.gender"] = gender == GENDER_FEMALE ? "female" : "male";
+	variables["self.age"] = GetAge(t);
+}
+
+void Person::SetValue(const string& name, ValueType value) {
+	variables[name] = value;
+}
+
+bool Person::AddOption(string option) {
+	if (options.find(option) == options.end()) {
+		options.insert(option);
+		return true;
+	}
+	return false;
+}
+
+bool Person::RemoveOption(string option) {
+	if (options.find(option) != options.end()) {
+		options.erase(option);
+		return true;
+	}
+	return false;
+}
+
+unordered_set<string> Person::GetOptions() {
+	return options;
+}
+
 //void Person::SetStatus(shared_ptr<Zone> zone) {
 //	currentPlot = zone->GetParent();
 //	currentZone = zone;

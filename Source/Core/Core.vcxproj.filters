@@ -87,6 +87,21 @@
     <ClCompile Include="society\calendar.cpp">
       <Filter>society</Filter>
     </ClCompile>
+    <ClCompile Include="story\milestone.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\script.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\change.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\dialog.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\event.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -151,6 +166,21 @@
     </ClInclude>
     <ClInclude Include="society\organization.h">
       <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="story\milestone.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\script.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\change.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\dialog.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\event.h">
+      <Filter>story</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

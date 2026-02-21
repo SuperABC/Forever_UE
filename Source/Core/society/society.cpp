@@ -292,5 +292,10 @@ void Society::Save(string path) const {
 
 }
 
+void Society::ApplyChange(Change* change, Story* story,
+    vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+
+}
+
 
 

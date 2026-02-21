@@ -71,4 +71,9 @@ void Traffic::Save(string path) const {
 
 }
 
+void Traffic::ApplyChange(Change* change, Story* story,
+	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+
+}
+
 

@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "../story/story.h"
+
 #include "person.h"
 #include "asset.h"
 #include "job.h"
@@ -15,6 +17,7 @@
 
 class Map;
 class Story;
+class Person;
 
 class Populace {
 public:
@@ -48,6 +51,10 @@ public:
 	// 保存/加载人口
 	void Load(std::string path);
 	void Save(std::string path) const;
+
+	// 应用变更
+	void ApplyChange(Change* change, Story* story,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	// 获取市民
 	std::vector<Person*>& GetCitizens();

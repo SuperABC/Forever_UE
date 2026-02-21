@@ -71,4 +71,9 @@ void Industry::Save(string path) const {
 
 }
 
+void Industry::ApplyChange(Change* change, Story* story,
+	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+
+}
+
 
