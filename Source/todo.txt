@@ -19,3 +19,4 @@ Procedural Mesh Component实现地形
 milestone指针手动清理
 change移动到dialog之后执行
 dialog变量复制优化
+对话历史记录

@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void FinishSection();
 	UFUNCTION(BlueprintCallable, Category = "Story")
-	void SelectOption(int index);
+	bool SelectOption(FString selected);
 
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void GameStart();

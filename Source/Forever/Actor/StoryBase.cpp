@@ -58,25 +58,27 @@ void AStoryBase::FinishSection() {
 	interacting = false;
 }
 
-void AStoryBase::SelectOption(int index) {
+bool AStoryBase::SelectOption(FString selected) {
 	auto section = dialogQueue.front();
 	auto options = section.GetOptions();
-	if (index < 0 || index >= options.size()) {
-		return;
-	}
-
-	dialogQueue.pop_front();
-	auto story = ((AGlobalBase*)global)->GetStory();
-	auto selected = options[index];
-	auto dialogs = selected.GetDialogs();
-	if (dialogs.size() > 0) {
-		for (int i = dialogs.size() - 1; i >= 0; i--) {
-			if (!story->JudgeCondition(dialogs[i].GetCondition()))continue;
-			AddFront(&dialogs[i]);
+	
+	for(auto option : options) {
+		if (UTF8_TO_TCHAR(option.GetOption().data()) == selected) {
+			dialogQueue.pop_front();
+			auto story = ((AGlobalBase*)global)->GetStory();
+			auto dialogs = option.GetDialogs();
+			if (dialogs.size() > 0) {
+				for (int i = dialogs.size() - 1; i >= 0; i--) {
+					if (!story->JudgeCondition(dialogs[i].GetCondition()))continue;
+					AddFront(&dialogs[i]);
+				}
+			}
+			interacting = false;
+			return true;
 		}
 	}
 
-	interacting = false;
+	return false;
 }
 
 void AStoryBase::GameStart() {
