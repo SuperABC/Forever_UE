@@ -64,12 +64,17 @@ public:
 	std::vector<std::pair<Quad, int>>& GetRows();
 	std::vector<std::pair<Quad, int>>& GetRooms();
 
+	// 分配门牌号
+	int AssignNumber();
+
 private:
 	int level;
 
 	std::vector<Facility> facilities;
 	std::vector<std::pair<Quad, int>> rows;
 	std::vector<std::pair<Quad, int>> rooms;
+
+	int number = 0;
 };
 
 class Layout {

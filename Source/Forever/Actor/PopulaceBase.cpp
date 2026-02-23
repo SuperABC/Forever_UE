@@ -53,6 +53,10 @@ void APopulaceBase::SetGlobal(AActor* g) {
 	this->global = g;
 }
 
+void APopulaceBase::SpawnNpc(const FString& name, const FVector& position) {
+	UpdatePopulace({ FPerson(name, position) }, { });
+}
+
 void APopulaceBase::AddInstance(FString name, AActor* actor) {
 	if (personInstances.find(TCHAR_TO_UTF8(*name)) == personInstances.end()) {
 		personInstances[TCHAR_TO_UTF8(*name)] = actor;

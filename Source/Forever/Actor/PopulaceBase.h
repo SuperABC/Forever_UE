@@ -12,9 +12,9 @@ USTRUCT(Blueprintable, BlueprintType)
 struct FPerson {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Connection")
 	FString name;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Connection")
 	FVector pos;
 };
 
@@ -29,6 +29,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
+	void SpawnNpc(const FString& name, const FVector& position);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdatePopulace(const TArray<FPerson>& adds, const TMap<FString, AActor*>& removes);

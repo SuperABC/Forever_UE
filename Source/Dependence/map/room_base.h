@@ -56,6 +56,10 @@ public:
     int GetFace() const;
     void SetFace(int face);
 
+    // 寻址
+    void SetAddress(int number);
+    std::string GetAddress() const;
+
 protected:
     Building* parentBuilding;
     Component* parentComponent;
@@ -65,6 +69,7 @@ protected:
 
     int layer;
     int face;
+    std::string address;
 };
 
 class RoomFactory {

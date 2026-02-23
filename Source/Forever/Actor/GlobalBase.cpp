@@ -159,3 +159,37 @@ Player* AGlobalBase::GetPlayer() {
 	return player;
 }
 
+ATerrainBase* AGlobalBase::GetTerrainActor() {
+	return terrainActor;
+}
+
+ARoadnetBase* AGlobalBase::GetRoadnetActor() {
+	return roadnetActor;
+}
+
+AZoneBase* AGlobalBase::GetZoneActor() {
+	return zoneActor;
+}
+
+ABuildingBase* AGlobalBase::GetBuildingActor() {
+	return buildingActor;
+}
+
+ARoomBase* AGlobalBase::GetRoomActor() {
+	return roomActor;
+}
+
+ATrafficBase* AGlobalBase::GetTrafficActor() {
+	return trafficActor;
+}
+
+APopulaceBase* AGlobalBase::GetPopulaceActor() {
+	return populaceActor;
+}
+
+AStoryBase* AGlobalBase::GetStoryActor() {
+	return storyActor;
+}
+
+
+

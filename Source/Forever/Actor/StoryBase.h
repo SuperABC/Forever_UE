@@ -32,12 +32,19 @@ public:
 	void FinishSection();
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	bool SelectOption(FString selected);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	TArray<FString> GetOptions(FString name);
 
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void GameStart();
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void OptionDialog(FString name, FString option);
 
 protected:
 	virtual void BeginPlay() override;
+
+	void ApplyChange(Change* change,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;

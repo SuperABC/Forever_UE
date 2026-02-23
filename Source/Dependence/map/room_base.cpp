@@ -1,5 +1,7 @@
 ﻿#include "room_base.h"
 
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -49,6 +51,16 @@ int Room::GetFace() const {
 
 void Room::SetFace(int face) {
     this->face = face;
+}
+
+void Room::SetAddress(int number) {
+    ostringstream oss;
+    oss << setw(4) << setfill('0') << number;
+    address = oss.str();
+}
+
+string Room::GetAddress() const {
+    return address;
 }
 
 void RoomFactory::RegisterRoom(const string& id, function<Room* ()> creator) {

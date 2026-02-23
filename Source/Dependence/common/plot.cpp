@@ -341,3 +341,12 @@ void Plot::RemoveBuilding(string name) {
         }
     }
 }
+
+void Plot::SetAddress(std::string road, int id) {
+    address.first = road;
+    address.second = id;
+}
+
+std::string Plot::GetAddress() const {
+    return address.first + " " + to_string(address.second);
+}

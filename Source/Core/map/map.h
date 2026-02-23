@@ -140,6 +140,12 @@ public:
 	std::vector<Component*> GetComponents() const;
 	std::vector<Room*> GetRooms() const;
 
+	// 寻址
+	Plot* LocatePlot(std::string address) const;
+	Zone* LocateZone(std::string address) const;
+	Building* LocateBuilding(std::string address) const;
+	Room* LocateRoom(std::string address) const;
+
 private:
 	// 排列地块中的园区与建筑
 	void ArrangePlots();

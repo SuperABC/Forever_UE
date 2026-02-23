@@ -316,17 +316,13 @@ void Populace::ApplyChange(Change* change, Story* story,
 
 		person->SetId((int)citizens.size());
 		condition.ParseCondition(obj->GetTarget());
-		person->SetName(ToString(condition.EvaluateValue([&](string name) -> pair<bool, ValueType> {
-			return story->GetValue(name);
-			})));
+		person->SetName(ToString(condition.EvaluateValue(getValues)));
 		condition.ParseCondition(obj->GetGender());
 		person->SetGender(ToString(condition.EvaluateValue([&](string name) -> pair<bool, ValueType> {
 			return story->GetValue(name);
 			})) == "male" ? GENDER_MALE : GENDER_FEMALE);
 		condition.ParseCondition(obj->GetBirthday());
-		person->SetBirthday(Time(ToString(condition.EvaluateValue([&](string name) -> pair<bool, ValueType> {
-			return story->GetValue(name);
-			}))));
+		person->SetBirthday(Time(ToString(condition.EvaluateValue(getValues))));
 		citizens.push_back(person);
 		ids[person->GetName()] = person->GetId();
 	}
@@ -336,11 +332,7 @@ void Populace::ApplyChange(Change* change, Story* story,
 		Condition conditionTarget;
 		conditionTarget.ParseCondition(obj->GetTarget());
 
-		auto person = GetCitizen(ToString(conditionTarget.EvaluateValue(
-			[&](string name) -> pair<bool, ValueType> {
-				return story->GetValue(name);
-			}
-		)));
+		auto person = GetCitizen(ToString(conditionTarget.EvaluateValue(getValues)));
 
 		if (!person) {
 			THROW_EXCEPTION(InvalidArgumentException, "Target citizen not found.\n");

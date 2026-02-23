@@ -42,6 +42,15 @@ public:
 	Traffic* GetTraffic();
 	Player* GetPlayer();
 
+	ATerrainBase* GetTerrainActor();
+	ARoadnetBase* GetRoadnetActor();
+	AZoneBase* GetZoneActor();
+	ABuildingBase* GetBuildingActor();
+	ARoomBase* GetRoomActor();
+	ATrafficBase* GetTrafficActor();
+	APopulaceBase* GetPopulaceActor();
+	AStoryBase* GetStoryActor();
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void GetLocation(FVector& location);
 

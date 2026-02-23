@@ -35,7 +35,7 @@ std::function<void(ZoneFactory*, BuildingFactory*, const std::vector<Plot*>&)> M
                 zone->SetAcreage(40000.f);
                 zone->AddBuildings(buildingFactory, { {"mod", 1.f}, {"mod", 1.f} });
                 std::string name = zone->GetName();
-                plot->AddZone(name, std::move(zone));
+                plot->AddZone(name, zone);
             }
         }
     };

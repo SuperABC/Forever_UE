@@ -324,57 +324,57 @@ unordered_set<string> Person::GetOptions() {
 	return options;
 }
 
-//void Person::SetStatus(shared_ptr<Zone> zone) {
-//	currentPlot = zone->GetParent();
-//	currentZone = zone;
-//	currentBuilding = nullptr;
-//	currentRoom = nullptr;
-//	commute.SetNull();
-//}
-//
-//void Person::SetStatus(shared_ptr<Building> building) {
-//	currentPlot = building->GetParentPlot();
-//	currentZone = building->GetParentZone();
-//	currentBuilding = building;
-//	currentRoom = nullptr;
-//	commute.SetNull();
-//}
-//
-//void Person::SetStatus(shared_ptr<Room> room) {
-//	currentPlot = room->GetParentBuilding()->GetParentPlot();
-//	currentZone = room->GetParentBuilding()->GetParentZone();
-//	currentBuilding = room->GetParentBuilding();
-//	currentRoom = room;
-//	commute.SetNull();
-//}
-//
-//void Person::SetStatus(shared_ptr<Room> target, vector<Connection> paths, Time time) {
-//	currentPlot = nullptr;
-//	currentZone = nullptr;
-//	currentBuilding = nullptr;
-//	currentRoom = nullptr;
-//	commute.SetTarget(target);
-//	commute.SetPaths(paths);
-//	commute.StartCommute(time);
-//}
-//
-//shared_ptr<Plot> Person::GetCurrentPlot() {
-//	return currentPlot;
-//}
-//
-//shared_ptr<Zone> Person::GetCurrentZone() {
-//	return currentZone;
-//}
-//
-//shared_ptr<Building> Person::GetCurrentBuilding() {
-//	return currentBuilding;
-//}
-//
-//shared_ptr<Room> Person::GetCurrentRoom() {
-//	return currentRoom;
-//}
-//
-//Commute Person::GetCurrentCommute() {
-//	return commute;
-//}
+void Person::SetStatus(Zone* zone) {
+	currentPlot = zone->GetParent();
+	currentZone = zone;
+	currentBuilding = nullptr;
+	currentRoom = nullptr;
+	commute.SetNull();
+}
+
+void Person::SetStatus(Building* building) {
+	currentPlot = building->GetParentPlot();
+	currentZone = building->GetParentZone();
+	currentBuilding = building;
+	currentRoom = nullptr;
+	commute.SetNull();
+}
+
+void Person::SetStatus(Room* room) {
+	currentPlot = room->GetParentBuilding()->GetParentPlot();
+	currentZone = room->GetParentBuilding()->GetParentZone();
+	currentBuilding = room->GetParentBuilding();
+	currentRoom = room;
+	commute.SetNull();
+}
+
+void Person::SetStatus(Room* target, vector<Connection> paths, Time time) {
+	currentPlot = nullptr;
+	currentZone = nullptr;
+	currentBuilding = nullptr;
+	currentRoom = nullptr;
+	commute.SetTarget(target);
+	commute.SetPaths(paths);
+	commute.StartCommute(time);
+}
+
+Plot* Person::GetCurrentPlot() {
+	return currentPlot;
+}
+
+Zone* Person::GetCurrentZone() {
+	return currentZone;
+}
+
+Building* Person::GetCurrentBuilding() {
+	return currentBuilding;
+}
+
+Room* Person::GetCurrentRoom() {
+	return currentRoom;
+}
+
+Commute Person::GetCurrentCommute() {
+	return commute;
+}
 

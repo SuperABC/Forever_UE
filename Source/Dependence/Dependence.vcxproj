@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="common\commute.cpp" />
     <ClCompile Include="common\condition.cpp" />
     <ClCompile Include="common\error.cpp" />
     <ClCompile Include="common\json.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="story\event_base.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\commute.h" />
     <ClInclude Include="common\condition.h" />
     <ClInclude Include="common\error.h" />
     <ClInclude Include="common\json.h" />

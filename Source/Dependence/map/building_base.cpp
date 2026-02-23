@@ -54,6 +54,10 @@ vector<pair<Quad, int>>& Floor::GetRooms() {
     return rooms;
 }
 
+int Floor::AssignNumber() {
+    return number++;
+}
+
 Building::Building() {
 
 }
@@ -360,6 +364,7 @@ void Building::AssignRoom(int level, int slot, string name, Component* component
         floors[basements + level]->GetRooms()[slot].first.GetSizeY());
     room->SetFace(floors[basements + level]->GetRooms()[slot].second);
     component->AddRoom(room);
+    room->SetAddress(floors[basements + level]->AssignNumber());
     rooms.push_back(room);
 }
 
@@ -378,7 +383,8 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage, Compo
                 row.first.GetRight(), row.first.GetBottom() + div * (i + 1));
             room->SetFace(floors[basements + level]->GetRows()[slot].second);
             component->AddRoom(room);
-            rooms.push_back(move(room));
+            room->SetAddress(floors[basements + level]->AssignNumber());
+            rooms.push_back(room);
         }
     }
     else {
@@ -390,7 +396,8 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage, Compo
                 row.first.GetLeft() + div * (i + 1), row.first.GetTop());
             room->SetFace(floors[basements + level]->GetRows()[slot].second);
             component->AddRoom(room);
-            rooms.push_back(move(room));
+            room->SetAddress(floors[basements + level]->AssignNumber());
+            rooms.push_back(room);
         }
     }
 }

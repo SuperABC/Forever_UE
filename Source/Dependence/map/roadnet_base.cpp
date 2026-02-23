@@ -47,13 +47,14 @@ const vector<Plot *>& Roadnet::GetPlots() const {
 void Roadnet::AllocateAddress() {
     addresses.clear();
 
-    for (const auto& plot : plots) {
+    for (auto& plot : plots) {
 		auto roads = plot->GetRoads();
         for (const auto& road : roads) {
             if (addresses.find(road.first.GetName()) == addresses.end()) {
                 addresses[road.first.GetName()] = vector<Plot *>();
             }
             addresses[road.first.GetName()].push_back(plot);
+            plot->SetAddress(road.first.GetName(), addresses[road.first.GetName()].size());
 		}
 	}
 }

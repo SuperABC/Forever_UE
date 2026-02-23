@@ -624,7 +624,7 @@ int Map::Init(int blockX, int blockY) {
             for (auto room : component->GetRooms()) {
                 room->SetParent(component);
                 room->SetParent(building.second);
-	        capacity += room->GetLivingCapacity();
+	            capacity += room->GetLivingCapacity();
             }
         }
     }
@@ -912,6 +912,96 @@ vector<Room*> Map::GetRooms() const {
         rooms.insert(rooms.end(), current.begin(), current.end());
     }
     return rooms;
+}
+
+Plot* Map::LocatePlot(std::string address) const {
+    std::istringstream iss(address);
+
+    std::string road;
+    iss >> road;
+    int id = -1;
+    iss >> id;
+    if (id < 0)return nullptr;
+    return roadnet->LocatePlot(road, id);
+}
+
+Zone* Map::LocateZone(std::string address) const {
+    std::istringstream iss(address);
+
+    std::string road;
+    iss >> road;
+    int id = -1;
+    iss >> id;
+    if (id < 0)return nullptr;
+    auto plot = roadnet->LocatePlot(road, id);
+    if (!plot)return nullptr;
+
+    std::string zone;
+    iss >> zone;
+    if (plot->GetZones().find(zone) == plot->GetZones().end())return nullptr;
+    return plot->GetZones()[zone];
+}
+
+Building* Map::LocateBuilding(std::string address) const {
+    std::istringstream iss(address);
+
+    std::string road;
+    iss >> road;
+    int id = -1;
+    iss >> id;
+    if (id < 0)return nullptr;
+    auto plot = roadnet->LocatePlot(road, id);
+    if (!plot)return nullptr;
+
+    std::string zone;
+    iss >> zone;
+    if (plot->GetZones().find(zone) == plot->GetZones().end()) {
+        std::string building = zone;
+        if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
+        return plot->GetBuildings()[building];
+    }
+    else {
+        auto z = plot->GetZones()[zone];
+        std::string building;
+        iss >> building;
+        if (z->GetBuildings().find(building) == z->GetBuildings().end())return nullptr;
+        return z->GetBuildings()[building];
+    }
+}
+
+Room* Map::LocateRoom(std::string address) const {
+    std::istringstream iss(address);
+
+    std::string road;
+    iss >> road;
+    int id = -1;
+    iss >> id;
+    if (id < 0)return nullptr;
+    auto plot = roadnet->LocatePlot(road, id);
+    if (!plot)return nullptr;
+
+    std::string zone;
+    iss >> zone;
+    if (plot->GetZones().find(zone) == plot->GetZones().end()) {
+        std::string building = zone;
+        if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
+        auto b = plot->GetBuildings()[building];
+        int id = -1;
+        iss >> id;
+        if (id < 0)return nullptr;
+        return b->GetRooms()[id];
+    }
+    else {
+        auto z = plot->GetZones()[zone];
+        std::string building;
+        iss >> building;
+        if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
+        auto b = plot->GetBuildings()[building];
+        int id = -1;
+        iss >> id;
+        if (id < 0)return nullptr;
+        return b->GetRooms()[id];
+    }
 }
 
 void Map::ArrangePlots() {

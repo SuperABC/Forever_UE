@@ -8,6 +8,7 @@
 #include "job.h"
 #include "experience.h"
 #include "utility.h"
+#include "commute.h"
 
 #include <string>
 #include <memory>
@@ -121,15 +122,15 @@ public:
 	std::unordered_set<std::string> GetOptions();
 
 	// 实时状态
-	//void SetStatus(std::shared_ptr<Zone> zone);
-	//void SetStatus(std::shared_ptr<Building> building);
-	//void SetStatus(std::shared_ptr<Room> room);
-	//void SetStatus(std::shared_ptr<Room> target, std::vector<Connection> paths, Time time);
-	//std::shared_ptr<Plot> GetCurrentPlot();
-	//std::shared_ptr<Zone> GetCurrentZone();
-	//std::shared_ptr<Building> GetCurrentBuilding();
-	//std::shared_ptr<Room> GetCurrentRoom();
-	//Commute GetCurrentCommute();
+	void SetStatus(Zone* zone);
+	void SetStatus(Building* building);
+	void SetStatus(Room* room);
+	void SetStatus(Room* target, std::vector<Connection> paths, Time time);
+	Plot* GetCurrentPlot();
+	Zone* GetCurrentZone();
+	Building* GetCurrentBuilding();
+	Room* GetCurrentRoom();
+	Commute GetCurrentCommute();
 
 private:
 	int id;
@@ -162,9 +163,9 @@ private:
 	std::unordered_map<std::string, ValueType> variables;
 	std::unordered_set<std::string> options;
 
-	//std::shared_ptr<Plot> currentPlot;
-	//std::shared_ptr<Zone> currentZone;
-	//std::shared_ptr<Building> currentBuilding;
-	//std::shared_ptr<Room> currentRoom;
-	//Commute commute;
+	Plot* currentPlot;
+	Zone* currentZone;
+	Building* currentBuilding;
+	Room* currentRoom;
+	Commute commute;
 };

@@ -87,6 +87,9 @@
     <ClCompile Include="common\condition.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="common\commute.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -147,6 +150,9 @@
       <Filter>story</Filter>
     </ClInclude>
     <ClInclude Include="common\condition.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\commute.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

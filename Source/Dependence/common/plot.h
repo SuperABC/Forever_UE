@@ -103,10 +103,15 @@ public:
 	void RemoveZone(std::string name);
 	void RemoveBuilding(std::string name);
 
+	// 寻址
+	void SetAddress(std::string road, int id);
+	std::string GetAddress() const;
+
 protected:
 	float rotation;
 	AREA_TYPE area = AREA_GREEN;
 
+	std::pair<std::string, int> address;
 	std::vector<std::pair<Connection, float>> roads;
 
 	std::unordered_map<std::string, Zone*> zones;

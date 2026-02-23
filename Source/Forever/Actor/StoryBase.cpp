@@ -73,6 +73,24 @@ bool AStoryBase::SelectOption(FString selected) {
 					AddFront(&dialogs[i]);
 				}
 			}
+			auto changes = option.GetChanges();
+			vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+				[&](string name) -> pair<bool, ValueType> {
+					return story->GetValue(name);
+				}
+			};
+			for (auto change : changes) {
+				if (!story->JudgeCondition(change->GetCondition()))continue;
+				((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+				ApplyChange(change, getValues);
+			}
 			interacting = false;
 			return true;
 		}
@@ -81,11 +99,22 @@ bool AStoryBase::SelectOption(FString selected) {
 	return false;
 }
 
+TArray<FString> AStoryBase::GetOptions(FString name) {
+	TArray<FString> options;
+	auto populace = ((AGlobalBase*)global)->GetPopulace();
+	auto citizen = populace->GetCitizen(TCHAR_TO_UTF8(*name));
+	for (auto option : citizen->GetOptions()) {
+		options.Add(UTF8_TO_TCHAR(option.data()));
+	}
+	return options;
+}
+
 void AStoryBase::GameStart() {
 	auto story = ((AGlobalBase*)global)->GetStory();
 	auto event = new GameStartEvent();
 
 	auto [dialogs, changes] = story->MatchEvent(event);
+	delete event;
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](string name) -> pair<bool, ValueType> {
@@ -101,12 +130,64 @@ void AStoryBase::GameStart() {
 		((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
 		((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
 		((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+		ApplyChange(change, getValues);
 	}
 
 	for (auto& dialog : dialogs) {
 		if (story->JudgeCondition(dialog.GetCondition())) {
 			AddBack(&dialog);
 		}
+	}
+}
+
+void AStoryBase::OptionDialog(FString name, FString option) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new OptionDialogEvent(TCHAR_TO_UTF8(*name), TCHAR_TO_UTF8(*option));
+
+	auto [dialogs, changes] = story->MatchEvent(event);
+	delete event;
+
+	for (auto& dialog : dialogs) {
+		if (story->JudgeCondition(dialog.GetCondition())) {
+			AddBack(&dialog);
+		}
+	}
+
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](string name) -> pair<bool, ValueType> {
+			return story->GetValue(name);
+		}
+	};
+	for (auto change : changes) {
+		if (!story->JudgeCondition(change->GetCondition()))continue;
+		((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+		((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+		((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+		((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+		((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+		((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+		((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+		ApplyChange(change, getValues);
+	}
+}
+
+void AStoryBase::ApplyChange(Change* change,
+	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	auto type = change->GetType();
+
+	if (type == "spawn_npc") {
+		auto obj = dynamic_cast<SpawnNpcChange*>(change);
+
+		Condition condition;
+		condition.ParseCondition(obj->GetTarget());
+		FString name = UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data());
+		FVector location = FVector(0.f, 0.f, 0.f);
+		((AGlobalBase*)global)->GetLocation(location);
+		location /= 1000.f;
+		location += FVector(1.f, 1.f, 0.f);
+		((AGlobalBase*)global)->GetPopulaceActor()->SpawnNpc(name, location);
 	}
 }
 

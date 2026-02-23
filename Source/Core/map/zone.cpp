@@ -37,7 +37,7 @@ function<void(ZoneFactory*, BuildingFactory*, const vector<Plot*>&)> DefaultZone
 				zone->AddBuildings(buildingFactory, buildings);
 
                 string name = zone->GetName();
-                plot->AddZone(name, move(zone));
+                plot->AddZone(name, zone);
             }
         }
     };
