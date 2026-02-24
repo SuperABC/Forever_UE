@@ -221,8 +221,8 @@ SpawnNpcChange::SpawnNpcChange() {
 
 }
 
-SpawnNpcChange::SpawnNpcChange(string target, string gender, string birthday)
-    : target(target), gender(gender), birthday(birthday) {
+SpawnNpcChange::SpawnNpcChange(string target, string gender, string birthday, string avatar)
+    : target(target), gender(gender), birthday(birthday), avatar(avatar) {
 
 }
 
@@ -264,6 +264,14 @@ void SpawnNpcChange::SetBirthday(string birthday) {
 
 string SpawnNpcChange::GetBirthday() {
     return birthday;
+}
+
+void SpawnNpcChange::SetAvatar(string avatar) {
+    this->avatar = avatar;
+}
+
+string SpawnNpcChange::GetAvatar() {
+    return avatar;
 }
 
 vector<Change*> SpawnNpcChange::ApplyChange() {

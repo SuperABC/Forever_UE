@@ -621,7 +621,8 @@ vector<Change*> Script::BuildChanges(JsonValue root, ChangeFactory* factory) con
             }
             string gender = obj["gender"].IsNull() ? "" : obj["gender"].AsString();
             string birthday = obj["birthday"].IsNull() ? "" : obj["birthday"].AsString();
-            change = new SpawnNpcChange(obj["target"].AsString(), gender, birthday);
+            string avatar = obj["avatar"].IsNull() ? "" : obj["avatar"].AsString();
+            change = new SpawnNpcChange(obj["target"].AsString(), gender, birthday, avatar);
         }
         else if (type == "remove_npc") {
             auto target = obj["target"];

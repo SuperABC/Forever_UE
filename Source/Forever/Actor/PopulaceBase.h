@@ -15,6 +15,8 @@ struct FPerson {
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Connection")
 	FString name;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Connection")
+	FString avatar;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Connection")
 	FVector pos;
 };
 
@@ -29,7 +31,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
-	void SpawnNpc(const FString& name, const FVector& position);
+	void SpawnNpc(const FString& name, const FString& avatar, const FVector& position);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdatePopulace(const TArray<FPerson>& adds, const TMap<FString, AActor*>& removes);

@@ -53,8 +53,8 @@ void APopulaceBase::SetGlobal(AActor* g) {
 	this->global = g;
 }
 
-void APopulaceBase::SpawnNpc(const FString& name, const FVector& position) {
-	UpdatePopulace({ FPerson(name, position) }, { });
+void APopulaceBase::SpawnNpc(const FString& name, const FString& avatar, const FVector& position) {
+	UpdatePopulace({ FPerson(name, avatar, position) }, { });
 }
 
 void APopulaceBase::AddInstance(FString name, AActor* actor) {

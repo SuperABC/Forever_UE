@@ -123,7 +123,7 @@ private:
 class SpawnNpcChange : public Change {
 public:
     SpawnNpcChange();
-    SpawnNpcChange(std::string target, std::string gender, std::string birthday);
+    SpawnNpcChange(std::string target, std::string gender, std::string birthday, std::string avatar);
     virtual ~SpawnNpcChange();
 
     static std::string GetId();
@@ -136,6 +136,8 @@ public:
     std::string GetGender();
     void SetBirthday(std::string birthday);
     std::string GetBirthday();
+    void SetAvatar(std::string avatar);
+    std::string GetAvatar();
 
     virtual std::vector<Change*> ApplyChange() override;
 
@@ -143,6 +145,7 @@ private:
     std::string target;
     std::string gender;
     std::string birthday;
+    std::string avatar;
 };
 
 // 移除NPC

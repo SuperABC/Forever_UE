@@ -183,11 +183,13 @@ void AStoryBase::ApplyChange(Change* change,
 		Condition condition;
 		condition.ParseCondition(obj->GetTarget());
 		FString name = UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data());
+		condition.ParseCondition(obj->GetAvatar());
+		FString avatar = UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data());
 		FVector location = FVector(0.f, 0.f, 0.f);
 		((AGlobalBase*)global)->GetLocation(location);
 		location /= 1000.f;
 		location += FVector(1.f, 1.f, 0.f);
-		((AGlobalBase*)global)->GetPopulaceActor()->SpawnNpc(name, location);
+		((AGlobalBase*)global)->GetPopulaceActor()->SpawnNpc(name, avatar, location);
 	}
 }
 
