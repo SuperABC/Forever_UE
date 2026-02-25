@@ -106,6 +106,9 @@ void AGlobalBase::BeginPlay() {
 		society->Init(map, populace, player->GetTime());
 		story->InitVariables(player->GetTime());
 		story->ReadStory("ys", path);
+		populace->Schedule();
+		populace->Workload(story);
+		populace->Characterize("scripts/characters/", story);
 
 		FVector Location(0.0f, 0.0f, 0.0f);
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
@@ -128,7 +131,7 @@ void AGlobalBase::BeginPlay() {
 		storyActor->SetGlobal(this);
 	}
 	catch (ExceptionBase& e) {
-		UE_LOGFMT(LogTemp, Log, "{0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
+		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
 	}
 }
 

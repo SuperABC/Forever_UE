@@ -6,7 +6,7 @@
 	"dialogs": [
 	],
 	"changes": [
-		{"type": "add_option", "target": "$$self.name", "option": "²âÊÔ"}
+		{"type": "add_option", "target": "$$self.name", "option": "æµ‹è¯•"}
 	],
 	"subsequences": [
 		"test_dialog"
@@ -16,10 +16,10 @@
 	"milestone": "test_dialog",
 	"visible": false,
 	"drop": "false",
-	"triggers": [{"type": "option_dialog", "option": "²âÊÔ"}],
+	"triggers": [{"type": "option_dialog", "option": "æµ‹è¯•"}],
 	"dialogs": [
 		{"list": [
-			{"content": "ĞÔ¸ñ½Å±¾²âÊÔ³É¹¦¡£"}
+			{"content": "æ€§æ ¼è„šæœ¬æµ‹è¯•æˆåŠŸã€‚"}
 		]}
 	],
 	"changes": [

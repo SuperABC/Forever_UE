@@ -443,6 +443,9 @@ int main() {
 				society->Init(::map, populace, player->GetTime());
 				story->InitVariables(player->GetTime());
 				story->ReadStory("ys", path);
+				populace->Schedule();
+				populace->Workload(story);
+				populace->Characterize(REPLACE_PATH("../Resources/scripts/characters/"), story);
 
 				break;
 			}
@@ -462,7 +465,7 @@ int main() {
 					THROW_EXCEPTION(CommandException, "Wrong input event format.");
 				}
 
-				if (true) { // 全局事件
+				{ // 全局事件
 					vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 						[&](string name) -> pair<bool, ValueType> {
 							return story->GetValue(name);
@@ -490,20 +493,70 @@ int main() {
 						player->ApplyChange(change, story, getValues);
 					}
 				}
-				/*
-				if (event->GetType() == "game_start") { // 市民独立开始事件
-					for (int i = 0; i < populace->GetCitizens().size(); i++) {
-						auto actions = populace->TriggerEvent(i, event, story);
-						auto dialogs = actions.first;
-						auto changes = actions.second;
+
+				{ // 人物事件
+					bool traverse = false;
+					int id = -1;
+					Person* person = nullptr;
+					auto type = event->GetType();
+					if (type == "game_start") {
+						traverse = true;
+					}
+					else if (type == "option_dialog") {
+						auto target = dynamic_cast<OptionDialogEvent*>(event)->GetTarget();
+						auto idx = dynamic_cast<OptionDialogEvent*>(event)->GetIdx();
+						if (target.size() == 0) {
+							if (idx >= populace->GetCitizens().size() || idx < 0) {
+								THROW_EXCEPTION(CommandException, "Wrong input citizen ID.");
+							}
+							person = populace->GetCitizens()[idx];
+							id = idx;
+						}
+						else {
+							person = populace->GetCitizen(target);
+							if (person == nullptr) {
+								THROW_EXCEPTION(CommandException, "Citizen not found.");
+							}
+							id = person->GetId();
+						}
+					}
+
+					if (traverse) {
+						for (int i = 0; i < populace->GetCitizens().size(); i++) {
+							vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+								[&](string name) -> pair<bool, ValueType> {
+									return story->GetValue(name);
+								},
+								[&](string name) -> pair<bool, ValueType> {
+									return populace->GetCitizens()[i]->GetValue(name);
+								}
+							};
+							auto [dialogs, changes] = populace->TriggerEvent(i, event, story);
+							for (auto dialog : dialogs) {
+								if (story->JudgeCondition(dialog.GetCondition())) {
+									if (PrintDialog(dialog, getValues)) {
+										break;
+									}
+								}
+							}
+							for (auto change : changes) {
+								if (!story->JudgeCondition(change->GetCondition()))continue;
+								::map->ApplyChange(change, story, getValues);
+								populace->ApplyChange(change, story, getValues);
+								story->ApplyChange(change, story, getValues);
+							}
+						}
+					}
+					else {
 						vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 							[&](string name) -> pair<bool, ValueType> {
 								return story->GetValue(name);
 							},
 							[&](string name) -> pair<bool, ValueType> {
-								return populace->GetCitizens()[i]->GetValue(name);
+								return person->GetValue(name);
 							}
 						};
+						auto [dialogs, changes] = populace->TriggerEvent(id, event, story);
 						for (auto dialog : dialogs) {
 							if (story->JudgeCondition(dialog.GetCondition())) {
 								if (PrintDialog(dialog, getValues)) {
@@ -512,60 +565,13 @@ int main() {
 							}
 						}
 						for (auto change : changes) {
-							if (!story->JudgeCondition(change->GetCondition(), populace->GetCitizens()[i]))continue;
-							::map->ApplyChange(change, story);
-							populace->ApplyChange(change, ::map, story, populace->GetCitizens()[i]);
-							story->ApplyChange(change);
+							if (!story->JudgeCondition(change->GetCondition()))continue;
+							::map->ApplyChange(change, story, getValues);
+							populace->ApplyChange(change, story, getValues);
+							story->ApplyChange(change, story, getValues);
 						}
 					}
 				}
-				if (event->GetType() == "option_dialog") { // 市民独立对话事件
-					auto target = dynamic_pointer_cast<OptionDialogEvent>(event)->GetTarget();
-					auto idx = dynamic_pointer_cast<OptionDialogEvent>(event)->GetIdx();
-					pair<vector<Dialog>, vector<shared_ptr<Change>>> actions;
-					shared_ptr<Person> person = nullptr;
-					if (target.size() == 0) {
-						if (idx >= populace->GetCitizens().size() || idx < 0) {
-							THROW_EXCEPTION(CommandException, "Wrong input citizen ID.");
-						}
-						actions = populace->TriggerEvent(idx, event, story);
-						person = populace->GetCitizens()[idx];
-					}
-					else {
-						actions = populace->TriggerEvent(target, event, story);
-						person = populace->GetCitizen(target);
-					}
-
-					if (person == nullptr) {
-						THROW_EXCEPTION(CommandException, "Citizen not found.");
-					}
-
-					vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-						[&](string name) -> pair<bool, ValueType> {
-							return story->GetValue(name);
-						},
-						[&](string name) -> pair<bool, ValueType> {
-							return person->GetValue(name);
-						}
-					};
-
-					auto dialogs = actions.first;
-					auto changes = actions.second;
-					for (auto dialog : dialogs) {
-						if (story->JudgeCondition(dialog.GetCondition(), person)) {
-							if (PrintDialog(dialog, getValues)) {
-								break;
-							}
-						}
-					}
-					for (auto change : changes) {
-						if (!story->JudgeCondition(change->GetCondition()))continue;
-						::map->ApplyChange(change, story);
-						populace->ApplyChange(change, ::map, story);
-						story->ApplyChange(change);
-					}
-				}
-				*/
 
 				delete event;
 				break;

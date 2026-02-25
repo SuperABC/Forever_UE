@@ -16,7 +16,6 @@ class MilestoneNode;
 class Script {
 public:
 	Script();
-	Script(Script* script);
 	~Script();
 
 	// 读取剧本

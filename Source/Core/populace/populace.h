@@ -18,6 +18,7 @@
 class Map;
 class Story;
 class Person;
+class Event;
 
 class Populace {
 public:
@@ -56,12 +57,25 @@ public:
 	void ApplyChange(Change* change, Story* story,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
+	// 分配调度
+	void Schedule() const;
+
+	// 分配剧情
+	void Workload(Story* story) const;
+	void Characterize(std::string path, Story* story) const;
+
 	// 获取市民
 	std::vector<Person*>& GetCitizens();
 	Person* GetCitizen(std::string name);
 
 	// 获取Job工厂
 	JobFactory* GetJobFactory();
+
+	// 触发事件
+	std::pair<std::vector<Dialog>, std::vector<Change*>> TriggerEvent(
+		std::string name, Event* event, Story* story) const;
+	std::pair<std::vector<Dialog>, std::vector<Change*>> TriggerEvent(
+		int id, Event* event, Story* story) const;
 
 private:
 	// 生成市民

@@ -229,7 +229,16 @@ void Populace::ReadConfigs(string path) const {
         THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
     }
     if (reader.Parse(fin, root)) {
+		for (auto asset : root["mods"]["asset"]) {
+			assetFactory->SetConfig(asset.AsString(), true);
+		}
+		for (auto job : root["mods"]["job"]) {
+			jobFactory->SetConfig(job.AsString(), true);
+		}
 		nameFactory->SetConfig(root["mods"]["name"].AsString(), true);
+		for (auto scheduler : root["mods"]["scheduler"]) {
+			schedulerFactory->SetConfig(scheduler.AsString(), true);
+		}
     }
     else {
         fin.close();
@@ -248,9 +257,9 @@ void Populace::Init(int accomodation, vector<string> nameholders, Time* time) {
     GenerateJobs();
 
     // 更新个人变量
-    //for (auto citizen : citizens) {
-    //    citizen->UpdateValues(time);
-    //}
+    for (auto citizen : citizens) {
+        citizen->UpdateValues(time);
+    }
 }
 
 void Populace::Destroy() {
@@ -344,6 +353,83 @@ void Populace::ApplyChange(Change* change, Story* story,
 	}
 }
 
+void Populace::Schedule() const {
+	// 汇总权重
+	auto powers = schedulerFactory->GetPowers();
+	vector<pair<string, float>> cdfs;
+	float sum = 0.f;
+	for (auto power : powers) {
+		sum += power.second;
+		cdfs.emplace_back(power.first, sum);
+	}
+	if (sum == 0.f) {
+		THROW_EXCEPTION(InvalidArgumentException, "No valid organization for generation.\n");
+	}
+	for (auto& cdf : cdfs) {
+		cdf.second /= sum;
+	}
+
+	// 加权分配调度
+	for (auto& citizen : citizens) {
+		float r = GetRandom(1000) / 1000.f;
+		string selectedScheduler;
+		for (auto& cdf : cdfs) {
+			if (r <= cdf.second) {
+				selectedScheduler = cdf.first;
+				break;
+			}
+		}
+		Scheduler* scheduler = schedulerFactory->CreateScheduler(selectedScheduler);
+		if (!scheduler) {
+			continue;
+		}
+
+		citizen->SetScheduler(scheduler);
+	}
+}
+
+void Populace::Workload(Story* story) const {
+	// 添加职业剧本
+	unordered_map<string, Script*> jobScripts;
+	for (auto citizen : citizens) {
+		for (auto job : citizen->GetJobs()) {
+			for (auto scriptPath : job->GetScripts()) {
+				auto script = new Script();
+				script->ReadMilestones(scriptPath, resourcePath + scriptPath,
+					story->GetEventFactory(), story->GetChangeFactory());
+				citizen->AddScript(script);
+			}
+		}
+	}
+
+	debugf("Generate workloads.\n");
+}
+
+void Populace::Characterize(string path, Story* story) const {
+	// 汇总个性剧本
+	vector<string> characters;
+	for (const auto& entry : filesystem::directory_iterator(resourcePath + path)) {
+		if (entry.is_regular_file() && entry.path().extension() == ".json") {
+			characters.push_back(entry.path().string());
+		}
+	}
+	if (characters.size() == 0) {
+		debugf("No character scripts found.\n");
+		return;
+	}
+
+	// 随机选择个性剧本
+	for (auto citizen : citizens) {
+		int r = GetRandom((int)characters.size());
+		Script* script = new Script();
+		script->ReadMilestones(characters[r], characters[r],
+			story->GetEventFactory(), story->GetChangeFactory());
+		citizen->AddScript(script);
+	}
+
+	debugf("Generate characters.\n");
+}
+
 vector<Person*>& Populace::GetCitizens() {
 	return citizens;
 }
@@ -359,6 +445,27 @@ Person* Populace::GetCitizen(string name) {
 
 JobFactory* Populace::GetJobFactory() {
 	return jobFactory;
+}
+
+pair<vector<Dialog>, vector<Change*>> Populace::TriggerEvent(
+	string name, Event* event, Story* story) const {
+
+	for (auto& citizen : citizens) {
+		if (citizen->GetName() == name) {
+			return citizen->MatchEvent(event, story, citizen);
+		}
+	}
+
+	return make_pair(vector<Dialog>(), vector<Change*>());
+}
+
+pair<vector<Dialog>, vector<Change*>> Populace::TriggerEvent(
+	int id, Event* event, Story* story)  const {
+	if (id >= 0 && id < citizens.size()) {
+		return citizens[id]->MatchEvent(event, story, citizens[id]);
+	}
+
+	return make_pair(vector<Dialog>(), vector<Change*>());
 }
 
 void Populace::GenerateCitizens(int num, vector<string> nameholders, Time* time) {

@@ -31,6 +31,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
+	void TriggerEvent(Event* event);
 	void SpawnNpc(const FString& name, const FString& avatar, const FVector& position);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
@@ -42,6 +43,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	TArray<FString> GetOptions(FString name);
+
 
 protected:
 	virtual void BeginPlay() override;

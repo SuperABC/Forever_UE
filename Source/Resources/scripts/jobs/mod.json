@@ -3,10 +3,10 @@
 	"milestone": "test_dialog",
 	"visible": false,
 	"drop": "false",
-	"triggers": [{"type": "option_dialog", "option": "²âÊÔ"}],
+	"triggers": [{"type": "option_dialog", "option": "æµ‹è¯•"}],
 	"dialogs": [
 		{"list": [
-			{"content": "Ä£×éÖ°Òµ½Å±¾³É¹¦¡£"}
+			{"content": "æ¨¡ç»„èŒä¸šè„šæœ¬æˆåŠŸã€‚"}
 		]}
 	],
 	"changes": [

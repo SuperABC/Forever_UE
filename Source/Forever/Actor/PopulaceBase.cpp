@@ -53,6 +53,96 @@ void APopulaceBase::SetGlobal(AActor* g) {
 	this->global = g;
 }
 
+void APopulaceBase::TriggerEvent(Event* event) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto populace = ((AGlobalBase*)global)->GetPopulace();
+
+	bool traverse = false;
+	int id = -1;
+	Person* person = nullptr;
+	auto type = event->GetType();
+	if (type == "game_start") {
+		traverse = true;
+	}
+	else if(type == "option_dialog") {
+		auto target = dynamic_cast<OptionDialogEvent*>(event)->GetTarget();
+		auto idx = dynamic_cast<OptionDialogEvent*>(event)->GetIdx();
+		if (target.size() == 0) {
+			if (idx >= populace->GetCitizens().size() || idx < 0) {
+				THROW_EXCEPTION(CommandException, "Wrong input citizen ID.");
+			}
+			person = populace->GetCitizens()[idx];
+			id = idx;
+		}
+		else {
+			person = populace->GetCitizen(target);
+			if (person == nullptr) {
+				THROW_EXCEPTION(CommandException, "Citizen not found.");
+			}
+			id = person->GetId();
+		}
+	}
+
+	if (traverse) {
+		for (int i = 0; i < populace->GetCitizens().size(); i++) {
+			vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+				[&](string name) -> pair<bool, ValueType> {
+					return story->GetValue(name);
+				},
+				[&](string name) -> pair<bool, ValueType> {
+					return populace->GetCitizens()[i]->GetValue(name);
+				}
+			};
+			auto [dialogs, changes] = populace->TriggerEvent(i, event, story);
+			for (auto dialog : dialogs) {
+				if (story->JudgeCondition(dialog.GetCondition())) {
+					((AGlobalBase*)global)->GetStoryActor()->AddBack(&dialog);
+				}
+			}
+			for (auto change : changes) {
+				if (!story->JudgeCondition(change->GetCondition()))continue;
+				((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+				((AGlobalBase*)global)->GetStoryActor()->ApplyChange(change, getValues);
+			}
+		}
+	}
+	else {
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](string name) -> pair<bool, ValueType> {
+				return story->GetValue(name);
+			},
+			[&](string name) -> pair<bool, ValueType> {
+				return person->GetValue(name);
+			}
+		};
+		auto [dialogs, changes] = populace->TriggerEvent(id, event, story);
+		for (auto dialog : dialogs) {
+			if (story->JudgeCondition(dialog.GetCondition())) {
+				((AGlobalBase*)global)->GetStoryActor()->AddBack(&dialog);
+			}
+		}
+		for (auto change : changes) {
+			if (!story->JudgeCondition(change->GetCondition()))continue;
+			((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+			((AGlobalBase*)global)->GetStoryActor()->ApplyChange(change, getValues);
+		}
+	}
+}
+
 void APopulaceBase::SpawnNpc(const FString& name, const FString& avatar, const FVector& position) {
 	UpdatePopulace({ FPerson(name, avatar, position) }, { });
 }

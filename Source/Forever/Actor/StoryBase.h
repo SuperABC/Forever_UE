@@ -24,6 +24,9 @@ public:
 	void AddFront(Dialog* dialog);
 	void AddBack(Dialog* dialog);
 
+	void ApplyChange(Change* change,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void UpdateDialog(const FString& speaker, const FString& content);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
@@ -42,9 +45,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	void ApplyChange(Change* change,
-		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
