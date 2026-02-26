@@ -134,6 +134,9 @@
     <ClCompile Include="common\plot.cpp" />
     <ClCompile Include="common\quad.cpp" />
     <ClCompile Include="common\utility.cpp" />
+    <ClCompile Include="industry\manufacture_base.cpp" />
+    <ClCompile Include="industry\product_base.cpp" />
+    <ClCompile Include="industry\storage_base.cpp" />
     <ClCompile Include="map\building_base.cpp" />
     <ClCompile Include="map\component_base.cpp" />
     <ClCompile Include="map\roadnet_base.cpp" />
@@ -157,6 +160,9 @@
     <ClInclude Include="common\plot.h" />
     <ClInclude Include="common\quad.h" />
     <ClInclude Include="common\utility.h" />
+    <ClInclude Include="industry\manufacture_base.h" />
+    <ClInclude Include="industry\product_base.h" />
+    <ClInclude Include="industry\storage_base.h" />
     <ClInclude Include="map\building_base.h" />
     <ClInclude Include="map\component_base.h" />
     <ClInclude Include="map\roadnet_base.h" />

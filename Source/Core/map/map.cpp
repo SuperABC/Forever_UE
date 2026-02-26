@@ -624,7 +624,7 @@ int Map::Init(int blockX, int blockY) {
             for (auto room : component->GetRooms()) {
                 room->SetParent(component);
                 room->SetParent(building.second);
-	            capacity += room->GetLivingCapacity();
+	            capacity += room->ResidentialCapacity();
             }
         }
     }
@@ -637,7 +637,7 @@ int Map::Init(int blockX, int blockY) {
                 for (auto room : component->GetRooms()) {
                     room->SetParent(component);
                     room->SetParent(building.second);
-			 	    capacity += room->GetLivingCapacity();
+			 	    capacity += room->ResidentialCapacity();
                 }
             }
         }

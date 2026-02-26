@@ -446,6 +446,7 @@ int main() {
 				populace->Schedule();
 				populace->Workload(story);
 				populace->Characterize(REPLACE_PATH("../Resources/scripts/characters/"), story);
+				industry->Init(::map);
 
 				break;
 			}

@@ -12,6 +12,9 @@
 #include "organization_mod.h"
 #include "event_mod.h"
 #include "change_mod.h"
+#include "product_mod.h"
+#include "storage_mod.h"
+#include "manufacture_mod.h"
 
 #pragma comment(lib, "Dependence.lib")
 
@@ -97,6 +100,24 @@ extern "C" __declspec(dllexport) void RegisterModEvents(EventFactory* factory) {
 extern "C" __declspec(dllexport) void RegisterModChanges(ChangeFactory* factory) {
     factory->RegisterChange(ModChange::GetId(), []() {
         return new ModChange();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterModProducts(ProductFactory* factory) {
+    factory->RegisterProduct(ModProduct::GetId(), []() {
+        return new ModProduct();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterModStorages(StorageFactory* factory) {
+    factory->RegisterStorage(ModStorage::GetId(), []() {
+        return new ModStorage();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterModManufactures(ManufactureFactory* factory) {
+    factory->RegisterManufacture(ModManufacture::GetId(), []() {
+        return new ModManufacture();
         });
 }
 

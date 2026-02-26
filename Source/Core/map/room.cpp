@@ -31,20 +31,20 @@ bool DefaultResidentialRoom::IsManufacture() const {
 	return false;
 }
 
-int DefaultResidentialRoom::GetLivingCapacity() const {
+int DefaultResidentialRoom::ResidentialCapacity() const {
 	return 1;
 }
 
-int DefaultResidentialRoom::GetPersonnelCapacity() const {
+int DefaultResidentialRoom::WorkspaceCapacity() const {
 	return 0;
 }
 
-pair<string, float> DefaultResidentialRoom::GetIndustryCapacity() const {
+pair<string, float> DefaultResidentialRoom::StorageConfig() const {
 	return { "", 0.f };
 }
 
-string DefaultResidentialRoom::GetFactoryPipeline() const {
-	return "";
+vector<string> DefaultResidentialRoom::ManufactureTypes() const {
+	return { "" };
 }
 
 string DefaultWorkingRoom::GetId() {
@@ -75,18 +75,18 @@ bool DefaultWorkingRoom::IsManufacture() const {
 	return false;
 }
 
-int DefaultWorkingRoom::GetLivingCapacity() const {
+int DefaultWorkingRoom::ResidentialCapacity() const {
 	return 0;
 }
 
-int DefaultWorkingRoom::GetPersonnelCapacity() const {
+int DefaultWorkingRoom::WorkspaceCapacity() const {
 	return 50;
 }
 
-pair<string, float> DefaultWorkingRoom::GetIndustryCapacity() const {
+pair<string, float> DefaultWorkingRoom::StorageConfig() const {
 	return { "", 0.f };
 }
 
-string DefaultWorkingRoom::GetFactoryPipeline() const {
-	return "";
+vector<string> DefaultWorkingRoom::ManufactureTypes() const {
+	return { "" };
 }

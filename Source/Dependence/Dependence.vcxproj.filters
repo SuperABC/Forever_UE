@@ -90,6 +90,15 @@
     <ClCompile Include="common\commute.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="industry\product_base.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
+    <ClCompile Include="industry\storage_base.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
+    <ClCompile Include="industry\manufacture_base.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -154,6 +163,15 @@
     </ClInclude>
     <ClInclude Include="common\commute.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\product_base.h">
+      <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\storage_base.h">
+      <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\manufacture_base.h">
+      <Filter>industry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

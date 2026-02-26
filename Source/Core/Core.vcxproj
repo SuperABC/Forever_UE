@@ -136,6 +136,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="industry\industry.cpp" />
+    <ClCompile Include="industry\manufacture.cpp" />
+    <ClCompile Include="industry\product.cpp" />
+    <ClCompile Include="industry\storage.cpp" />
     <ClCompile Include="map\building.cpp" />
     <ClCompile Include="map\component.cpp" />
     <ClCompile Include="map\map.cpp" />
@@ -164,6 +167,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h" />
+    <ClInclude Include="industry\manufacture.h" />
+    <ClInclude Include="industry\product.h" />
+    <ClInclude Include="industry\storage.h" />
     <ClInclude Include="map\building.h" />
     <ClInclude Include="map\component.h" />
     <ClInclude Include="map\map.h" />

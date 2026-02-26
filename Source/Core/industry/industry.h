@@ -1,6 +1,11 @@
 ﻿#pragma once
 
+#include "../map/map.h"
 #include "../story/story.h"
+
+#include "product.h"
+#include "storage.h"
+#include "manufacture.h"
 
 #include <windows.h>
 #include <vector>
@@ -17,9 +22,12 @@ public:
 	void SetResourcePath(std::string path);
 
 	// 读取Mods
+	void InitProducts(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitStorages(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitManufactures(std::unordered_map<std::string, HMODULE>& modHandles);
 
 	// 初始化全部工业
-	void Init();
+	void Init(Map* map);
 
 	// 读取配置文件
 	void ReadConfigs(std::string path) const;
@@ -46,6 +54,11 @@ private:
 	std::string resourcePath;
 
 	// Mod管理
+	static ProductFactory* productFactory;
+	static StorageFactory* storageFactory;
+	static ManufactureFactory* manufactureFactory;
 
+	std::vector<Storage*> storages;
+	std::vector<Manufacture*> manufactures;
 };
 

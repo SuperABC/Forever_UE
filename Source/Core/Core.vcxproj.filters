@@ -102,6 +102,15 @@
     <ClCompile Include="story\event.cpp">
       <Filter>story</Filter>
     </ClCompile>
+    <ClCompile Include="industry\product.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
+    <ClCompile Include="industry\storage.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
+    <ClCompile Include="industry\manufacture.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -181,6 +190,15 @@
     </ClInclude>
     <ClInclude Include="story\event.h">
       <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\product.h">
+      <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\storage.h">
+      <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\manufacture.h">
+      <Filter>industry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

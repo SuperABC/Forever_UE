@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "../common/quad.h"
+#include "../industry/storage_base.h"
+#include "../industry/manufacture_base.h"
 
 #include "component_base.h"
 #include "building_base.h"
@@ -16,8 +18,8 @@ class Component;
 
 class Room : public Quad {
 public:
-    Room() = default;
-    virtual ~Room() = default;
+    Room();
+    virtual ~Room();
 
 	// 子类实现方法
 
@@ -31,10 +33,10 @@ public:
     virtual bool IsWorkspace() const = 0;
     virtual bool IsStorage() const = 0;
     virtual bool IsManufacture() const = 0;
-    virtual int GetLivingCapacity() const = 0;
-    virtual int GetPersonnelCapacity() const = 0;
-    virtual std::pair<std::string, float> GetIndustryCapacity() const = 0;
-    virtual std::string GetFactoryPipeline() const = 0;
+    virtual int ResidentialCapacity() const = 0;
+    virtual int WorkspaceCapacity() const = 0;
+    virtual std::pair<std::string, float> StorageConfig() const = 0;
+    virtual std::vector< std::string> ManufactureTypes() const = 0;
 
 	// 父类实现方法
 
@@ -60,6 +62,21 @@ public:
     void SetAddress(int number);
     std::string GetAddress() const;
 
+	// 获取/设置租户/员工/仓储/生产
+    std::vector<int> GetTenants();
+	void AddTenant(int id);
+    bool RemoveTenant(int id);
+    std::vector<int> GetWorkers();
+	void AddWorker(int id);
+    bool RemoveWorker(int id);
+    Storage* GetStorage();
+	void SetStorage(Storage* storage);
+    Storage* ClearStorage();
+	std::vector<Manufacture*> GetManufactures();
+	void AddManufacture(Manufacture* manufacture);
+    Manufacture* RemoveManufacture(std::string manufacture);
+    std::vector<Manufacture*> ClearManufactures();
+
 protected:
     Building* parentBuilding;
     Component* parentComponent;
@@ -70,6 +87,11 @@ protected:
     int layer;
     int face;
     std::string address;
+
+    std::vector<int> tenants;
+	std::vector<int> workers;
+	Storage* storage;
+	std::vector<Manufacture*> manufactures;
 };
 
 class RoomFactory {

@@ -57,6 +57,15 @@
     <ClInclude Include="event_mod.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="product_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="storage_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="manufacture_mod.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mod.cpp">

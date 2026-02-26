@@ -267,7 +267,8 @@ void Populace::Destroy() {
 }
 
 void Populace::Tick(int day, int hour, int min, int sec) {
-
+	// 更新个人变量
+	// 通勤
 }
 
 void Populace::Print() const {

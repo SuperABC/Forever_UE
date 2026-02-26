@@ -17,10 +17,10 @@ public:
     virtual bool IsWorkspace() const override;
     virtual bool IsStorage() const override;
     virtual bool IsManufacture() const override;
-    virtual int GetLivingCapacity() const override;
-    virtual int GetPersonnelCapacity() const override;
-    virtual std::pair<std::string, float> GetIndustryCapacity() const override;
-    virtual std::string GetFactoryPipeline() const override;
+    virtual int ResidentialCapacity() const override;
+    virtual int WorkspaceCapacity() const override;
+    virtual std::pair<std::string, float> StorageConfig() const override;
+    virtual std::vector<std::string> ManufactureTypes() const override;
 };
 
 // 默认工作房间
@@ -34,8 +34,8 @@ public:
     virtual bool IsWorkspace() const override;
     virtual bool IsStorage() const override;
     virtual bool IsManufacture() const override;
-    virtual int GetLivingCapacity() const override;
-    virtual int GetPersonnelCapacity() const override;
-    virtual std::pair<std::string, float> GetIndustryCapacity() const override;
-    virtual std::string GetFactoryPipeline() const override;
+    virtual int ResidentialCapacity() const override;
+    virtual int WorkspaceCapacity() const override;
+    virtual std::pair<std::string, float> StorageConfig() const override;
+    virtual std::vector<std::string> ManufactureTypes() const override;
 };

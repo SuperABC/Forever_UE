@@ -149,7 +149,7 @@ void Story::Destroy() {
 }
 
 void Story::Tick(int day, int hour, int min, int sec) {
-
+	// 更新全局变量
 }
 
 void Story::Print() const {

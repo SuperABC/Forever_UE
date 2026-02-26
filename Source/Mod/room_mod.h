@@ -17,9 +17,9 @@ public:
     virtual bool IsWorkspace() const override { return false; }
     virtual bool IsStorage() const override { return false; };
     virtual bool IsManufacture() const override { return false; };
-    virtual int GetLivingCapacity() const override { return 0; }
-    virtual int GetPersonnelCapacity() const override { return 0; }
-	virtual std::pair<std::string, float> GetIndustryCapacity() const override { return { "", 0.f }; }
-	virtual std::string GetFactoryPipeline() const override { return ""; }
+    virtual int ResidentialCapacity() const override { return 0; }
+    virtual int WorkspaceCapacity() const override { return 0; }
+	virtual std::pair<std::string, float> StorageConfig() const override { return { "", 0.f }; }
+    virtual std::vector< std::string> ManufactureTypes() const override { return { "" }; }
 };
 
