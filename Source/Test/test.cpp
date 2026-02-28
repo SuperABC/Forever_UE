@@ -448,6 +448,7 @@ int main() {
 				populace->Characterize(REPLACE_PATH("../Resources/scripts/characters/"), story);
 				industry->Init(::map);
 				traffic->Init(::map);
+				player->Init();
 
 				break;
 			}

@@ -37,6 +37,9 @@ void Industry::SetResourcePath(string path) {
 }
 
 void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles) {
+	productFactory->RegisterProduct(DefaultProduct::GetId(),
+		[]() { return new DefaultProduct(); });
+
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
 	if (modHandles.find(modPath) != modHandles.end()) {
@@ -77,6 +80,9 @@ void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles) {
 }
 
 void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles) {
+	storageFactory->RegisterStorage(DefaultStorage::GetId(),
+		[]() { return new DefaultStorage(); });
+
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
 	if (modHandles.find(modPath) != modHandles.end()) {
@@ -117,6 +123,9 @@ void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles) {
 }
 
 void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles) {
+	manufactureFactory->RegisterManufacture(DefaultManufacture::GetId(),
+		[]() { return new DefaultManufacture(); });
+
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
 	if (modHandles.find(modPath) != modHandles.end()) {
@@ -202,7 +211,7 @@ void Industry::Init(Map* map) {
 		for (auto [product, amount] : ingredients) {
 			if (provides.find(product) == provides.end()) continue;
 			auto suppliers = provides[product];
-			int r = GetRandom(suppliers.size());
+			int r = GetRandom((int)suppliers.size());
 			suppliers[r]->ConnectDownstream(manufacture);
 			manufacture->SetInput(product, suppliers[r], productFactory);
 		}
@@ -210,7 +219,7 @@ void Industry::Init(Map* map) {
 		for (auto [product, amount] : target) {
 			if (accepts.find(product) == accepts.end()) continue;
 			auto buyers = accepts[product];
-			int r = GetRandom(buyers.size());
+			int r = GetRandom((int)buyers.size());
 			buyers[r]->ConnectUpstream(manufacture);
 			manufacture->SetOutput(product, buyers[r], productFactory);
 		}

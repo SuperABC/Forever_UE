@@ -12,7 +12,13 @@
 
 using namespace std;
 
+SkillFactory* Player::skillFactory = nullptr;
+
 Player::Player() {
+	if (!skillFactory) {
+		skillFactory = new SkillFactory();
+	}
+
 	time = new Time();
 }
 
@@ -24,8 +30,51 @@ void Player::SetResourcePath(string path) {
 	resourcePath = path;
 }
 
-void Player::Init() {
+void Player::InitSkills(unordered_map<string, HMODULE>& modHandles) {
+	skillFactory->RegisterSkill(DefaultSkill::GetId(),
+		[]() { return new DefaultSkill(); });
 
+	string modPath = "Mod.dll";
+	HMODULE modHandle;
+	if (modHandles.find(modPath) != modHandles.end()) {
+		modHandle = modHandles[modPath];
+	}
+	else {
+		modHandle = LoadLibraryA(modPath.data());
+		modHandles[modPath] = modHandle;
+	}
+	if (modHandle) {
+		debugf("Mod dll loaded successfully.\n");
+		RegisterModSkillsFunc registerFunc = (RegisterModSkillsFunc)GetProcAddress(modHandle, "RegisterModSkills");
+		if (registerFunc) {
+			registerFunc(skillFactory);
+		}
+		else {
+			debugf("Incorrect dll content.\n");
+		}
+	}
+	else {
+		debugf("Failed to load mod dll.\n");
+	}
+
+#ifdef MOD_TEST
+	auto skillList = { "mod" };
+	for (const auto& skillId : skillList) {
+		if (skillFactory->CheckRegistered(skillId)) {
+			auto skill = skillFactory->CreateSkill(skillId);
+			debugf("Created skill: mod.\n");
+			delete skill;
+		}
+		else {
+			debugf("Skill not registered: %s.\n", skillId);
+		}
+	}
+#endif // MOD_TEST
+
+}
+
+void Player::Init() {
+	skills = skillFactory->GetSkills();
 }
 
 void Player::ReadConfigs(string path) const {
@@ -42,7 +91,9 @@ void Player::ReadConfigs(string path) const {
 		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
 	}
 	if (reader.Parse(fin, root)) {
-
+		for (auto skill : root["mods"]["skill"]) {
+			skillFactory->SetConfig(skill.AsString(), true);
+		}
 	}
 	else {
 		fin.close();

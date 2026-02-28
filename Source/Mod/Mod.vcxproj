@@ -150,6 +150,7 @@
     <ClInclude Include="room_mod.h" />
     <ClInclude Include="route_mod.h" />
     <ClInclude Include="scheduler_mod.h" />
+    <ClInclude Include="skill_mod.h" />
     <ClInclude Include="station_mod.h" />
     <ClInclude Include="storage_mod.h" />
     <ClInclude Include="terrain_mod.h" />

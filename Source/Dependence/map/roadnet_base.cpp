@@ -54,7 +54,7 @@ void Roadnet::AllocateAddress() {
                 addresses[road.first.GetName()] = vector<Plot *>();
             }
             addresses[road.first.GetName()].push_back(plot);
-            plot->SetAddress(road.first.GetName(), addresses[road.first.GetName()].size());
+            plot->SetAddress(road.first.GetName(), (int)addresses[road.first.GetName()].size());
 		}
 	}
 }

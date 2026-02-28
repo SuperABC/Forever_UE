@@ -18,6 +18,7 @@
 #include "route_mod.h"
 #include "station_mod.h"
 #include "vehicle_mod.h"
+#include "skill_mod.h"
 
 #pragma comment(lib, "Dependence.lib")
 
@@ -139,6 +140,12 @@ extern "C" __declspec(dllexport) void RegisterStations(StationFactory* factory) 
 extern "C" __declspec(dllexport) void RegisterModVehicles(VehicleFactory* factory) {
     factory->RegisterVehicle(ModVehicle::GetId(), []() {
         return new ModVehicle();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterModSkills(SkillFactory* factory) {
+    factory->RegisterSkill(ModSkill::GetId(), []() {
+        return new ModSkill();
         });
 }
 

@@ -2,6 +2,7 @@
 
 #include "../story/story.h"
 
+#include "skill.h"
 #include "utility.h"
 
 #include <windows.h>
@@ -19,6 +20,7 @@ public:
 	void SetResourcePath(std::string path);
 
 	// 读取Mods
+	void InitSkills(std::unordered_map<std::string, HMODULE>& modHandles);
 
 	// 初始化全部交通
 	void Init();
@@ -51,8 +53,11 @@ private:
 	std::string resourcePath;
 
 	// Mod管理
+	static SkillFactory* skillFactory;
 
 	// 时钟
 	Time* time = nullptr;
+
+	std::vector<Skill*> skills;
 };
 

@@ -120,6 +120,9 @@
     <ClCompile Include="traffic\vehicle.cpp">
       <Filter>traffic</Filter>
     </ClCompile>
+    <ClCompile Include="player\skill.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -217,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="traffic\vehicle.h">
       <Filter>traffic</Filter>
+    </ClInclude>
+    <ClInclude Include="player\skill.h">
+      <Filter>player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

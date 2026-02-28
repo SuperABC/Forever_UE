@@ -143,6 +143,7 @@
     <ClCompile Include="map\room_base.cpp" />
     <ClCompile Include="map\terrain_base.cpp" />
     <ClCompile Include="map\zone_base.cpp" />
+    <ClCompile Include="player\skill_base.cpp" />
     <ClCompile Include="populace\asset_base.cpp" />
     <ClCompile Include="populace\job_base.cpp" />
     <ClCompile Include="populace\name_base.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="map\room_base.h" />
     <ClInclude Include="map\terrain_base.h" />
     <ClInclude Include="map\zone_base.h" />
+    <ClInclude Include="player\skill_base.h" />
     <ClInclude Include="populace\asset_base.h" />
     <ClInclude Include="populace\job_base.h" />
     <ClInclude Include="populace\name_base.h" />

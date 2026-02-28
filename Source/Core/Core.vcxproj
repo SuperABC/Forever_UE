@@ -147,6 +147,7 @@
     <ClCompile Include="map\terrain.cpp" />
     <ClCompile Include="map\zone.cpp" />
     <ClCompile Include="player\player.cpp" />
+    <ClCompile Include="player\skill.cpp" />
     <ClCompile Include="populace\asset.cpp" />
     <ClCompile Include="populace\experience.cpp" />
     <ClCompile Include="populace\job.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="map\terrain.h" />
     <ClInclude Include="map\zone.h" />
     <ClInclude Include="player\player.h" />
+    <ClInclude Include="player\skill.h" />
     <ClInclude Include="populace\asset.h" />
     <ClInclude Include="populace\experience.h" />
     <ClInclude Include="populace\job.h" />

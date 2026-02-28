@@ -111,6 +111,7 @@ void AGlobalBase::BeginPlay() {
 		populace->Characterize("scripts/characters/", story);
 		industry->Init(map);
 		traffic->Init(map);
+		player->Init();
 
 		FVector Location(0.0f, 0.0f, 0.0f);
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
