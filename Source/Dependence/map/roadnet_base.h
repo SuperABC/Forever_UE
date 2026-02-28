@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "../common/plot.h"
+#include "../traffic/route_base.h"
+#include "../traffic/station_base.h"
 
 #include <string>
 #include <functional>
@@ -22,7 +24,7 @@ public:
 
     // 在平原上生成路网
     virtual void DistributeRoadnet(int width, int height,
-        std::function<std::string(int, int)> get) = 0;
+        std::function<std::string(int, int)> get, StationFactory* stationFactory, RouteFactory* routeFactory) = 0;
 
 	// 父类实现方法
 
@@ -49,6 +51,7 @@ protected:
     std::vector<Node> nodes;
     std::vector<Connection> connections;
     std::vector<Plot*> plots;
+	std::vector<Route*> routes;
 
     std::unordered_map<std::string, std::vector<Plot*>> addresses;
 };

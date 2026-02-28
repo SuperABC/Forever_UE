@@ -464,7 +464,7 @@ void Map::ReadConfigs(string path) const {
     fin.close();
 }
 
-int Map::Init(int blockX, int blockY) {
+int Map::Init(int blockX, int blockY, Traffic* traffic) {
     // 清除已有内容
     Destroy();
 
@@ -514,7 +514,7 @@ int Map::Init(int blockX, int blockY) {
     if (!roadnet) {
         THROW_EXCEPTION(InvalidConfigException, "No enabled roadnet in config.\n");
     }
-    roadnet->DistributeRoadnet(width, height, getTerrain);
+    roadnet->DistributeRoadnet(width, height, getTerrain, traffic->GetStationFactory(), traffic->GetRouteFactory());
     roadnet->AllocateAddress();
 
     // 随机生成园区

@@ -17,7 +17,15 @@ StorageFactory* Industry::storageFactory = nullptr;
 ManufactureFactory* Industry::manufactureFactory = nullptr;
 
 Industry::Industry() {
-
+	if (!productFactory) {
+		productFactory = new ProductFactory();
+	}
+	if (!storageFactory) {
+		storageFactory = new StorageFactory();
+	}
+	if (!manufactureFactory) {
+		manufactureFactory = new ManufactureFactory();
+	}
 }
 
 Industry::~Industry() {
@@ -223,7 +231,15 @@ void Industry::ReadConfigs(string path) const {
 		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
 	}
 	if (reader.Parse(fin, root)) {
-
+		for (auto product : root["mods"]["product"]) {
+			productFactory->SetConfig(product.AsString(), true);
+		}
+		for (auto storage : root["mods"]["storage"]) {
+			storageFactory->SetConfig(storage.AsString(), true);
+		}
+		for (auto manufacture : root["mods"]["manufacture"]) {
+			manufactureFactory->SetConfig(manufacture.AsString(), true);
+		}
 	}
 	else {
 		fin.close();

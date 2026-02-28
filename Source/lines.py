@@ -20,7 +20,7 @@ def count_code_lines(extensions=None, ignore_dirs=None):
     if ignore_dirs is None:
         ignore_dirs = [
             'venv', '.git', '__pycache__', 'node_modules',
-            '.idea', '.vscode', 'build', 'dist', 'target', 'Forever'
+            '.idea', '.vscode', 'build', 'dist', 'target', 'Forever', 'glm'
         ]
 
     total_lines = 0

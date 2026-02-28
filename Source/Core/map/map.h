@@ -2,6 +2,7 @@
 
 #include "../populace/person.h"
 #include "../story/story.h"
+#include "../traffic/traffic.h"
 
 #include "terrain.h"
 #include "roadnet.h"
@@ -19,6 +20,7 @@
 
 
 class Person;
+class Traffic;
 
 class Element {
 public:
@@ -91,7 +93,7 @@ public:
 	void ReadConfigs(std::string path) const;
 
 	// 初始化全部地图
-	int Init(int blockX, int blockY);
+	int Init(int blockX, int blockY, Traffic* traffic);
 
 	// 市民入驻
 	void Checkin(std::vector<Person*> citizens, Time* time) const;

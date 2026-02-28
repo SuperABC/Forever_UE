@@ -151,6 +151,9 @@
     <ClCompile Include="society\organization_base.cpp" />
     <ClCompile Include="story\change_base.cpp" />
     <ClCompile Include="story\event_base.cpp" />
+    <ClCompile Include="traffic\route_base.cpp" />
+    <ClCompile Include="traffic\station_base.cpp" />
+    <ClCompile Include="traffic\vehicle_base.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\commute.h" />
@@ -177,6 +180,9 @@
     <ClInclude Include="society\organization_base.h" />
     <ClInclude Include="story\change_base.h" />
     <ClInclude Include="story\event_base.h" />
+    <ClInclude Include="traffic\route_base.h" />
+    <ClInclude Include="traffic\station_base.h" />
+    <ClInclude Include="traffic\vehicle_base.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

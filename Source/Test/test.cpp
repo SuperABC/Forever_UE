@@ -437,7 +437,7 @@ int main() {
 				string path = parser.GetOption("--story");
 
 				story->Init();
-				int accomodation = ::map->Init(size, size);
+				int accomodation = ::map->Init(size, size, traffic);
 				populace->Init(accomodation, story->ReadNames("ys", path), player->GetTime());
 				::map->Checkin(populace->GetCitizens(), player->GetTime());
 				society->Init(::map, populace, player->GetTime());
@@ -447,6 +447,7 @@ int main() {
 				populace->Workload(story);
 				populace->Characterize(REPLACE_PATH("../Resources/scripts/characters/"), story);
 				industry->Init(::map);
+				traffic->Init(::map);
 
 				break;
 			}

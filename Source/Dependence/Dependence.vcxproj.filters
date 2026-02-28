@@ -99,6 +99,15 @@
     <ClCompile Include="industry\manufacture_base.cpp">
       <Filter>industry</Filter>
     </ClCompile>
+    <ClCompile Include="traffic\route_base.cpp">
+      <Filter>traffic</Filter>
+    </ClCompile>
+    <ClCompile Include="traffic\vehicle_base.cpp">
+      <Filter>traffic</Filter>
+    </ClCompile>
+    <ClCompile Include="traffic\station_base.cpp">
+      <Filter>traffic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -172,6 +181,15 @@
     </ClInclude>
     <ClInclude Include="industry\manufacture_base.h">
       <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="traffic\route_base.h">
+      <Filter>traffic</Filter>
+    </ClInclude>
+    <ClInclude Include="traffic\vehicle_base.h">
+      <Filter>traffic</Filter>
+    </ClInclude>
+    <ClInclude Include="traffic\station_base.h">
+      <Filter>traffic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

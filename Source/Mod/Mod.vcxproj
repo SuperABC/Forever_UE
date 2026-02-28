@@ -148,9 +148,12 @@
     <ClInclude Include="product_mod.h" />
     <ClInclude Include="roadnet_mod.h" />
     <ClInclude Include="room_mod.h" />
+    <ClInclude Include="route_mod.h" />
     <ClInclude Include="scheduler_mod.h" />
+    <ClInclude Include="station_mod.h" />
     <ClInclude Include="storage_mod.h" />
     <ClInclude Include="terrain_mod.h" />
+    <ClInclude Include="vehicle_mod.h" />
     <ClInclude Include="zone_mod.h" />
   </ItemGroup>
   <ItemGroup>

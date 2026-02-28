@@ -13,7 +13,8 @@ public:
     virtual std::string GetType() const override { return "mod"; }
     virtual std::string GetName() const override { return "模组路网"; }
 
-    virtual void DistributeRoadnet(int width, int height, std::function<std::string(int, int)> get) override {
+    virtual void DistributeRoadnet(int width, int height,
+        std::function<std::string(int, int)> get, StationFactory* stationFactory, RouteFactory* routeFactory) override {
         Node n1 = Node(width / 2.f + 32.f, height / 2.f + 32.f);
         Node n2 = Node(width / 2.f - 32.f, height / 2.f + 32.f);
         Node n3 = Node(width / 2.f - 32.f, height / 2.f - 32.f);

@@ -15,7 +15,8 @@ string JingRoadnet::GetName() const {
     return"井字路网";
 }
 
-void JingRoadnet::DistributeRoadnet(int width, int height, function<string(int, int)> get) {
+void JingRoadnet::DistributeRoadnet(int width, int height,
+    function<string(int, int)> get, StationFactory* stationFactory, RouteFactory* routeFactory) {
     vector<pair<Node, int>> horizontalNode1w;
     vector<pair<Node, int>> horizontalNode1e;
     vector<pair<Node, int>> horizontalNode2w;

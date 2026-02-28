@@ -15,6 +15,9 @@
 #include "product_mod.h"
 #include "storage_mod.h"
 #include "manufacture_mod.h"
+#include "route_mod.h"
+#include "station_mod.h"
+#include "vehicle_mod.h"
 
 #pragma comment(lib, "Dependence.lib")
 
@@ -118,6 +121,24 @@ extern "C" __declspec(dllexport) void RegisterModStorages(StorageFactory* factor
 extern "C" __declspec(dllexport) void RegisterModManufactures(ManufactureFactory* factory) {
     factory->RegisterManufacture(ModManufacture::GetId(), []() {
         return new ModManufacture();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterModRoutes(RouteFactory* factory) {
+    factory->RegisterRoute(ModRoute::GetId(), []() {
+        return new ModRoute();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterStations(StationFactory* factory) {
+    factory->RegisterStation(ModStation::GetId(), []() {
+        return new ModStation();
+        });
+}
+
+extern "C" __declspec(dllexport) void RegisterModVehicles(VehicleFactory* factory) {
+    factory->RegisterVehicle(ModVehicle::GetId(), []() {
+        return new ModVehicle();
         });
 }
 

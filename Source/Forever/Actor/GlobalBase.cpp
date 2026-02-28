@@ -100,7 +100,7 @@ void AGlobalBase::BeginPlay() {
 		string path = "scripts/ys.json";
 
 		story->Init();
-		int accomodation = map->Init(size, size);
+		int accomodation = map->Init(size, size, traffic);
 		populace->Init(accomodation, story->ReadNames("ys", path), player->GetTime());
 		map->Checkin(populace->GetCitizens(), player->GetTime());
 		society->Init(map, populace, player->GetTime());
@@ -110,6 +110,7 @@ void AGlobalBase::BeginPlay() {
 		populace->Workload(story);
 		populace->Characterize("scripts/characters/", story);
 		industry->Init(map);
+		traffic->Init(map);
 
 		FVector Location(0.0f, 0.0f, 0.0f);
 		FRotator Rotation(0.0f, 0.0f, 0.0f);

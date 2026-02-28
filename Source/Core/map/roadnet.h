@@ -13,5 +13,6 @@ public:
     virtual std::string GetType() const override;
     virtual std::string GetName() const override;
 
-    virtual void DistributeRoadnet(int width, int height, std::function<std::string(int, int)> get) override;
+    virtual void DistributeRoadnet(int width, int height,
+        std::function<std::string(int, int)> get, StationFactory* stationFactory, RouteFactory* routeFactory) override;
 };
