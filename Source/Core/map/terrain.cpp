@@ -21,7 +21,8 @@ float OceanTerrain::GetPriority() const {
 };
 
 void OceanTerrain::DistributeTerrain(int width, int height,
-    function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+	std::function<bool(int, int, const std::string, float)> setElement,
+	std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const {
 	// 随机生成四个方向是否临海，并保证至少有一面临海
 	int distribute = 0;
 	while (distribute == 0) {
@@ -35,7 +36,7 @@ void OceanTerrain::DistributeTerrain(int width, int height,
 		float shift = 0.0f, slope = 0.0f;
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < distance + shift; x++) {
-				set(x, y, GetType());
+				setElement(x, y, GetType(), 0.f);
 			}
 			slope += float(GetRandom(33) - 16) / 256.0f;
 			shift += slope;
@@ -57,7 +58,7 @@ void OceanTerrain::DistributeTerrain(int width, int height,
 		float shift = 0.0f, slope = 0.0f;
 		for (int y = 0; y < height; y++) {
 			for (int x = width - 1; x >= width - distance - shift; x--) {
-				set(x, y, GetType());
+				setElement(x, y, GetType(), 0.f);
 			}
 			slope += float(GetRandom(33) - 16) / 256.0f;
 			shift += slope;
@@ -79,7 +80,7 @@ void OceanTerrain::DistributeTerrain(int width, int height,
 		float shift = 0.0f, slope = 0.0f;
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < distance + shift; y++) {
-				set(x, y, GetType());
+				setElement(x, y, GetType(), 0.f);
 			}
 			slope += float(GetRandom(33) - 16) / 256.0f;
 			shift += slope;
@@ -101,7 +102,7 @@ void OceanTerrain::DistributeTerrain(int width, int height,
 		float shift = 0.0f, slope = 0.0f;
 		for (int x = 0; x < width; x++) {
 			for (int y = height - 1; y >= height - distance - shift; y--) {
-				set(x, y, GetType());
+				setElement(x, y, GetType(), 0.f);
 			}
 			slope += float(GetRandom(33) - 16) / 256.0f;
 			shift += slope;
@@ -134,7 +135,8 @@ float MountainTerrain::GetPriority() const {
 };
 
 void MountainTerrain::DistributeTerrain(int width, int height,
-	function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+	std::function<bool(int, int, const std::string, float)> setElement,
+	std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const {
 	int scalar = width * height / (512 * 512);
 	int num = scalar > 1 ? (4 + GetRandom(scalar * 2)) : 0;
 
@@ -144,18 +146,18 @@ void MountainTerrain::DistributeTerrain(int width, int height,
 		int x = width / 8 + GetRandom(width * 3 / 4);
 		int y = height / 8 + GetRandom(height * 3 / 4);
 
-		if (get(x, y) != "plain" ||
+		if (getTerrain(x, y) != "plain" ||
 			sqrt(pow(x - width / 2, 2) + pow(y - height / 2, 2)) < 128) {
 			if (!counter.count())i--;
 			continue;
 		}
 		FloodTerrain(x, y, (int)(64 * 64 + scalar * 0.2f * ((GetRandom(4) ? 0 : 1) * GetRandom(512 * 512)) + GetRandom(128 * 128)),
-			false, width, height, set, get);
+			false, width, height, setElement, getTerrain);
 		mountain++;
 	}
 	for (int i = 2; i < width - 2; i++) {
 		for (int j = 2; j < height - 2; j++) {
-			ShapeFilter(i, j, width, height, set, get, 2, 0.5f);
+			ShapeFilter(i, j, width, height, setElement, getTerrain, 2, 0.5f);
 		}
 	}
 	debugf("Generate mountain %d.\n", mountain);

@@ -31,8 +31,9 @@ string Element::GetTerrain() const {
     return terrain;
 }
 
-bool Element::SetTerrain(string terrain) {
+bool Element::SetTerrain(string terrain, float height) {
     this->terrain = terrain;
+    this->height = height;
 
     return true;
 }
@@ -43,26 +44,6 @@ float Element::GetHeight() const {
 
 bool Element::SetHeight(float height) {
     this->height = height;
-    return true;
-}
-
-string Element::GetZone() const {
-    return this->zone;
-}
-
-bool Element::SetZone(string zone) {
-    this->zone = zone;
-
-    return true;
-}
-
-string Element::GetBuilding() const {
-    return this->building;
-}
-
-bool Element::SetBuilding(string building) {
-    this->building = building;
-
     return true;
 }
 
@@ -88,12 +69,20 @@ string Block::GetTerrain(int x, int y) const {
     return elements[y - offsetY][x - offsetX]->GetTerrain();
 }
 
-bool Block::SetTerrain(int x, int y, string terrain) {
+bool Block::SetTerrain(int x, int y, string terrain, float height) {
     if (!CheckXY(x, y)) {
         return false;
     }
 
-    return elements[y - offsetY][x - offsetX]->SetTerrain(terrain);
+    return elements[y - offsetY][x - offsetX]->SetTerrain(terrain, height);
+}
+
+float Block::GetHeight(int x, int y) {
+    if (!CheckXY(x, y)) {
+        return false;
+    }
+
+    return elements[y - offsetY][x - offsetX]->GetHeight();
 }
 
 bool Block::CheckXY(int x, int y) const {
@@ -150,8 +139,6 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
     terrainFactory->RegisterTerrain(MountainTerrain::GetId(),
         []() { return new MountainTerrain(); });
 
-    return;
-    
 	string modPath = "Mod.dll";
     HMODULE modHandle;
     if(modHandles.find(modPath) != modHandles.end()) {
@@ -196,8 +183,6 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
     roadnetFactory->RegisterRoadnet(JingRoadnet::GetId(),
         []() { return new JingRoadnet(); });
 
-    return;
-
     string modPath = "Mod.dll";
     HMODULE modHandle;
     if (modHandles.find(modPath) != modHandles.end()) {
@@ -241,8 +226,6 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
 void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
     zoneFactory->RegisterZone(DefaultZone::GetId(),
         []() { return new DefaultZone(); }, DefaultZone::ZoneGenerator);
-
-    return;
 
     string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -290,8 +273,6 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
     buildingFactory->RegisterBuilding(DefaultWorkingBuilding::GetId(),
         []() { return new DefaultWorkingBuilding(); }, DefaultWorkingBuilding::GetPower());
 
-    return;
-
     string modPath = "Mod.dll";
     HMODULE modHandle;
     if (modHandles.find(modPath) != modHandles.end()) {
@@ -338,8 +319,6 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
     componentFactory->RegisterComponent(DefaultWorkingComponent::GetId(),
         []() { return new DefaultWorkingComponent(); });
 
-    return;
-
     string modPath = "Mod.dll";
     HMODULE modHandle;
     if (modHandles.find(modPath) != modHandles.end()) {
@@ -384,8 +363,6 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
         []() { return new DefaultResidentialRoom(); });
     roomFactory->RegisterRoom(DefaultWorkingRoom::GetId(),
         []() { return new DefaultWorkingRoom(); });
-
-    return;
 
     string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -493,8 +470,11 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     auto getTerrain = [this](int x, int y) -> string {
         return this->GetTerrain(x, y);
         };
-    auto setTerrain = [this](int x, int y, const string terrain) -> bool {
-        return this->SetTerrain(x, y, terrain);
+    auto getHeight = [this](int x, int y) -> float {
+        return this->GetHeight(x, y);
+        };
+    auto setElement = [this](int x, int y, const string terrain, float height) -> bool {
+        return this->SetTerrain(x, y, terrain, height);
         };
     auto terrains = terrainFactory->GetTerrains();
     sort(terrains.begin(), terrains.end(),
@@ -502,7 +482,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
             return a->GetPriority() > b->GetPriority();
         });
     for (auto& terrain : terrains) {
-        terrain->DistributeTerrain(width, height, setTerrain, getTerrain);
+        terrain->DistributeTerrain(width, height, setElement, getTerrain, getHeight);
     }
     for(auto &terrain : terrains) {
         delete terrain;
@@ -857,7 +837,7 @@ string Map::GetTerrain(int x, int y) const {
     return blocks[blockY][blockX]->GetTerrain(x, y);
 }
 
-bool Map::SetTerrain(int x, int y, string terrain) {
+bool Map::SetTerrain(int x, int y, string terrain, float height) {
     if (!CheckXY(x, y)) {
         return false;
     }
@@ -869,7 +849,22 @@ bool Map::SetTerrain(int x, int y, string terrain) {
         return false;
     }
 
-    return blocks[blockY][blockX]->SetTerrain(x, y, terrain);
+    return blocks[blockY][blockX]->SetTerrain(x, y, terrain, height);
+}
+
+float Map::GetHeight(int x, int y) {
+    if (!CheckXY(x, y)) {
+        return false;
+    }
+
+    int blockX = x / BLOCK_SIZE;
+    int blockY = y / BLOCK_SIZE;
+
+    if (blockY >= blocks.size() || blockX >= blocks[0].size()) {
+        return false;
+    }
+
+    return blocks[blockY][blockX]->GetHeight(x, y);
 }
 
 Roadnet* Map::GetRoadnet() const {

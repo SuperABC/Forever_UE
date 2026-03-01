@@ -16,7 +16,8 @@ public:
     virtual float GetPriority() const override;
 
     virtual void DistributeTerrain(int width, int height,
-        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get) const override;
+        std::function<bool(int, int, const std::string, float)> setElement,
+        std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const override;
 };
 
 // 山区地形
@@ -29,7 +30,8 @@ public:
     virtual float GetPriority() const override;
 
     virtual void DistributeTerrain(int width, int height,
-        std::function<bool(int, int, const std::string)> set, std::function<std::string(int, int)> get) const override;
+        std::function<bool(int, int, const std::string, float)> setElement,
+        std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const override;
 };
 
 

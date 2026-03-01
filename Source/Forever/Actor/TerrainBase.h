@@ -32,11 +32,13 @@ public:
 	void SetGlobal(AActor* g);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
-	void UpdateTerrain(const TArray<FCoordinate> &coordinates);
+	void UpdateTerrain(const TArray<FCoordinate> &adds, const TArray<FCoordinate>& removes);
 	UFUNCTION(BlueprintCallable, Category = "World")
 	void LookupTerrain(int x, int y, FString &type, float &height);
 	UFUNCTION(BlueprintCallable, Category = "World")
-	void SetInstance(int x, int y, int id);
+	void SetInstance(int x, int y, TArray<int> ids);
+	UFUNCTION(BlueprintCallable, Category = "World")
+	void RemoveInstance(int x, int y, TArray<int>& ids);
 
 protected:
 	virtual void BeginPlay() override;
@@ -44,5 +46,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	std::vector<std::vector<int>> terrainInstances;
+	std::vector<std::vector<TArray<int>>> terrainInstances;
+	std::vector<std::pair<int, int>> idList;
 };

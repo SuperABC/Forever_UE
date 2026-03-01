@@ -13,13 +13,13 @@ Terrain::~Terrain() {
 }
 
 int Terrain::FloodTerrain(int x, int y, int num, bool overwrite, int width, int height,
-    function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+    function<bool(int, int, const string, float)> set, function<string(int, int)> get) const {
     vector<pair<int, int>> q;
 
     if (x < 0 || x >= width - 1 || y < 0 || y >= width - 1)return 0;
     if (get(x, y) == GetType())return 0;
 
-    set(x, y, GetType());
+    set(x, y, GetType(), 0.f);
     int count = 1;
 
     for (int i = 0; i < 4; ++i) {
@@ -39,7 +39,7 @@ int Terrain::FloodTerrain(int x, int y, int num, bool overwrite, int width, int 
         q[idx] = q.back();
         q.pop_back();
 
-        set(cx, cy, GetType());
+        set(cx, cy, GetType(), 0.f);
         ++count;
 
         UpdateBoundary(cx, cy, q, overwrite, width, height, set, get);
@@ -49,7 +49,7 @@ int Terrain::FloodTerrain(int x, int y, int num, bool overwrite, int width, int 
 }
 
 bool Terrain::CheckBoundary(int x, int y, bool overwrite, int width, int height,
-    function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+    function<bool(int, int, const string, float)> set, function<string(int, int)> get) const {
     if (x == 0 || x == width - 1 || y == 0 || y == height - 1) return true;
     for (int i = 0; i < 4; ++i) {
         int nx = x + dx[i];
@@ -65,7 +65,7 @@ bool Terrain::CheckBoundary(int x, int y, bool overwrite, int width, int height,
 }
 
 void Terrain::UpdateBoundary(int x, int y, vector<pair<int, int>>& q, bool overwrite, int width, int height,
-    function<bool(int, int, const string)> set, function<string(int, int)> get) const {
+    function<bool(int, int, const string, float)> set, function<string(int, int)> get) const {
     for (int i = 0; i < 4; ++i) {
         int nx = x + dx[i];
         int ny = y + dy[i];
@@ -82,7 +82,7 @@ void Terrain::UpdateBoundary(int x, int y, vector<pair<int, int>>& q, bool overw
 }
 
 void Terrain::ShapeFilter(int x, int y, int width, int height,
-    function<bool(int, int, const string)> set, function<string(int, int)> get, int side, float threshold) const {
+    function<bool(int, int, const string, float)> set, function<string(int, int)> get, int side, float threshold) const {
     if (get(x, y) == GetType())return;
 
     int count = 0;
@@ -91,7 +91,7 @@ void Terrain::ShapeFilter(int x, int y, int width, int height,
             if (get(i, j) == GetType())count++;
         }
     }
-    if (count > (side * 2 + 1) * (side * 2 + 1) * threshold)set(x, y, GetType());
+    if (count > (side * 2 + 1) * (side * 2 + 1) * threshold)set(x, y, GetType(), 0.f);
 }
 
 void TerrainFactory::RegisterTerrain(const string& id, function<Terrain* ()> creator) {

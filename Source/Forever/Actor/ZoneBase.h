@@ -9,17 +9,30 @@
 
 
 USTRUCT(Blueprintable, BlueprintType)
+struct FFence {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
+	FVector center;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
+	FVector size;
+};
+
+USTRUCT(Blueprintable, BlueprintType)
 struct FZone {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
 	FString name;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
 	FVector center;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
 	FVector size;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
 	float rotation;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
+	TArray<FFence> fences;
 };
 
 UCLASS()

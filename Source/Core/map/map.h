@@ -29,26 +29,16 @@ public:
 
 	//获取/设置地形名称
 	std::string GetTerrain() const;
-	bool SetTerrain(std::string terrain);
+	bool SetTerrain(std::string terrain, float height);
 
+	// 获取/设置高度
 	float GetHeight() const;
 	bool SetHeight(float height);
-
-	//获取/设置园区标识
-	std::string GetZone() const;
-	bool SetZone(std::string zone);
-
-	//获取/设置建筑标识
-	std::string GetBuilding() const;
-	bool SetBuilding(std::string building);
 
 private:
 	// 基础属性
 	std::string terrain = "plain";
 	float height = 0.f;
-
-	std::string zone;
-	std::string building;
 };
 
 class Block {
@@ -57,9 +47,10 @@ public:
 	Block(int x, int y);
 	~Block();
 
-	//获取/设置地形名称
+	//获取/设置地形
 	std::string GetTerrain(int x, int y) const;
-	bool SetTerrain(int x, int y, std::string terrain);
+	bool SetTerrain(int x, int y, std::string terrain, float height);
+	float GetHeight(int x, int y);
 
 	//检查全局坐标是否在地块内
 	bool CheckXY(int x, int y) const;
@@ -127,9 +118,10 @@ public:
 	// 获取元素
 	std::shared_ptr<Element> GetElement(int x, int y) const;
 
-	// 获取/设置地形名称
+	// 获取/设置地形
 	std::string GetTerrain(int x, int y) const;
-	bool SetTerrain(int x, int y, std::string terrain);
+	bool SetTerrain(int x, int y, std::string terrain, float height);
+	float GetHeight(int x, int y);
 
 	// 获取路网
 	Roadnet* GetRoadnet() const;

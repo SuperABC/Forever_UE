@@ -1,6 +1,8 @@
 #include "Actor/TerrainBase.h"
 #include "Actor/GlobalBase.h"
 
+#include "Landscape.h"
+
 
 using namespace std;
 
@@ -13,7 +15,7 @@ ATerrainBase::~ATerrainBase() {
 }
 
 void ATerrainBase::BeginPlay() {
-	Super::BeginPlay();
+    Super::BeginPlay();
 }
 
 void ATerrainBase::Tick(float DeltaTime) {
@@ -24,19 +26,32 @@ void ATerrainBase::Tick(float DeltaTime) {
 	location /= 1000.f;
 
 	auto size = ((AGlobalBase*)global)->GetMap()->GetSize();
-	TArray<FCoordinate> coordinates;
-	for(auto j = FMath::Clamp(int(location.Y - 20), 0, size.second); j <= FMath::Clamp(int(location.Y + 20), 0, size.second); j++) {
-		for (auto i = FMath::Clamp(int(location.X - 20), 0, size.first); i <= FMath::Clamp(int(location.X + 20), 0, size.first); i++) {
-			if(terrainInstances[j][i] == -1) {
-				coordinates.Add(FCoordinate(i, j));
+	TArray<FCoordinate> adds;
+	for(auto j = FMath::Clamp(int(location.Y - 10), 0, size.second); j <= FMath::Clamp(int(location.Y + 10), 0, size.second); j++) {
+		for (auto i = FMath::Clamp(int(location.X - 10), 0, size.first); i <= FMath::Clamp(int(location.X + 10), 0, size.first); i++) {
+			if(terrainInstances[j][i].Num() == 0) {
+				adds.Add(FCoordinate(i, j));
 			}
 		}
 	}
-	UpdateTerrain(coordinates);
+
+	TArray<FCoordinate> removes;
+	for (int j = 0; j < terrainInstances.size(); j++) {
+		for (int i = 0; i < terrainInstances[j].size(); i++) {
+			if (terrainInstances[j][i].Num() > 0) {
+				if (j < FMath::Clamp(int(location.Y - 10), 0, size.second) || j > FMath::Clamp(int(location.Y + 10), 0, size.second) ||
+					i < FMath::Clamp(int(location.X - 10), 0, size.first) || i > FMath::Clamp(int(location.X + 10), 0, size.first)) {
+					removes.Add(FCoordinate(i, j));
+				}
+			}
+		}
+	}
+
+	UpdateTerrain(adds, removes);
 }
 
 void ATerrainBase::InitInstances(int width, int height) {
-	terrainInstances = vector<vector<int>>(height, vector<int>(width, -1));
+	terrainInstances = vector<vector<TArray<int>>>(height, vector<TArray<int>>(width));
 }
 
 void ATerrainBase::SetGlobal(AActor* g) {
@@ -48,14 +63,44 @@ void ATerrainBase::LookupTerrain(int x, int y, FString& type, float& height) {
 	if (!map)return;
 
 	type = FString(map->GetTerrain(x, y).data());
-	height = map->GetElement(x, y)->GetHeight();
+	height = map->GetHeight(x, y);
 }
 
-void ATerrainBase::SetInstance(int x, int y, int id) {
+void ATerrainBase::SetInstance(int x, int y, TArray<int> ids) {
 	auto size = ((AGlobalBase*)global)->GetMap()->GetSize();
 	if (x < 0 || y < 0 || x >= size.first || y >= size.second) {
 		return;
 	}
-	terrainInstances[y][x] = id;
+
+	terrainInstances[y][x] = ids;
+	for (auto id : ids) {
+		idList.push_back({ x, y });
+	}
+}
+
+void ATerrainBase::RemoveInstance(int x, int y, TArray<int>& ids) {
+	auto size = ((AGlobalBase*)global)->GetMap()->GetSize();
+	if (x < 0 || y < 0 || x >= size.first || y >= size.second) return;
+
+	ids = terrainInstances[y][x];
+	if (ids.Num() == 0) return;
+
+	ids.Sort([](int a, int b) { return a > b; });
+
+	for (int removedId : ids) {
+		terrainInstances[y][x].Remove(removedId);
+
+		idList.erase(idList.begin() + removedId);
+
+		for (auto& row : terrainInstances) {
+			for (auto& cellIds : row) {
+				for (int& instanceId : cellIds) {
+					if (instanceId > removedId) {
+						instanceId--;
+					}
+				}
+			}
+		}
+	}
 }
 

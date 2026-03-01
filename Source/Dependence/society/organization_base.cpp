@@ -3,7 +3,7 @@
 
 using namespace std;
 
-vector<Job*> Organization::EnrollEmployee(vector<int> ids) {
+vector<Job*> Organization::EnrollEmployee(vector<int> &ids) {
     vector<Job*> positions;
 
     int i = 0;

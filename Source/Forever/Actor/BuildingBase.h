@@ -9,17 +9,30 @@
 
 
 USTRUCT(Blueprintable, BlueprintType)
+struct FWall {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FVector center;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FVector size;
+};
+
+USTRUCT(Blueprintable, BlueprintType)
 struct FBuilding {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
 	FString name;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
 	FVector center;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
 	FVector size;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
 	float rotation;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	TArray<FWall> walls;
 };
 
 UCLASS()

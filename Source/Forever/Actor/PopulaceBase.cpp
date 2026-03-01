@@ -40,10 +40,10 @@ void APopulaceBase::Tick(float DeltaTime) {
 		adds.Add(citizenInfo);
 	}
 
-	TMap<FString, AActor*> removes;
+	TArray<FString> removes;
 	for(auto &[name, instance] : personInstances) {
 		if((instance->GetActorLocation() / 1000.f - location).Size() > 16.f) {
-			removes.Add(UTF8_TO_TCHAR(name.data()), instance);
+			removes.Add(UTF8_TO_TCHAR(name.data()));
 		}
 	}
 	UpdatePopulace(adds, removes);
@@ -156,8 +156,9 @@ void APopulaceBase::AddInstance(FString name, AActor* actor) {
 	}
 }
 
-void APopulaceBase::RemoveInstance(FString name) {
+void APopulaceBase::RemoveInstance(FString name, AActor*& instance) {
 	if (personInstances.find(TCHAR_TO_UTF8(*name)) != personInstances.end()) {
+		instance = personInstances[TCHAR_TO_UTF8(*name)];
 		personInstances.erase(TCHAR_TO_UTF8(*name));
 	}
 	else {

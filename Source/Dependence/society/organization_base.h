@@ -43,7 +43,7 @@ public:
 	// 父类实现方法
 
     // 员工入职
-    virtual std::vector<Job*> EnrollEmployee(std::vector<int> ids);
+    virtual std::vector<Job*> EnrollEmployee(std::vector<int>& ids);
 
 	// 管理职位
     std::vector<std::pair<Component*, std::vector<std::pair<Job*, int>>>> GetJobs() const;

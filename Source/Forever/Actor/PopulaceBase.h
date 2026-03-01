@@ -35,11 +35,11 @@ public:
 	void SpawnNpc(const FString& name, const FString& avatar, const FVector& position);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
-	void UpdatePopulace(const TArray<FPerson>& adds, const TMap<FString, AActor*>& removes);
+	void UpdatePopulace(const TArray<FPerson>& adds, const TArray<FString>& removes);
 	UFUNCTION(BlueprintCallable, Category = "World")
 	void AddInstance(FString name, AActor* actor);
 	UFUNCTION(BlueprintCallable, Category = "World")
-	void RemoveInstance(FString name);
+	void RemoveInstance(FString name, AActor*& instances);
 
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	TArray<FString> GetOptions(FString name);

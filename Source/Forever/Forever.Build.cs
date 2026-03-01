@@ -20,8 +20,9 @@ public class Forever : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
-		});
+			"Slate",
+            "Landscape"
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
