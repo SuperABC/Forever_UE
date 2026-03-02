@@ -132,6 +132,9 @@ void AGlobalBase::BeginPlay() {
 		populaceActor->SetGlobal(this);
 		storyActor = GetWorld()->SpawnActor<AStoryBase>(StoryClass, Location, Rotation);
 		storyActor->SetGlobal(this);
+
+		auto pos = map->GetPlayerPos();
+		SetLocation(FVector(pos.first, pos.second, 0.f));
 	}
 	catch (ExceptionBase& e) {
 		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
@@ -201,6 +204,5 @@ APopulaceBase* AGlobalBase::GetPopulaceActor() {
 AStoryBase* AGlobalBase::GetStoryActor() {
 	return storyActor;
 }
-
 
 

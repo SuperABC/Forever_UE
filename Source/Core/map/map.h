@@ -109,6 +109,9 @@ public:
 	// 获取地图尺寸
 	std::pair<int, int> GetSize() const;
 
+	// 获取玩家坐标
+	std::pair<float, float> GetPlayerPos() const;
+
 	// 检查全局坐标是否在地图内
 	bool CheckXY(int x, int y) const;
 
@@ -158,6 +161,7 @@ private:
 	// 基础内容
 	int width = 0, height = 0;
 	std::vector<std::vector<std::shared_ptr<Block>>> blocks;
+	std::pair<float, float> playerPos;
 
 	// 地图架构
 	Roadnet* roadnet = nullptr;

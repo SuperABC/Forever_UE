@@ -53,6 +53,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void GetLocation(FVector& location);
+	UFUNCTION(BlueprintImplementableEvent, Category = "World")
+	void SetLocation(FVector location);
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> TerrainClass;

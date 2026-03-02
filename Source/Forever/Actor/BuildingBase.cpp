@@ -49,6 +49,11 @@ void ABuildingBase::Tick(float DeltaTime) {
 			buildingInfo.center = FVector(center.first, center.second, 0.f);
 			buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(), 1.f);
 			buildingInfo.rotation = plot->GetRotation();
+			for (int i = 0; i < building->GetLayers(); i++) {
+				buildingInfo.walls.Add(
+					FWall(FVector(0.f, 0.f, 0.4f * (i + 1)),
+						FVector(construction.GetSizeX(), construction.GetSizeY(), 0.01f)));
+			}
 			buildings.Add(buildingInfo);
 		}
 		auto plotZones = plot->GetZones();
@@ -69,6 +74,11 @@ void ABuildingBase::Tick(float DeltaTime) {
 				buildingInfo.center = FVector(center.first, center.second, 0.f);
 				buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(), 1.f);
 				buildingInfo.rotation = plot->GetRotation();
+				for (int i = 0; i < building->GetLayers(); i++) {
+					buildingInfo.walls.Add(
+						FWall(FVector(0.f, 0.f, 0.4f * (i + 1)),
+							FVector(construction.GetSizeX(), construction.GetSizeY(), 0.01f)));
+				}
 				buildings.Add(buildingInfo);
 			}
 		}

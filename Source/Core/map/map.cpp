@@ -454,6 +454,8 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     // 计算地图实际长宽
     width = blockX * BLOCK_SIZE;
     height = blockY * BLOCK_SIZE;
+    playerPos.first = width / 2.f;
+    playerPos.second = height / 2.f;
 
     // 构建区块
 	debugf("Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
@@ -477,7 +479,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         return this->SetTerrain(x, y, terrain, height);
         };
     auto terrains = terrainFactory->GetTerrains();
-    sort(terrains.begin(), terrains.end(),
+    std::sort(terrains.begin(), terrains.end(),
         [](const Terrain* a, const Terrain* b) {
             return a->GetPriority() > b->GetPriority();
         });
@@ -790,6 +792,10 @@ void Map::ApplyChange(Change* change, Story* story,
 
 pair<int, int> Map::GetSize() const {
     return make_pair(width, height);
+}
+
+pair<float, float> Map::GetPlayerPos() const {
+    return playerPos;
 }
 
 bool Map::CheckXY(int x, int y) const {
