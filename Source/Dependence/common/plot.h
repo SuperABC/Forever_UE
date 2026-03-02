@@ -73,7 +73,7 @@ public:
 	Plot(float x, float y, float w, float h, float r);
 	Plot(Node n1, Node n2, Node n3, std::vector<float> margin = std::vector<float>(4, 0.f));
 	Plot(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin = std::vector<float>(4, 0.f));
-	~Plot();
+	virtual ~Plot();
 
 	// 获取/设置属性
 	float GetRotation() const;

@@ -78,13 +78,16 @@ Plot::~Plot() {
     for(auto& zone : zones) {
         if (zone.second) {
             delete zone.second;
-            zone.second = nullptr;
+            debugf("%s\n", zone.first.data());
+            zones.erase(zone.first);
         }
 	}
     for (auto& building : buildings) {
         if (building.second) {
             delete building.second;
             building.second = nullptr;
+            debugf("%s\n", building.first.data());
+            buildings.erase(building.first);
         }
     }
 }

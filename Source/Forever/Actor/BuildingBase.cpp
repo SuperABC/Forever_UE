@@ -54,6 +54,20 @@ void ABuildingBase::Tick(float DeltaTime) {
 					FWall(FVector(0.f, 0.f, 0.4f * (i + 1)),
 						FVector(construction.GetSizeX(), construction.GetSizeY(), 0.01f)));
 			}
+			for (auto room : building->GetRooms()) {
+				buildingInfo.walls.Add(
+					FWall(FVector(room->GetPosX() + room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+						FVector(0.01f, room->GetSizeY(), 0.1f)));
+				buildingInfo.walls.Add(
+					FWall(FVector(room->GetPosX() - room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+						FVector(0.01f, room->GetSizeY(), 0.1f)));
+				buildingInfo.walls.Add(
+					FWall(FVector(room->GetPosX(), room->GetPosY() + room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+						FVector(room->GetSizeX(), 0.01f, 0.1f)));
+				buildingInfo.walls.Add(
+					FWall(FVector(room->GetPosX(), room->GetPosY() - room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+						FVector(room->GetSizeX(), 0.01f, 0.1f)));
+			}
 			buildings.Add(buildingInfo);
 		}
 		auto plotZones = plot->GetZones();
@@ -78,6 +92,20 @@ void ABuildingBase::Tick(float DeltaTime) {
 					buildingInfo.walls.Add(
 						FWall(FVector(0.f, 0.f, 0.4f * (i + 1)),
 							FVector(construction.GetSizeX(), construction.GetSizeY(), 0.01f)));
+				}
+				for (auto room : building->GetRooms()) {
+					buildingInfo.walls.Add(
+						FWall(FVector(room->GetPosX() + room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+							FVector(0.01f, room->GetSizeY(), 0.1f)));
+					buildingInfo.walls.Add(
+						FWall(FVector(room->GetPosX() - room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+							FVector(0.01f, room->GetSizeY(), 0.1f)));
+					buildingInfo.walls.Add(
+						FWall(FVector(room->GetPosX(), room->GetPosY() + room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+							FVector(room->GetSizeX(), 0.01f, 0.1f)));
+					buildingInfo.walls.Add(
+						FWall(FVector(room->GetPosX(), room->GetPosY() - room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+							FVector(room->GetSizeX(), 0.01f, 0.1f)));
 				}
 				buildings.Add(buildingInfo);
 			}
