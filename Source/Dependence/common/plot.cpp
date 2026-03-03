@@ -1,6 +1,8 @@
-﻿#include "plot.h"
+﻿#include "../map/roadnet_base.h"
+
+#include "plot.h"
 #include "error.h"
-#include "../map/roadnet_base.h"
+#include "utility.h"
 
 #include <cmath>
 #include <utility>
@@ -77,15 +79,14 @@ Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
 Plot::~Plot() {
     for(auto& zone : zones) {
         if (zone.second) {
-            delete zone.second;
+            //delete zone.second; 故意内存泄漏，如果不崩说明是这个地方delete导致崩溃
             debugf("%s\n", zone.first.data());
             zones.erase(zone.first);
         }
 	}
     for (auto& building : buildings) {
         if (building.second) {
-            delete building.second;
-            building.second = nullptr;
+            //delete building.second;
             debugf("%s\n", building.first.data());
             buildings.erase(building.first);
         }

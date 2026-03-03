@@ -3,7 +3,6 @@
 #include "../map/zone_base.h"
 #include "../map/building_base.h"
 
-#include "utility.h"
 #include "quad.h"
 
 #include <vector>

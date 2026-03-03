@@ -62,14 +62,6 @@ void Room::SetLayer(int layer) {
     this->layer = layer;
 }
 
-int Room::GetFace() const {
-    return face;
-}
-
-void Room::SetFace(int face) {
-    this->face = face;
-}
-
 void Room::SetAddress(int number) {
     ostringstream oss;
     oss << setw(4) << setfill('0') << number;

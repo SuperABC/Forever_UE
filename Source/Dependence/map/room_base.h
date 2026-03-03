@@ -55,8 +55,6 @@ public:
     // 获取/设置属性
     int GetLayer() const;
     void SetLayer(int layer);
-    int GetFace() const;
-    void SetFace(int face);
 
     // 寻址
     void SetAddress(int number);
@@ -85,7 +83,6 @@ protected:
 	int ownerId = -1;
 
     int layer;
-    int face;
     std::string address;
 
     std::vector<int> tenants;

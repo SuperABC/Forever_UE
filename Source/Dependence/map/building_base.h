@@ -31,17 +31,83 @@ enum FACE_DIRECTION {
 };
 static char faceAbbr[4] = { 'w', 'e', 'n', 's' };
 
-// 走廊&电梯&楼梯
-class Facility : public Quad {
+class Stair : public Quad {
 public:
-	enum FACILITY_TYPE : int { FACILITY_CORRIDOR, FACILITY_STAIR, FACILITY_ELEVATOR };
+	Stair(std::vector<float> params);
 
-	Facility(FACILITY_TYPE type, float x, float y, float w, float h);
+	void SetDirection(FACE_DIRECTION direction);
+	FACE_DIRECTION GetDirection() const;
 
-	FACILITY_TYPE getType() const;
+	void InstanciateQuad(float width, float height);
 
 private:
-	FACILITY_TYPE type;
+	FACE_DIRECTION direction;
+
+	std::vector<float> params;
+};
+
+class Ceiling : public Quad {
+public:
+	Ceiling(std::vector<float> params);
+
+	void InstanciateQuad(float width, float height);
+
+private:
+	std::vector<float> params;
+};
+
+class Corridor : public Quad {
+public:
+	Corridor(std::vector<float> params);
+
+	void AddWall(int direction);
+	void AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	void AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+
+	void InstanciateQuad(float width, float height);
+
+private:
+	std::vector<bool> walls;
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors;
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows;
+
+	std::vector<float> params;
+};
+
+class Single : public Quad {
+public:
+	Single(std::vector<float> params);
+
+	void AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	void AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+
+	void InstanciateQuad(float width, float height);
+
+private:
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors;
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows;
+
+	std::vector<float> params;
+};
+
+class Row : public Quad {
+public:
+	Row(std::vector<float> params);
+
+	void SetDirection(FACE_DIRECTION direction);
+	FACE_DIRECTION GetDirection() const;
+
+	void AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	void AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+
+	void InstanciateQuad(float width, float height);
+
+private:
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors;
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows;
+
+	FACE_DIRECTION direction;
+	std::vector<float> params;
 };
 
 // 楼层
@@ -50,19 +116,21 @@ public:
 	Floor(int level, float width, float height);
 	~Floor();
 
-	void AddFacility(Facility facility);
-
-	void AddRow(std::pair<Quad, int> row);
-
-	void AddRoom(std::pair<Quad, int> room);
+	void AddStair(Stair stair);
+	void AddCeiling(Ceiling ceiling);
+	void AddCorridor(Corridor corridor);
+	void AddSingle(Single single);
+	void AddRow(Row row);
 
 	// 获取楼层
 	int GetLevel() const;
 
 	// 访问组件
-	std::vector<Facility>& GetFacilities();
-	std::vector<std::pair<Quad, int>>& GetRows();
-	std::vector<std::pair<Quad, int>>& GetRooms();
+	std::vector<Stair>& GetStairs();
+	std::vector<Ceiling>& GetCeilings();
+	std::vector<Corridor>& GetCorridors();
+	std::vector<Single>& GetSingles();
+	std::vector<Row>& GetRows();
 
 	// 分配门牌号
 	int AssignNumber();
@@ -70,18 +138,22 @@ public:
 private:
 	int level;
 
-	std::vector<Facility> facilities;
-	std::vector<std::pair<Quad, int>> rows;
-	std::vector<std::pair<Quad, int>> rooms;
+	std::vector<Stair> stairs;
+	std::vector<Ceiling> ceilings;
+	std::vector<Corridor> corridors;
+	std::vector<Single> singles;
+	std::vector<Row> rows;
 
 	int number = 0;
 };
 
 class Layout {
 public:
-	std::unordered_map<std::string, std::vector<std::vector<std::pair<Facility::FACILITY_TYPE, std::vector<float>>>>> templateFacilities;
-	std::unordered_map<std::string, std::vector<std::vector<std::pair<FACE_DIRECTION, std::vector<float>>>>> templateRows;
-	std::unordered_map<std::string, std::vector<std::vector<std::pair<FACE_DIRECTION, std::vector<float>>>>> templateRooms;
+	std::unordered_map<std::string, std::vector<std::vector<Stair>>> templateStairs;
+	std::unordered_map<std::string, std::vector<std::vector<Ceiling>>> templateCeilings;
+	std::unordered_map<std::string, std::vector<std::vector<Corridor>>> templateCorridors;
+	std::unordered_map<std::string, std::vector<std::vector<Single>>> templateSingles;
+	std::unordered_map<std::string, std::vector<std::vector<Row>>> templateRows;
 };
 
 class Building : public Quad {
@@ -141,6 +213,8 @@ public:
 
 	// 读入布局模板
 	static Layout* ReadTemplates(std::string path);
+	static std::vector<float> InverseParams(std::vector<float>& params, int face);
+	static int InverseDirection(int direction, int face);
 
 protected:
 	// 根据布局文件分配房间
@@ -165,11 +239,9 @@ protected:
 
 	int layers = 1;
 	int basements = 0;
+	float height = 0.4f;
 	Quad construction;
 
-private:
-	static std::vector<float> InverseParams(std::vector<float>& params, int face);
-	static int InverseDirection(int direction, int face);
 };
 
 class BuildingFactory {

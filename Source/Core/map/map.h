@@ -35,10 +35,19 @@ public:
 	float GetHeight() const;
 	bool SetHeight(float height);
 
+	//获取/设置园区/建筑标识
+	std::string GetZone() const;
+	bool SetZone(std::string zone);
+	std::string GetBuilding() const;
+	bool SetBuilding(std::string building);
+
 private:
 	// 基础属性
 	std::string terrain = "plain";
 	float height = 0.f;
+
+	std::string zone;
+	std::string building;
 };
 
 class Block {
@@ -136,6 +145,13 @@ public:
 	// 获取组合/房间
 	std::vector<Component*> GetComponents() const;
 	std::vector<Room*> GetRooms() const;
+
+	// 获取/设置元素所属园区/建筑
+	Zone* GetZone(std::string name);
+	Building* GetBuilding(std::string name);
+	void SetZone(Zone* zone, std::string name);
+	void SetBuilding(Building* building, std::string name);
+	void SetBuilding(Building* building, std::string name, std::pair<float, float> offset);
 
 	// 寻址
 	Plot* LocatePlot(std::string address) const;

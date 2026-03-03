@@ -2,6 +2,7 @@
 
 #include "../common/quad.h"
 #include "../common/plot.h"
+#include "../common/utility.h"
 
 #include "building_base.h"
 

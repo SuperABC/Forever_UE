@@ -47,6 +47,26 @@ bool Element::SetHeight(float height) {
     return true;
 }
 
+string Element::GetZone() const {
+    return this->zone;
+}
+
+bool Element::SetZone(string zone) {
+    this->zone = zone;
+
+    return true;
+}
+
+string Element::GetBuilding() const {
+    return this->building;
+}
+
+bool Element::SetBuilding(string building) {
+    this->building = building;
+
+    return true;
+}
+
 Block::Block(int x, int y) : offsetX(x), offsetY(y) {
     elements = vector<vector<shared_ptr<Element>>>(BLOCK_SIZE,
         vector<shared_ptr<Element>>(BLOCK_SIZE, nullptr));
@@ -590,6 +610,14 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         auto zones = plot->GetZones();
         for (auto zone : zones) {
             zone.second->ArrangeBuildings();
+            SetZone(zone.second, zone.first);
+            for (auto building : zone.second->GetBuildings()) {
+                SetBuilding(building.second, building.first, make_pair(zone.second->GetLeft(), zone.second->GetBottom()));
+            }
+        }
+        auto buildings = plot->GetBuildings();
+        for (auto building : buildings) {
+            SetBuilding(building.second, building.first);
         }
     }
 
@@ -913,6 +941,131 @@ vector<Room*> Map::GetRooms() const {
         rooms.insert(rooms.end(), current.begin(), current.end());
     }
     return rooms;
+}
+
+Zone* Map::GetZone(string name) {
+    return zones[name];
+}
+
+Building* Map::GetBuilding(string name) {
+    return buildings[name];
+}
+
+void Map::SetZone(Zone* zone, string name) {
+    auto plot = zone->GetParent();
+
+    auto v1 = plot->GetPosition(zone->GetPosX() + zone->GetSizeX() / 2.f, zone->GetPosY() + zone->GetSizeY() / 2.f);
+    auto v2 = plot->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f, zone->GetPosY() + zone->GetSizeY() / 2.f);
+    auto v3 = plot->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f, zone->GetPosY() - zone->GetSizeY() / 2.f);
+    auto v4 = plot->GetPosition(zone->GetPosX() + zone->GetSizeX() / 2.f, zone->GetPosY() - zone->GetSizeY() / 2.f);
+
+    vector<pair<float, float>> points = { v1, v2, v3, v4 };
+    int minX = (int)points[0].first;
+    int maxX = (int)points[0].first;
+    int minY = (int)points[0].second;
+    int maxY = (int)points[0].second;
+    for (const auto& point : points) {
+        minX = min(minX, (int)point.first);
+        maxX = max(maxX, (int)point.first);
+        minY = min(minY, (int)point.second);
+        maxY = max(maxY, (int)point.second);
+    }
+
+    for (int x = minX; x <= maxX; x++) {
+        for (int y = minY; y <= maxY; y++) {
+            bool inside = false;
+            for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
+                if (((points[i].second > y) != (points[j].second > y)) &&
+                    (x < (points[j].first - points[i].first) * (y - points[i].second) /
+                        (points[j].second - points[i].second) + points[i].first)) {
+                    inside = !inside;
+                }
+            }
+
+            if (inside) {
+                auto element = GetElement((int)x, (int)y);
+                if (element)element->SetZone(name);
+            }
+        }
+    }
+}
+
+void Map::SetBuilding(Building* building, string name) {
+    auto plot = building->GetParentPlot();
+
+    auto v1 = plot->GetPosition(building->GetPosX() + building->GetSizeX() / 2.f, building->GetPosY() + building->GetSizeY() / 2.f);
+    auto v2 = plot->GetPosition(building->GetPosX() - building->GetSizeX() / 2.f, building->GetPosY() + building->GetSizeY() / 2.f);
+    auto v3 = plot->GetPosition(building->GetPosX() - building->GetSizeX() / 2.f, building->GetPosY() - building->GetSizeY() / 2.f);
+    auto v4 = plot->GetPosition(building->GetPosX() + building->GetSizeX() / 2.f, building->GetPosY() - building->GetSizeY() / 2.f);
+
+    vector<pair<float, float>> points = { v1, v2, v3, v4 };
+    int minX = (int)points[0].first;
+    int maxX = (int)points[0].first;
+    int minY = (int)points[0].second;
+    int maxY = (int)points[0].second;
+    for (const auto& point : points) {
+        minX = min(minX, (int)point.first);
+        maxX = max(maxX, (int)point.first);
+        minY = min(minY, (int)point.second);
+        maxY = max(maxY, (int)point.second);
+    }
+
+    for (int x = minX; x <= maxX; x++) {
+        for (int y = minY; y <= maxY; y++) {
+            bool inside = false;
+            for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
+                if (((points[i].second > y) != (points[j].second > y)) &&
+                    (x < (points[j].first - points[i].first) * (y - points[i].second) /
+                        (points[j].second - points[i].second) + points[i].first)) {
+                    inside = !inside;
+                }
+            }
+
+            if (inside) {
+                auto element = GetElement((int)x, (int)y);
+                if (element)element->SetBuilding(name);
+            }
+        }
+    }
+}
+
+void Map::SetBuilding(Building* building, string name, pair<float, float> offset) {
+    auto plot = building->GetParentPlot();
+
+    auto v1 = plot->GetPosition(offset.first + building->GetPosX() + building->GetSizeX() / 2.f, offset.second + building->GetPosY() + building->GetSizeY() / 2.f);
+    auto v2 = plot->GetPosition(offset.first + building->GetPosX() - building->GetSizeX() / 2.f, offset.second + building->GetPosY() + building->GetSizeY() / 2.f);
+    auto v3 = plot->GetPosition(offset.first + building->GetPosX() - building->GetSizeX() / 2.f, offset.second + building->GetPosY() - building->GetSizeY() / 2.f);
+    auto v4 = plot->GetPosition(offset.first + building->GetPosX() + building->GetSizeX() / 2.f, offset.second + building->GetPosY() - building->GetSizeY() / 2.f);
+
+    vector<pair<float, float>> points = { v1, v2, v3, v4 };
+    int minX = (int)points[0].first;
+    int maxX = (int)points[0].first;
+    int minY = (int)points[0].second;
+    int maxY = (int)points[0].second;
+    for (const auto& point : points) {
+        minX = min(minX, (int)point.first);
+        maxX = max(maxX, (int)point.first);
+        minY = min(minY, (int)point.second);
+        maxY = max(maxY, (int)point.second);
+    }
+
+    for (int x = minX; x <= maxX; x++) {
+        for (int y = minY; y <= maxY; y++) {
+            bool inside = false;
+            for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
+                if (((points[i].second > y) != (points[j].second > y)) &&
+                    (x < (points[j].first - points[i].first) * (y - points[i].second) /
+                        (points[j].second - points[i].second) + points[i].first)) {
+                    inside = !inside;
+                }
+            }
+
+            if (inside) {
+                auto element = GetElement((int)x, (int)y);
+                if (element)element->SetBuilding(name);
+            }
+        }
+    }
 }
 
 Plot* Map::LocatePlot(std::string address) const {
