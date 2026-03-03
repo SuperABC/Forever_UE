@@ -77,18 +77,22 @@ Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
 }
 
 Plot::~Plot() {
-    for(auto& zone : zones) {
-        if (zone.second) {
-            //delete zone.second; 故意内存泄漏，如果不崩说明是这个地方delete导致崩溃
-            debugf("%s\n", zone.first.data());
-            zones.erase(zone.first);
+    for (auto it = zones.begin(); it != zones.end(); ) {
+        if (it->second) {
+            delete it->second;
+            it = zones.erase(it);
         }
-	}
-    for (auto& building : buildings) {
-        if (building.second) {
-            //delete building.second;
-            debugf("%s\n", building.first.data());
-            buildings.erase(building.first);
+        else {
+            ++it;
+        }
+    }
+    for (auto it = buildings.begin(); it != buildings.end(); ) {
+        if (it->second) {
+            delete it->second;
+            it = buildings.erase(it);
+        }
+        else {
+            ++it;
         }
     }
 }

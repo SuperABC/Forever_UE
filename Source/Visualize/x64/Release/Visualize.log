@@ -1,3 +1,0 @@
-﻿  visualize.cpp
-LINK : fatal error C1047: 对象或库文件“E:\Projects\Forever\SGL\lib\x64\winsgl.lib”是使用与其他对象(如“x64\Release\visualize.obj”)不同的编译器版本创建的；请使用相同的编译器重新生成所有对象和库
-LINK : fatal error LNK1257: 代码生成失败

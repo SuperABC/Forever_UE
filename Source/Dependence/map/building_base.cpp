@@ -352,7 +352,7 @@ Layout* Building::ReadTemplates(string path) {
                         rect[i] = c["rect"][i].AsFloat();
                     }
                     for (int i = 0; i < 4; i++) {
-                        Corridor corridor(InverseParams(rect, 0));
+                        Corridor corridor(InverseParams(rect, i));
                         for (auto wall : c["walls"]) {
                             corridor.AddWall(InverseDirection(wall.AsInt(), i));
                         }
@@ -388,7 +388,7 @@ Layout* Building::ReadTemplates(string path) {
                         rect[i] = s["rect"][i].AsFloat();
                     }
                     for (int i = 0; i < 4; i++) {
-                        Single single(InverseParams(rect, 0));
+                        Single single(InverseParams(rect, i));
                         for (auto door : s["doors"]) {
                             vector<vector<float>> positions;
                             for (auto p : door["positions"]) {
@@ -421,7 +421,7 @@ Layout* Building::ReadTemplates(string path) {
                         rect[i] = r["rect"][i].AsFloat();
                     }
                     for (int i = 0; i < 4; i++) {
-                        Row row(InverseParams(rect, 0));
+                        Row row(InverseParams(rect, i));
                         row.SetDirection((FACE_DIRECTION)InverseDirection(r["direction"].AsInt(), i));
                         for (auto door : r["doors"]) {
                             vector<vector<float>> positions;
@@ -565,36 +565,36 @@ vector<float> Building::InverseParams(vector<float>& params, int face) {
     auto inversed = params;
     switch (face) {
     case 0:
-        inversed[0] = 1.f - params[4];
-        inversed[1] = -params[5];
-        inversed[2] = 1.f - params[6];
-        inversed[3] = -params[7];
-        inversed[4] = 1.f - params[0];
-        inversed[5] = -params[1];
-        inversed[6] = 1.f - params[2];
-        inversed[7] = -params[3];
+        inversed[0] = 1.f - params[6];
+        inversed[1] = -params[7];
+        inversed[2] = params[0];
+        inversed[3] = params[1];
+        inversed[4] = 1.f - params[2];
+        inversed[5] = -params[3];
+        inversed[6] = params[4];
+        inversed[7] = params[5];
         break;
     case 1:
-        inversed[6] = params[2];
-        inversed[7] = params[3];
-        inversed[0] = 1.f - params[4];
-        inversed[1] = -params[5];
-        inversed[2] = params[6];
-        inversed[3] = params[7];
-        inversed[4] = 1.f - params[0];
-        inversed[5] = -params[1];
+        inversed[0] = params[2];
+        inversed[1] = params[3];
+        inversed[2] = 1.f - params[4];
+        inversed[3] = -params[5];
+        inversed[4] = params[6];
+        inversed[5] = params[7];
+        inversed[6] = 1.f - params[0];
+        inversed[7] = -params[1];
         break;
     case 2:
         break;
     case 3:
+        inversed[0] = 1.f - params[4];
+        inversed[1] = -params[5];
         inversed[2] = 1.f - params[6];
         inversed[3] = -params[7];
-        inversed[4] = params[0];
-        inversed[5] = params[1];
+        inversed[4] = 1.f - params[0];
+        inversed[5] = -params[1];
         inversed[6] = 1.f - params[2];
         inversed[7] = -params[3];
-        inversed[0] = params[4];
-        inversed[1] = params[5];
         break;
     default:
         break;
