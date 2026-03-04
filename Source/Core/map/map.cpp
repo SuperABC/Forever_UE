@@ -521,7 +521,21 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
 
     // 随机生成园区
     debugf("Generate zones.\n");
-    zoneFactory->GenerateAll(roadnet->GetPlots(), buildingFactory);
+    auto zoneTypes= zoneFactory->GetTypes();
+    for (auto plot : roadnet->GetPlots()) {
+        vector<Zone*>zones;
+        for (auto type : zoneTypes) {
+            for (auto zone : zoneFactory->CreateZones(type, plot)) {
+                zones.push_back(zone);
+            }
+        }
+        for (auto zone : zones) {
+            zone->SetAcreage(plot);
+            zone->AddBuilding(plot, buildingFactory);
+            string name = zone->GetName();
+            plot->AddZone(name, zone);
+        }
+    }
     for (auto plot : roadnet->GetPlots()) {
         auto zs = plot->GetZones();
         for (auto z : zs) {

@@ -15,8 +15,10 @@ public:
     virtual std::string GetType() const;
     virtual std::string GetName() const;
 
-    static std::function<void(ZoneFactory*, BuildingFactory*, const std::vector<Plot*>&)> ZoneGenerator;
-    
+    static std::function<int(Plot*)> ZoneGenerator;
+    virtual void SetAcreage(Plot* plot);
+    virtual void AddBuilding(Plot* plot, BuildingFactory* buildingFactory);
+
 private:
     static int count;
 

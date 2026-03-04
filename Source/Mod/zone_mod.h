@@ -17,8 +17,12 @@ public:
     virtual std::string GetType() const override { return "mod"; }
     virtual std::string GetName() const override { return "模组园区" + std::to_string(name); }
 
-    static std::function<void(ZoneFactory*, BuildingFactory*, const std::vector<Plot*>&)> ZoneGenerator;
-    
+    static std::function<int(Plot*)> ZoneGenerator;
+    virtual void SetAcreage(Plot* plot) { Quad::SetAcreage(40000.f); }
+    virtual void AddBuilding(Plot* plot, BuildingFactory* buildingFactory) {
+        AddBuildings(buildingFactory, { {"mod", 1.f}, {"mod", 1.f} });
+    }
+
 private:
     static int count;
 
@@ -27,15 +31,4 @@ private:
 
 int ModZone::count = 0;
 
-std::function<void(ZoneFactory*, BuildingFactory*, const std::vector<Plot*>&)> ModZone::ZoneGenerator =
-    [](ZoneFactory* zoneFactory, BuildingFactory* buildingFactory, const std::vector<Plot*>& plots) {
-        for (const auto& plot : plots) {
-            auto zone = zoneFactory->CreateZone(ModZone::GetId());
-            if (zone) {
-                zone->SetAcreage(40000.f);
-                zone->AddBuildings(buildingFactory, { {"mod", 1.f}, {"mod", 1.f} });
-                std::string name = zone->GetName();
-                plot->AddZone(name, zone);
-            }
-        }
-    };
+std::function<int(Plot*)> ModZone::ZoneGenerator = [](Plot* plot) { return 1; };

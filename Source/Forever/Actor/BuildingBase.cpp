@@ -40,34 +40,19 @@ void ABuildingBase::Tick(float DeltaTime) {
 				continue;
 			}
 			auto building = plotBuilding.second;
-			auto construction = building->GetConstruction();
 			FBuilding buildingInfo;
 			buildingInfo.name = UTF8_TO_TCHAR(plotBuilding.first.data());
+			auto construction = building->GetConstruction();
 			auto center = plot->GetPosition(
 				building->GetPosX() - building->GetSizeX() / 2.f + construction.GetPosX(),
 				building->GetPosY() - building->GetSizeY() / 2.f + construction.GetPosY());
 			buildingInfo.center = FVector(center.first, center.second, 0.f);
+			if ((location - buildingInfo.center).Size() > 32.f) {
+				continue;
+			}
 			buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(), 1.f);
 			buildingInfo.rotation = plot->GetRotation();
-			for (int i = 0; i < building->GetLayers(); i++) {
-				buildingInfo.walls.Add(
-					FWall(FVector(0.f, 0.f, 0.4f * (i + 1)),
-						FVector(construction.GetSizeX(), construction.GetSizeY(), 0.01f)));
-			}
-			for (auto room : building->GetRooms()) {
-				buildingInfo.walls.Add(
-					FWall(FVector(room->GetPosX() + room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-						FVector(0.01f, room->GetSizeY(), 0.1f)));
-				buildingInfo.walls.Add(
-					FWall(FVector(room->GetPosX() - room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-						FVector(0.01f, room->GetSizeY(), 0.1f)));
-				buildingInfo.walls.Add(
-					FWall(FVector(room->GetPosX(), room->GetPosY() + room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-						FVector(room->GetSizeX(), 0.01f, 0.1f)));
-				buildingInfo.walls.Add(
-					FWall(FVector(room->GetPosX(), room->GetPosY() - room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-						FVector(room->GetSizeX(), 0.01f, 0.1f)));
-			}
+			ConstructBuilding(building, buildingInfo);
 			buildings.Add(buildingInfo);
 		}
 		auto plotZones = plot->GetZones();
@@ -79,34 +64,19 @@ void ABuildingBase::Tick(float DeltaTime) {
 					continue;
 				}
 				auto building = zoneBuilding.second;
-				auto construction = building->GetConstruction();
 				FBuilding buildingInfo;
 				buildingInfo.name = UTF8_TO_TCHAR(zoneBuilding.first.data());
+				auto construction = building->GetConstruction();
 				auto center = plot->GetPosition(
 					zone->GetPosX() - zone->GetSizeX() / 2 + building->GetPosX() - building->GetSizeX() / 2.f + construction.GetPosX(),
 					zone->GetPosY() - zone->GetSizeY() / 2 + building->GetPosY() - building->GetSizeY() / 2.f + construction.GetPosY());
 				buildingInfo.center = FVector(center.first, center.second, 0.f);
+				if ((location - buildingInfo.center).Size() > 32.f) {
+					continue;
+				}
 				buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(), 1.f);
 				buildingInfo.rotation = plot->GetRotation();
-				for (int i = 0; i < building->GetLayers(); i++) {
-					buildingInfo.walls.Add(
-						FWall(FVector(0.f, 0.f, 0.4f * (i + 1)),
-							FVector(construction.GetSizeX(), construction.GetSizeY(), 0.01f)));
-				}
-				for (auto room : building->GetRooms()) {
-					buildingInfo.walls.Add(
-						FWall(FVector(room->GetPosX() + room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-							FVector(0.01f, room->GetSizeY(), 0.1f)));
-					buildingInfo.walls.Add(
-						FWall(FVector(room->GetPosX() - room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-							FVector(0.01f, room->GetSizeY(), 0.1f)));
-					buildingInfo.walls.Add(
-						FWall(FVector(room->GetPosX(), room->GetPosY() + room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-							FVector(room->GetSizeX(), 0.01f, 0.1f)));
-					buildingInfo.walls.Add(
-						FWall(FVector(room->GetPosX(), room->GetPosY() - room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-							FVector(room->GetSizeX(), 0.01f, 0.1f)));
-				}
+				ConstructBuilding(building, buildingInfo);
 				buildings.Add(buildingInfo);
 			}
 		}
@@ -127,3 +97,25 @@ void ABuildingBase::SetInstance(FString name, AActor* actor) {
 	}
 }
 
+void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
+	auto construction = building->GetConstruction();
+	for (int i = 0; i < building->GetLayers(); i++) {
+		info.walls.Add(
+			FWall(FVector(0.f, 0.f, 0.4f * (i + 1)),
+				FVector(construction.GetSizeX(), construction.GetSizeY(), 0.01f)));
+	}
+	for (auto room : building->GetRooms()) {
+		info.walls.Add(
+			FWall(FVector(room->GetPosX() + room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+				FVector(0.01f, room->GetSizeY(), 0.1f)));
+		info.walls.Add(
+			FWall(FVector(room->GetPosX() - room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+				FVector(0.01f, room->GetSizeY(), 0.1f)));
+		info.walls.Add(
+			FWall(FVector(room->GetPosX(), room->GetPosY() + room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+				FVector(room->GetSizeX(), 0.01f, 0.1f)));
+		info.walls.Add(
+			FWall(FVector(room->GetPosX(), room->GetPosY() - room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
+				FVector(room->GetSizeX(), 0.01f, 0.1f)));
+	}
+}

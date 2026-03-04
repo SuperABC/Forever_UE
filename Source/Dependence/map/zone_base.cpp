@@ -292,11 +292,22 @@ void ZoneFactory::SetConfig(string name, bool config) {
     configs[name] = config;
 }
 
-void ZoneFactory::GenerateAll(const vector<Plot*>& plots, BuildingFactory* factory) {
-    for (const auto& [id, generator] : generators) {
-        if (generator && configs[id]) {
-            generator(this, factory, plots);
-        }
+vector<string> ZoneFactory::GetTypes() {
+    vector<string> types;
+    for (auto config : configs) {
+        types.push_back(config.first);
     }
+    return types;
 }
+
+vector<Zone*> ZoneFactory::CreateZones(string type, Plot* plot) {
+    vector<Zone*> zones;
+    auto num = generators[type](plot);
+    for (int i = 0; i < num; i++) {
+        auto zone = CreateZone(type);
+        if(zone)zones.push_back(zone);
+    }
+    return zones;
+}
+
 

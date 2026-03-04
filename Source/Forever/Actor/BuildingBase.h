@@ -59,4 +59,7 @@ protected:
 	AActor* global;
 
 	std::unordered_map<std::string, AActor*> buildingInstances;
+
+private:
+	void ConstructBuilding(Building* building, FBuilding& info);
 };
