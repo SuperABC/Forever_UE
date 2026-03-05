@@ -58,14 +58,16 @@ protected:
 
 class RoadnetFactory {
 public:
-    void RegisterRoadnet(const std::string& id, std::function<Roadnet* ()> creator);
+    void RegisterRoadnet(const std::string& id,
+        std::function<Roadnet* ()> creator, std::function<void(Roadnet*)> deleter);
     Roadnet* CreateRoadnet(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
     Roadnet* GetRoadnet() const;
+    void DestroyRoadnet(Roadnet* roadnet) const;
 
 private:
-    std::unordered_map<std::string, std::function<Roadnet* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Roadnet* ()>, std::function<void(Roadnet*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };
 

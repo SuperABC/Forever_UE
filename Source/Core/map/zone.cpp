@@ -21,11 +21,9 @@ string DefaultZone::GetName() const {
     return "默认园区" + to_string(name);
 }
 
-void DefaultZone::SetAcreage(Plot* plot) {
+void DefaultZone::SetZone(Plot* plot, BuildingFactory* buildingFactory) {
     Quad::SetAcreage(40000.f);
-}
 
-void DefaultZone::AddBuilding(Plot* plot, BuildingFactory* buildingFactory) {
     vector<pair<string, float>> buildings;
     int num = 40;
     for (int i = 0; i < num; i++) {

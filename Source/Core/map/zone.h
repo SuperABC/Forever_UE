@@ -16,8 +16,7 @@ public:
     virtual std::string GetName() const;
 
     static std::function<int(Plot*)> ZoneGenerator;
-    virtual void SetAcreage(Plot* plot);
-    virtual void AddBuilding(Plot* plot, BuildingFactory* buildingFactory);
+    virtual void SetZone(Plot* plot, BuildingFactory* buildingFactory);
 
 private:
     static int count;

@@ -26,37 +26,60 @@
 using namespace std;
 
 extern "C" __declspec(dllexport) void RegisterModTerrains(TerrainFactory* factory) {
-    factory->RegisterTerrain(ModTerrain::GetId(), []() {
-        return new ModTerrain();
+    factory->RegisterTerrain(ModTerrain::GetId(),
+        []() {
+            return new ModTerrain();
+        },[](Terrain* terrain) {
+            delete terrain;
         });
 }
 
 extern "C" __declspec(dllexport) void RegisterModRoadnets(RoadnetFactory* factory) {
-    factory->RegisterRoadnet(ModRoadnet::GetId(), []() {
-        return new ModRoadnet();
+    factory->RegisterRoadnet(ModRoadnet::GetId(),
+        []() {
+            return new ModRoadnet();
+        },[](Roadnet* roadnet) {
+            delete roadnet;
         });
 }
 
 extern "C" __declspec(dllexport) void RegisterModZones(ZoneFactory* factory) {
-    factory->RegisterZone(ModZone::GetId(),
-        []() { return new ModZone(); }, ModZone::ZoneGenerator);
+    factory->RegisterZone(ModZone::GetId(), ModZone::ZoneGenerator,
+        []() {
+            return new ModZone();
+        }, [](Zone* zone) {
+            delete zone;
+        });
 }
 
 extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* factory) {
-    factory->RegisterBuilding(ModZone::GetId(),
-        []() { return new ModBuilding(); }, ModBuilding::GetPower());
+    factory->RegisterBuilding(ModZone::GetId(), ModBuilding::GetPower(),
+        []() {
+            return new ModBuilding();
+        },[](Building* building) {
+            delete building;
+        }
+    );
 }
 
 extern "C" __declspec(dllexport) void RegisterModComponents(ComponentFactory* factory) {
-    factory->RegisterComponent(ModComponent::GetId(), []() {
-        return new ModComponent();
-        });
+    factory->RegisterComponent(ModComponent::GetId(),
+        []() {
+            return new ModComponent();
+        },[](Component* component) {
+            delete component;
+        }
+    );
 }
 
 extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
-    factory->RegisterRoom(ModRoom::GetId(), []() {
-        return new ModRoom();
-        });
+    factory->RegisterRoom(ModRoom::GetId(),
+        []() {
+            return new ModRoom();
+        },[](Room* room) {
+            delete room;
+        }
+    );
 }
 
 extern "C" __declspec(dllexport) void RegisterModAssets(AssetFactory* factory) {

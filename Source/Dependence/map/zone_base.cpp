@@ -10,12 +10,7 @@
 using namespace std;
 
 Zone::~Zone() {
-    for (auto& building : buildings) {
-        if (building.second) {
-            delete building.second;
-            building.second = nullptr;
-        }
-    }
+
 }
 
 void Zone::SetParent(Plot* plot) {
@@ -268,9 +263,9 @@ pair<float, float> Zone::GetPosition() const {
     return { 0.f, 0.f };
 }
 
-void ZoneFactory::RegisterZone(const string& id,
-    function<Zone* ()> creator,  GeneratorFunc generator) {
-    registries[id] = creator;
+void ZoneFactory::RegisterZone(const string& id, GeneratorFunc generator,
+        function<Zone* ()> creator, function<void(Zone*)> deleter) {
+    registries[id] = { creator, deleter };
     generators[id] = generator;
 }
 
@@ -279,7 +274,7 @@ Zone* ZoneFactory::CreateZone(const string& id) {
     
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -310,4 +305,13 @@ vector<Zone*> ZoneFactory::CreateZones(string type, Plot* plot) {
     return zones;
 }
 
+void ZoneFactory::DestroyZone(Zone* zone) {
+    auto it = registries.find(zone->GetType());
+    if (it != registries.end()) {
+        return it->second.second(zone);
+    }
+    else{
+        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + zone->GetType() + ".\n");
+    }
+}
 

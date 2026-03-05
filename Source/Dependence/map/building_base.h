@@ -254,15 +254,16 @@ protected:
 
 class BuildingFactory {
 public:
-    void RegisterBuilding(const std::string& id,
-		std::function<Building* ()> creator, std::vector<float> powers);
+    void RegisterBuilding(const std::string& id, std::vector<float> powers,
+		std::function<Building* ()> creator, std::function<void(Building*)> deleter);
 	Building* CreateBuilding(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
     const std::unordered_map<std::string, std::vector<float>>& GetPowers() const;
+	void DestroyBuilding(Building* building) const;
 
 private:
-    std::unordered_map<std::string, std::function<Building *()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Building *()>, std::function<void(Building*)>>> registries;
     std::unordered_map<std::string, bool> configs;
     std::unordered_map<std::string, std::vector<float>> powers;
 };

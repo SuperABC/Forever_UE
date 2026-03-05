@@ -20,8 +20,9 @@ void Component::AddRoom(Room* room) {
     rooms.push_back(room);
 }
 
-void ComponentFactory::RegisterComponent(const string& id, function<Component* ()> creator) {
-    registries[id] = creator;
+void ComponentFactory::RegisterComponent(const string& id,
+    function<Component* ()> creator, function<void(Component*)> deleter) {
+    registries[id] = { creator, deleter };
 }
 
 Component* ComponentFactory::CreateComponent(const string& id) {
@@ -29,7 +30,7 @@ Component* ComponentFactory::CreateComponent(const string& id) {
 
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -42,3 +43,12 @@ void ComponentFactory::SetConfig(string name, bool config) {
     configs[name] = config;
 }
 
+void ComponentFactory::DestroyComponent(Component* component) const {
+    auto it = registries.find(component->GetType());
+    if (it != registries.end()) {
+        return it->second.second(component);
+    }
+    else{
+        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + component->GetType() + ".\n");
+    }
+}

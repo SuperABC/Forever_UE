@@ -168,8 +168,9 @@ vector<Manufacture*> Room::ClearManufactures() {
 }
 
 
-void RoomFactory::RegisterRoom(const string& id, function<Room* ()> creator) {
-    registries[id] = creator;
+void RoomFactory::RegisterRoom(const string& id,
+    function<Room* ()> creator, function<void(Room*)> deleter) {
+    registries[id] = { creator, deleter };
 }
 
 Room* RoomFactory::CreateRoom(const string& id) {
@@ -177,7 +178,7 @@ Room* RoomFactory::CreateRoom(const string& id) {
     
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -190,6 +191,12 @@ void RoomFactory::SetConfig(string name, bool config) {
     configs[name] = config;
 }
 
-void RoomFactory::DestroyRoom(Room* room) {
-
+void RoomFactory::DestroyRoom(Room* room) const {
+    auto it = registries.find(room->GetType());
+    if (it != registries.end()) {
+        return it->second.second(room);
+    }
+    else{
+        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + room->GetType() + ".\n");
+    }
 }

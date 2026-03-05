@@ -77,24 +77,7 @@ Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
 }
 
 Plot::~Plot() {
-    for (auto it = zones.begin(); it != zones.end(); ) {
-        if (it->second) {
-            delete it->second;
-            it = zones.erase(it);
-        }
-        else {
-            ++it;
-        }
-    }
-    for (auto it = buildings.begin(); it != buildings.end(); ) {
-        if (it->second) {
-            delete it->second;
-            it = buildings.erase(it);
-        }
-        else {
-            ++it;
-        }
-    }
+    
 }
 
 float Plot::GetRotation() const {

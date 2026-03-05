@@ -33,8 +33,7 @@ public:
 
     // 在地图中生成园区
     static std::function<int(Plot*)> ZoneGenerator;
-    virtual void SetAcreage(Plot* plot) = 0;
-    virtual void AddBuilding(Plot* plot, BuildingFactory* buildingFactory) = 0;
+    virtual void SetZone(Plot* plot, BuildingFactory* buildingFactory) = 0;
 
 	// 父类实现方法
 
@@ -72,16 +71,17 @@ class ZoneFactory {
 public:
     using GeneratorFunc = std::function<int(Plot*)>;
 
-    void RegisterZone(const std::string& id,
-        std::function<Zone* ()> creator, GeneratorFunc generator = nullptr);
+    void RegisterZone(const std::string& id, GeneratorFunc generator,
+        std::function<Zone* ()> creator, std::function<void(Zone*)> deleter);
     Zone* CreateZone(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
     std::vector<std::string> GetTypes();
     std::vector<Zone*> CreateZones(std::string type, Plot* plot);
+    void DestroyZone(Zone* zone);
 
 private:
-    std::unordered_map<std::string, std::function<Zone* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Zone* ()>, std::function<void(Zone*)>>> registries;
     std::unordered_map<std::string, bool> configs;
     std::unordered_map<std::string, GeneratorFunc> generators;
 };

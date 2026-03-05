@@ -275,11 +275,12 @@ const vector<Connection> Roadnet::AutoNavigate(Plot* startPlot, vector<pair<Conn
     return AutoNavigate(startRoads, endRoads);
 }
 
-void RoadnetFactory::RegisterRoadnet(const string& id, function<Roadnet* ()> creator) {
+void RoadnetFactory::RegisterRoadnet(const string& id,
+        function<Roadnet* ()> creator, function<void(Roadnet*)> deleter) {
     if (registries.find(id) != registries.end()) {
         return;
     }
-    registries[id] = creator;
+    registries[id] = { creator, deleter };
 }
 
 Roadnet* RoadnetFactory::CreateRoadnet(const string& id) {
@@ -287,7 +288,7 @@ Roadnet* RoadnetFactory::CreateRoadnet(const string& id) {
     
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -302,7 +303,17 @@ void RoadnetFactory::SetConfig(string name, bool config) {
 
 Roadnet* RoadnetFactory::GetRoadnet() const {
     for (auto config : configs) {
-        if (config.second)return registries.find(config.first)->second();
+        if (config.second)return registries.find(config.first)->second.first();
     }
     return nullptr;
+}
+
+void RoadnetFactory::DestroyRoadnet(Roadnet* roadnet) const{
+    auto it = registries.find(roadnet->GetType());
+    if (it != registries.end()) {
+        return it->second.second(roadnet);
+    }
+    else{
+        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + roadnet->GetType() + ".\n");
+    }
 }

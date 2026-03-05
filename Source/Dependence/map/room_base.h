@@ -102,13 +102,14 @@ protected:
 
 class RoomFactory {
 public:
-    void RegisterRoom(const std::string& id, std::function<Room* ()> creator);
+    void RegisterRoom(const std::string& id,
+        std::function<Room* ()> creator, std::function<void(Room*)> deleter);
     Room* CreateRoom(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
-    void DestroyRoom(Room* room);
+    void DestroyRoom(Room* room) const;
 
 private:
-    std::unordered_map<std::string, std::function<Room* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Room* ()>, std::function<void(Room*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

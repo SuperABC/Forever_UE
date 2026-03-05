@@ -1,5 +1,6 @@
 ﻿#include "terrain_base.h"
 #include "../common/utility.h"
+#include "../common/error.h"
 
 
 using namespace std;
@@ -94,11 +95,12 @@ void Terrain::ShapeFilter(int x, int y, int width, int height,
     if (count > (side * 2 + 1) * (side * 2 + 1) * threshold)set(x, y, GetType(), 0.f);
 }
 
-void TerrainFactory::RegisterTerrain(const string& id, function<Terrain* ()> creator) {
+void TerrainFactory::RegisterTerrain(const string& id,
+        function<Terrain* ()> creator, function<void(Terrain*)> deleter) {
     if(registries.find(id) != registries.end()) {
         return;
 	}
-    registries[id] = creator;
+    registries[id] = { creator, deleter };
 }
 
 Terrain* TerrainFactory::CreateTerrain(const string& id) const {
@@ -106,7 +108,7 @@ Terrain* TerrainFactory::CreateTerrain(const string& id) const {
     
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -123,9 +125,20 @@ vector<Terrain*> TerrainFactory::GetTerrains() const {
     vector<Terrain*> terrains;
     for (auto &r : registries) {
         if (configs.find(r.first)->second) {
-            terrains.push_back(r.second());
+            terrains.push_back(r.second.first());
         }
     }
     return terrains;
 }
 
+void TerrainFactory::DestroyTerrains(const std::vector<Terrain *> terrains) const {
+    for(auto terrain : terrains){
+        auto it = registries.find(terrain->GetType());
+        if (it != registries.end()) {
+            return it->second.second(terrain);
+        }
+        else{
+		    THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + terrain->GetType() + ".\n");
+        }
+    }
+}

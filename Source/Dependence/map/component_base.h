@@ -42,12 +42,14 @@ protected:
 
 class ComponentFactory {
 public:
-    void RegisterComponent(const std::string& id, std::function<Component* ()> creator);
+    void RegisterComponent(const std::string& id,
+        std::function<Component* ()> creator, std::function<void(Component*)> deleter);
     Component* CreateComponent(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyComponent(Component* component) const;
 
 private:
-    std::unordered_map<std::string, std::function<Component* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Component* ()>, std::function<void(Component*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

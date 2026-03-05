@@ -221,12 +221,6 @@ Building::~Building() {
     for(auto floor : floors) {
         if(floor)delete floor;
     }
-     for(auto component : components) {
-        if(component)delete component;
-    }
-     for(auto room : rooms) {
-        if(room)delete room;
-	 }
 }
 
 void Building::SetParent(Plot* plot) {
@@ -666,8 +660,9 @@ int Building::InverseDirection(int direction, int face) {
     return direction;
 }
 
-void BuildingFactory::RegisterBuilding(const string& id, function<Building* ()> creator, vector<float> power) {
-    registries[id] = creator;
+void BuildingFactory::RegisterBuilding(const string& id, vector<float> power,
+    function<Building* ()> creator, function<void(Building*)> deleter) {
+    registries[id] = { creator, deleter };
     powers[id] = power;
 }
 
@@ -676,7 +671,7 @@ Building* BuildingFactory::CreateBuilding(const string& id) {
 
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -693,4 +688,13 @@ const unordered_map<string, vector<float>>& BuildingFactory::GetPowers() const {
     return powers;
 }
 
+void BuildingFactory::DestroyBuilding(Building* building) const {
+    auto it = registries.find(building->GetType());
+    if (it != registries.end()) {
+        return it->second.second(building);
+    }
+    else{
+        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + building->GetType() + ".\n");
+    }
+}
 

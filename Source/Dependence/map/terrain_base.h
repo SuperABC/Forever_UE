@@ -46,13 +46,15 @@ protected:
 
 class TerrainFactory {
 public:
-    void RegisterTerrain(const std::string& id, std::function<Terrain* ()> creator);
+    void RegisterTerrain(const std::string& id,
+        std::function<Terrain* ()> creator, std::function<void(Terrain*)> deleter);
     Terrain* CreateTerrain(const std::string& id) const;
     bool CheckRegistered(const std::string& id) const;
     void SetConfig(std::string name, bool config);
     std::vector<Terrain*> GetTerrains() const;
+    void DestroyTerrains(const std::vector<Terrain*> terrains) const;
 
 private:
-    std::unordered_map<std::string, std::function<Terrain* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Terrain* ()>, std::function<void(Terrain*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

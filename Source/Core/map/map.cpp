@@ -144,9 +144,32 @@ Map::Map() {
 Map::~Map() {
     Destroy();
 
-     if (roadnet) {
-         delete roadnet;
-     }
+    if (roadnet) {
+        for(auto plot : roadnet->GetPlots()){
+            for(auto zone : plot->GetZones()){
+                for(auto building : zone.second->GetBuildings()){
+                    for(auto room : building.second->GetRooms()){
+                        roomFactory->DestroyRoom(room);
+                    }
+                    for(auto component : building.second->GetComponents()){
+                        componentFactory->DestroyComponent(component);
+                    }
+                    buildingFactory->DestroyBuilding(building.second);
+                }
+                zoneFactory->DestroyZone(zone.second);
+            }
+            for(auto building : plot->GetBuildings()){
+                for(auto room : building.second->GetRooms()){
+                    roomFactory->DestroyRoom(room);
+                }
+                for(auto component : building.second->GetComponents()){
+                    componentFactory->DestroyComponent(component);
+                }
+                buildingFactory->DestroyBuilding(building.second);
+            }
+        }
+        roadnetFactory->DestroyRoadnet(roadnet);
+    }
 }
 
 void Map::SetResourcePath(string path) {
@@ -155,9 +178,13 @@ void Map::SetResourcePath(string path) {
 
 void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
     terrainFactory->RegisterTerrain(OceanTerrain::GetId(),
-        []() { return new OceanTerrain(); });
+        []() { return new OceanTerrain(); },
+        [](Terrain* terrain) { delete terrain; }
+    );
     terrainFactory->RegisterTerrain(MountainTerrain::GetId(),
-        []() { return new MountainTerrain(); });
+        []() { return new MountainTerrain(); },
+        [](Terrain* terrain) { delete terrain; }
+    );
 
 	string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -201,7 +228,8 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
 
 void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
     roadnetFactory->RegisterRoadnet(JingRoadnet::GetId(),
-        []() { return new JingRoadnet(); });
+        []() { return new JingRoadnet(); },
+        [](Roadnet* roadnet) { delete roadnet; });
 
     string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -244,8 +272,10 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
 }
 
 void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
-    zoneFactory->RegisterZone(DefaultZone::GetId(),
-        []() { return new DefaultZone(); }, DefaultZone::ZoneGenerator);
+    zoneFactory->RegisterZone(DefaultZone::GetId(), DefaultZone::ZoneGenerator,
+        []() { return new DefaultZone(); },
+        [](Zone* zone) { delete zone; }
+    );
 
     string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -288,10 +318,14 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
 }
 
 void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
-    buildingFactory->RegisterBuilding(DefaultResidentialBuilding::GetId(),
-        []() { return new DefaultResidentialBuilding(); }, DefaultResidentialBuilding::GetPower());
-    buildingFactory->RegisterBuilding(DefaultWorkingBuilding::GetId(),
-        []() { return new DefaultWorkingBuilding(); }, DefaultWorkingBuilding::GetPower());
+    buildingFactory->RegisterBuilding(DefaultResidentialBuilding::GetId(), DefaultResidentialBuilding::GetPower(),
+        []() { return new DefaultResidentialBuilding(); },
+        [](Building* building) { delete building; }
+    );
+    buildingFactory->RegisterBuilding(DefaultWorkingBuilding::GetId(), DefaultWorkingBuilding::GetPower(),
+        []() { return new DefaultWorkingBuilding(); },
+        [](Building* building) { delete building; }
+    );
 
     string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -335,9 +369,13 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
 
 void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
     componentFactory->RegisterComponent(DefaultResidentialComponent::GetId(),
-        []() { return new DefaultResidentialComponent(); });
+        []() { return new DefaultResidentialComponent(); },
+        [](Component* component) { delete component; }
+    );
     componentFactory->RegisterComponent(DefaultWorkingComponent::GetId(),
-        []() { return new DefaultWorkingComponent(); });
+        []() { return new DefaultWorkingComponent(); },
+        [](Component* component) { delete component; }
+    );
 
     string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -380,9 +418,13 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
 
 void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
     roomFactory->RegisterRoom(DefaultResidentialRoom::GetId(),
-        []() { return new DefaultResidentialRoom(); });
+        []() { return new DefaultResidentialRoom(); },
+        [](Room* room) { delete room; }
+    );
     roomFactory->RegisterRoom(DefaultWorkingRoom::GetId(),
-        []() { return new DefaultWorkingRoom(); });
+        []() { return new DefaultWorkingRoom(); },
+        [](Room* room) { delete room; }
+    );
 
     string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -506,9 +548,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     for (auto& terrain : terrains) {
         terrain->DistributeTerrain(width, height, setElement, getTerrain, getHeight);
     }
-    for(auto &terrain : terrains) {
-        delete terrain;
-	}
+    terrainFactory->DestroyTerrains(terrains);
 
     // 随机生成路网
 	debugf("Generate roadnet.\n");
@@ -530,8 +570,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
             }
         }
         for (auto zone : zones) {
-            zone->SetAcreage(plot);
-            zone->AddBuilding(plot, buildingFactory);
+            zone->SetZone(plot, buildingFactory);
             string name = zone->GetName();
             plot->AddZone(name, zone);
         }
