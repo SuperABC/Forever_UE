@@ -23,7 +23,7 @@ class ComponentFactory;
 class RoomFactory;
 
 // 建筑方向
-enum FACE_DIRECTION {
+enum FACE_DIRECTION : int {
 	FACE_WEST,
 	FACE_EAST,
 	FACE_NORTH,
@@ -61,8 +61,11 @@ public:
 	Corridor(std::vector<float> params);
 
 	void AddWall(int direction);
+	bool GetWall(int direction);
 	void AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetDoors();
 	void AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetWindows();
 
 	void InstanciateQuad(float width, float height);
 
@@ -79,7 +82,9 @@ public:
 	Single(std::vector<float> params);
 
 	void AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetDoors();
 	void AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetWindows();
 
 	void InstanciateQuad(float width, float height);
 
@@ -98,7 +103,9 @@ public:
 	FACE_DIRECTION GetDirection() const;
 
 	void AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetDoors();
 	void AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions);
+	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetWindows();
 
 	void InstanciateQuad(float width, float height);
 
@@ -198,6 +205,7 @@ public:
 	// 获取/设置属性
 	int GetLayers() const;
 	int GetBasements() const;
+	float GetHeight() const;
 	const Quad GetConstruction() const;
 
 	// 获取/设置组织/房间/楼层

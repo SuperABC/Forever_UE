@@ -77,6 +77,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)Source/Dependence/common;$(SolutionDir)Source/Dependence/map;$(SolutionDir)Source/Dependence/populace;$(SolutionDir)Source/Dependence/society;$(SolutionDir)Source/Dependence/story;$(SolutionDir)Source/Dependence/industry;$(SolutionDir)Source/Dependence/player;$(SolutionDir)Source/Dependence/traffic;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)x64/Release;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <OutDir>$(SolutionDir)Binaries\Win64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

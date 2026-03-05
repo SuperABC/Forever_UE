@@ -79,7 +79,6 @@ Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
 Plot::~Plot() {
     for (auto it = zones.begin(); it != zones.end(); ) {
         if (it->second) {
-            debugf("%s\n", it->first);
             delete it->second;
             it = zones.erase(it);
         }
@@ -89,7 +88,6 @@ Plot::~Plot() {
     }
     for (auto it = buildings.begin(); it != buildings.end(); ) {
         if (it->second) {
-            debugf("%s\n", it->first);
             delete it->second;
             it = buildings.erase(it);
         }

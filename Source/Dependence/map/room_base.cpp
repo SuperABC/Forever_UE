@@ -62,6 +62,22 @@ void Room::SetLayer(int layer) {
     this->layer = layer;
 }
 
+unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> Room::GetDoors() {
+    return doors;
+}
+
+void Room::SetDoors(unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> doors) {
+    this->doors = doors;
+}
+
+unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> Room::GetWindows() {
+    return windows;
+}
+
+void Room::SetWindows(unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> windows) {
+    this->windows = windows;
+}
+
 void Room::SetAddress(int number) {
     ostringstream oss;
     oss << setw(4) << setfill('0') << number;
@@ -174,3 +190,6 @@ void RoomFactory::SetConfig(string name, bool config) {
     configs[name] = config;
 }
 
+void RoomFactory::DestroyRoom(Room* room) {
+
+}

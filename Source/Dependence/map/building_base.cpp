@@ -53,16 +53,28 @@ void Corridor::AddWall(int direction) {
     walls[direction] = true;
 }
 
+bool Corridor::GetWall(int direction) {
+    return walls[direction];
+}
+
 void Corridor::AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> positions) {
     for (auto p : positions) {
         doors[direction].push_back({ p, Quad() });
     }
 }
 
+std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> Corridor::GetDoors() {
+    return doors;
+}
+
 void Corridor::AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions) {
     for (auto p : positions) {
         windows[direction].push_back({ p, Quad() });
     }
+}
+
+std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> Corridor::GetWindows() {
+    return windows;
 }
 
 void Corridor::InstanciateQuad(float width, float height) {
@@ -83,10 +95,18 @@ void Single::AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> p
     }
 }
 
+std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> Single::GetDoors() {
+    return doors;
+}
+
 void Single::AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions) {
     for (auto p : positions) {
         windows[direction].push_back({ p, Quad() });
     }
+}
+
+std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> Single::GetWindows() {
+    return windows;
 }
 
 void Single::InstanciateQuad(float width, float height) {
@@ -115,10 +135,18 @@ void Row::AddDoor(FACE_DIRECTION direction, std::vector<std::vector<float>> posi
     }
 }
 
+std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> Row::GetDoors() {
+    return doors;
+}
+
 void Row::AddWindow(FACE_DIRECTION direction, std::vector<std::vector<float>> positions) {
     for (auto p : positions) {
         windows[direction].push_back({ p, Quad() });
     }
+}
+
+std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> Row::GetWindows() {
+    return windows;
 }
 
 void Row::InstanciateQuad(float width, float height) {
@@ -239,6 +267,10 @@ int Building::GetLayers() const {
 
 int Building::GetBasements() const {
     return basements;
+}
+
+float Building::GetHeight() const {
+    return height;
 }
 
 const Quad Building::GetConstruction() const {
@@ -468,6 +500,11 @@ void Building::ReadFloor(int level, int face, string name, Layout* layout) {
         floor->AddStair(stair);
     }
 
+    for (auto ceiling : layout->templateCeilings[name][face]) {
+        ceiling.InstanciateQuad(width, height);
+        floor->AddCeiling(ceiling);
+    }
+
     for (auto corridor : layout->templateCorridors[name][face]) {
         corridor.InstanciateQuad(width, height);
         floor->AddCorridor(corridor);
@@ -510,8 +547,10 @@ void Building::AssignRoom(int level, int slot, string name, Component* component
         floors[basements + level]->GetSingles()[slot].GetPosY(),
         floors[basements + level]->GetSingles()[slot].GetSizeX(),
         floors[basements + level]->GetSingles()[slot].GetSizeY());
-    component->AddRoom(room);
+    room->SetDoors(floors[basements + level]->GetSingles()[slot].GetDoors());
+    room->SetWindows(floors[basements + level]->GetSingles()[slot].GetWindows());
     room->SetAddress(floors[basements + level]->AssignNumber());
+    component->AddRoom(room);
     rooms.push_back(room);
 }
 
@@ -528,8 +567,10 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage, Compo
             room->SetLayer(level);
             room->SetVertices(row.GetLeft(), row.GetBottom() + div * i,
                 row.GetRight(), row.GetBottom() + div * (i + 1));
-            component->AddRoom(room);
+            room->SetDoors(floors[basements + level]->GetRows()[slot].GetDoors());
+            room->SetWindows(floors[basements + level]->GetRows()[slot].GetWindows());
             room->SetAddress(floors[basements + level]->AssignNumber());
+            component->AddRoom(room);
             rooms.push_back(room);
         }
     }
@@ -540,8 +581,10 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage, Compo
             room->SetLayer(level);
             room->SetVertices(row.GetLeft() + div * i, row.GetBottom(),
                 row.GetLeft() + div * (i + 1), row.GetTop());
-            component->AddRoom(room);
+            room->SetDoors(floors[basements + level]->GetRows()[slot].GetDoors());
+            room->SetWindows(floors[basements + level]->GetRows()[slot].GetWindows());
             room->SetAddress(floors[basements + level]->AssignNumber());
+            component->AddRoom(room);
             rooms.push_back(room);
         }
     }

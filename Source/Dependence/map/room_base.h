@@ -13,6 +13,8 @@
 #include <unordered_map>
 
 
+enum FACE_DIRECTION : int;
+
 class Building;
 class Component;
 
@@ -55,6 +57,10 @@ public:
     // 获取/设置属性
     int GetLayer() const;
     void SetLayer(int layer);
+    std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetDoors();
+    void SetDoors(std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors);
+    std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetWindows();
+    void SetWindows(std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows);
 
     // 寻址
     void SetAddress(int number);
@@ -83,6 +89,9 @@ protected:
 	int ownerId = -1;
 
     int layer;
+    std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors;
+    std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows;
+
     std::string address;
 
     std::vector<int> tenants;
@@ -97,6 +106,7 @@ public:
     Room* CreateRoom(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyRoom(Room* room);
 
 private:
     std::unordered_map<std::string, std::function<Room* ()>> registries;

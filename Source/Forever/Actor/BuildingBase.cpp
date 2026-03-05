@@ -99,23 +99,126 @@ void ABuildingBase::SetInstance(FString name, AActor* actor) {
 
 void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
 	auto construction = building->GetConstruction();
+	FVector bias = -FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f);
 	for (int i = 0; i < building->GetLayers(); i++) {
-		info.walls.Add(
-			FWall(FVector(0.f, 0.f, 0.4f * (i + 1)),
-				FVector(construction.GetSizeX(), construction.GetSizeY(), 0.01f)));
+		auto ceilings = building->GetFloor(i)->GetCeilings();
+		for (auto ceiling : ceilings) {
+			info.walls.Add(
+				FWall(FVector(ceiling.GetPosX(), ceiling.GetPosY(), 0.4f * (i + 1)) + bias,
+					FVector(ceiling.GetSizeX(), ceiling.GetSizeY(), 0.01f)));
+		}
 	}
 	for (auto room : building->GetRooms()) {
-		info.walls.Add(
-			FWall(FVector(room->GetPosX() + room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-				FVector(0.01f, room->GetSizeY(), 0.1f)));
-		info.walls.Add(
-			FWall(FVector(room->GetPosX() - room->GetSizeX() / 2.f, room->GetPosY(), 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-				FVector(0.01f, room->GetSizeY(), 0.1f)));
-		info.walls.Add(
-			FWall(FVector(room->GetPosX(), room->GetPosY() + room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-				FVector(room->GetSizeX(), 0.01f, 0.1f)));
-		info.walls.Add(
-			FWall(FVector(room->GetPosX(), room->GetPosY() - room->GetSizeY() / 2.f, 0.35f + 0.4f * room->GetLayer()) - FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f),
-				FVector(room->GetSizeX(), 0.01f, 0.1f)));
+		info.walls.Append(ConstructQuad(
+			FVector(room->GetPosX(), room->GetPosY(), (room->GetLayer() + 0.5f) * building->GetHeight()) + bias,
+			FVector(room->GetSizeX(), room->GetSizeY(), building->GetHeight()), { true, true, true, true },
+			room->GetDoors(), room->GetWindows()));
 	}
+}
+
+TArray<FWall> ABuildingBase::ConstructQuad(FVector center, FVector size, vector<bool> directions,
+	unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> doors,
+	unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> windows) {
+	TArray<FWall> walls;
+	auto doorsWest = doors[FACE_WEST];
+	auto windowsWest = windows[FACE_WEST];
+	if (doorsWest.size() > 0) {
+		auto door = doorsWest[0];
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f, center.Y - size.Y / 2.f + (door.first[0] * size.Y + door.first[1]) / 2.f, center.Z),
+				FVector(0.01f, door.first[0] * size.Y + door.first[1], size.Z)));
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f, center.Y - size.Y / 2.f + ((door.first[4] + 1) * size.Y + door.first[5]) / 2.f, center.Z),
+				FVector(0.01f, (1 - door.first[4]) * size.Y - door.first[5], size.Z)));
+	}
+	else if (windowsWest.size() > 0) {
+		auto window = windowsWest[0];
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f, center.Y - size.Y / 2.f + (window.first[0] * size.Y + window.first[1]) / 2.f, center.Z),
+				FVector(0.01f, window.first[0] * size.Y + window.first[1], size.Z)));
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f, center.Y - size.Y / 2.f + ((window.first[4] + 1) * size.Y + window.first[5]) / 2.f, center.Z),
+				FVector(0.01f, (1 - window.first[4]) * size.Y - window.first[5], size.Z)));
+	}
+	else {
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f, center.Y, center.Z),
+				FVector(0.01f, size.Y, size.Z)));
+	}
+	auto doorsEast = doors[FACE_EAST];
+	auto windowsEast = windows[FACE_EAST];
+	if (doorsEast.size() > 0) {
+		auto door = doorsEast[0];
+		walls.Add(
+			FWall(FVector(center.X + size.X / 2.f, center.Y - size.Y / 2.f + (door.first[0] * size.Y + door.first[1]) / 2.f, center.Z),
+				FVector(0.01f, door.first[0] * size.Y + door.first[1], size.Z)));
+		walls.Add(
+			FWall(FVector(center.X + size.X / 2.f, center.Y - size.Y / 2.f + ((door.first[4] + 1) * size.Y + door.first[5]) / 2.f, center.Z),
+				FVector(0.01f, (1 - door.first[4]) * size.Y - door.first[5], size.Z)));
+	}
+	else if (windowsEast.size() > 0) {
+		auto window = windowsEast[0];
+		walls.Add(
+			FWall(FVector(center.X + size.X / 2.f, center.Y - size.Y / 2.f + (window.first[0] * size.Y + window.first[1]) / 2.f, center.Z),
+				FVector(0.01f, window.first[0] * size.Y + window.first[1], size.Z)));
+		walls.Add(
+			FWall(FVector(center.X + size.X / 2.f, center.Y - size.Y / 2.f + ((window.first[4] + 1) * size.Y + window.first[5]) / 2.f, center.Z),
+				FVector(0.01f, (1 - window.first[4]) * size.Y - window.first[5], size.Z)));
+	}
+	else {
+		walls.Add(
+			FWall(FVector(center.X + size.X / 2.f, center.Y, center.Z),
+				FVector(0.01f, size.Y, size.Z)));
+	}
+	auto doorsNorth = doors[FACE_NORTH];
+	auto windowsNorth = windows[FACE_NORTH];
+	if (doorsNorth.size() > 0) {
+		auto door = doorsNorth[0];
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f + (door.first[0] * size.X + door.first[1]) / 2.f, center.Y - size.Y / 2.f, center.Z),
+				FVector(door.first[0] * size.X + door.first[1], 0.01f, size.Z)));
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f + ((door.first[4] + 1) * size.X + door.first[5]) / 2.f, center.Y - size.Y / 2.f, center.Z),
+				FVector((1 - door.first[4]) * size.X - door.first[5], 0.01f, size.Z)));
+	}
+	else if (windowsNorth.size() > 0) {
+		auto window = windowsNorth[0];
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f + (window.first[0] * size.X + window.first[1]) / 2.f, center.Y - size.Y / 2.f, center.Z),
+				FVector(window.first[0] * size.X + window.first[1], 0.01f, size.Z)));
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f + ((window.first[4] + 1) * size.X + window.first[5]) / 2.f, center.Y - size.Y / 2.f, center.Z),
+				FVector((1 - window.first[4]) * size.X - window.first[5], 0.01f, size.Z)));
+	}
+	else {
+		walls.Add(
+			FWall(FVector(center.X, center.Y - size.Y / 2.f, center.Z),
+				FVector(size.X, 0.01f, size.Z)));
+	}
+	auto doorsSouth = doors[FACE_SOUTH];
+	auto windowsSouth = windows[FACE_SOUTH];
+	if (doorsSouth.size() > 0) {
+		auto door = doorsSouth[0];
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f + (door.first[0] * size.X + door.first[1]) / 2.f, center.Y + size.Y / 2.f, center.Z),
+				FVector(door.first[0] * size.X + door.first[1], 0.01f, size.Z)));
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f + ((door.first[4] + 1) * size.X + door.first[5]) / 2.f, center.Y + size.Y / 2.f, center.Z),
+				FVector((1 - door.first[4]) * size.X - door.first[5], 0.01f, size.Z)));
+	}
+	else if (windowsSouth.size() > 0) {
+		auto window = windowsSouth[0];
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f + (window.first[0] * size.X + window.first[1]) / 2.f, center.Y + size.Y / 2.f, center.Z),
+				FVector(window.first[0] * size.X + window.first[1], 0.01f, size.Z)));
+		walls.Add(
+			FWall(FVector(center.X - size.X / 2.f + ((window.first[4] + 1) * size.X + window.first[5]) / 2.f, center.Y + size.Y / 2.f, center.Z),
+				FVector((1 - window.first[4]) * size.X - window.first[5], 0.01f, size.Z)));
+	}
+	else {
+		walls.Add(
+			FWall(FVector(center.X, center.Y + size.Y / 2.f, center.Z),
+				FVector(size.X, 0.01f, size.Z)));
+	}
+	return walls;
 }
