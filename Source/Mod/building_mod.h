@@ -36,7 +36,7 @@ public:
         int direction = GetRandom(4);
 
         auto component = CreateComponent("mod", componentFactory);
-        ReadFloor(0, direction, "single_room", layout);
+        ReadFloor(0, direction, "single_room_1f", layout);
         AssignRoom(0, 0, "mod", component, roomFactory);
     }
 

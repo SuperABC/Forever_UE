@@ -177,8 +177,8 @@ void Plot::SetPosition(Node n1, Node n2, Node n3, vector<float> margin) {
 	sy -= margin[0] + margin[2];
 
     // 计算中心点：p1 和 p3 的对角线中心
-    float cx = (x1 + x3) / 2.0f + (margin[3] - margin[1]) * ux / (2.0f * sx) + (margin[0] - margin[2]) * vx / (2.0f * sy);
-	float cy = (y1 + y3) / 2.0f + (margin[3] - margin[1]) * uy / (2.0f * sx) + (margin[0] - margin[2]) * vy / (2.0f * sy);
+    float cx = (x1 + x3) / 2.0f + (margin[3] - margin[1]) * ux / (2.0f * sx) + (margin[2] - margin[0]) * vx / (2.0f * sy);
+	float cy = (y1 + y3) / 2.0f + (margin[3] - margin[1]) * uy / (2.0f * sx) + (margin[2] - margin[0]) * vy / (2.0f * sy);
 
     // 计算旋转角度（p1p2 与 x 轴夹角）
     float rot = atan2(uy, ux);
@@ -259,8 +259,8 @@ void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4, vector<float> margin)
 	// 应用边距
 	sx -= margin[1] + margin[3];
 	sy -= margin[0] + margin[2];
-	cx += (margin[3] - margin[1]) * u1x / (2.0f * sx) + (margin[0] - margin[2]) * u2x / (2.0f * sy);
-	cy += (margin[3] - margin[1]) * u1y / (2.0f * sx) + (margin[0] - margin[2]) * u2y / (2.0f * sy);
+	cx += (margin[3] - margin[1]) * u1x / (2.0f * sx) + (margin[2] - margin[0]) * u2x / (2.0f * sy);
+	cy += (margin[3] - margin[1]) * u1y / (2.0f * sx) + (margin[2] - margin[0]) * u2y / (2.0f * sy);
 
     // 更新成员变量
     posX = cx;

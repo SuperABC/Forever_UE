@@ -646,11 +646,11 @@ int Building::InverseDirection(int direction, int face) {
     }
     switch (face) {
     case 0:
-        if (direction >= 2)return direction - 2;
-        else return 3 - direction;
-    case 1:
         if (direction >= 2)return 3 - direction;
         else return direction + 2;
+    case 1:
+        if (direction >= 2)return direction - 2;
+        else return 3 - direction;
     case 2:
         return direction;
     case 3:

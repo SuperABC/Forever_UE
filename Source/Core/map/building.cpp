@@ -26,22 +26,22 @@ vector<float> DefaultResidentialBuilding::GetPower() {
 }
 
 float DefaultResidentialBuilding::RandomAcreage() const {
-    return 1200.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
+    return 600.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
 }
 
 float DefaultResidentialBuilding::GetAcreageMin() const {
-    return 1200.f;
+    return 600.f;
 }
 
 float DefaultResidentialBuilding::GetAcreageMax() const {
-    return 19200.f;
+    return 9600.f;
 }
 
 Quad DefaultResidentialBuilding::LayoutConstruction() {
-    if (GetAcreage() < 2000) {
+    if (GetAcreage() < 1000) {
         layers = 1 + GetRandom(2);
     }
-    else if (GetAcreage() < 8000) {
+    else if (GetAcreage() < 4000) {
         layers = 2 + GetRandom(3);
     }
     else {
@@ -49,7 +49,7 @@ Quad DefaultResidentialBuilding::LayoutConstruction() {
     }
     basements = 1;
 
-    return Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.5f * GetSizeX(), 0.5f * GetSizeY());
+    return Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.8f * GetSizeX(), 0.8f * GetSizeY());
 }
 
 void DefaultResidentialBuilding::LayoutRooms(
@@ -75,10 +75,14 @@ void DefaultResidentialBuilding::LayoutRooms(
     }
 
     auto component = CreateComponent("default_residential", componentFactory);
-    ReadFloor(-1, direction, "single_room", layout);
-    AssignRoom(-1, 0, "default_residential", component, roomFactory);
-    for (int i = 0; i < layers; i++) {
-        ReadFloor(i, direction, "straight_linear", layout);
+    ReadFloor(-1, direction, "straight_linear_1b", layout);
+    ArrangeRow(-1, 0, "default_residential", 200.f, component, roomFactory);
+    ArrangeRow(-1, 1, "default_residential", 200.f, component, roomFactory);
+    ReadFloor(0, direction, "straight_linear_1f", layout);
+    ArrangeRow(0, 0, "default_residential", 200.f, component, roomFactory);
+    ArrangeRow(0, 1, "default_residential", 200.f, component, roomFactory);
+    for (int i = 1; i < layers; i++) {
+        ReadFloor(i, direction, "straight_linear_2f", layout);
         ArrangeRow(i, 0, "default_residential", 200.f, component, roomFactory);
         ArrangeRow(i, 1, "default_residential", 200.f, component, roomFactory);
     }
@@ -107,22 +111,22 @@ vector<float> DefaultWorkingBuilding::GetPower() {
 }
 
 float DefaultWorkingBuilding::RandomAcreage() const {
-    return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
+    return 1000.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
 }
 
 float DefaultWorkingBuilding::GetAcreageMin() const {
-    return 2000.f;
+    return 1000.f;
 }
 
 float DefaultWorkingBuilding::GetAcreageMax() const {
-    return 32000.f;
+    return 16000.f;
 }
 
 Quad DefaultWorkingBuilding::LayoutConstruction() {
-    if (GetAcreage() < 6000) {
+    if (GetAcreage() < 3000) {
         layers = 1 + GetRandom(2);
     }
-    else if (GetAcreage() < 20000) {
+    else if (GetAcreage() < 10000) {
         layers = 2 + GetRandom(3);
     }
     else {
@@ -130,7 +134,7 @@ Quad DefaultWorkingBuilding::LayoutConstruction() {
     }
     basements = 1;
 
-    return Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.5f * GetSizeX(), 0.5f * GetSizeY());
+    return Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.6f * GetSizeX(), 0.6f * GetSizeY());
 }
 
 void DefaultWorkingBuilding::LayoutRooms(
@@ -156,16 +160,19 @@ void DefaultWorkingBuilding::LayoutRooms(
     }
 
     auto component = CreateComponent("default_working", componentFactory);
-    ReadFloor(-1, direction, "single_room", layout);
+    ReadFloor(-1, direction, "lobby_linear_1b", layout);
     AssignRoom(-1, 0, "default_working", component, roomFactory);
-    ReadFloor(0, direction, "lobby_linear", layout);
+    ArrangeRow(-1, 0, "default_working", 200.f, component, roomFactory);
+    ArrangeRow(-1, 1, "default_working", 200.f, component, roomFactory);
+    ReadFloor(0, direction, "lobby_linear_1f", layout);
     AssignRoom(0, 0, "default_working", component, roomFactory);
-    ArrangeRow(0, 0, "default_working", 100.f, component, roomFactory);
-    ArrangeRow(0, 1, "default_working", 100.f, component, roomFactory);
+    ArrangeRow(0, 0, "default_working", 200.f, component, roomFactory);
+    ArrangeRow(0, 1, "default_working", 200.f, component, roomFactory);
     for (int i = 1; i < layers; i++) {
-        ReadFloor(i, direction, "straight_linear", layout);
-        ArrangeRow(i, 0, "default_working", 100.f, component, roomFactory);
-        ArrangeRow(i, 1, "default_working", 100.f, component, roomFactory);
+        ReadFloor(i, direction, "lobby_linear_2f", layout);
+        AssignRoom(i, 0, "default_working", component, roomFactory);
+        ArrangeRow(i, 0, "default_working", 200.f, component, roomFactory);
+        ArrangeRow(i, 1, "default_working", 200.f, component, roomFactory);
     }
 }
 

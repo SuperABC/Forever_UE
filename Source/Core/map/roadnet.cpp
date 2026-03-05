@@ -1,5 +1,7 @@
 ﻿#include "roadnet.h"
 
+#include <iostream>
+
 
 using namespace std;
 
@@ -28,10 +30,10 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
     float theta = GetRandom(1000) / 1000.f * 0.4f - 0.2f;
 
-    Node northWest(width / 2.f + 32.f * (sin(theta) - cos(theta)), height / 2.f + 32.f * (-cos(theta) - sin(theta)));
-    Node northEast(width / 2.f + 32.f * (sin(theta) + cos(theta)), height / 2.f + 32.f * (-cos(theta) + sin(theta)));
-    Node southWest(width / 2.f + 32.f * (-sin(theta) - cos(theta)), height / 2.f + 32.f * (cos(theta) - sin(theta)));
-    Node southEast(width / 2.f + 32.f * (-sin(theta) + cos(theta)), height / 2.f + 32.f * (cos(theta) + sin(theta)));
+    Node northWest(width / 2.f + 16.f * (sin(theta) - cos(theta)), height / 2.f + 16.f * (-cos(theta) - sin(theta)));
+    Node northEast(width / 2.f + 16.f * (sin(theta) + cos(theta)), height / 2.f + 16.f * (-cos(theta) + sin(theta)));
+    Node southWest(width / 2.f + 16.f * (-sin(theta) - cos(theta)), height / 2.f + 16.f * (cos(theta) - sin(theta)));
+    Node southEast(width / 2.f + 16.f * (-sin(theta) + cos(theta)), height / 2.f + 16.f * (cos(theta) + sin(theta)));
     nodes.push_back(northWest);
     nodes.push_back(northEast);
     nodes.push_back(southWest);
@@ -118,6 +120,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
         plots.push_back(new Plot(
             horizontalNode1w[i].first, horizontalNode1w[i - 1].first, horizontalNode2w[i - 1].first, horizontalNode2w[i].first,
             { 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f }));
+        if (i == 1)cout << plots.back()->GetPosX() << " " << plots.back()->GetPosY() << endl;
         plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
         plots.back()->SetRoads({
             {Connection("城西北路", this, horizontalNode1w[i].second, horizontalNode1w[i - 1].second), 0.5f},
@@ -132,6 +135,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
         plots.push_back(new Plot(
             horizontalNode1e[i - 1].first, horizontalNode1e[i].first, horizontalNode2e[i].first, horizontalNode2e[i - 1].first,
             { 0.5f, 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f) }));
+        if (i == 1)cout << plots.back()->GetPosX() << " " << plots.back()->GetPosY() << endl;
         plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
         plots.back()->SetRoads({
             {Connection("城东北路", this, horizontalNode1e[i].second, horizontalNode1e[i - 1].second), 0.5f},
@@ -146,6 +150,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
         plots.push_back(new Plot(
             verticalNode1n[i].first, verticalNode2n[i].first, verticalNode2n[i - 1].first, verticalNode1n[i - 1].first,
             { 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f }));
+        if (i == 1)cout << plots.back()->GetPosX() << " " << plots.back()->GetPosY() << endl;
         plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
         plots.back()->SetRoads({
             {Connection("城北西路", this, verticalNode1n[i].second, verticalNode1n[i - 1].second), 0.5f},
@@ -160,6 +165,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
         plots.push_back(new Plot(
             verticalNode1s[i - 1].first, verticalNode2s[i - 1].first, verticalNode2s[i].first, verticalNode1s[i].first,
             { (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f, 0.5f }));
+        if (i == 1)cout << plots.back()->GetPosX() << " " << plots.back()->GetPosY() << endl;
         plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
         plots.back()->SetRoads({
             {Connection("城南西路", this, verticalNode1s[i].second, verticalNode1s[i - 1].second), 0.5f},
