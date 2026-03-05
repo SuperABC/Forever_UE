@@ -25,12 +25,14 @@ protected:
 
 class AssetFactory {
 public:
-    void RegisterAsset(const std::string& id, std::function<Asset*()> creator);
+    void RegisterAsset(const std::string& id,
+        std::function<Asset*()> creator, std::function<void(Asset*)> deleter);
     Asset* CreateAsset(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyAsset(Asset* asset) const;
 
 private:
-    std::unordered_map<std::string, std::function<Asset* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Asset* ()>, std::function<void(Asset*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

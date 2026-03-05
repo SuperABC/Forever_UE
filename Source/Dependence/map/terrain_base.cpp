@@ -133,12 +133,13 @@ vector<Terrain*> TerrainFactory::GetTerrains() const {
 
 void TerrainFactory::DestroyTerrains(const std::vector<Terrain *> terrains) const {
     for(auto terrain : terrains){
+        if(!terrain)continue;
         auto it = registries.find(terrain->GetType());
         if (it != registries.end()) {
             return it->second.second(terrain);
         }
         else{
-		    THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + terrain->GetType() + ".\n");
+            debugf(("Deleter not found for " + terrain->GetType() + ".\n").data());
         }
     }
 }

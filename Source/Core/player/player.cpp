@@ -32,7 +32,9 @@ void Player::SetResourcePath(string path) {
 
 void Player::InitSkills(unordered_map<string, HMODULE>& modHandles) {
 	skillFactory->RegisterSkill(DefaultSkill::GetId(),
-		[]() { return new DefaultSkill(); });
+		[]() { return new DefaultSkill(); },
+		[](Skill* skill) { delete skill; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;

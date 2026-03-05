@@ -34,13 +34,15 @@ protected:
 
 class StationFactory {
 public:
-    void RegisterStation(const std::string& id, std::function<Station* ()> creator);
+    void RegisterStation(const std::string& id,
+        std::function<Station*()> creator, std::function<void(Station*)> deleter);
     Station* CreateStation(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyStation(Station* station) const;
 
 private:
-    std::unordered_map<std::string, std::function<Station* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Station*()>, std::function<void(Station*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };
 

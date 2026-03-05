@@ -33,14 +33,16 @@ protected:
 
 class SchedulerFactory {
 public:
-    void RegisterScheduler(const std::string& id, std::function<Scheduler*()> creator, float power);
+    void RegisterScheduler(const std::string& id, float power,
+                           std::function<Scheduler*()> creator, std::function<void(Scheduler*)> deleter);
     Scheduler* CreateScheduler(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
     const std::unordered_map<std::string, float>& GetPowers() const;
+    void DestroyScheduler(Scheduler* scheduler) const;
 
 private:
-    std::unordered_map<std::string, std::function<Scheduler* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Scheduler*()>, std::function<void(Scheduler*)>>> registries;
     std::unordered_map<std::string, bool> configs;
     std::unordered_map<std::string, float> powers;
 };

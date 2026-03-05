@@ -25,7 +25,9 @@ Society::Society() {
 }
 
 Society::~Society() {
-
+    for(auto organization : organizations){
+        organizationFactory->DestroyOrganization(organization);
+    }
 }
 
 void Society::SetResourcePath(string path) {
@@ -34,9 +36,13 @@ void Society::SetResourcePath(string path) {
 
 void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles) {
     calendarFactory->RegisterCalendar(StandardCalendar::GetId(),
-        []() { return new StandardCalendar(); });
+        []() { return new StandardCalendar(); },
+        [](Calendar* calendar) { delete calendar; }
+    );
     calendarFactory->RegisterCalendar(FullCalendar::GetId(),
-        []() { return new FullCalendar(); });
+        []() { return new FullCalendar(); },
+        [](Calendar* calendar) { delete calendar; }
+    );
 
 	string modPath = "Mod.dll";
     HMODULE modHandle;
@@ -78,8 +84,10 @@ void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles) {
 }
 
 void Society::InitOrganizations(unordered_map<string, HMODULE>& modHandles) {
-    organizationFactory->RegisterOrganization(DefaultOrganization::GetId(),
-        []() { return new DefaultOrganization(); }, DefaultOrganization::GetPower());
+    organizationFactory->RegisterOrganization(DefaultOrganization::GetId(), DefaultOrganization::GetPower(),
+        []() { return new DefaultOrganization(); },
+        [](Organization* organization) { delete organization; }
+    );
 
     string modPath = "Mod.dll";
     HMODULE modHandle;

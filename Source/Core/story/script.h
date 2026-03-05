@@ -41,6 +41,9 @@ private:
 	std::unordered_map<std::string, MilestoneNode> milestones;
 	std::vector<MilestoneNode*> actives;
 
+	EventFactory* eventFactory;
+	ChangeFactory* changeFactory;
+
 	// 复合对象读取
 	std::vector<Event*> BuildEvent(JsonValue root, EventFactory* factory) const;
 	std::vector<Dialog> BuildDialogs(JsonValue root, ChangeFactory* factory) const;

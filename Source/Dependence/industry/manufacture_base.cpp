@@ -1,7 +1,5 @@
 ﻿#include "manufacture_base.h"
-
 #include <unordered_set>
-
 
 using namespace std;
 
@@ -54,17 +52,16 @@ void Manufacture::CalculateTargets(ProductFactory* factory) {
         }
         state[node] = 2;
         return false;
-        };
+    };
 
     for (auto& node : targetSet) {
         if (state[node] == 0) {
             if (dfs(node)) {
-				THROW_EXCEPTION(InvalidConfigException, "Cyclic dependency detected among target products.");
+                THROW_EXCEPTION(InvalidConfigException, "Cyclic dependency detected among target products.");
             }
         }
     }
 
-    // 4. 迭代计算
     unordered_map<string, float> demands = originTargets;
     unordered_map<string, float> productions;
     unordered_map<string, float> sides;
@@ -131,8 +128,8 @@ void Manufacture::CalculateTargets(ProductFactory* factory) {
 }
 
 void Manufacture::SetInput(string product, Storage* input, ProductFactory* factory) {
-	input->AddOutcome(product, 0.f, factory);
-	inputs[product] = input;
+    input->AddOutcome(product, 0.f, factory);
+    inputs[product] = input;
 }
 
 unordered_map<string, Storage*> Manufacture::GetInputs() const {
@@ -141,7 +138,7 @@ unordered_map<string, Storage*> Manufacture::GetInputs() const {
 
 void Manufacture::SetOutput(string product, Storage* output, ProductFactory* factory) {
     output->AddIncome(product, 0.f, factory);
-	outputs[product] = output;
+    outputs[product] = output;
 }
 
 unordered_map<string, Storage*> Manufacture::GetOutputs() const {
@@ -160,16 +157,18 @@ unordered_map<string, float> Manufacture::GetByproducts() const {
     return byproducts;
 }
 
-void ManufactureFactory::RegisterManufacture(const string& id, function<Manufacture* ()> creator) {
-    registries[id] = creator;
+void ManufactureFactory::RegisterManufacture(const string& id,
+    function<Manufacture*()> creator, function<void(Manufacture*)> deleter) {
+    registries[id] = {creator, deleter};
 }
 
 Manufacture* ManufactureFactory::CreateManufacture(const string& id) {
-    if (configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+    if (configs.find(id) == configs.end() || !configs.find(id)->second)
+        return nullptr;
 
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -180,4 +179,14 @@ bool ManufactureFactory::CheckRegistered(const string& id) {
 
 void ManufactureFactory::SetConfig(string name, bool config) {
     configs[name] = config;
+}
+
+void ManufactureFactory::DestroyManufacture(Manufacture* manufacture) const {
+    if (!manufacture) return;
+    auto it = registries.find(manufacture->GetType());
+    if (it != registries.end()) {
+        it->second.second(manufacture);
+    } else {
+        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + manufacture->GetType() + ".\n");
+    }
 }

@@ -34,10 +34,17 @@ Populace::Populace() {
 
 Populace::~Populace() {
 	for(auto citizen : citizens) {
+		for(auto asset : citizen->GetAssets()) {
+			assetFactory->DestroyAsset(asset);
+		}
+		for(auto job : citizen->GetJobs()) {
+			jobFactory->DestroyJob(job);
+		}
+		schedulerFactory->DestroyScheduler(citizen->GetScheduler());
 		delete citizen;
 	}
 
-	delete names;
+	nameFactory->DestroyName(names);
 }
 
 void Populace::SetResourcePath(string path) {
@@ -87,7 +94,9 @@ void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
 
 void Populace::InitJobs(unordered_map<string, HMODULE>& modHandles) {
 	jobFactory->RegisterJob(DefaultJob::GetId(),
-		[]() { return new DefaultJob(); });
+		[]() { return new DefaultJob(); },
+		[](Job* job) { delete job; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
@@ -130,7 +139,9 @@ void Populace::InitJobs(unordered_map<string, HMODULE>& modHandles) {
 
 void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
 	nameFactory->RegisterName(ChineseName::GetId(),
-		[]() { return new ChineseName(); });
+		[]() { return new ChineseName(); },
+		[](Name* name) { delete name; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
@@ -173,8 +184,10 @@ void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
 }
 
 void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles) {
-	schedulerFactory->RegisterScheduler(WorkOnlyScheduler::GetId(),
-		[]() { return new WorkOnlyScheduler(); }, WorkOnlyScheduler::GetPower());
+	schedulerFactory->RegisterScheduler(WorkOnlyScheduler::GetId(), WorkOnlyScheduler::GetPower(),
+		[]() { return new WorkOnlyScheduler(); },
+		[](Scheduler* scheduler) { delete scheduler; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;

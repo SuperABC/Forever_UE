@@ -24,13 +24,15 @@ protected:
 
 class SkillFactory {
 public:
-    void RegisterSkill(const std::string& id, std::function<Skill* ()> creator);
+    void RegisterSkill(const std::string& id,
+        std::function<Skill*()> creator, std::function<void(Skill*)> deleter);
     Skill* CreateSkill(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
     std::vector<Skill*> GetSkills();
+    void DestroySkill(Skill* skill) const;
 
 private:
-    std::unordered_map<std::string, std::function<Skill* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Skill*()>, std::function<void(Skill*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

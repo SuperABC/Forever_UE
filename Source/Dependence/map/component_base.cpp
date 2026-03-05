@@ -44,11 +44,12 @@ void ComponentFactory::SetConfig(string name, bool config) {
 }
 
 void ComponentFactory::DestroyComponent(Component* component) const {
+    if(!component)return;
     auto it = registries.find(component->GetType());
     if (it != registries.end()) {
         return it->second.second(component);
     }
     else{
-        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + component->GetType() + ".\n");
+        debugf(("Deleter not found for " + component->GetType() + ".\n").data());
     }
 }

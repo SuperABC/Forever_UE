@@ -48,12 +48,14 @@ protected:
 
 class ProductFactory {
 public:
-    void RegisterProduct(const std::string& id, std::function<Product*()> creator);
+    void RegisterProduct(const std::string& id,
+        std::function<Product*()> creator, std::function<void(Product*)> deleter);
     Product* CreateProduct(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyProduct(Product* product) const;
 
 private:
-    std::unordered_map<std::string, std::function<Product*()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Product*()>, std::function<void(Product*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

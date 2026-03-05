@@ -16,7 +16,7 @@ Script::Script() {
 }
 
 Script::~Script() {
-
+    
 }
 
 void Script::ReadScript(string name, string path,
@@ -97,6 +97,9 @@ vector<string> Script::ReadNames(string name, string path,
     if (libraries.find(name) == libraries.end()) {
         THROW_EXCEPTION(RuntimeException, "Read script failed: " + path + "\n");
 	}
+    this->eventFactory = eventFactory;
+    this->changeFactory = changeFactory;
+
 	return libraries[name].first;
 }
 
@@ -106,6 +109,8 @@ void Script::ReadMilestones(string name, string path,
     if (libraries.find(name) == libraries.end()) {
         THROW_EXCEPTION(RuntimeException, "Read script failed: " + path + "\n");
     }
+    this->eventFactory = eventFactory;
+    this->changeFactory = changeFactory;
 
     for (auto milestone : libraries[name].second) {
         milestones[milestone.first] = MilestoneNode(milestone.second);

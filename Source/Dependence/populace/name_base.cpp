@@ -1,11 +1,10 @@
 ﻿#include "name_base.h"
-//#include "job_base.h"
-//#include "scheduler_base.h"
-
+#include "../common/error.h"
+#include "../common/utility.h"
 
 using namespace std;
 
-bool Name::ReserveName(std::string name) {
+bool Name::ReserveName(string name) {
     if (reserve.find(name) == reserve.end()) {
         reserve.insert(name);
         return true;
@@ -13,13 +12,13 @@ bool Name::ReserveName(std::string name) {
     return false;
 }
 
-bool Name::UseName(std::string name) {
+bool Name::UseName(string name) {
     if (reserve.find(name) != reserve.end()) {
         reserve.erase(name);
         roll.insert(name);
         return true;
     }
-	return false;
+    return false;
 }
 
 bool Name::RegisterName(string name) {
@@ -30,16 +29,19 @@ bool Name::RegisterName(string name) {
     return false;
 }
 
-void NameFactory::RegisterName(const string& id, function<Name*()> creator) {
-    registries[id] = creator;
+void NameFactory::RegisterName(const string& id,
+                               function<Name*()> creator,
+                               function<void(Name*)> deleter) {
+    registries[id] = {creator, deleter};
 }
 
 Name* NameFactory::CreateName(const string& id) {
-    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+    if (configs.find(id) == configs.end() || !configs.find(id)->second)
+        return nullptr;
 
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -53,8 +55,23 @@ void NameFactory::SetConfig(string name, bool config) {
 }
 
 Name* NameFactory::GetName() const {
-    for (auto config : configs) {
-        if (config.second)return registries.find(config.first)->second();
+    for (const auto& config : configs) {
+        if (config.second) {
+            auto it = registries.find(config.first);
+            if (it != registries.end()) {
+                return it->second.first();
+            }
+        }
     }
     return nullptr;
+}
+
+void NameFactory::DestroyName(Name* name) const {
+    if(!name)return;
+    auto it = registries.find(name->GetType());
+    if (it != registries.end()) {
+        it->second.second(name);
+    } else {
+        debugf(("Deleter not found for " + name->GetType() + ".\n").data());
+    }
 }

@@ -30,12 +30,14 @@ protected:
 
 class CalendarFactory {
 public:
-    void RegisterCalendar(const std::string& id, std::function<Calendar*()> creator);
+    void RegisterCalendar(const std::string& id,
+        std::function<Calendar*()> creator, std::function<void(Calendar*)> deleter);
     Calendar* CreateCalendar(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyCalendar(Calendar* calendar) const; // 新增销毁方法
 
 private:
-    std::unordered_map<std::string, std::function<Calendar* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Calendar*()>, std::function<void(Calendar*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

@@ -306,12 +306,13 @@ vector<Zone*> ZoneFactory::CreateZones(string type, Plot* plot) {
 }
 
 void ZoneFactory::DestroyZone(Zone* zone) {
+    if(!zone)return;
     auto it = registries.find(zone->GetType());
     if (it != registries.end()) {
         return it->second.second(zone);
     }
     else{
-        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + zone->GetType() + ".\n");
+        debugf(("Deleter not found for " + zone->GetType() + ".\n").data());
     }
 }
 

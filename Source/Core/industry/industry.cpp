@@ -29,7 +29,12 @@ Industry::Industry() {
 }
 
 Industry::~Industry() {
-
+	for(auto storage : storages){
+		storageFactory->DestroyStorage(storage);
+	}
+	for(auto manufacture : manufactures){
+		manufactureFactory->DestroyManufacture(manufacture);
+	}
 }
 
 void Industry::SetResourcePath(string path) {
@@ -38,7 +43,9 @@ void Industry::SetResourcePath(string path) {
 
 void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles) {
 	productFactory->RegisterProduct(DefaultProduct::GetId(),
-		[]() { return new DefaultProduct(); });
+		[]() { return new DefaultProduct(); },
+		[](Product* product) { delete product; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
@@ -81,7 +88,9 @@ void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles) {
 
 void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles) {
 	storageFactory->RegisterStorage(DefaultStorage::GetId(),
-		[]() { return new DefaultStorage(); });
+		[]() { return new DefaultStorage(); },
+		[](Storage* storage) { delete storage; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
@@ -124,7 +133,9 @@ void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles) {
 
 void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles) {
 	manufactureFactory->RegisterManufacture(DefaultManufacture::GetId(),
-		[]() { return new DefaultManufacture(); });
+		[]() { return new DefaultManufacture(); },
+		[](Manufacture* manufacture) { delete manufacture; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;

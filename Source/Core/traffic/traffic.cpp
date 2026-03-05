@@ -38,7 +38,9 @@ void Traffic::SetResourcePath(string path) {
 
 void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles) {
 	routeFactory->RegisterRoute(AirRoute::GetId(),
-		[]() { return new AirRoute(); });
+		[]() { return new AirRoute(); },
+		[](Route* route) { delete route; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
@@ -81,7 +83,9 @@ void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles) {
 
 void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles) {
 	stationFactory->RegisterStation(AirportStation::GetId(),
-		[]() { return new AirportStation(); });
+		[]() { return new AirportStation(); },
+		[](Station* station) { delete station; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
@@ -124,7 +128,9 @@ void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles) {
 
 void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles) {
 	vehicleFactory->RegisterVehicle(PlaneVehicle::GetId(),
-		[]() { return new PlaneVehicle(); });
+		[]() { return new PlaneVehicle(); },
+		[](Vehicle* vehicle) { delete vehicle; }
+	);
 
 	string modPath = "Mod.dll";
 	HMODULE modHandle;

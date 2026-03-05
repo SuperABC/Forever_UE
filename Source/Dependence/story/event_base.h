@@ -37,12 +37,14 @@ protected:
 
 class EventFactory {
 public:
-    void RegisterEvent(const std::string& id, std::function<Event*()> creator);
+    void RegisterEvent(const std::string& id,
+        std::function<Event*()> creator, std::function<void(Event*)> deleter);
     Event* CreateEvent(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyEvent(Event* event) const;
 
 private:
-    std::unordered_map<std::string, std::function<Event* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Event*()>, std::function<void(Event*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

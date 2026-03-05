@@ -192,11 +192,12 @@ void RoomFactory::SetConfig(string name, bool config) {
 }
 
 void RoomFactory::DestroyRoom(Room* room) const {
+    if(!room)return;
     auto it = registries.find(room->GetType());
     if (it != registries.end()) {
         return it->second.second(room);
     }
     else{
-        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + room->GetType() + ".\n");
+        debugf(("Deleter not found for " + room->GetType() + ".\n").data());
     }
 }

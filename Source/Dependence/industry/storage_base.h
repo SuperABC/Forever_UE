@@ -63,12 +63,14 @@ protected:
 
 class StorageFactory {
 public:
-    void RegisterStorage(const std::string& id, std::function<Storage*()> creator);
+    void RegisterStorage(const std::string& id,
+        std::function<Storage*()> creator, std::function<void(Storage*)> deleter);
     Storage* CreateStorage(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyStorage(Storage* storage) const;
 
 private:
-    std::unordered_map<std::string, std::function<Storage*()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Storage*()>, std::function<void(Storage*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

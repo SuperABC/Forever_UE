@@ -1,10 +1,9 @@
 ﻿#include "storage_base.h"
-
+#include "../common/error.h"
 
 using namespace std;
 
 Storage::Storage() {
-
 }
 
 Storage::~Storage() {
@@ -17,20 +16,20 @@ Storage::~Storage() {
 }
 
 void Storage::SetAccept(bool accept) {
-	this->accept = accept;
+    this->accept = accept;
 }
 
 bool Storage::GetAccept() const {
-    return this->accept;
+    return accept;
 }
 
 void Storage::AddIncome(string product, float amount, ProductFactory* factory) {
-    for(auto income : incomes) {
-        if(income->GetName() == product) {
+    for (auto income : incomes) {
+        if (income->GetType() == product) {
             income->IncreaseAmount(amount);
             return;
         }
-	}
+    }
 
     auto income = factory->CreateProduct(product);
     if (income) {
@@ -57,12 +56,12 @@ void Storage::SetProvide(bool provide) {
 }
 
 bool Storage::GetProvide() const {
-    return this->provide;
+    return provide;
 }
 
 void Storage::AddOutcome(string product, float amount, ProductFactory* factory) {
     for (auto outcome : outcomes) {
-        if (outcome->GetName() == product) {
+        if (outcome->GetType() == product) {
             outcome->IncreaseAmount(amount);
             return;
         }
@@ -85,7 +84,7 @@ Product* Storage::GetOutcome(string product) const {
 }
 
 vector<Product*> Storage::GetOutcomes() const {
-    return incomes;
+    return outcomes;
 }
 
 void Storage::ConnectUpstream(Manufacture* manufacture) {
@@ -109,19 +108,21 @@ void Storage::SetVolume(float volume) {
 }
 
 float Storage::GetVolume() const {
-    return this->volume;
+    return volume;
 }
 
-void StorageFactory::RegisterStorage(const string& id, function<Storage*()> creator) {
-    registries[id] = creator;
+void StorageFactory::RegisterStorage(const string& id,
+    function<Storage*()> creator, function<void(Storage*)> deleter) {
+    registries[id] = {creator, deleter};
 }
 
 Storage* StorageFactory::CreateStorage(const string& id) {
-    if (configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
+    if (configs.find(id) == configs.end() || !configs.at(id))
+        return nullptr;
 
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -132,4 +133,14 @@ bool StorageFactory::CheckRegistered(const string& id) {
 
 void StorageFactory::SetConfig(string name, bool config) {
     configs[name] = config;
+}
+
+void StorageFactory::DestroyStorage(Storage* storage) const {
+    if (!storage) return;
+    auto it = registries.find(storage->GetType());
+    if (it != registries.end()) {
+        it->second.second(storage);
+    } else {
+        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + storage->GetType() + ".\n");
+    }
 }

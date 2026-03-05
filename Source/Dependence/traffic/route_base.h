@@ -53,12 +53,14 @@ protected:
 
 class RouteFactory {
 public:
-    void RegisterRoute(const std::string& id, std::function<Route* ()> creator);
+    void RegisterRoute(const std::string& id,
+        std::function<Route*()> creator,std::function<void(Route*)> deleter);
     Route* CreateRoute(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyRoute(Route* route) const;
 
 private:
-    std::unordered_map<std::string, std::function<Route* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Route*()>, std::function<void(Route*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

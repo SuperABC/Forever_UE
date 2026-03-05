@@ -36,13 +36,15 @@ protected:
 
 class NameFactory {
 public:
-    void RegisterName(const std::string& id, std::function<Name*()> creator);
+    void RegisterName(const std::string& id,
+                      std::function<Name*()> creator, std::function<void(Name*)> deleter);
     Name* CreateName(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
-    Name* GetName() const;
+    Name* GetName() const; // 注意：此方法已调整以适配新的registries结构
+    void DestroyName(Name* name) const; // 新增销毁方法
 
 private:
-    std::unordered_map<std::string, std::function<Name* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Name*()>, std::function<void(Name*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

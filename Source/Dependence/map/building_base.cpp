@@ -689,12 +689,13 @@ const unordered_map<string, vector<float>>& BuildingFactory::GetPowers() const {
 }
 
 void BuildingFactory::DestroyBuilding(Building* building) const {
+    if(!building)return;
     auto it = registries.find(building->GetType());
     if (it != registries.end()) {
         return it->second.second(building);
     }
     else{
-        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + building->GetType() + ".\n");
+        debugf(("Deleter not found for " + building->GetType() + ".\n").data());
     }
 }
 

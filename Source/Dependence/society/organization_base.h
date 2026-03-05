@@ -55,14 +55,16 @@ protected:
 
 class OrganizationFactory {
 public:
-    void RegisterOrganization(const std::string& id, std::function<Organization*()> creator, float power);
+    void RegisterOrganization(const std::string& id, float power,
+        std::function<Organization*()> creator, std::function<void(Organization*)> deleter);
     Organization* CreateOrganization(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
     const std::unordered_map<std::string, float>& GetPowers() const;
+    void DestroyOrganization(Organization* organization) const;
 
 private:
-    std::unordered_map<std::string, std::function<Organization* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Organization*()>, std::function<void(Organization*)>>> registries;
     std::unordered_map<std::string, bool> configs;
     std::unordered_map<std::string, float> powers;
 };

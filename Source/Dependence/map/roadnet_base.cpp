@@ -309,11 +309,12 @@ Roadnet* RoadnetFactory::GetRoadnet() const {
 }
 
 void RoadnetFactory::DestroyRoadnet(Roadnet* roadnet) const{
+    if(!roadnet)return;
     auto it = registries.find(roadnet->GetType());
     if (it != registries.end()) {
         return it->second.second(roadnet);
     }
     else{
-        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + roadnet->GetType() + ".\n");
+        debugf(("Deleter not found for " + roadnet->GetType() + ".\n").data());
     }
 }

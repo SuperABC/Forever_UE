@@ -8,13 +8,6 @@ Person::Person() {
 }
 
 Person::~Person() {
-	for(auto asset : assets) {
-		delete asset;
-	}
-	for(auto job : jobs) {
-		delete job;
-	}
-	delete scheduler;
 	for(auto script : scripts) {
 		delete script;
 	}

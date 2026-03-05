@@ -1,5 +1,6 @@
 ﻿#include "job_base.h"
-
+#include "../common/error.h"
+#include "../common/utility.h"
 
 using namespace std;
 
@@ -19,16 +20,18 @@ Room* Job::GetPosition() const {
     return position;
 }
 
-void JobFactory::RegisterJob(const string& id, function<Job* ()> creator) {
-    registries[id] = creator;
+void JobFactory::RegisterJob(const string& id,
+                             function<Job*()> creator, function<void(Job*)> deleter) {
+    registries[id] = {creator, deleter};
 }
 
 Job* JobFactory::CreateJob(const string& id) {
-    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
-    
+    if (configs.find(id) == configs.end() || !configs.find(id)->second)
+        return nullptr;
+
     auto it = registries.find(id);
     if (it != registries.end()) {
-        return it->second();
+        return it->second.first();
     }
     return nullptr;
 }
@@ -41,3 +44,12 @@ void JobFactory::SetConfig(string name, bool config) {
     configs[name] = config;
 }
 
+void JobFactory::DestroyJob(Job* job) const {
+    if(!job)return;
+    auto it = registries.find(job->GetType());
+    if (it != registries.end()) {
+        it->second.second(job);
+    } else {
+        debugf(("Deleter not found for " + job->GetType() + ".\n").data());
+    }
+}

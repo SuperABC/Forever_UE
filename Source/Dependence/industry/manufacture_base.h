@@ -59,12 +59,14 @@ protected:
 
 class ManufactureFactory {
 public:
-    void RegisterManufacture(const std::string& id, std::function<Manufacture*()> creator);
+    void RegisterManufacture(const std::string& id,
+        std::function<Manufacture*()> creator, std::function<void(Manufacture*)> deleter);
     Manufacture* CreateManufacture(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyManufacture(Manufacture* manufacture) const;
 
 private:
-    std::unordered_map<std::string, std::function<Manufacture*()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Manufacture*()>, std::function<void(Manufacture*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

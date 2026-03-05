@@ -24,12 +24,14 @@ protected:
 
 class VehicleFactory {
 public:
-    void RegisterVehicle(const std::string& id, std::function<Vehicle* ()> creator);
+    void RegisterVehicle(const std::string& id,
+        std::function<Vehicle*()> creator, std::function<void(Vehicle*)> deleter);
     Vehicle* CreateVehicle(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyVehicle(Vehicle* vehicle) const;
 
 private:
-    std::unordered_map<std::string, std::function<Vehicle* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Vehicle*()>, std::function<void(Vehicle*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

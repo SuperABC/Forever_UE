@@ -35,12 +35,14 @@ protected:
 
 class ChangeFactory {
 public:
-    void RegisterChange(const std::string& id, std::function<Change* ()> creator);
+    void RegisterChange(const std::string& id,
+        std::function<Change*()> creator, std::function<void(Change*)> deleter);
     Change* CreateChange(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyChange(Change* change) const;
 
 private:
-    std::unordered_map<std::string, std::function<Change* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Change*()>, std::function<void(Change*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };

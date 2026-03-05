@@ -43,12 +43,14 @@ protected:
 
 class JobFactory {
 public:
-    void RegisterJob(const std::string& id, std::function<Job*()> creator);
+    void RegisterJob(const std::string& id,
+                     std::function<Job*()> creator, std::function<void(Job*)> deleter);
     Job* CreateJob(const std::string& id);
     bool CheckRegistered(const std::string& id);
     void SetConfig(std::string name, bool config);
+    void DestroyJob(Job* job) const;
 
 private:
-    std::unordered_map<std::string, std::function<Job* ()>> registries;
+    std::unordered_map<std::string, std::pair<std::function<Job*()>, std::function<void(Job*)>>> registries;
     std::unordered_map<std::string, bool> configs;
 };
