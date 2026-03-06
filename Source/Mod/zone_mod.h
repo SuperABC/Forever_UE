@@ -19,7 +19,7 @@ public:
 
     static std::function<int(Plot*)> ZoneGenerator;
     virtual void SetZone(Plot* plot, BuildingFactory* buildingFactory) {
-        Quad::SetAcreage(40000.f);
+        Quad::SetAcreage(10000.f);
         AddBuildings(buildingFactory, { {"mod", 1.f}, {"mod", 1.f} });
     }
 

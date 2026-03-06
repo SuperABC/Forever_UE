@@ -97,21 +97,44 @@ void ABuildingBase::SetInstance(FString name, AActor* actor) {
 	}
 }
 
+float ABuildingBase::GetRotation(FACE_DIRECTION direction) {
+	switch (direction) {
+	case FACE_EAST:
+		return 270.f;
+	case FACE_WEST:
+		return 90.f;
+	case FACE_NORTH:
+		return 180.f;
+	case FACE_SOUTH:
+		return 0.f;
+	}
+	return 0.f;
+}
+
 void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
 	auto construction = building->GetConstruction();
 	FVector bias = -FVector(construction.GetSizeX() / 2.f, construction.GetSizeY() / 2.f, 0.f);
 	for (int i = 0; i < building->GetLayers(); i++) {
 		auto stairs = building->GetFloor(i)->GetStairs();
 		for (auto stair : stairs) {
-			info.walls.Add(
-				FWall(FVector(stair.GetPosX(), stair.GetPosY(), building->GetHeight() * (i + 1)) + bias,
-					FVector(stair.GetSizeX() / 2.f, stair.GetSizeY() / 2.f, 0.1f)));
+			if (stair.GetDirection() == FACE_WEST || stair.GetDirection() == FACE_EAST) {
+				info.meshes.Add(
+					FMesh(FVector(stair.GetPosX(), stair.GetPosY(), building->GetHeight() * i) + bias,
+						FVector(stair.GetSizeY(), stair.GetSizeX(), building->GetHeight()), GetRotation(stair.GetDirection()),
+						FString("/Game/Assets/Meshes/Stair.Stair")));
+			}
+			else {
+				info.meshes.Add(
+					FMesh(FVector(stair.GetPosX(), stair.GetPosY(), building->GetHeight() * i) + bias,
+						FVector(stair.GetSizeX(), stair.GetSizeY(), building->GetHeight()), GetRotation(stair.GetDirection()),
+						FString("/Game/Assets/Meshes/Stair.Stair")));
+			}
 		}
 		auto ceilings = building->GetFloor(i)->GetCeilings();
 		for (auto ceiling : ceilings) {
 			info.walls.Add(
-				FWall(FVector(ceiling.GetPosX(), ceiling.GetPosY(), building->GetHeight() * (i + 1)) + bias,
-					FVector(ceiling.GetSizeX(), ceiling.GetSizeY(), 0.01f)));
+				FWall(FVector(ceiling.GetPosX(), ceiling.GetPosY(), building->GetHeight() * (i + 1) - 0.01f) + bias,
+					FVector(ceiling.GetSizeX(), ceiling.GetSizeY(), 0.02f)));
 		}
 		auto corridors = building->GetFloor(i)->GetCorridors();
 		for (auto corridor : corridors) {

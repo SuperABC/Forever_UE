@@ -22,7 +22,7 @@ string DefaultZone::GetName() const {
 }
 
 void DefaultZone::SetZone(Plot* plot, BuildingFactory* buildingFactory) {
-    Quad::SetAcreage(40000.f);
+    Quad::SetAcreage(20000.f);
 
     vector<pair<string, float>> buildings;
     int num = 40;

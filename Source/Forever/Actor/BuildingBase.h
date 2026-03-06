@@ -17,6 +17,20 @@ struct FWall {
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
 	FVector size;
 };
+USTRUCT(Blueprintable, BlueprintType)
+
+struct FMesh {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FVector center;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FVector size;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	float rot;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FString address;
+};
 
 USTRUCT(Blueprintable, BlueprintType)
 struct FBuilding {
@@ -33,6 +47,8 @@ struct FBuilding {
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
 	TArray<FWall> walls;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	TArray<FMesh> meshes;
 };
 
 UCLASS()
@@ -61,6 +77,7 @@ protected:
 	std::unordered_map<std::string, AActor*> buildingInstances;
 
 private:
+	float GetRotation(FACE_DIRECTION direction);
 	void ConstructBuilding(Building* building, FBuilding& info);
 	TArray<FWall> ConstructQuad(FVector center, FVector size, std::vector<bool> directions,
 		std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors,
