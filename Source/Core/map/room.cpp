@@ -3,6 +3,14 @@
 
 using namespace std;
 
+// 默认住宅房间
+
+DefaultResidentialRoom::DefaultResidentialRoom() {
+}
+
+DefaultResidentialRoom::~DefaultResidentialRoom() {
+}
+
 string DefaultResidentialRoom::GetId() {
 	return "default_residential";
 }
@@ -45,6 +53,14 @@ pair<string, float> DefaultResidentialRoom::StorageConfig() const {
 
 vector<string> DefaultResidentialRoom::ManufactureTypes() const {
 	return { "" };
+}
+
+// 默认工作房间
+
+DefaultWorkingRoom::DefaultWorkingRoom() {
+}
+
+DefaultWorkingRoom::~DefaultWorkingRoom() {
 }
 
 string DefaultWorkingRoom::GetId() {
