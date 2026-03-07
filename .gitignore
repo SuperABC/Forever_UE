@@ -57,6 +57,7 @@ Build/*
 x64/*
 Source/Dependence/x64/*
 Source/Core/x64/*
+Source/WXDJ/x64/*
 Source/Mod/x64/*
 Source/Test/x64/*
 

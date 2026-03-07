@@ -9,15 +9,21 @@ typedef void (*RegisterModComponentsFunc)(ComponentFactory* factory);
 // 默认住宅组合
 class DefaultResidentialComponent : public Component {
 public:
-    static std::string GetId();
-    virtual std::string GetType() const override;
-    virtual std::string GetName() const override;
+	DefaultResidentialComponent();
+	virtual ~DefaultResidentialComponent();
+
+	static std::string GetId();
+	virtual std::string GetType() const override;
+	virtual std::string GetName() const override;
 };
 
-// 酒店组合
+// 默认工作组合
 class DefaultWorkingComponent : public Component {
 public:
-    static std::string GetId();
-    virtual std::string GetType() const override;
-    virtual std::string GetName() const override;
+	DefaultWorkingComponent();
+	virtual ~DefaultWorkingComponent();
+
+	static std::string GetId();
+	virtual std::string GetType() const override;
+	virtual std::string GetName() const override;
 };
