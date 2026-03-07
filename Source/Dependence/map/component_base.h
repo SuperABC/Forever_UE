@@ -38,7 +38,7 @@ public:
 	// 添加房间
 	void AddRoom(Room* room);
 
-protected:
+private:
 	// 所在建筑
 	Building* parentBuilding;
 

@@ -22,19 +22,19 @@ Plot* Zone::GetParent() const {
 }
 
 int Zone::GetOwner() const {
-    return ownerId;
+    return owner;
 }
 
-void Zone::SetOwner(int id) {
-    ownerId = id;
+void Zone::SetOwner(int owner) {
+    this->owner = owner;
 }
 
-bool Zone::GetStateOwned() const {
-    return stateOwned;
+bool Zone::GetStated() const {
+    return stated;
 }
 
-void Zone::SetStateOwned(bool state) {
-    stateOwned = state;
+void Zone::SetStated(bool stated) {
+    this->stated = stated;
 }
 
 Building* Zone::GetBuilding(string name) {

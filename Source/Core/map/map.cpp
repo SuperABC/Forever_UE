@@ -722,11 +722,11 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
     auto residences = vector<pair<Room*, int>>();
     for (auto zone : zones) {
         // 政府园区
-        if (zone.second->GetStateOwned()) {
+        if (zone.second->GetStated()) {
             for (auto building : zone.second->GetBuildings()) {
-                building.second->SetStateOwned(true);
+                building.second->SetStated(true);
                 for (auto room : building.second->GetRooms()) {
-                    room->SetStateOwned(true);
+                    room->SetStated(true);
                     if (room->IsResidential()) {
                         residences.push_back({ room, 0 });
                     }
@@ -781,9 +781,9 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
     }
     for (auto building : buildings) {
         // 政府建筑
-        if (building.second->GetStateOwned()) {
+        if (building.second->GetStated()) {
             for (auto room : building.second->GetRooms()) {
-                room->SetStateOwned(true);
+                room->SetStated(true);
                 if (room->IsResidential()) {
                     residences.push_back({ room, 0 });
                 }

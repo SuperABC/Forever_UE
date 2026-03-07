@@ -43,9 +43,9 @@ public:
 
     // 获取/设置房东
     int GetOwner() const;
-    void SetOwner(int id);
-	bool GetStateOwned() const;
-	void SetStateOwned(bool state);
+    void SetOwner(int owner);
+	bool GetStated() const;
+	void SetStated(bool state);
 
     // 获取/添加园区内建筑
     Building* GetBuilding(std::string name);
@@ -61,8 +61,8 @@ public:
 protected:
     Plot* parentPlot;
 
-	bool stateOwned = false;
-    int ownerId = -1;
+	bool stated = false;
+    int owner = -1;
 
     std::unordered_map<std::string, Building*> buildings;
 };

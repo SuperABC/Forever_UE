@@ -2,9 +2,6 @@
 
 #include "building_base.h"
 
-//#include "component_mod.h"
-//#include "room_mod.h"
-
 #include <memory>
 #include <string>
 
@@ -12,38 +9,46 @@
 // 模组检测子类
 class ModBuilding : public Building {
 public:
-    ModBuilding() {
-        name = count++;
-    }
+	ModBuilding() : name(count++) {}
+	~ModBuilding() {}
 
-    static std::string GetId() { return "mod"; }
-    virtual std::string GetType() const override { return "mod"; }
-    virtual std::string GetName() const override { return "模组建筑" + std::to_string(name); }
+	static std::string GetId() { return "mod"; }
+	virtual std::string GetType() const override { return "mod"; }
+	virtual std::string GetName() const override {
+		return "模组建筑" + std::to_string(name);
+	}
 
-    static std::vector<float> GetPower() { return std::vector<float>(13, 0.1f); }
+	static std::vector<float> GetPower() {
+		return std::vector<float>(13, 0.1f);
+	}
 
-    virtual float RandomAcreage() const override { return 10000.f; }
-    virtual float GetAcreageMin() const override { return 2000.f; }
-    virtual float GetAcreageMax() const override { return 20000.f; }
+	virtual float RandomAcreage() const override { return 10000.f; }
+	virtual float GetAcreageMin() const override { return 2000.f; }
+	virtual float GetAcreageMax() const override { return 20000.f; }
 
-    virtual Quad LayoutConstruction() override {
-        return Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.5f * GetSizeX(), 0.5f * GetSizeY());
-    }
-    virtual void LayoutRooms(
-        ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) override {
-        floors.resize(basements + layers);
+	virtual Quad LayoutConstruction() override {
+		return Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.5f * GetSizeX(), 0.5f * GetSizeY());
+	}
 
-        int direction = GetRandom(4);
+	virtual void LayoutRooms(
+		ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) override {
+		if (!componentFactory || !roomFactory || !layout) {
+			return;
+		}
+		AllocateFloors();
 
-        auto component = CreateComponent("mod", componentFactory);
-        ReadFloor(0, direction, "single_room_1f", layout);
-        AssignRoom(0, 0, "mod", component, roomFactory);
-    }
+		int direction = GetRandom(4);
+
+		auto component = CreateComponent("mod", componentFactory);
+		if (!component) return;
+
+		ReadFloor(0, direction, "single_room_1f", layout);
+		AssignRoom(0, 0, "mod", component, roomFactory);
+	}
 
 private:
-    static int count;
-
-    int name;
+	static int count;
+	int name;
 };
 
 int ModBuilding::count = 0;

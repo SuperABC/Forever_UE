@@ -81,10 +81,10 @@ public:
 	void SetOwner(int owner);
 
 	// 获取是否由政府拥有
-	bool GetStateOwned() const;
+	bool GetStated() const;
 
 	// 设置是否由政府拥有
-	void SetStateOwned(bool stated);
+	void SetStated(bool stated);
 
 	// 获取所在层数
 	int GetLayer() const;
@@ -149,7 +149,7 @@ public:
 	// 清空工坊（返回值需要delete）
 	std::vector<Manufacture*> ClearManufactures();
 
-protected:
+private:
 	// 所在建筑
 	Building* parentBuilding;
 

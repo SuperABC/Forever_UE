@@ -58,12 +58,12 @@ void Room::SetOwner(int owner) {
 	this->owner = owner;
 }
 
-bool Room::GetStateOwned() const {
+bool Room::GetStated() const {
 	// 获取是否由政府拥有
 	return stated;
 }
 
-void Room::SetStateOwned(bool stated) {
+void Room::SetStated(bool stated) {
 	// 设置是否由政府拥有
 	this->stated = stated;
 }
