@@ -215,8 +215,8 @@ void RoomFactory::RegisterRoom(const string& id,
 
 Room* RoomFactory::CreateRoom(const string& id) {
 	// 根据配置构造房间
-	auto configIt = configs.find(id);
-	if (configIt == configs.end() || !configIt->second) {
+	auto config = configs.find(id);
+	if (config == configs.end() || !config->second) {
 		debugf("Room %s not enabled or not configured.\n", id.c_str());
 		return nullptr;
 	}

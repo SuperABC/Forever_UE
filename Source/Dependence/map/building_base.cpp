@@ -13,7 +13,8 @@ using namespace std;
 
 // 楼梯
 
-Stair::Stair(vector<float> params) : direction(FACE_WEST), params(move(params)) {
+Stair::Stair(vector<float> params) :
+	direction(FACE_WEST), params(move(params)) {
 
 }
 
@@ -43,7 +44,8 @@ void Stair::InstanciateQuad(float width, float height) {
 
 // 天花板
 
-Ceiling::Ceiling(vector<float> params) : params(move(params)) {
+Ceiling::Ceiling(vector<float> params) :
+	params(move(params)) {
 
 }
 
@@ -64,9 +66,11 @@ void Ceiling::InstanciateQuad(float width, float height) {
 }
 
 // 走廊
-Corridor::Corridor(vector<float> params)
-	: walls(4, false), doors(), windows(), params(move(params)) {
+Corridor::Corridor(vector<float> params) :
+	walls(4, false), doors(), windows(), params(move(params)) {
+
 }
+
 
 Corridor::~Corridor() {
 
@@ -74,7 +78,7 @@ Corridor::~Corridor() {
 
 bool Corridor::GetWall(int direction) const {
 	if (direction < 0 || direction >= 4) {
-		THROW_EXCEPTION(InvalidArgumentException, "Corridor wall direction out of range [0,3].\n");
+		THROW_EXCEPTION(InvalidArgumentException, "Corridor wall direction out of range [0, 3].\n");
 	}
 
 	return walls[direction];
@@ -82,7 +86,7 @@ bool Corridor::GetWall(int direction) const {
 
 void Corridor::AddWall(int direction) {
 	if (direction < 0 || direction >= 4) {
-		THROW_EXCEPTION(InvalidArgumentException, "Corridor wall direction out of range [0,3].\n");
+		THROW_EXCEPTION(InvalidArgumentException, "Corridor wall direction out of range [0, 3].\n");
 	}
 
 	walls[direction] = true;
@@ -122,7 +126,8 @@ void Corridor::InstanciateQuad(float width, float height) {
 
 // 独立房间
 
-Single::Single(vector<float> params) : doors(), windows(), params(move(params)) {
+Single::Single(vector<float> params) :
+	doors(), windows(), params(move(params)) {
 
 }
 
@@ -164,8 +169,8 @@ void Single::InstanciateQuad(float width, float height) {
 
 // 联排房间
 
-Row::Row(vector<float> params)
-	: direction(FACE_WEST), doors(), windows(), params(move(params)) {
+Row::Row(vector<float> params) :
+	direction(FACE_WEST), doors(), windows(), params(move(params)) {
 
 }
 

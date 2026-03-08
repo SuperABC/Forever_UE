@@ -72,7 +72,7 @@ public:
     // 获取世界位置
     std::pair<float, float> GetPosition() const;
 
-protected:
+private:
     // 所在地块
     Plot* parentPlot;
 
