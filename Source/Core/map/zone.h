@@ -10,17 +10,17 @@ typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
 class DefaultZone : public Zone {
 public:
     DefaultZone();
+    ~DefaultZone() override;
 
     static std::string GetId();
-    virtual std::string GetType() const;
-    virtual std::string GetName() const;
+    std::string GetType() const override;
+    std::string GetName() const override;
 
     static std::function<int(Plot*)> ZoneGenerator;
-    virtual void SetZone(Plot* plot, BuildingFactory* buildingFactory);
+    void SetZone(Plot* plot, BuildingFactory* buildingFactory) override;
 
 private:
     static int count;
 
     int name;
 };
-

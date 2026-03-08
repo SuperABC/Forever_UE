@@ -867,9 +867,15 @@ void BuildingFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
 }
 
-const unordered_map<string, vector<float>>& BuildingFactory::GetPowers() const {
-	// 获取所有建筑全地块权重
-	return powers;
+const unordered_map<string, vector<float>> BuildingFactory::GetPowers() {
+	// 获取所有启用建筑全地块权重
+	auto result = powers;
+	for (auto &[name, power] : powers) {
+		if (configs.find(name) == configs.end() || !configs[name]) {
+			result.erase(name);
+		}
+	}
+	return result;
 }
 
 void BuildingFactory::DestroyBuilding(Building* building) const {

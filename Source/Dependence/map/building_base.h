@@ -346,7 +346,7 @@ public:
 	void SetConfig(const std::string& name, bool config);
 
 	// 获取所有建筑全地块权重
-	const std::unordered_map<std::string, std::vector<float>>& GetPowers() const;
+	const std::unordered_map<std::string, std::vector<float>> GetPowers();
 
 	// 析构组合（包含delete操作）
 	void DestroyBuilding(Building* building) const;

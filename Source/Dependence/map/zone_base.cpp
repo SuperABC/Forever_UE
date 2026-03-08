@@ -1,66 +1,94 @@
-﻿#include "zone_base.h"
+﻿#include "../common/error.h"
 
-#include "../common/error.h"
+#include "zone_base.h"
 
 #include <algorithm>
-
-#undef REPLACEMENT_OPERATOR_NEW_AND_DELETE
 
 
 using namespace std;
 
-Zone::~Zone() {
+Zone::Zone() :
+    parentPlot(nullptr),
+    stated(false),
+    owner(-1),
+    buildings() {
+    // 全成员默认构造
 
 }
 
-void Zone::SetParent(Plot* plot) {
-    parentPlot = plot;
+Zone::~Zone() {
+    // building在map中统一创建和析构
+
 }
 
 Plot* Zone::GetParent() const {
+    // 获取所在地块
     return parentPlot;
 }
 
+void Zone::SetParent(Plot* plot) {
+    // 设置所在地块
+    parentPlot = plot;
+}
+
 int Zone::GetOwner() const {
+    // 获取私人房东ID
     return owner;
 }
 
 void Zone::SetOwner(int owner) {
+    // 设置私人房东ID
     this->owner = owner;
 }
 
 bool Zone::GetStated() const {
+    // 获取是否由政府拥有
     return stated;
 }
 
 void Zone::SetStated(bool stated) {
+    // 设置是否由政府拥有
     this->stated = stated;
 }
 
-Building* Zone::GetBuilding(string name) {
-    return buildings[name];
+Building* Zone::GetBuilding(const string& name) {
+    // 获取一栋建筑
+    auto it = buildings.find(name);
+    if (it != buildings.end()) {
+        return it->second;
+    }
+    return nullptr;
 }
 
 unordered_map<string, Building*>& Zone::GetBuildings() {
+    // 获取园区内所有建筑
     return buildings;
 }
 
-void Zone::AddBuildings(BuildingFactory* factory, vector<pair<string, float>> list) {
+void Zone::AddBuildings(BuildingFactory* factory, const vector<pair<string, float>>& list) {
+    // 添加园区内建筑
+    if (!factory) {
+        THROW_EXCEPTION(InvalidConfigException, "Factory pointer is null.\n");
+    }
+
     float acreageTmp = 0.f;
     int attempt = 0;
-    for (size_t i = 0; i < list.size(); i++) {
-        if (acreageTmp >= GetAcreage() || attempt > 16)break;
+    for (int i = 0; i < (int)list.size(); i++) {
+        if (acreageTmp >= GetAcreage() || attempt > 16) {
+            break;
+        }
 
-        Building* building = factory->CreateBuilding(list[i].first);
+        const auto& [buildingType, ratio] = list[i];
+        Building* building = factory->CreateBuilding(buildingType);
         if (!building) {
             attempt++;
             i--;
             continue;
         }
 
-        float acreageBuilding = building->RandomAcreage() * list[i].second;
-        float acreageMin = building->GetAcreageMin() * list[i].second;
-        float acreageMax = building->GetAcreageMax() * list[i].second;
+        float acreageBuilding = building->RandomAcreage() * ratio;
+        float acreageMin = building->GetAcreageMin() * ratio;
+        float acreageMax = building->GetAcreageMax() * ratio;
         if (GetAcreage() - acreageTmp < acreageMin) {
             attempt++;
             i--;
@@ -72,37 +100,45 @@ void Zone::AddBuildings(BuildingFactory* factory, vector<pair<string, float>> li
 
         acreageTmp += acreageBuilding;
         building->SetAcreage(acreageBuilding);
-        if(buildings.find(building->GetName()) != buildings.end()) {
+        if (buildings.find(building->GetName()) != buildings.end()) {
             THROW_EXCEPTION(InvalidConfigException, "Duplicate building name: " + building->GetName() + ".\n");
-		}
+        }
         buildings[building->GetName()] = building;
     }
 }
 
 void Zone::ArrangeBuildings() {
-    if (buildings.empty()) return;
+    // 自动分布建筑
+    if (buildings.empty()) {
+        return;
+    }
 
     float acreageTotal = GetAcreage();
     float acreageUsed = 0.f;
 
-    for (const auto& building : buildings) {
-        acreageUsed += building.second->GetAcreage();
+    for (const auto& [name, building] : buildings) {
+        if (!building) {
+            debugf("Warning: null building found in zone, skipping.\n");
+            continue;
+        }
+        acreageUsed += building->GetAcreage();
     }
     float acreageRemain = acreageTotal - acreageUsed;
 
     bool acreageAllocate = false;
     if (acreageRemain > 0) {
-        for (auto& building : buildings) {
-            float acreageTmp = building.second->GetAcreage();
-            float acreageMax = building.second->GetAcreageMax();
-            float acreageMin = building.second->GetAcreageMin();
+        for (auto& [name, building] : buildings) {
+            if (!building) continue;
+            float acreageTmp = building->GetAcreage();
+            float acreageMax = building->GetAcreageMax();
+            float acreageMin = building->GetAcreageMin();
 
             float acreageExpand = acreageMax - acreageTmp;
 
             if (acreageExpand > acreageRemain && acreageRemain > 0) {
                 float acreageNew = acreageTmp + acreageRemain;
                 if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
-                    building.second->SetAcreage(acreageNew);
+                    building->SetAcreage(acreageNew);
                     acreageUsed += acreageRemain;
                     acreageRemain = 0.f;
                     acreageAllocate = true;
@@ -120,11 +156,15 @@ void Zone::ArrangeBuildings() {
         elements.push_back(emptyRect);
     }
 
-    for (const auto& building : buildings) {
-        elements.push_back(static_cast<Quad*>(building.second));
+    for (const auto& [name, building] : buildings) {
+        if (building) {
+            elements.push_back(static_cast<Quad*>(building));
+        }
     }
 
-    if (elements.empty()) return;
+    if (elements.empty()) {
+        return;
+    }
 
     sort(elements.begin(), elements.end(), [](Quad* a, Quad* b) {
         return a->GetAcreage() > b->GetAcreage();
@@ -137,8 +177,10 @@ void Zone::ArrangeBuildings() {
     else {
         class Chunk : public Quad {
         public:
-            Chunk(Quad* r1, Quad* r2) : r1(r1), r2(r2) { acreage = r1->GetAcreage() + r2->GetAcreage(); }
-            Quad *r1, *r2;
+            Chunk(Quad* r1, Quad* r2) : r1(r1), r2(r2) {
+                acreage = r1->GetAcreage() + r2->GetAcreage();
+            }
+            Quad* r1, * r2;
         };
         while (elements.size() > 2) {
             Chunk* tmp = new Chunk(elements[elements.size() - 1], elements[elements.size() - 2]);
@@ -153,23 +195,25 @@ void Zone::ArrangeBuildings() {
                     break;
                 }
             }
-            if (i < 0)elements[0] = tmp;
+            if (i < 0) {
+                elements[0] = tmp;
+            }
         }
 
         if (container.GetSizeX() > container.GetSizeY()) {
             if (GetRandom(2)) {
                 int divX = int(container.GetLeft() +
                     (container.GetRight() - container.GetLeft()) * elements[0]->GetAcreage() / container.GetAcreage());
-                if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
-                if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                if (abs(divX - container.GetLeft()) < 2) divX = (int)container.GetLeft();
+                if (abs(divX - container.GetRight()) < 2) divX = (int)container.GetRight();
                 elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
                 elements[1]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
             }
             else {
                 int divX = int(container.GetLeft() +
                     (container.GetRight() - container.GetLeft()) * elements[1]->GetAcreage() / container.GetAcreage());
-                if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
-                if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                if (abs(divX - container.GetLeft()) < 2) divX = (int)container.GetLeft();
+                if (abs(divX - container.GetRight()) < 2) divX = (int)container.GetRight();
                 elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
                 elements[0]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
             }
@@ -178,25 +222,25 @@ void Zone::ArrangeBuildings() {
             if (GetRandom(2)) {
                 int divY = int(container.GetBottom() +
                     (container.GetTop() - container.GetBottom()) * elements[0]->GetAcreage() / container.GetAcreage());
-                if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
-                if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                if (abs(divY - container.GetBottom()) < 2) divY = (int)container.GetBottom();
+                if (abs(divY - container.GetTop()) < 2) divY = (int)container.GetTop();
                 elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
                 elements[1]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
             }
             else {
                 int divY = int(container.GetBottom() +
                     (container.GetTop() - container.GetBottom()) * elements[1]->GetAcreage() / container.GetAcreage());
-                if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
-                if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                if (abs(divY - container.GetBottom()) < 2) divY = (int)container.GetBottom();
+                if (abs(divY - container.GetTop()) < 2) divY = (int)container.GetTop();
                 elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
                 elements[0]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
             }
         }
 
-        while (elements.size() > 0) {
+        while (!elements.empty()) {
             auto tmp = elements.back();
             elements.pop_back();
-            if (auto chunk = dynamic_cast<Chunk *>(tmp)) {
+            if (auto chunk = dynamic_cast<Chunk*>(tmp)) {
                 Quad* rect1 = chunk->r1;
                 Quad* rect2 = chunk->r2;
 
@@ -205,16 +249,16 @@ void Zone::ArrangeBuildings() {
                         if (GetRandom(2)) {
                             int divX = int(tmp->GetLeft() +
                                 tmp->GetSizeX() * rect1->GetAcreage() / tmp->GetAcreage());
-                            if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
-                            if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                            if (abs(divX - tmp->GetLeft()) < 2) divX = (int)tmp->GetLeft();
+                            if (abs(divX - tmp->GetRight()) < 2) divX = (int)tmp->GetRight();
                             rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
                             rect2->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
                         }
                         else {
                             int divX = int(tmp->GetLeft() +
                                 tmp->GetSizeX() * rect2->GetAcreage() / tmp->GetAcreage());
-                            if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
-                            if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                            if (abs(divX - tmp->GetLeft()) < 2) divX = (int)tmp->GetLeft();
+                            if (abs(divX - tmp->GetRight()) < 2) divX = (int)tmp->GetRight();
                             rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
                             rect1->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
                         }
@@ -223,35 +267,40 @@ void Zone::ArrangeBuildings() {
                         if (GetRandom(2)) {
                             int divY = int(tmp->GetBottom() +
                                 tmp->GetSizeY() * rect1->GetAcreage() / tmp->GetAcreage());
-                            if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
-                            if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                            if (abs(divY - tmp->GetBottom()) < 2) divY = (int)tmp->GetBottom();
+                            if (abs(divY - tmp->GetTop()) < 2) divY = (int)tmp->GetTop();
                             rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
                             rect2->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
                         }
                         else {
                             int divY = int(tmp->GetBottom() +
                                 tmp->GetSizeY() * rect2->GetAcreage() / tmp->GetAcreage());
-                            if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
-                            if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                            if (abs(divY - tmp->GetBottom()) < 2) divY = (int)tmp->GetBottom();
+                            if (abs(divY - tmp->GetTop()) < 2) divY = (int)tmp->GetTop();
                             rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
                             rect1->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
                         }
                     }
-                    if (dynamic_cast<Chunk *>(rect1))elements.push_back(rect1);
-                    if (dynamic_cast<Chunk *>(rect2))elements.push_back(rect2);
+                    if (dynamic_cast<Chunk*>(rect1)) {
+                        elements.push_back(rect1);
+                    }
+                    if (dynamic_cast<Chunk*>(rect2)) {
+                        elements.push_back(rect2);
+                    }
                 }
 
-				delete chunk;
+                delete chunk;
             }
         }
     }
 
     if (emptyRect) {
-		delete emptyRect;
+        delete emptyRect;
     }
 }
 
 pair<float, float> Zone::GetPosition() const {
+    // 获取世界位置
     auto plot = GetParent();
     if (plot) {
         auto center = plot->GetPosition(
@@ -264,14 +313,19 @@ pair<float, float> Zone::GetPosition() const {
 }
 
 void ZoneFactory::RegisterZone(const string& id, GeneratorFunc generator,
-        function<Zone* ()> creator, function<void(Zone*)> deleter) {
+    function<Zone* ()> creator, function<void(Zone*)> deleter) {
+    // 注册构造器和析构器
     registries[id] = { creator, deleter };
     generators[id] = generator;
 }
 
 Zone* ZoneFactory::CreateZone(const string& id) {
-    if(configs.find(id) == configs.end() || !configs.find(id)->second)return nullptr;
-    
+    // 根据配置构造园区
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        return nullptr;
+    }
+
     auto it = registries.find(id);
     if (it != registries.end()) {
         return it->second.first();
@@ -280,39 +334,56 @@ Zone* ZoneFactory::CreateZone(const string& id) {
 }
 
 bool ZoneFactory::CheckRegistered(const string& id) {
+    // 检查是否注册
     return registries.find(id) != registries.end();
 }
 
-void ZoneFactory::SetConfig(string name, bool config) {
+void ZoneFactory::SetConfig(const string& name, bool config) {
+    // 设置配置
     configs[name] = config;
 }
 
 vector<string> ZoneFactory::GetTypes() {
+    // 获取所有启用园区
     vector<string> types;
-    for (auto config : configs) {
-        types.push_back(config.first);
+    for (const auto& [name, enabled] : configs) {
+        if(enabled)types.push_back(name);
     }
     return types;
 }
 
-vector<Zone*> ZoneFactory::CreateZones(string type, Plot* plot) {
+vector<Zone*> ZoneFactory::CreateZones(const string& type, Plot* plot) {
+    // 在地块内生成一类园区
     vector<Zone*> zones;
-    auto num = generators[type](plot);
+    auto config = configs.find(type);
+    if (config == configs.end() || !config->second) {
+        return zones;
+    }
+    auto genIt = generators.find(type);
+    if (genIt == generators.end()) {
+        debugf("Generator for zone type %s not found.\n", type.data());
+        return zones;
+    }
+    int num = genIt->second(plot);
     for (int i = 0; i < num; i++) {
         auto zone = CreateZone(type);
-        if(zone)zones.push_back(zone);
+        if (zone) {
+            zones.push_back(zone);
+        }
     }
     return zones;
 }
 
 void ZoneFactory::DestroyZone(Zone* zone) {
-    if(!zone)return;
+    // 析构园区
+    if (!zone) {
+        return;
+    }
     auto it = registries.find(zone->GetType());
     if (it != registries.end()) {
-        return it->second.second(zone);
+        it->second.second(zone);
     }
-    else{
-        debugf(("Deleter not found for " + zone->GetType() + ".\n").data());
+    else {
+        debugf("Deleter not found for %s.\n", zone->GetType().data());
     }
 }
-

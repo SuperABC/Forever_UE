@@ -3,10 +3,16 @@
 
 using namespace std;
 
+// 默认园区
+
 int DefaultZone::count = 0;
 
-DefaultZone::DefaultZone() {
-    name = count++;
+DefaultZone::DefaultZone() : name(count++) {
+
+}
+
+DefaultZone::~DefaultZone() {
+
 }
 
 string DefaultZone::GetId() {
