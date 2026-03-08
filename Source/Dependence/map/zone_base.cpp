@@ -312,6 +312,12 @@ pair<float, float> Zone::GetPosition() const {
     return { 0.f, 0.f };
 }
 
+const string& Zone::GetAddress() const {
+    // 获取完整地址
+    auto plotAddress = GetParent()->GetAddress();
+    return plotAddress + " " + GetName();
+}
+
 void ZoneFactory::RegisterZone(const string& id, GeneratorFunc generator,
     function<Zone* ()> creator, function<void(Zone*)> deleter) {
     // 注册构造器和析构器

@@ -48,7 +48,7 @@ Component* ComponentFactory::CreateComponent(const string& id) {
 	// 根据配置构造组合
 	auto configIt = configs.find(id);
 	if (configIt == configs.end() || !configIt->second) {
-		debugf("Component %s not enabled or not configured.\n", id.c_str());
+		debugf("Component %s not enabled or not configured.\n", id.data());
 		return nullptr;
 	}
 
@@ -56,12 +56,12 @@ Component* ComponentFactory::CreateComponent(const string& id) {
 	if (it != registries.end()) {
 		Component* component = it->second.first();
 		if (component == nullptr) {
-			debugf("Creat component %s failed.\n", id.c_str());
+			debugf("Creat component %s failed.\n", id.data());
 		}
 		return component;
 	}
 
-	debugf("Component %s not registered.\n", id.c_str());
+	debugf("Component %s not registered.\n", id.data());
 	return nullptr;
 }
 
@@ -85,6 +85,6 @@ void ComponentFactory::DestroyComponent(Component* component) const {
 		it->second.second(component);
 	}
 	else {
-		debugf("Deleter not found for %s.\n", component->GetType().c_str());
+		debugf("Deleter not found for %s.\n", component->GetType().data());
 	}
 }

@@ -99,8 +99,8 @@ void Room::SetWindows(const WallHole& windows) {
 }
 
 const string& Room::GetAddress() const {
-	// 获取门牌号字符串
-	return address;
+	// 获取完整地址
+	return GetParentBuilding()->GetAddress() + " " + address;
 }
 
 void Room::SetAddress(int number) {
@@ -217,7 +217,7 @@ Room* RoomFactory::CreateRoom(const string& id) {
 	// 根据配置构造房间
 	auto config = configs.find(id);
 	if (config == configs.end() || !config->second) {
-		debugf("Room %s not enabled or not configured.\n", id.c_str());
+		debugf("Room %s not enabled or not configured.\n", id.data());
 		return nullptr;
 	}
 
@@ -225,12 +225,12 @@ Room* RoomFactory::CreateRoom(const string& id) {
 	if (it != registries.end()) {
 		Room* room = it->second.first();
 		if (room == nullptr) {
-			debugf("Creat room %s failed.\n", id.c_str());
+			debugf("Creat room %s failed.\n", id.data());
 		}
 		return room;
 	}
 
-	debugf("Room %s not registered.\n", id.c_str());
+	debugf("Room %s not registered.\n", id.data());
 	return nullptr;
 }
 

@@ -9,7 +9,7 @@
 
 using namespace std;
 
-std::unordered_map<std::string, std::pair<std::vector<std::string>, std::unordered_map<std::string, Milestone*>>> Script::libraries = {};
+unordered_map<string, pair<vector<string>, unordered_map<string, Milestone*>>> Script::libraries = {};
 
 Script::Script() {
 
@@ -233,7 +233,7 @@ pair<vector<Dialog>, vector<Change*>> Script::MatchEvent(
 	return results;
 }
 
-void Script::DeactivateMilestone(const std::string& name) {
+void Script::DeactivateMilestone(const string& name) {
 	for (auto it = actives.begin(); it != actives.end(); ) {
 		if ((*it)->content->GetName() == name) {
 			it = actives.erase(it);

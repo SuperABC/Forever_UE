@@ -1002,7 +1002,7 @@ int PlayerSleepEvent::GetHour() {
     return hour;
 }
 
-TimeUpEvent::TimeUpEvent(std::string timer) : timer(timer) {
+TimeUpEvent::TimeUpEvent(string timer) : timer(timer) {
 
 }
 
@@ -1032,15 +1032,15 @@ bool TimeUpEvent::operator==(Event* e) {
     return timer == other->timer;
 }
 
-void TimeUpEvent::SetTimer(std::string timer) {
+void TimeUpEvent::SetTimer(string timer) {
     this->timer = timer;
 }
 
-std::string TimeUpEvent::GetTimer() {
+string TimeUpEvent::GetTimer() {
     return timer;
 }
 
-CountUpEvent::CountUpEvent(std::string counter) : counter(counter) {
+CountUpEvent::CountUpEvent(string counter) : counter(counter) {
 
 }
 
@@ -1070,11 +1070,11 @@ bool CountUpEvent::operator==(Event* e) {
     return counter == other->counter;
 }
 
-void CountUpEvent::SetCounter(std::string counter) {
+void CountUpEvent::SetCounter(string counter) {
     this->counter = counter;
 }
 
-std::string CountUpEvent::GetCounter() {
+string CountUpEvent::GetCounter() {
     return counter;
 }
 

@@ -419,6 +419,17 @@ pair<float, float> Building::GetPosition() const {
 	return { 0.f, 0.f };
 }
 
+const string& Building::GetAddress() const {
+	// 获取完整地址
+	auto plotAddress = GetParentPlot()->GetAddress();
+	if (GetParentZone()) {
+		return plotAddress + " " + GetParentZone()->GetAddress() + " " + GetName();
+	}
+	else {
+		return plotAddress + " " + GetName();
+	}
+}
+
 Layout* Building::ReadTemplates(string path) {
 	// 读取所有布局模板
 	if (!filesystem::exists(REPLACE_PATH(path))) {

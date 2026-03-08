@@ -3,19 +3,9 @@
 
 using namespace std;
 
-string ZoneAsset::GetId() {
-	return "zoneAsset";
-}
+// 园区资产
 
-string ZoneAsset::GetType() const {
-	return "zoneAsset";
-}
-
-string ZoneAsset::GetName() const {
-	return "园区资产";
-}
-
-ZoneAsset::ZoneAsset(Zone* zone) : zone(zone) {
+ZoneAsset::ZoneAsset() {
 
 }
 
@@ -23,27 +13,21 @@ ZoneAsset::~ZoneAsset() {
 
 }
 
-Zone* ZoneAsset::GetZone() {
-	return zone;
+string ZoneAsset::GetId() {
+	return "zone";
 }
 
-void ZoneAsset::SetZone(Zone* zone) {
-	this->zone = zone;
+string ZoneAsset::GetType() const {
+	return "zone";
 }
 
-string BuildingAsset::GetId() {
-	return "buildingAsset";
+string ZoneAsset::GetName() const {
+	return "园区资产";
 }
 
-string BuildingAsset::GetType() const {
-	return "buildingAsset";
-}
+// 建筑资产
 
-string BuildingAsset::GetName() const {
-	return "建筑资产";
-}
-
-BuildingAsset::BuildingAsset(Building* building) : building(building) {
+BuildingAsset::BuildingAsset() {
 
 }
 
@@ -51,27 +35,21 @@ BuildingAsset::~BuildingAsset() {
 
 }
 
-Building* BuildingAsset::GetBuilding() {
-	return building;
+string BuildingAsset::GetId() {
+	return "building";
 }
 
-void BuildingAsset::SetBuilding(Building* building) {
-	this->building = building;
+string BuildingAsset::GetType() const {
+	return "building";
 }
 
-string RoomAsset::GetId() {
-	return "roomAsset";
+string BuildingAsset::GetName() const {
+	return "建筑资产";
 }
 
-string RoomAsset::GetType() const {
-	return "roomAsset";
-}
+// 房间资产
 
-string RoomAsset::GetName() const {
-	return "房间资产";
-}
-
-RoomAsset::RoomAsset(Room* room) : room(room) {
+RoomAsset::RoomAsset() {
 
 }
 
@@ -79,10 +57,14 @@ RoomAsset::~RoomAsset() {
 
 }
 
-Room* RoomAsset::GetRoom() {
-	return room;
+string RoomAsset::GetId() {
+	return "room";
 }
 
-void RoomAsset::SetRoom(Room* room) {
-	this->room = room;
+string RoomAsset::GetType() const {
+	return "room";
+}
+
+string RoomAsset::GetName() const {
+	return "房间资产";
 }

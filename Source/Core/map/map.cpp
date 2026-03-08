@@ -541,7 +541,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         return this->SetTerrain(x, y, terrain, height);
         };
     auto terrains = terrainFactory->GetTerrains();
-    std::sort(terrains.begin(), terrains.end(),
+    sort(terrains.begin(), terrains.end(),
         [](const Terrain* a, const Terrain* b) {
             return a->GetPriority() > b->GetPriority();
         });
@@ -709,7 +709,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     return capacity / 4;
 }
 
-void Map::Checkin(vector<Person*> citizens, Time* time) const {
+void Map::Checkin(vector<Person*> citizens, Time* time, AssetFactory* factory) const {
     // 筛选成年市民
     auto adults = vector<Person*>();
     for (auto citizen : citizens) {
@@ -739,7 +739,9 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
         if (GetRandom(100) < 2) {
             int index = GetRandom(int(adults.size()));
             zone.second->SetOwner(index);
-            citizens[index]->AddAsset(new ZoneAsset(zone.second));
+            auto asset = factory->CreateAsset("zone");
+            asset->SetAsset(zone.second->GetAddress());
+            citizens[index]->AddAsset(asset);
             for (auto building : zone.second->GetBuildings()) {
                 building.second->SetOwner(index);
                 for (auto room : building.second->GetRooms()) {
@@ -757,7 +759,9 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
                 if (GetRandom(100) < 5) {
                     int index = GetRandom(int(adults.size()));
                     building.second->SetOwner(index);
-                    citizens[index]->AddAsset(new BuildingAsset(building.second));
+                    auto asset = factory->CreateAsset("building");
+                    asset->SetAsset(building.second->GetAddress());
+                    citizens[index]->AddAsset(asset);
                     for (auto room : building.second->GetRooms()) {
                         room->SetOwner(index);
                         if (room->IsResidential()) {
@@ -770,7 +774,9 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
                     for (auto room : building.second->GetRooms()) {
                         int index = GetRandom(int(adults.size()));
                         room->SetOwner(index);
-                        citizens[index]->AddAsset(new RoomAsset(room));
+                        auto asset = factory->CreateAsset("room");
+                        asset->SetAsset(room->GetAddress());
+                        citizens[index]->AddAsset(asset);
                         if (room->IsResidential()) {
                             residences.push_back({ room, 0 });
                         }
@@ -795,7 +801,9 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
         if (GetRandom(100) < 5) {
             int index = GetRandom(int(adults.size()));
             building.second->SetOwner(index);
-            citizens[index]->AddAsset(new BuildingAsset(building.second));
+            auto asset = factory->CreateAsset("building");
+            asset->SetAsset(building.second->GetAddress());
+            citizens[index]->AddAsset(asset);
             for (auto room : building.second->GetRooms()) {
                 room->SetOwner(index);
                 if (room->IsResidential()) {
@@ -808,7 +816,9 @@ void Map::Checkin(vector<Person*> citizens, Time* time) const {
             for (auto room : building.second->GetRooms()) {
                 int index = GetRandom(int(adults.size()));
                 room->SetOwner(index);
-                citizens[index]->AddAsset(new RoomAsset(room));
+                auto asset = factory->CreateAsset("room");
+                asset->SetAsset(room->GetAddress());
+                citizens[index]->AddAsset(asset);
                 if (room->IsResidential()) {
                     residences.push_back({ room, 0 });
                 }
@@ -1121,10 +1131,10 @@ void Map::SetBuilding(Building* building, string name, pair<float, float> offset
     }
 }
 
-Plot* Map::LocatePlot(std::string address) const {
-    std::istringstream iss(address);
+Plot* Map::LocatePlot(string address) const {
+    istringstream iss(address);
 
-    std::string road;
+    string road;
     iss >> road;
     int id = -1;
     iss >> id;
@@ -1132,10 +1142,10 @@ Plot* Map::LocatePlot(std::string address) const {
     return roadnet->LocatePlot(road, id);
 }
 
-Zone* Map::LocateZone(std::string address) const {
-    std::istringstream iss(address);
+Zone* Map::LocateZone(string address) const {
+    istringstream iss(address);
 
-    std::string road;
+    string road;
     iss >> road;
     int id = -1;
     iss >> id;
@@ -1143,16 +1153,16 @@ Zone* Map::LocateZone(std::string address) const {
     auto plot = roadnet->LocatePlot(road, id);
     if (!plot)return nullptr;
 
-    std::string zone;
+    string zone;
     iss >> zone;
     if (plot->GetZones().find(zone) == plot->GetZones().end())return nullptr;
     return plot->GetZones()[zone];
 }
 
-Building* Map::LocateBuilding(std::string address) const {
-    std::istringstream iss(address);
+Building* Map::LocateBuilding(string address) const {
+    istringstream iss(address);
 
-    std::string road;
+    string road;
     iss >> road;
     int id = -1;
     iss >> id;
@@ -1160,26 +1170,26 @@ Building* Map::LocateBuilding(std::string address) const {
     auto plot = roadnet->LocatePlot(road, id);
     if (!plot)return nullptr;
 
-    std::string zone;
+    string zone;
     iss >> zone;
     if (plot->GetZones().find(zone) == plot->GetZones().end()) {
-        std::string building = zone;
+        string building = zone;
         if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
         return plot->GetBuildings()[building];
     }
     else {
         auto z = plot->GetZones()[zone];
-        std::string building;
+        string building;
         iss >> building;
         if (z->GetBuildings().find(building) == z->GetBuildings().end())return nullptr;
         return z->GetBuildings()[building];
     }
 }
 
-Room* Map::LocateRoom(std::string address) const {
-    std::istringstream iss(address);
+Room* Map::LocateRoom(string address) const {
+    istringstream iss(address);
 
-    std::string road;
+    string road;
     iss >> road;
     int id = -1;
     iss >> id;
@@ -1187,10 +1197,10 @@ Room* Map::LocateRoom(std::string address) const {
     auto plot = roadnet->LocatePlot(road, id);
     if (!plot)return nullptr;
 
-    std::string zone;
+    string zone;
     iss >> zone;
     if (plot->GetZones().find(zone) == plot->GetZones().end()) {
-        std::string building = zone;
+        string building = zone;
         if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
         auto b = plot->GetBuildings()[building];
         int id = -1;
@@ -1200,7 +1210,7 @@ Room* Map::LocateRoom(std::string address) const {
     }
     else {
         auto z = plot->GetZones()[zone];
-        std::string building;
+        string building;
         iss >> building;
         if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
         auto b = plot->GetBuildings()[building];

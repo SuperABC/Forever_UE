@@ -15,6 +15,6 @@ string DefaultManufacture::GetName() const {
 	return "默认生产线";
 }
 
-std::unordered_map<std::string, float> DefaultManufacture::ProductTargets() const {
+unordered_map<string, float> DefaultManufacture::ProductTargets() const {
 	return { {"default", 1.f} };
 }

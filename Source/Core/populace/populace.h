@@ -68,6 +68,9 @@ public:
 	std::vector<Person*>& GetCitizens();
 	Person* GetCitizen(std::string name);
 
+	// 获取Asset工厂
+	AssetFactory* GetAssetFactory();
+
 	// 获取Job工厂
 	JobFactory* GetJobFactory();
 

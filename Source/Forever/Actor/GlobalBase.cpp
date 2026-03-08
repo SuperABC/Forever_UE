@@ -102,7 +102,7 @@ void AGlobalBase::BeginPlay() {
 		story->Init();
 		int accomodation = map->Init(size, size, traffic);
 		populace->Init(accomodation, story->ReadNames("ys", path), player->GetTime());
-		map->Checkin(populace->GetCitizens(), player->GetTime());
+		map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 		society->Init(map, populace, player->GetTime());
 		story->InitVariables(player->GetTime());
 		story->ReadStory("ys", path);

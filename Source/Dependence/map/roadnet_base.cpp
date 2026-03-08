@@ -369,6 +369,6 @@ void RoadnetFactory::DestroyRoadnet(Roadnet* roadnet) const {
 		it->second.second(roadnet);
 	}
 	else {
-		debugf("Deleter not found for %s.\n", roadnet->GetType().c_str());
+		debugf("Deleter not found for %s.\n", roadnet->GetType().data());
 	}
 }

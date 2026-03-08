@@ -7,53 +7,35 @@
 // 子类注册函数
 typedef void (*RegisterModAssetsFunc)(AssetFactory* factory);
 
-// 园区资产子类
+// 园区资产
 class ZoneAsset : public Asset {
 public:
-    ZoneAsset(Zone* zone);
-    ~ZoneAsset();
+	ZoneAsset();
+	~ZoneAsset();
 
-    static std::string GetId();
-    virtual std::string GetType() const override;
-    virtual std::string GetName() const override;
-
-    Zone* GetZone();
-    void SetZone(Zone* zone);
-
-private:
-    Zone* zone;
+	static std::string GetId();
+	virtual std::string GetType() const override;
+	virtual std::string GetName() const override;
 };
 
-// 建筑资产子类
+// 建筑资产
 class BuildingAsset : public Asset {
 public:
-    BuildingAsset(Building* building);
-    ~BuildingAsset();
+	BuildingAsset();
+	~BuildingAsset();
 
-    static std::string GetId();
-    virtual std::string GetType() const override;
-    virtual std::string GetName() const override;
-
-    Building* GetBuilding();
-    void SetBuilding(Building* building);
-
-private:
-    Building* building;
+	static std::string GetId();
+	virtual std::string GetType() const override;
+	virtual std::string GetName() const override;
 };
 
-// 房间资产子类
+// 房间资产
 class RoomAsset : public Asset {
 public:
-    RoomAsset(Room* room);
-    ~RoomAsset();
+	RoomAsset();
+	~RoomAsset();
 
-    static std::string GetId();
-    virtual std::string GetType() const override;
-    virtual std::string GetName() const override;
-
-    Room* GetRoom();
-    void SetRoom(Room* room);
-
-private:
-    Room* room;
+	static std::string GetId();
+	virtual std::string GetType() const override;
+	virtual std::string GetName() const override;
 };

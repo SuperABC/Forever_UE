@@ -85,7 +85,7 @@ JsonReader::JsonReader()
 
 bool JsonReader::Parse(const string& document, JsonValue& root, bool collectComments) {
     this->document = document;
-    const char* begin = document.c_str();
+    const char* begin = document.data();
     const char* end = begin + document.length();
     return Parse(begin, end, root, collectComments);
 }
@@ -537,7 +537,7 @@ bool JsonReader::DecodeDouble(Token& token, JsonValue& decoded) {
 
     // 使用 strtod 替代 sscanf，提供更好的错误检测
     string buffer(token.start, token.end);
-    const char* str = buffer.c_str();
+    const char* str = buffer.data();
 
     // 跳过前导空格（虽然我们的token不应该有空格）
     while (*str && isspace(*str)) str++;
@@ -1303,11 +1303,11 @@ const JsonValue& JsonValue::operator[](const char* key) const {
 }
 
 JsonValue& JsonValue::operator[](const string& key) {
-    return (*this)[key.c_str()];
+    return (*this)[key.data()];
 }
 
 const JsonValue& JsonValue::operator[](const string& key) const {
-    return (*this)[key.c_str()];
+    return (*this)[key.data()];
 }
 
 JsonValue& JsonValue::append(const JsonValue& value) {
@@ -1320,7 +1320,7 @@ JsonValue JsonValue::get(const char* key, const JsonValue& defaultValue) const {
 }
 
 JsonValue JsonValue::get(const string& key, const JsonValue& defaultValue) const {
-    return get(key.c_str(), defaultValue);
+    return get(key.data(), defaultValue);
 }
 
 JsonValue JsonValue::RemoveMember(const string& key) {
@@ -1573,7 +1573,7 @@ unsigned int ValueIteratorBase::index() const {
 }
 
 const char* ValueIteratorBase::name() const {
-    return current->first.c_str();
+    return current->first.data();
 }
 
 ValueConstIterator::ValueConstIterator() {
@@ -1921,7 +1921,7 @@ bool StyledWriter::HasCommentForValue(const JsonValue& value) {
 string StyledWriter::NormalizeEOL(const string& text) {
     string normalized;
     normalized.reserve(text.length());
-    const char* current = text.c_str();
+    const char* current = text.data();
     const char* end = current + text.length();
 
     while (current != end) {
@@ -2124,7 +2124,7 @@ bool StyledStreamWriter::HasCommentForValue(const JsonValue& value) {
 string StyledStreamWriter::NormalizeEOL(const string& text) {
     string normalized;
     normalized.reserve(text.length());
-    const char* current = text.c_str();
+    const char* current = text.data();
     const char* end = current + text.length();
 
     while (current != end) {

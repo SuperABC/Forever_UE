@@ -43,12 +43,12 @@ struct StringCompare {
     bool operator()(const std::string& s1, const std::string& s2) const {
         // 如果两个字符串都可以解析为数字，按数字比较
         char* end1, * end2;
-        long long n1 = strtoll(s1.c_str(), &end1, 10);
-        long long n2 = strtoll(s2.c_str(), &end2, 10);
+        long long n1 = strtoll(s1.data(), &end1, 10);
+        long long n2 = strtoll(s2.data(), &end2, 10);
 
         // 如果两个字符串都可以完全转换为数字，按数字比较
-        if (end1 != s1.c_str() && *end1 == '\0' &&
-            end2 != s2.c_str() && *end2 == '\0') {
+        if (end1 != s1.data() && *end1 == '\0' &&
+            end2 != s2.data() && *end2 == '\0') {
             return n1 < n2;
         }
 

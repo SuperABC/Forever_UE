@@ -33,10 +33,10 @@ Player* player = new Player();
 // ANSI字符串和UTF-8字符串转换
 string AnsiToUtf8(const string& ansiStr) {
 	// 第一步：ANSI -> UTF-16
-	int lenWide = MultiByteToWideChar(CP_ACP, 0, ansiStr.c_str(), -1, nullptr, 0);
+	int lenWide = MultiByteToWideChar(CP_ACP, 0, ansiStr.data(), -1, nullptr, 0);
 	if (lenWide == 0) return "";   // 转换失败
 	vector<wchar_t> wideBuf(lenWide);
-	MultiByteToWideChar(CP_ACP, 0, ansiStr.c_str(), -1, wideBuf.data(), lenWide);
+	MultiByteToWideChar(CP_ACP, 0, ansiStr.data(), -1, wideBuf.data(), lenWide);
 
 	// 第二步：UTF-16 -> UTF-8
 	int lenUtf8 = WideCharToMultiByte(CP_UTF8, 0, wideBuf.data(), -1, nullptr, 0, nullptr, nullptr);
@@ -48,10 +48,10 @@ string AnsiToUtf8(const string& ansiStr) {
 }
 string Utf8ToAnsi(const string& utf8Str) {
 	// 第一步：UTF-8 -> UTF-16
-	int lenWide = MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, nullptr, 0);
+	int lenWide = MultiByteToWideChar(CP_UTF8, 0, utf8Str.data(), -1, nullptr, 0);
 	if (lenWide == 0) return "";
 	vector<wchar_t> wideBuf(lenWide);
-	MultiByteToWideChar(CP_UTF8, 0, utf8Str.c_str(), -1, wideBuf.data(), lenWide);
+	MultiByteToWideChar(CP_UTF8, 0, utf8Str.data(), -1, wideBuf.data(), lenWide);
 
 	// 第二步：UTF-16 -> ANSI
 	int lenAnsi = WideCharToMultiByte(CP_ACP, 0, wideBuf.data(), -1, nullptr, 0, nullptr, nullptr);
@@ -364,7 +364,7 @@ bool PrintDialog(Dialog& dialog, vector<function<pair<bool, ValueType>(const str
 }
 
 int main() {
-	std::unordered_map<string, HMODULE> modHandles;
+	unordered_map<string, HMODULE> modHandles;
 
 	// 读取Map相关类及Mod
 	::map->SetResourcePath(REPLACE_PATH("../Resources/"));
@@ -439,7 +439,7 @@ int main() {
 				story->Init();
 				int accomodation = ::map->Init(size, size, traffic);
 				populace->Init(accomodation, story->ReadNames("ys", path), player->GetTime());
-				::map->Checkin(populace->GetCitizens(), player->GetTime());
+				::map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 				society->Init(::map, populace, player->GetTime());
 				story->InitVariables(player->GetTime());
 				story->ReadStory("ys", path);

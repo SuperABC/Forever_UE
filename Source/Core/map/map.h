@@ -96,7 +96,7 @@ public:
 	int Init(int blockX, int blockY, Traffic* traffic);
 
 	// 市民入驻
-	void Checkin(std::vector<Person*> citizens, Time* time) const;
+	void Checkin(std::vector<Person*> citizens, Time* time, AssetFactory* factory) const;
 
 	// 释放空间
 	void Destroy();

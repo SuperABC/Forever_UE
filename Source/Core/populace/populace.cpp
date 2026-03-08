@@ -457,6 +457,10 @@ Person* Populace::GetCitizen(string name) {
 	}
 }
 
+AssetFactory* Populace::GetAssetFactory() {
+	return assetFactory;
+}
+
 JobFactory* Populace::GetJobFactory() {
 	return jobFactory;
 }
