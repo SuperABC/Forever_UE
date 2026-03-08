@@ -98,7 +98,7 @@ void Room::SetWindows(const WallHole& windows) {
 	this->windows = windows;
 }
 
-const string& Room::GetAddress() const {
+string Room::GetAddress() const {
 	// 获取完整地址
 	return GetParentBuilding()->GetAddress() + " " + address;
 }

@@ -52,6 +52,19 @@ void Populace::SetResourcePath(string path) {
 }
 
 void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
+	assetFactory->RegisterAsset(ZoneAsset::GetId(),
+		[]() { return new ZoneAsset(); },
+		[](Asset* asset) { delete asset; }
+	);
+	assetFactory->RegisterAsset(BuildingAsset::GetId(),
+		[]() { return new BuildingAsset(); },
+		[](Asset* asset) { delete asset; }
+	);
+	assetFactory->RegisterAsset(RoomAsset::GetId(),
+		[]() { return new RoomAsset(); },
+		[](Asset* asset) { delete asset; }
+	);
+
 	string modPath = "Mod.dll";
 	HMODULE modHandle;
 	if (modHandles.find(modPath) != modHandles.end()) {

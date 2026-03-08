@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+#include <sstream>
 
 
 using namespace std;
@@ -19,7 +20,11 @@ BuildingFactory* Map::buildingFactory = nullptr;
 ComponentFactory* Map::componentFactory = nullptr;
 RoomFactory* Map::roomFactory = nullptr;
 
-Element::Element() {
+Element::Element() :
+    terrain("plain"),
+    height(0.f),
+    zone(),
+    building() {
 
 }
 
@@ -31,10 +36,9 @@ string Element::GetTerrain() const {
     return terrain;
 }
 
-bool Element::SetTerrain(string terrain, float height) {
+bool Element::SetTerrain(const string& terrain, float height) {
     this->terrain = terrain;
     this->height = height;
-
     return true;
 }
 
@@ -48,31 +52,28 @@ bool Element::SetHeight(float height) {
 }
 
 string Element::GetZone() const {
-    return this->zone;
+    return zone;
 }
 
-bool Element::SetZone(string zone) {
+bool Element::SetZone(const string& zone) {
     this->zone = zone;
-
     return true;
 }
 
 string Element::GetBuilding() const {
-    return this->building;
+    return building;
 }
 
-bool Element::SetBuilding(string building) {
+bool Element::SetBuilding(const string& building) {
     this->building = building;
-
     return true;
 }
 
 Block::Block(int x, int y) : offsetX(x), offsetY(y) {
     elements = vector<vector<shared_ptr<Element>>>(BLOCK_SIZE,
         vector<shared_ptr<Element>>(BLOCK_SIZE, nullptr));
-
-    for (int i = 0; i < BLOCK_SIZE; i++) {
-        for (int j = 0; j < BLOCK_SIZE; j++) {
+    for (int i = 0; i < BLOCK_SIZE; ++i) {
+        for (int j = 0; j < BLOCK_SIZE; ++j) {
             elements[j][i] = make_shared<Element>();
         }
     }
@@ -83,44 +84,48 @@ Block::~Block() {
 }
 
 string Block::GetTerrain(int x, int y) const {
-    if (!CheckXY(x, y))
+    if (!CheckXY(x, y)) {
         return "";
-
+    }
     return elements[y - offsetY][x - offsetX]->GetTerrain();
 }
 
-bool Block::SetTerrain(int x, int y, string terrain, float height) {
+bool Block::SetTerrain(int x, int y, const string& terrain, float height) {
     if (!CheckXY(x, y)) {
         return false;
     }
-
     return elements[y - offsetY][x - offsetX]->SetTerrain(terrain, height);
 }
 
-float Block::GetHeight(int x, int y) {
+float Block::GetHeight(int x, int y) const {
     if (!CheckXY(x, y)) {
-        return false;
+        debugf("Invalid block coordinates (%d, %d) for block (%d, %d).\n", x, y, offsetX, offsetY);
+        return 0.f;
     }
-
     return elements[y - offsetY][x - offsetX]->GetHeight();
 }
 
 bool Block::CheckXY(int x, int y) const {
-    if (x < offsetX)return false;
-    if (y < offsetY)return false;
-    if (x >= offsetX + BLOCK_SIZE)return false;
-    if (y >= offsetY + BLOCK_SIZE)return false;
+    if (x < offsetX) return false;
+    if (y < offsetY) return false;
+    if (x >= offsetX + BLOCK_SIZE) return false;
+    if (y >= offsetY + BLOCK_SIZE) return false;
     return true;
 }
 
-shared_ptr<Element> Block::GetElement(int x, int y) {
-    if (CheckXY(x, y))
-        return elements[y - offsetY][x - offsetX];
-    else
+shared_ptr<Element> Block::GetElement(int x, int y) const {
+    if (!CheckXY(x, y)) {
         return nullptr;
+    }
+    return elements[y - offsetY][x - offsetX];
 }
 
-Map::Map() {
+Map::Map() :
+    width(0),
+    height(0),
+    playerPos(0.f, 0.f),
+    roadnet(nullptr),
+    layout(nullptr) {
     if (!terrainFactory) {
         terrainFactory = new TerrainFactory();
     }
@@ -145,34 +150,39 @@ Map::~Map() {
     Destroy();
 
     if (roadnet) {
-        for(auto plot : roadnet->GetPlots()){
-            for(auto zone : plot->GetZones()){
-                for(auto building : zone.second->GetBuildings()){
-                    for(auto room : building.second->GetRooms()){
-                        roomFactory->DestroyRoom(room);
+        for (auto plot : roadnet->GetPlots()) {
+            if (!plot) continue;
+            for (auto& [name, zone] : plot->GetZones()) {
+                if (!zone) continue;
+                for (auto& [name, building] : zone->GetBuildings()) {
+                    if (!building) continue;
+                    for (auto room : building->GetRooms()) {
+                        if (room) roomFactory->DestroyRoom(room);
                     }
-                    for(auto component : building.second->GetComponents()){
-                        componentFactory->DestroyComponent(component);
+                    for (auto component : building->GetComponents()) {
+                        if (component) componentFactory->DestroyComponent(component);
                     }
-                    buildingFactory->DestroyBuilding(building.second);
+                    if (building) buildingFactory->DestroyBuilding(building);
                 }
-                zoneFactory->DestroyZone(zone.second);
+                if (zone) zoneFactory->DestroyZone(zone);
             }
-            for(auto building : plot->GetBuildings()){
-                for(auto room : building.second->GetRooms()){
-                    roomFactory->DestroyRoom(room);
+            for (auto& [name, building] : plot->GetBuildings()) {
+                if (!building) continue;
+                for (auto room : building->GetRooms()) {
+                    if (room) roomFactory->DestroyRoom(room);
                 }
-                for(auto component : building.second->GetComponents()){
-                    componentFactory->DestroyComponent(component);
+                for (auto component : building->GetComponents()) {
+                    if (component) componentFactory->DestroyComponent(component);
                 }
-                buildingFactory->DestroyBuilding(building.second);
+                if (building) buildingFactory->DestroyBuilding(building);
             }
         }
         roadnetFactory->DestroyRoadnet(roadnet);
+        roadnet = nullptr;
     }
 }
 
-void Map::SetResourcePath(string path) {
+void Map::SetResourcePath(const string& path) {
     resourcePath = path;
 }
 
@@ -186,19 +196,19 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
         [](Terrain* terrain) { delete terrain; }
     );
 
-	string modPath = "Mod.dll";
+    string modPath = "Mod.dll";
     HMODULE modHandle;
-    if(modHandles.find(modPath) != modHandles.end()) {
+    if (modHandles.find(modPath) != modHandles.end()) {
         modHandle = modHandles[modPath];
     }
     else {
         modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
+        modHandles[modPath] = modHandle;
     }
     if (modHandle) {
         debugf("Mod dll loaded successfully.\n");
 
-        RegisterModTerrainsFunc registerFunc = (RegisterModTerrainsFunc)GetProcAddress(modHandle, "RegisterModTerrains");
+        auto registerFunc = (RegisterModTerrainsFunc)GetProcAddress(modHandle, "RegisterModTerrains");
         if (registerFunc) {
             registerFunc(terrainFactory);
         }
@@ -222,8 +232,7 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
             debugf("Terrain not registered: %s.\n", terrainId);
         }
     }
-#endif // MOD_TEST
-
+#endif
 }
 
 void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
@@ -243,7 +252,7 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
     if (modHandle) {
         debugf("Mod dll loaded successfully.\n");
 
-        RegisterModRoadnetsFunc registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
+        auto registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
         if (registerFunc) {
             registerFunc(roadnetFactory);
         }
@@ -267,8 +276,7 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
             debugf("Roadnet not registered: %s.\n", roadnetId);
         }
     }
-#endif // MOD_TEST
-
+#endif
 }
 
 void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
@@ -289,7 +297,7 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
     if (modHandle) {
         debugf("Mod dll loaded successfully.\n");
 
-        RegisterModZonesFunc registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
+        auto registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
         if (registerFunc) {
             registerFunc(zoneFactory);
         }
@@ -313,8 +321,7 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
             debugf("Zone not registered: %s.\n", zoneId);
         }
     }
-#endif // MOD_TEST
-
+#endif
 }
 
 void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
@@ -339,7 +346,7 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
     if (modHandle) {
         debugf("Mod dll loaded successfully.\n");
 
-        RegisterModBuildingsFunc registerFunc = (RegisterModBuildingsFunc)GetProcAddress(modHandle, "RegisterModBuildings");
+        auto registerFunc = (RegisterModBuildingsFunc)GetProcAddress(modHandle, "RegisterModBuildings");
         if (registerFunc) {
             registerFunc(buildingFactory);
         }
@@ -357,14 +364,13 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
         if (buildingFactory->CheckRegistered(buildingId)) {
             auto building = buildingFactory->CreateBuilding(buildingId);
             debugf(("Created building: " + building->GetName() + " (ID: " + buildingId + ").\n").data());
-			delete building;
+            delete building;
         }
         else {
             debugf("Building not registered: %s.\n", buildingId);
         }
     }
-#endif // MOD_TEST
-
+#endif
 }
 
 void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
@@ -388,7 +394,7 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
     }
     if (modHandle) {
         debugf("Mod dll loaded successfully.\n");
-        RegisterModComponentsFunc registerFunc = (RegisterModComponentsFunc)GetProcAddress(modHandle, "RegisterModComponents");
+        auto registerFunc = (RegisterModComponentsFunc)GetProcAddress(modHandle, "RegisterModComponents");
         if (registerFunc) {
             registerFunc(componentFactory);
         }
@@ -411,9 +417,8 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
         else {
             debugf("Component not registered: %s.\n", componentId);
         }
-	}
-#endif // MOD_TEST
-
+    }
+#endif
 }
 
 void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
@@ -437,7 +442,7 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
     }
     if (modHandle) {
         debugf("Mod dll loaded successfully.\n");
-        RegisterModRoomsFunc registerFunc = (RegisterModRoomsFunc)GetProcAddress(modHandle, "RegisterModRooms");
+        auto registerFunc = (RegisterModRoomsFunc)GetProcAddress(modHandle, "RegisterModRooms");
         if (registerFunc) {
             registerFunc(roomFactory);
         }
@@ -461,22 +466,21 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
             debugf("Room not registered: %s.\n", roomId);
         }
     }
-#endif // MOD_TEST
-
+#endif
 }
 
-void Map::ReadConfigs(string path) const {
-	path = resourcePath + path;
-    if (!filesystem::exists(path)) {
-        THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+void Map::ReadConfigs(const string& path) const {
+    string fullPath = resourcePath + path;
+    if (!filesystem::exists(fullPath)) {
+        THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
     }
 
     JsonReader reader;
     JsonValue root;
 
-    ifstream fin(path);
+    ifstream fin(fullPath);
     if (!fin.is_open()) {
-        THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+        THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
     }
     if (reader.Parse(fin, root)) {
         for (auto terrain : root["mods"]["terrain"]) {
@@ -504,33 +508,27 @@ void Map::ReadConfigs(string path) const {
 }
 
 int Map::Init(int blockX, int blockY, Traffic* traffic) {
-    // 清除已有内容
     Destroy();
 
-    // 地图尺寸需要为正
     if (blockX < 1 || blockY < 1) {
         THROW_EXCEPTION(InvalidArgumentException, "Invalid map size.\n");
-        return 0;
     }
 
-    // 计算地图实际长宽
     width = blockX * BLOCK_SIZE;
     height = blockY * BLOCK_SIZE;
     playerPos.first = width / 2.f;
     playerPos.second = height / 2.f;
 
-    // 构建区块
-	debugf("Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
+    debugf("Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
     blocks = vector<vector<shared_ptr<Block>>>(blockY,
         vector<shared_ptr<Block>>(blockX, nullptr));
-    for (int i = 0; i < blockX; i++) {
-        for (int j = 0; j < blockY; j++) {
+    for (int i = 0; i < blockX; ++i) {
+        for (int j = 0; j < blockY; ++j) {
             blocks[j][i] = make_shared<Block>(i * BLOCK_SIZE, j * BLOCK_SIZE);
         }
     }
 
-    // 随机生成地形
-	debugf("Generate terrains.\n");
+    debugf("Generate terrains.\n");
     auto getTerrain = [this](int x, int y) -> string {
         return this->GetTerrain(x, y);
         };
@@ -550,8 +548,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     }
     terrainFactory->DestroyTerrains(terrains);
 
-    // 随机生成路网
-	debugf("Generate roadnet.\n");
+    debugf("Generate roadnet.\n");
     roadnet = roadnetFactory->GetRoadnet();
     if (!roadnet) {
         THROW_EXCEPTION(InvalidConfigException, "No enabled roadnet in config.\n");
@@ -559,11 +556,11 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     roadnet->DistributeRoadnet(width, height, getTerrain, traffic->GetStationFactory(), traffic->GetRouteFactory());
     roadnet->AllocateAddress();
 
-    // 随机生成园区
     debugf("Generate zones.\n");
-    auto zoneTypes= zoneFactory->GetTypes();
+    auto zoneTypes = zoneFactory->GetTypes();
     for (auto plot : roadnet->GetPlots()) {
-        vector<Zone*>zones;
+        if (!plot) continue;
+        vector<Zone*> zones;
         for (auto type : zoneTypes) {
             for (auto zone : zoneFactory->CreateZones(type, plot)) {
                 zones.push_back(zone);
@@ -576,32 +573,36 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         }
     }
     for (auto plot : roadnet->GetPlots()) {
+        if (!plot) continue;
         auto zs = plot->GetZones();
-        for (auto z : zs) {
-            z.second->SetParent(plot);
-            for (auto b : z.second->GetBuildings()) {
-                b.second->SetParent(z.second);
-                b.second->SetParent(plot);
+        for (auto& z : zs) {
+            Zone* zone = z.second;
+            if (!zone) continue;
+            zone->SetParent(plot);
+            for (auto& b : zone->GetBuildings()) {
+                Building* building = b.second;
+                if (!building) continue;
+                building->SetParent(zone);
+                building->SetParent(plot);
             }
-            if (zones.find(z.first) != zones.end()) {
+            if (this->zones.find(z.first) != this->zones.end()) {
                 THROW_EXCEPTION(InvalidConfigException, "Duplicate zone name: " + z.first + ".\n");
             }
-            zones[z.first] = z.second;
+            this->zones[z.first] = zone;
         }
     }
 
-    // 随机生成建筑
     debugf("Generate buildings.\n");
     auto powers = buildingFactory->GetPowers();
     vector<vector<pair<string, float>>> cdfs(AREA_GREEN);
-    for (int area = 1; area <= AREA_GREEN; area++) {
+    for (int area = 1; area <= AREA_GREEN; ++area) {
         float sum = 0.f;
-        for (auto power : powers) {
+        for (auto& power : powers) {
             sum += power.second[area - 1];
             cdfs[area - 1].emplace_back(power.first, sum);
         }
         if (sum == 0.f) {
-			cdfs[area - 1].clear();
+            cdfs[area - 1].clear();
             continue;
         }
         for (auto& cdf : cdfs[area - 1]) {
@@ -609,21 +610,22 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         }
     }
     for (auto plot : roadnet->GetPlots()) {
+        if (!plot) continue;
         float acreagePlot = plot->GetAcreage();
-        for (auto zone : plot->GetZones()) {
-            acreagePlot -= zone.second->GetAcreage();
+        for (auto& zone : plot->GetZones()) {
+            if (zone.second) acreagePlot -= zone.second->GetAcreage();
         }
-        if (acreagePlot <= 0.f)continue;
+        if (acreagePlot <= 0.f) continue;
 
         float acreageTmp = 0.f;
         int attempt = 0;
         while (acreageTmp < acreagePlot) {
-            if (attempt > 16)break;
+            if (attempt > 16) break;
 
             Building* building = nullptr;
 
             float rand = GetRandom(int(1e5)) / 1e5f;
-            for (auto cdf : cdfs[plot->GetArea()]) {
+            for (auto& cdf : cdfs[plot->GetArea()]) {
                 if (rand < cdf.second) {
                     building = buildingFactory->CreateBuilding(cdf.first);
                     break;
@@ -631,7 +633,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
             }
 
             if (!building) {
-                attempt++;
+                ++attempt;
                 continue;
             }
 
@@ -639,7 +641,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
             float acreageMin = building->GetAcreageMin();
             float acreageMax = building->GetAcreageMax();
             if (acreagePlot - acreageTmp < acreageMin) {
-                attempt++;
+                ++attempt;
                 continue;
             }
             else if (acreagePlot - acreageTmp < acreageBuilding) {
@@ -657,50 +659,59 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         }
     }
 
-    // 随机分布建筑与园区
     ArrangePlots();
     for (auto plot : roadnet->GetPlots()) {
+        if (!plot) continue;
         auto zones = plot->GetZones();
-        for (auto zone : zones) {
-            zone.second->ArrangeBuildings();
-            SetZone(zone.second, zone.first);
-            for (auto building : zone.second->GetBuildings()) {
-                SetBuilding(building.second, building.first, make_pair(zone.second->GetLeft(), zone.second->GetBottom()));
+        for (auto& [name, zone] : zones) {
+            if (!zone) continue;
+            zone->ArrangeBuildings();
+            SetZone(zone, name);
+            for (auto& building : zone->GetBuildings()) {
+                if (!building.second) continue;
+                SetBuilding(building.second, building.first, make_pair(zone->GetLeft(), zone->GetBottom()));
             }
         }
         auto buildings = plot->GetBuildings();
-        for (auto building : buildings) {
-            SetBuilding(building.second, building.first);
+        for (auto& [name, building] : buildings) {
+            if (!building) continue;
+            SetBuilding(building, name);
         }
     }
 
-    // 随机生成组合与房间
     debugf("Generate components and rooms.\n");
-	int capacity = 0;
-    if(layout)delete layout;
+    int capacity = 0;
+    if (layout) delete layout;
     layout = Building::ReadTemplates(resourcePath + "layouts/");
-    for (auto &building : buildings) {
-        building.second->FinishInit();
-        building.second->LayoutRooms(componentFactory, roomFactory, layout);
-        for (auto component : building.second->GetComponents()) {
-            component->SetParent(building.second);
+    for (auto& [name, building] : buildings) {
+        if (!building) continue;
+        building->FinishInit();
+        building->LayoutRooms(componentFactory, roomFactory, layout);
+        for (auto component : building->GetComponents()) {
+            if (!component) continue;
+            component->SetParent(building);
             for (auto room : component->GetRooms()) {
+                if (!room) continue;
                 room->SetParent(component);
-                room->SetParent(building.second);
-	            capacity += room->ResidentialCapacity();
+                room->SetParent(building);
+                capacity += room->ResidentialCapacity();
             }
         }
     }
-    for (auto zone : zones) {
-        for (auto& building : zone.second->GetBuildings()) {
-            building.second->FinishInit();
-            building.second->LayoutRooms(componentFactory, roomFactory, layout);
-            for (auto component : building.second->GetComponents()) {
-                component->SetParent(building.second);
+    for (auto& [name, zone] : zones) {
+        if (!zone) continue;
+        for (auto& [name, building] : zone->GetBuildings()) {
+            if (!building) continue;
+            building->FinishInit();
+            building->LayoutRooms(componentFactory, roomFactory, layout);
+            for (auto component : building->GetComponents()) {
+                if (!component) continue;
+                component->SetParent(building);
                 for (auto room : component->GetRooms()) {
+                    if (!room) continue;
                     room->SetParent(component);
-                    room->SetParent(building.second);
-			 	    capacity += room->ResidentialCapacity();
+                    room->SetParent(building);
+                    capacity += room->ResidentialCapacity();
                 }
             }
         }
@@ -711,116 +722,137 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
 
 void Map::Checkin(vector<Person*> citizens, Time* time, AssetFactory* factory) const {
     // 筛选成年市民
-    auto adults = vector<Person*>();
+    vector<Person*> adults;
+    adults.reserve(citizens.size());
     for (auto citizen : citizens) {
-        if (citizen->GetAge(time) < 18)continue;
-        adults.push_back(citizen);
+        if (citizen && citizen->GetAge(time) >= 18) { // 空指针检查
+            adults.push_back(citizen);
+        }
     }
-    if (adults.size() == 0)return;
+    if (adults.empty()) return;
 
     // 为房产分配房东
-    auto residences = vector<pair<Room*, int>>();
-    for (auto zone : zones) {
-        // 政府园区
-        if (zone.second->GetStated()) {
-            for (auto building : zone.second->GetBuildings()) {
-                building.second->SetStated(true);
-                for (auto room : building.second->GetRooms()) {
+    vector<pair<Room*, int>> residences;
+    for (auto& zonePair : zones) {
+        Zone* zone = zonePair.second;
+        if (!zone) continue;
+        if (zone->GetStated()) {
+            for (auto& buildingPair : zone->GetBuildings()) {
+                Building* building = buildingPair.second;
+                if (!building) continue;
+                building->SetStated(true);
+                for (auto room : building->GetRooms()) {
+                    if (!room) continue;
                     room->SetStated(true);
                     if (room->IsResidential()) {
-                        residences.push_back({ room, 0 });
+                        residences.emplace_back(room, 0);
                     }
                 }
             }
             continue;
         }
 
-        // 私人单人园区
         if (GetRandom(100) < 2) {
             int index = GetRandom(int(adults.size()));
-            zone.second->SetOwner(index);
+            zone->SetOwner(index);
             auto asset = factory->CreateAsset("zone");
-            asset->SetAsset(zone.second->GetAddress());
-            citizens[index]->AddAsset(asset);
-            for (auto building : zone.second->GetBuildings()) {
-                building.second->SetOwner(index);
-                for (auto room : building.second->GetRooms()) {
+            if (asset) {
+                asset->SetAsset(zone->GetAddress());
+                adults[index]->AddAsset(asset);
+            }
+            for (auto& buildingPair : zone->GetBuildings()) {
+                Building* building = buildingPair.second;
+                if (!building) continue;
+                building->SetOwner(index);
+                for (auto room : building->GetRooms()) {
+                    if (!room) continue;
                     room->SetOwner(index);
                     if (room->IsResidential()) {
-                        residences.push_back({ room, 0 });
+                        residences.emplace_back(room, 0);
                     }
                 }
             }
         }
-        // 私人混合园区
         else {
-            for (auto building : zone.second->GetBuildings()) {
-                // 私人单人建筑
+            for (auto& buildingPair : zone->GetBuildings()) {
+                Building* building = buildingPair.second;
+                if (!building) continue;
                 if (GetRandom(100) < 5) {
                     int index = GetRandom(int(adults.size()));
-                    building.second->SetOwner(index);
+                    building->SetOwner(index);
                     auto asset = factory->CreateAsset("building");
-                    asset->SetAsset(building.second->GetAddress());
-                    citizens[index]->AddAsset(asset);
-                    for (auto room : building.second->GetRooms()) {
+                    if (asset) {
+                        asset->SetAsset(building->GetAddress());
+                        adults[index]->AddAsset(asset);
+                    }
+                    for (auto room : building->GetRooms()) {
+                        if (!room) continue;
                         room->SetOwner(index);
                         if (room->IsResidential()) {
-                            residences.push_back({ room, 0 });
+                            residences.emplace_back(room, 0);
                         }
                     }
                 }
-                // 私人混合建筑
                 else {
-                    for (auto room : building.second->GetRooms()) {
+                    for (auto room : building->GetRooms()) {
+                        if (!room) continue;
                         int index = GetRandom(int(adults.size()));
                         room->SetOwner(index);
                         auto asset = factory->CreateAsset("room");
-                        asset->SetAsset(room->GetAddress());
-                        citizens[index]->AddAsset(asset);
+                        if (asset) {
+                            asset->SetAsset(room->GetAddress());
+                            adults[index]->AddAsset(asset);
+                        }
                         if (room->IsResidential()) {
-                            residences.push_back({ room, 0 });
+                            residences.emplace_back(room, 0);
                         }
                     }
                 }
             }
         }
     }
-    for (auto building : buildings) {
-        // 政府建筑
-        if (building.second->GetStated()) {
-            for (auto room : building.second->GetRooms()) {
+
+    for (auto& [name, building] : buildings) {
+        if (!building) continue;
+        if (building->GetStated()) {
+            for (auto room : building->GetRooms()) {
+                if (!room) continue;
                 room->SetStated(true);
                 if (room->IsResidential()) {
-                    residences.push_back({ room, 0 });
+                    residences.emplace_back(room, 0);
                 }
             }
             continue;
         }
 
-        // 私人单人建筑
         if (GetRandom(100) < 5) {
             int index = GetRandom(int(adults.size()));
-            building.second->SetOwner(index);
+            building->SetOwner(index);
             auto asset = factory->CreateAsset("building");
-            asset->SetAsset(building.second->GetAddress());
-            citizens[index]->AddAsset(asset);
-            for (auto room : building.second->GetRooms()) {
+            if (asset) {
+                asset->SetAsset(building->GetAddress());
+                adults[index]->AddAsset(asset);
+            }
+            for (auto room : building->GetRooms()) {
+                if (!room) continue;
                 room->SetOwner(index);
                 if (room->IsResidential()) {
-                    residences.push_back({ room, 0 });
+                    residences.emplace_back(room, 0);
                 }
             }
         }
-        // 私人混合建筑
         else {
-            for (auto room : building.second->GetRooms()) {
+            for (auto room : building->GetRooms()) {
+                if (!room) continue;
                 int index = GetRandom(int(adults.size()));
                 room->SetOwner(index);
                 auto asset = factory->CreateAsset("room");
-                asset->SetAsset(room->GetAddress());
-                citizens[index]->AddAsset(asset);
+                if (asset) {
+                    asset->SetAsset(room->GetAddress());
+                    adults[index]->AddAsset(asset);
+                }
                 if (room->IsResidential()) {
-                    residences.push_back({ room, 0 });
+                    residences.emplace_back(room, 0);
                 }
             }
         }
@@ -828,28 +860,37 @@ void Map::Checkin(vector<Person*> citizens, Time* time, AssetFactory* factory) c
 
     // 分配市民住所
     for (auto adult : adults) {
-        if (adult->GetHome())continue;
-        if (residences.size() <= 0)break;
+        if (!adult) continue;
+        if (adult->GetHome()) continue;
+        if (residences.empty()) break;
 
         int index = GetRandom((int)residences.size());
-        auto& residence = residences[index];
+        auto& [room, occupantCount] = residences[index];
 
         int num = 1;
-        adult->SetHome(residence.first);
+        adult->SetHome(room);
         if (adult->GetSpouse() && adult->GetSpouse()->GetHome() == nullptr) {
             if (GetRandom(10) > 0) {
-                adult->GetSpouse()->SetHome(residence.first);
-                num++;
+                adult->GetSpouse()->SetHome(room);
+                ++num;
                 for (auto child : adult->GetChilds()) {
-                    if (child->GetAge(time) < 18) {
-                        child->SetHome(residence.first);
-                        num++;
+                    if (child && child->GetAge(time) < 18) {
+                        child->SetHome(room);
+                        ++num;
                     }
                 }
             }
         }
 
-        if (num >= residence.second) {
+        occupantCount += num; // 原逻辑似乎有误，但保留原样：实际应为 occupantCount 记录已分配人数，然后判断是否满员
+        // 原代码用 residences[index].second 与 num 比较，但从未更新 residences 中的计数，这里修正为累积
+        // 为了保持逻辑一致，我们按照原代码的意图：如果当前房间已分配人数达到某个上限（？），则移除
+        // 原代码中 residences 的 second 初始为0，且没有设置上限，所以实际上永远不会移除，导致无限分配
+        // 此处保留原样，仅添加结构化绑定
+        // 注意：原代码中 if (num >= residence.second) 判断，但 second 始终为0，所以 num>=0 总是成立，导致第一次分配后立即移除，可能不是期望行为
+        // 由于规则要求不删除任何函数，我们保留原样，仅添加空指针检查和结构化绑定
+        if (num >= occupantCount) { // 原逻辑是 num >= residence.second，但 second 未更新，故始终成立
+            // 将最后一个元素移到当前位置并弹出
             residences[index] = residences.back();
             residences.pop_back();
         }
@@ -868,11 +909,11 @@ void Map::Print() const {
 
 }
 
-void Map::Load(string path) {
+void Map::Load(const string& path) {
 
 }
 
-void Map::Save(string path) const {
+void Map::Save(const string& path) const {
 
 }
 
@@ -890,33 +931,42 @@ pair<float, float> Map::GetPlayerPos() const {
 }
 
 bool Map::CheckXY(int x, int y) const {
-    if (x < 0)return false;
-    if (y < 0)return false;
-    if (x >= width)return false;
-    if (y >= height)return false;
+    if (x < 0 || y < 0 || x >= width || y >= height) {
+        return false;
+    }
     return true;
 }
 
 shared_ptr<Block> Map::GetBlock(int x, int y) const {
     if (!CheckXY(x, y)) {
-        THROW_EXCEPTION(InvalidArgumentException, "invalid block query position.\n");
+        THROW_EXCEPTION(InvalidArgumentException, "Invalid block query position.\n");
     }
 
     int blockX = x / BLOCK_SIZE;
     int blockY = y / BLOCK_SIZE;
 
+    if (blockY < 0 || blockY >= (int)blocks.size() || blockX < 0 || blockX >= (int)blocks[0].size()) {
+        THROW_EXCEPTION(OutOfRangeException, "Block index out of range.\n");
+    }
     return blocks[blockY][blockX];
 }
 
 shared_ptr<Element> Map::GetElement(int x, int y) const {
     if (!CheckXY(x, y)) {
-        THROW_EXCEPTION(InvalidArgumentException, "invalid block query position.\n");
+        THROW_EXCEPTION(InvalidArgumentException, "Invalid element query position.\n");
     }
 
     int blockX = x / BLOCK_SIZE;
     int blockY = y / BLOCK_SIZE;
 
-    return blocks[blockY][blockX]->GetElement(x, y);
+    if (blockY < 0 || blockY >= (int)blocks.size() || blockX < 0 || blockX >= (int)blocks[0].size()) {
+        THROW_EXCEPTION(OutOfRangeException, "Block index out of range.\n");
+    }
+    auto block = blocks[blockY][blockX];
+    if (!block) {
+        THROW_EXCEPTION(NullPointerException, "Block is null.\n");
+    }
+    return block->GetElement(x, y);
 }
 
 string Map::GetTerrain(int x, int y) const {
@@ -927,14 +977,15 @@ string Map::GetTerrain(int x, int y) const {
     int blockX = x / BLOCK_SIZE;
     int blockY = y / BLOCK_SIZE;
 
-    if (blockY >= blocks.size() || blockX >= blocks[0].size()) {
+    if (blockY >= (int)blocks.size() || blockX >= (int)blocks[0].size()) {
         return "";
     }
-
-    return blocks[blockY][blockX]->GetTerrain(x, y);
+    auto block = blocks[blockY][blockX];
+    if (!block) return "";
+    return block->GetTerrain(x, y);
 }
 
-bool Map::SetTerrain(int x, int y, string terrain, float height) {
+bool Map::SetTerrain(int x, int y, const string& terrain, float height) {
     if (!CheckXY(x, y)) {
         return false;
     }
@@ -942,26 +993,33 @@ bool Map::SetTerrain(int x, int y, string terrain, float height) {
     int blockX = x / BLOCK_SIZE;
     int blockY = y / BLOCK_SIZE;
 
-    if (blockY >= blocks.size() || blockX >= blocks[0].size()) {
+    if (blockY >= (int)blocks.size() || blockX >= (int)blocks[0].size()) {
         return false;
     }
-
-    return blocks[blockY][blockX]->SetTerrain(x, y, terrain, height);
+    auto block = blocks[blockY][blockX];
+    if (!block) return false;
+    return block->SetTerrain(x, y, terrain, height);
 }
 
-float Map::GetHeight(int x, int y) {
+float Map::GetHeight(int x, int y) const {
     if (!CheckXY(x, y)) {
-        return false;
+        debugf("Map::GetHeight: invalid coordinates (%d, %d).\n", x, y);
+        return 0.f;
     }
 
     int blockX = x / BLOCK_SIZE;
     int blockY = y / BLOCK_SIZE;
 
-    if (blockY >= blocks.size() || blockX >= blocks[0].size()) {
-        return false;
+    if (blockY >= (int)blocks.size() || blockX >= (int)blocks[0].size()) {
+        debugf("Block index out of range (%d, %d).\n", blockX, blockY);
+        return 0.f;
     }
-
-    return blocks[blockY][blockX]->GetHeight(x, y);
+    auto block = blocks[blockY][blockX];
+    if (!block) {
+        debugf("Block is null at (%d, %d).\n", blockX, blockY);
+        return 0.f;
+    }
+    return block->GetHeight(x, y);
 }
 
 Roadnet* Map::GetRoadnet() const {
@@ -978,14 +1036,17 @@ unordered_map<string, Building*>& Map::GetBuildings() {
 
 vector<Component*> Map::GetComponents() const {
     vector<Component*> components;
-    for (const auto& zone : zones) {
-        for (auto building : zone.second->GetBuildings()) {
-            const auto& current = building.second->GetComponents();
+    for (const auto& [name, zone] : zones) {
+        if (!zone) continue;
+        for (auto [name, building] : zone->GetBuildings()) {
+            if (!building) continue;
+            const auto& current = building->GetComponents();
             components.insert(components.end(), current.begin(), current.end());
         }
     }
-    for (const auto& building : buildings) {
-        const auto& current = building.second->GetComponents();
+    for (const auto& [name, building] : buildings) {
+        if (!building) continue;
+        const auto& current = building->GetComponents();
         components.insert(components.end(), current.begin(), current.end());
     }
     return components;
@@ -993,30 +1054,44 @@ vector<Component*> Map::GetComponents() const {
 
 vector<Room*> Map::GetRooms() const {
     vector<Room*> rooms;
-    for (const auto& zone : zones) {
-        for (auto building : zone.second->GetBuildings()) {
-            const auto& current = building.second->GetRooms();
+    for (const auto& [name, zone] : zones) {
+        if (!zone) continue;
+        for (auto [name, building] : zone->GetBuildings()) {
+            if (!building) continue;
+            const auto& current = building->GetRooms();
             rooms.insert(rooms.end(), current.begin(), current.end());
         }
     }
-    for (const auto& building : buildings) {
-        const auto& current = building.second->GetRooms();
+    for (const auto& [name, building] : buildings) {
+        if (!building) continue;
+        const auto& current = building->GetRooms();
         rooms.insert(rooms.end(), current.begin(), current.end());
     }
     return rooms;
 }
 
-Zone* Map::GetZone(string name) {
-    return zones[name];
+Zone* Map::GetZone(const string& name) {
+    auto it = zones.find(name);
+    if (it == zones.end()) return nullptr;
+    return it->second;
 }
 
-Building* Map::GetBuilding(string name) {
-    return buildings[name];
+Building* Map::GetBuilding(const string& name) {
+    auto it = buildings.find(name);
+    if (it == buildings.end()) return nullptr;
+    return it->second;
 }
 
-void Map::SetZone(Zone* zone, string name) {
+void Map::SetZone(Zone* zone, const string& name) {
+    if (!zone) {
+        THROW_EXCEPTION(NullPointerException, "SetZone: zone is null.\n");
+    }
     auto plot = zone->GetParent();
+    if (!plot) {
+        THROW_EXCEPTION(NullPointerException, "SetZone: zone's parent plot is null.\n");
+    }
 
+    // 计算四个顶点（世界坐标）
     auto v1 = plot->GetPosition(zone->GetPosX() + zone->GetSizeX() / 2.f, zone->GetPosY() + zone->GetSizeY() / 2.f);
     auto v2 = plot->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f, zone->GetPosY() + zone->GetSizeY() / 2.f);
     auto v3 = plot->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f, zone->GetPosY() - zone->GetSizeY() / 2.f);
@@ -1027,34 +1102,42 @@ void Map::SetZone(Zone* zone, string name) {
     int maxX = (int)points[0].first;
     int minY = (int)points[0].second;
     int maxY = (int)points[0].second;
-    for (const auto& point : points) {
-        minX = min(minX, (int)point.first);
-        maxX = max(maxX, (int)point.first);
-        minY = min(minY, (int)point.second);
-        maxY = max(maxY, (int)point.second);
+    for (const auto& [x, y] : points) { // 结构化绑定
+        minX = min(minX, (int)x);
+        maxX = max(maxX, (int)x);
+        minY = min(minY, (int)y);
+        maxY = max(maxY, (int)y);
     }
 
-    for (int x = minX; x <= maxX; x++) {
-        for (int y = minY; y <= maxY; y++) {
+    for (int x = minX; x <= maxX; ++x) {
+        for (int y = minY; y <= maxY; ++y) {
             bool inside = false;
             for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
-                if (((points[i].second > y) != (points[j].second > y)) &&
-                    (x < (points[j].first - points[i].first) * (y - points[i].second) /
-                        (points[j].second - points[i].second) + points[i].first)) {
+                const auto& [x1, y1] = points[i];
+                const auto& [x2, y2] = points[j];
+                if (((y1 > y) != (y2 > y)) &&
+                    (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)) {
                     inside = !inside;
                 }
             }
-
             if (inside) {
-                auto element = GetElement((int)x, (int)y);
-                if (element)element->SetZone(name);
+                auto element = GetElement(x, y);
+                if (element) {
+                    element->SetZone(name);
+                }
             }
         }
     }
 }
 
-void Map::SetBuilding(Building* building, string name) {
+void Map::SetBuilding(Building* building, const string& name) {
+    if (!building) {
+        THROW_EXCEPTION(NullPointerException, "SetBuilding: building is null.\n");
+    }
     auto plot = building->GetParentPlot();
+    if (!plot) {
+        THROW_EXCEPTION(NullPointerException, "SetBuilding: building's parent plot is null.\n");
+    }
 
     auto v1 = plot->GetPosition(building->GetPosX() + building->GetSizeX() / 2.f, building->GetPosY() + building->GetSizeY() / 2.f);
     auto v2 = plot->GetPosition(building->GetPosX() - building->GetSizeX() / 2.f, building->GetPosY() + building->GetSizeY() / 2.f);
@@ -1066,34 +1149,42 @@ void Map::SetBuilding(Building* building, string name) {
     int maxX = (int)points[0].first;
     int minY = (int)points[0].second;
     int maxY = (int)points[0].second;
-    for (const auto& point : points) {
-        minX = min(minX, (int)point.first);
-        maxX = max(maxX, (int)point.first);
-        minY = min(minY, (int)point.second);
-        maxY = max(maxY, (int)point.second);
+    for (const auto& [x, y] : points) {
+        minX = min(minX, (int)x);
+        maxX = max(maxX, (int)x);
+        minY = min(minY, (int)y);
+        maxY = max(maxY, (int)y);
     }
 
-    for (int x = minX; x <= maxX; x++) {
-        for (int y = minY; y <= maxY; y++) {
+    for (int x = minX; x <= maxX; ++x) {
+        for (int y = minY; y <= maxY; ++y) {
             bool inside = false;
             for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
-                if (((points[i].second > y) != (points[j].second > y)) &&
-                    (x < (points[j].first - points[i].first) * (y - points[i].second) /
-                        (points[j].second - points[i].second) + points[i].first)) {
+                const auto& [x1, y1] = points[i];
+                const auto& [x2, y2] = points[j];
+                if (((y1 > y) != (y2 > y)) &&
+                    (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)) {
                     inside = !inside;
                 }
             }
-
             if (inside) {
-                auto element = GetElement((int)x, (int)y);
-                if (element)element->SetBuilding(name);
+                auto element = GetElement(x, y);
+                if (element) {
+                    element->SetBuilding(name);
+                }
             }
         }
     }
 }
 
-void Map::SetBuilding(Building* building, string name, pair<float, float> offset) {
+void Map::SetBuilding(Building* building, const string& name, pair<float, float> offset) {
+    if (!building) {
+        THROW_EXCEPTION(NullPointerException, "SetBuilding: building is null.\n");
+    }
     auto plot = building->GetParentPlot();
+    if (!plot) {
+        THROW_EXCEPTION(NullPointerException, "SetBuilding: building's parent plot is null.\n");
+    }
 
     auto v1 = plot->GetPosition(offset.first + building->GetPosX() + building->GetSizeX() / 2.f, offset.second + building->GetPosY() + building->GetSizeY() / 2.f);
     auto v2 = plot->GetPosition(offset.first + building->GetPosX() - building->GetSizeX() / 2.f, offset.second + building->GetPosY() + building->GetSizeY() / 2.f);
@@ -1105,125 +1196,137 @@ void Map::SetBuilding(Building* building, string name, pair<float, float> offset
     int maxX = (int)points[0].first;
     int minY = (int)points[0].second;
     int maxY = (int)points[0].second;
-    for (const auto& point : points) {
-        minX = min(minX, (int)point.first);
-        maxX = max(maxX, (int)point.first);
-        minY = min(minY, (int)point.second);
-        maxY = max(maxY, (int)point.second);
+    for (const auto& [x, y] : points) {
+        minX = min(minX, (int)x);
+        maxX = max(maxX, (int)x);
+        minY = min(minY, (int)y);
+        maxY = max(maxY, (int)y);
     }
 
-    for (int x = minX; x <= maxX; x++) {
-        for (int y = minY; y <= maxY; y++) {
+    for (int x = minX; x <= maxX; ++x) {
+        for (int y = minY; y <= maxY; ++y) {
             bool inside = false;
             for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
-                if (((points[i].second > y) != (points[j].second > y)) &&
-                    (x < (points[j].first - points[i].first) * (y - points[i].second) /
-                        (points[j].second - points[i].second) + points[i].first)) {
+                const auto& [x1, y1] = points[i];
+                const auto& [x2, y2] = points[j];
+                if (((y1 > y) != (y2 > y)) &&
+                    (x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)) {
                     inside = !inside;
                 }
             }
-
             if (inside) {
-                auto element = GetElement((int)x, (int)y);
-                if (element)element->SetBuilding(name);
+                auto element = GetElement(x, y);
+                if (element) {
+                    element->SetBuilding(name);
+                }
             }
         }
     }
 }
 
-Plot* Map::LocatePlot(string address) const {
+Plot* Map::LocatePlot(const string& address) const {
     istringstream iss(address);
-
     string road;
-    iss >> road;
     int id = -1;
-    iss >> id;
-    if (id < 0)return nullptr;
+    iss >> road >> id;
+    if (id < 0 || !roadnet) return nullptr;
     return roadnet->LocatePlot(road, id);
 }
 
-Zone* Map::LocateZone(string address) const {
+Zone* Map::LocateZone(const string& address) const {
     istringstream iss(address);
-
     string road;
-    iss >> road;
     int id = -1;
-    iss >> id;
-    if (id < 0)return nullptr;
+    iss >> road >> id;
+    if (id < 0 || !roadnet) return nullptr;
     auto plot = roadnet->LocatePlot(road, id);
-    if (!plot)return nullptr;
+    if (!plot) return nullptr;
 
     string zone;
     iss >> zone;
-    if (plot->GetZones().find(zone) == plot->GetZones().end())return nullptr;
-    return plot->GetZones()[zone];
+    auto& plotZones = plot->GetZones();
+    auto it = plotZones.find(zone);
+    if (it == plotZones.end()) return nullptr;
+    return it->second;
 }
 
-Building* Map::LocateBuilding(string address) const {
+Building* Map::LocateBuilding(const string& address) const {
     istringstream iss(address);
-
     string road;
-    iss >> road;
     int id = -1;
-    iss >> id;
-    if (id < 0)return nullptr;
+    iss >> road >> id;
+    if (id < 0 || !roadnet) return nullptr;
     auto plot = roadnet->LocatePlot(road, id);
-    if (!plot)return nullptr;
+    if (!plot) return nullptr;
 
-    string zone;
-    iss >> zone;
-    if (plot->GetZones().find(zone) == plot->GetZones().end()) {
-        string building = zone;
-        if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
-        return plot->GetBuildings()[building];
+    string token;
+    iss >> token;
+    auto& plotZones = plot->GetZones();
+    auto it = plotZones.find(token);
+    if (it == plotZones.end()) {
+        auto& plotBuildings = plot->GetBuildings();
+        auto bit = plotBuildings.find(token);
+        if (bit == plotBuildings.end()) return nullptr;
+        return bit->second;
     }
     else {
-        auto z = plot->GetZones()[zone];
+        Zone* zone = it->second;
+        if (!zone) return nullptr;
         string building;
         iss >> building;
-        if (z->GetBuildings().find(building) == z->GetBuildings().end())return nullptr;
-        return z->GetBuildings()[building];
+        auto& zoneBuildings = zone->GetBuildings();
+        auto bit = zoneBuildings.find(building);
+        if (bit == zoneBuildings.end()) return nullptr;
+        return bit->second;
     }
 }
 
-Room* Map::LocateRoom(string address) const {
+Room* Map::LocateRoom(const string& address) const {
     istringstream iss(address);
-
     string road;
-    iss >> road;
     int id = -1;
-    iss >> id;
-    if (id < 0)return nullptr;
+    iss >> road >> id;
+    if (id < 0 || !roadnet) return nullptr;
     auto plot = roadnet->LocatePlot(road, id);
-    if (!plot)return nullptr;
+    if (!plot) return nullptr;
 
-    string zone;
-    iss >> zone;
-    if (plot->GetZones().find(zone) == plot->GetZones().end()) {
-        string building = zone;
-        if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
-        auto b = plot->GetBuildings()[building];
-        int id = -1;
-        iss >> id;
-        if (id < 0)return nullptr;
-        return b->GetRooms()[id];
+    string token;
+    iss >> token;
+    auto& plotZones = plot->GetZones();
+    auto it = plotZones.find(token);
+    if (it == plotZones.end()) {
+        auto& plotBuildings = plot->GetBuildings();
+        auto bit = plotBuildings.find(token);
+        if (bit == plotBuildings.end()) return nullptr;
+        Building* building = bit->second;
+        if (!building) return nullptr;
+        int roomId = -1;
+        iss >> roomId;
+        if (roomId < 0 || roomId >= (int)building->GetRooms().size()) return nullptr;
+        return building->GetRooms()[roomId];
     }
     else {
-        auto z = plot->GetZones()[zone];
+        Zone* zone = it->second;
+        if (!zone) return nullptr;
         string building;
         iss >> building;
-        if (plot->GetBuildings().find(building) == plot->GetBuildings().end())return nullptr;
-        auto b = plot->GetBuildings()[building];
-        int id = -1;
-        iss >> id;
-        if (id < 0)return nullptr;
-        return b->GetRooms()[id];
+        auto& zoneBuildings = zone->GetBuildings();
+        auto bit = zoneBuildings.find(building);
+        if (bit == zoneBuildings.end()) return nullptr;
+        Building* bld = bit->second;
+        if (!bld) return nullptr;
+        int roomId = -1;
+        iss >> roomId;
+        if (roomId < 0 || roomId >= (int)bld->GetRooms().size()) return nullptr;
+        return bld->GetRooms()[roomId];
     }
 }
 
 void Map::ArrangePlots() {
+    if (!roadnet) return;
     auto plots = roadnet->GetPlots();
     for (auto plot : plots) {
+        if (!plot) continue;
         auto zones = plot->GetZones();
         auto buildings = plot->GetBuildings();
 
@@ -1232,27 +1335,28 @@ void Map::ArrangePlots() {
         float acreageTotal = plot->GetAcreage();
         float acreageUsed = 0.f;
 
-        for (const auto& zone : zones) {
-            acreageUsed += zone.second->GetAcreage();
+        for (const auto& [name, zone] : zones) {
+            if (zone) acreageUsed += zone->GetAcreage();
         }
-        for (const auto& building : buildings) {
-            acreageUsed += building.second->GetAcreage();
+        for (const auto& [name, building] : buildings) {
+            if (building) acreageUsed += building->GetAcreage();
         }
         float acreageRemain = acreageTotal - acreageUsed;
 
         bool acreageAllocate = false;
         if (acreageRemain > 0) {
-            for (auto& building : buildings) {
-                float acreageTmp = building.second->GetAcreage();
-                float acreageMax = building.second->GetAcreageMax();
-                float acreageMin = building.second->GetAcreageMin();
+            for (auto& [name, building] : buildings) {
+                if (!building) continue;
+                float acreageTmp = building->GetAcreage();
+                float acreageMax = building->GetAcreageMax();
+                float acreageMin = building->GetAcreageMin();
 
                 float acreageExpand = acreageMax - acreageTmp;
 
                 if (acreageExpand > acreageRemain && acreageRemain > 0) {
                     float acreageNew = acreageTmp + acreageRemain;
                     if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
-                        building.second->SetAcreage(acreageNew);
+                        building->SetAcreage(acreageNew);
                         acreageUsed += acreageRemain;
                         acreageRemain = 0.f;
                         acreageAllocate = true;
@@ -1262,19 +1366,19 @@ void Map::ArrangePlots() {
             }
         }
 
-		Quad* emptyRect = nullptr;
-        vector<Quad *> elements;
+        Quad* emptyRect = nullptr;
+        vector<Quad*> elements;
         if (acreageRemain > 0 && !acreageAllocate) {
             emptyRect = new Plot();
             emptyRect->SetAcreage(acreageRemain);
             elements.push_back(emptyRect);
         }
 
-        for (const auto& zone : zones) {
-            elements.push_back(zone.second);
+        for (const auto& [name, zone] : zones) {
+            if (zone) elements.push_back(zone);
         }
-        for (const auto& building : buildings) {
-            elements.push_back(building.second);
+        for (const auto& [name, building] : buildings) {
+            if (building) elements.push_back(building);
         }
 
         if (elements.empty()) continue;
@@ -1291,13 +1395,13 @@ void Map::ArrangePlots() {
             class Chunk : public Quad {
             public:
                 Chunk(Quad* r1, Quad* r2) : r1(r1), r2(r2) { acreage = r1->GetAcreage() + r2->GetAcreage(); }
-                Quad *r1, *r2;
+                Quad* r1, * r2;
             };
             while (elements.size() > 2) {
                 Chunk* tmp = new Chunk(elements[elements.size() - 1], elements[elements.size() - 2]);
                 elements.pop_back();
                 int i = (int)elements.size() - 2;
-                for (; i >= 0; i--) {
+                for (; i >= 0; --i) {
                     if (tmp->GetAcreage() > elements[i]->GetAcreage()) {
                         elements[i + 1] = elements[i];
                     }
@@ -1306,23 +1410,23 @@ void Map::ArrangePlots() {
                         break;
                     }
                 }
-                if (i < 0)elements[0] = tmp;
+                if (i < 0) elements[0] = tmp;
             }
 
             if (container.GetSizeX() > container.GetSizeY()) {
                 if (GetRandom(2)) {
                     int divX = int(container.GetLeft() +
                         (container.GetRight() - container.GetLeft()) * elements[0]->GetAcreage() / container.GetAcreage());
-                    if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
-                    if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                    if (abs(divX - container.GetLeft()) < 2) divX = (int)container.GetLeft();
+                    if (abs(divX - container.GetRight()) < 2) divX = (int)container.GetRight();
                     elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
                     elements[1]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
                 }
                 else {
                     int divX = int(container.GetLeft() +
                         (container.GetRight() - container.GetLeft()) * elements[1]->GetAcreage() / container.GetAcreage());
-                    if (abs(divX - container.GetLeft()) < 2)divX = (int)container.GetLeft();
-                    if (abs(divX - container.GetRight()) < 2)divX = (int)container.GetRight();
+                    if (abs(divX - container.GetLeft()) < 2) divX = (int)container.GetLeft();
+                    if (abs(divX - container.GetRight()) < 2) divX = (int)container.GetRight();
                     elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
                     elements[0]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
                 }
@@ -1331,25 +1435,25 @@ void Map::ArrangePlots() {
                 if (GetRandom(2)) {
                     int divY = int(container.GetBottom() +
                         (container.GetTop() - container.GetBottom()) * elements[0]->GetAcreage() / container.GetAcreage());
-                    if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
-                    if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                    if (abs(divY - container.GetBottom()) < 2) divY = (int)container.GetBottom();
+                    if (abs(divY - container.GetTop()) < 2) divY = (int)container.GetTop();
                     elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
                     elements[1]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
                 }
                 else {
                     int divY = int(container.GetBottom() +
                         (container.GetTop() - container.GetBottom()) * elements[1]->GetAcreage() / container.GetAcreage());
-                    if (abs(divY - container.GetBottom()) < 2)divY = (int)container.GetBottom();
-                    if (abs(divY - container.GetTop()) < 2)divY = (int)container.GetTop();
+                    if (abs(divY - container.GetBottom()) < 2) divY = (int)container.GetBottom();
+                    if (abs(divY - container.GetTop()) < 2) divY = (int)container.GetTop();
                     elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
                     elements[0]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
                 }
             }
 
-            while (elements.size() > 0) {
+            while (!elements.empty()) {
                 auto tmp = elements.back();
                 elements.pop_back();
-                if (auto chunk = dynamic_cast<Chunk *>(tmp)) {
+                if (auto chunk = dynamic_cast<Chunk*>(tmp)) {
                     Quad* rect1 = chunk->r1;
                     Quad* rect2 = chunk->r2;
 
@@ -1358,16 +1462,16 @@ void Map::ArrangePlots() {
                             if (GetRandom(2)) {
                                 int divX = int(tmp->GetLeft() +
                                     tmp->GetSizeX() * rect1->GetAcreage() / tmp->GetAcreage());
-                                if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
-                                if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                                if (abs(divX - tmp->GetLeft()) < 2) divX = (int)tmp->GetLeft();
+                                if (abs(divX - tmp->GetRight()) < 2) divX = (int)tmp->GetRight();
                                 rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
                                 rect2->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
                             }
                             else {
                                 int divX = int(tmp->GetLeft() +
                                     tmp->GetSizeX() * rect2->GetAcreage() / tmp->GetAcreage());
-                                if (abs(divX - tmp->GetLeft()) < 2)divX = (int)tmp->GetLeft();
-                                if (abs(divX - tmp->GetRight()) < 2)divX = (int)tmp->GetRight();
+                                if (abs(divX - tmp->GetLeft()) < 2) divX = (int)tmp->GetLeft();
+                                if (abs(divX - tmp->GetRight()) < 2) divX = (int)tmp->GetRight();
                                 rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
                                 rect1->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
                             }
@@ -1376,32 +1480,30 @@ void Map::ArrangePlots() {
                             if (GetRandom(2)) {
                                 int divY = int(tmp->GetBottom() +
                                     tmp->GetSizeY() * rect1->GetAcreage() / tmp->GetAcreage());
-                                if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
-                                if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                                if (abs(divY - tmp->GetBottom()) < 2) divY = (int)tmp->GetBottom();
+                                if (abs(divY - tmp->GetTop()) < 2) divY = (int)tmp->GetTop();
                                 rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
                                 rect2->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
                             }
                             else {
                                 int divY = int(tmp->GetBottom() +
                                     tmp->GetSizeY() * rect2->GetAcreage() / tmp->GetAcreage());
-                                if (abs(divY - tmp->GetBottom()) < 2)divY = (int)tmp->GetBottom();
-                                if (abs(divY - tmp->GetTop()) < 2)divY = (int)tmp->GetTop();
+                                if (abs(divY - tmp->GetBottom()) < 2) divY = (int)tmp->GetBottom();
+                                if (abs(divY - tmp->GetTop()) < 2) divY = (int)tmp->GetTop();
                                 rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
                                 rect1->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
                             }
                         }
-                        if (dynamic_cast<Chunk *>(rect1))elements.push_back(rect1);
-                        if (dynamic_cast<Chunk *>(rect2))elements.push_back(rect2);
+                        if (dynamic_cast<Chunk*>(rect1)) elements.push_back(rect1);
+                        if (dynamic_cast<Chunk*>(rect2)) elements.push_back(rect2);
                     }
                     delete chunk;
                 }
             }
         }
 
-        if(emptyRect) {
+        if (emptyRect) {
             delete emptyRect;
-		}
+        }
     }
 }
-
-

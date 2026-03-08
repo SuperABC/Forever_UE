@@ -105,7 +105,7 @@ public:
 	void SetWindows(const WallHole& windows);
 
 	// 获取门牌号
-	const std::string& GetAddress() const;
+	std::string GetAddress() const;
 
 	// 设置门牌号
 	void SetAddress(int number);

@@ -419,7 +419,7 @@ pair<float, float> Building::GetPosition() const {
 	return { 0.f, 0.f };
 }
 
-const string& Building::GetAddress() const {
+string Building::GetAddress() const {
 	// 获取完整地址
 	auto plotAddress = GetParentPlot()->GetAddress();
 	if (GetParentZone()) {

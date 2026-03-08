@@ -312,7 +312,7 @@ pair<float, float> Zone::GetPosition() const {
     return { 0.f, 0.f };
 }
 
-const string& Zone::GetAddress() const {
+string Zone::GetAddress() const {
     // 获取完整地址
     auto plotAddress = GetParent()->GetAddress();
     return plotAddress + " " + GetName();

@@ -263,7 +263,7 @@ public:
 	std::pair<float, float> GetPosition() const;
 
 	// 获取地址
-	const std::string& GetAddress() const;
+	std::string GetAddress() const;
 
 	// 读取所有布局模板
 	static Layout* ReadTemplates(std::string path);

@@ -48,7 +48,7 @@ void OceanTerrain::DistributeTerrain(
         debugf("Sea in the west %d.\n", distance);
         float shift = 0.0f, slope = 0.0f;
         for (int y = 0; y < height; y++) {
-            int limit = distance + shift;
+            int limit = distance + (int)shift;
             if (limit > width)
                 limit = width;
             for (int x = 0; x < limit; x++) {
@@ -73,7 +73,7 @@ void OceanTerrain::DistributeTerrain(
         debugf("Sea in the east %d.\n", distance);
         float shift = 0.0f, slope = 0.0f;
         for (int y = 0; y < height; y++) {
-            int start = width - distance - shift;
+            int start = width - distance - (int)shift;
             if (start < 0)
                 start = 0;
             for (int x = width - 1; x >= start; x--) {
@@ -98,7 +98,7 @@ void OceanTerrain::DistributeTerrain(
         debugf("Sea in the north %d.\n", distance);
         float shift = 0.0f, slope = 0.0f;
         for (int x = 0; x < width; x++) {
-            int limit = distance + shift;
+            int limit = distance + (int)shift;
             if (limit > height)
                 limit = height;
             for (int y = 0; y < limit; y++) {
@@ -123,7 +123,7 @@ void OceanTerrain::DistributeTerrain(
         debugf("Sea in the south %d.\n", distance);
         float shift = 0.0f, slope = 0.0f;
         for (int x = 0; x < width; x++) {
-            int start = height - distance - shift;
+            int start = height - distance - (int)shift;
             if (start < 0)
                 start = 0;
             for (int y = height - 1; y >= start; y--) {
