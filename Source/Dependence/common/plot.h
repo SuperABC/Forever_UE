@@ -16,7 +16,7 @@ class Building;
 class Node {
 public:
 	Node(float x, float y);
-	~Node() = default;
+	~Node();
 
 	float GetX() const;
 	float GetY() const;
@@ -28,9 +28,9 @@ private:
 class Connection {
 public:
 	Connection(std::string name, Roadnet* roadnet, int n1, int n2, float width = 1.0f, float begin = 0.0f, float end = 1.0f);
-	~Connection() = default;
+	~Connection();
 
-	bool operator==(Connection& other) const;
+	bool operator==(const Connection& other) const;
 
 	std::string GetName() const;
 	Roadnet* GetRoadnet() const;
@@ -79,36 +79,36 @@ public:
 	void SetRotation(float r);
 	AREA_TYPE GetArea() const;
 	void SetArea(AREA_TYPE area);
-	std::vector<std::pair<Connection, float>> GetRoads();
-	void SetRoads(std::vector<std::pair<Connection, float>> roads);
+	const std::vector<std::pair<Connection, float>>& GetRoads() const;
+	void SetRoads(const std::vector<std::pair<Connection, float>>& roads);
 
 	// 世界坐标变换
 	std::pair<float, float> GetVertex(int idx) const;
 	std::pair<float, float> GetPosition(float x, float y) const;
 
 	// 通过逆时针顺序三个顶点设置矩形
-	void SetPosition(Node n1, Node n2, Node n3, std::vector<float> margin);
+	void SetPosition(Node n1, Node n2, Node n3, const std::vector<float>& margin);
 
 	// 通过顺序无关四个顶点设置矩形
-	void SetPosition(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin);
+	void SetPosition(Node n1, Node n2, Node n3, Node n4, const std::vector<float>& margin);
 
 	// 内部Quad管理
 	std::unordered_map<std::string, Zone*>& GetZones();
 	std::unordered_map<std::string, Building*>& GetBuildings();
-	void AddZone(std::string name, Zone* zone);
-	void AddBuilding(std::string name, Building* building);
-	Zone* GetZone(std::string name) const;
-	Building* GetBuilding(std::string name) const;
-	void RemoveZone(std::string name);
-	void RemoveBuilding(std::string name);
+	void AddZone(const std::string& name, Zone* zone);
+	void AddBuilding(const std::string& name, Building* building);
+	Zone* GetZone(const std::string& name) const;
+	Building* GetBuilding(const std::string& name) const;
+	void RemoveZone(const std::string& name);
+	void RemoveBuilding(const std::string& name);
 
 	// 寻址
-	void SetAddress(std::string road, int id);
+	void SetAddress(const std::string& road, int id);
 	std::string GetAddress() const;
 
 protected:
 	float rotation;
-	AREA_TYPE area = AREA_GREEN;
+	AREA_TYPE area;
 
 	std::pair<std::string, int> address;
 	std::vector<std::pair<Connection, float>> roads;

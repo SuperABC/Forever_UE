@@ -15,329 +15,347 @@ Node::Node(float x, float y) : posX(x), posY(y) {
 
 }
 
+Node::~Node() {
+
+}
+
 float Node::GetX() const {
-    return posX;
+	return posX;
 }
 
 float Node::GetY() const {
-    return posY;
+	return posY;
 }
 
-Connection::Connection(string name, Roadnet *roadnet, int n1, int n2, float width, float begin, float end) :
-    name(name), roadnet(roadnet), vertices(n1, n2), width(width), begin(begin), end(end) {
+Connection::Connection(string name, Roadnet* roadnet, int n1, int n2,
+	float width, float begin, float end) :
+	name(name), roadnet(roadnet), vertices(n1, n2), width(width),
+	begin(begin), end(end) {
+}
+
+Connection::~Connection() {
 
 }
 
-bool Connection::operator==(Connection& other) const {
-    if (vertices.first == other.vertices.first && vertices.second == other.vertices.second)return true;
-    if (vertices.first == other.vertices.second && vertices.second == other.vertices.first)return true;
-    return false;
+bool Connection::operator==(const Connection& other) const {
+	if (vertices.first == other.vertices.first &&
+		vertices.second == other.vertices.second) return true;
+	if (vertices.first == other.vertices.second &&
+		vertices.second == other.vertices.first) return true;
+	return false;
 }
 
 string Connection::GetName() const {
-    return name;
+	return name;
 }
 
 Roadnet* Connection::GetRoadnet() const {
-    return roadnet;
+	return roadnet;
 }
 
 float Connection::GetWidth() const {
-    return width;
+	return width;
 }
 
 int Connection::GetV1() const {
-    return vertices.first;
+	return vertices.first;
 }
 
 int Connection::GetV2() const {
-    return vertices.second;
+	return vertices.second;
 }
 
 float Connection::distance() const {
-    float dx = roadnet->GetNodes()[vertices.first].GetX() - roadnet->GetNodes()[vertices.second].GetX();
-    float dy = roadnet->GetNodes()[vertices.first].GetY() - roadnet->GetNodes()[vertices.second].GetY();
-    return sqrt(dx * dx + dy * dy);
+	if (!roadnet) {
+		THROW_EXCEPTION(NullPointerException, "Roadnet is null.\n");
+	}
+	const auto& nodes = roadnet->GetNodes();
+	if (vertices.first < 0 || vertices.first >= (int)nodes.size() ||
+		vertices.second < 0 || vertices.second >= (int)nodes.size()) {
+		THROW_EXCEPTION(OutOfRangeException, "Roadnet node index out of range.\n");
+	}
+	float dx = nodes[vertices.first].GetX() - nodes[vertices.second].GetX();
+	float dy = nodes[vertices.first].GetY() - nodes[vertices.second].GetY();
+	return sqrt(dx * dx + dy * dy);
 }
 
-Plot::Plot() : Quad(), rotation(0.f) {
-
+Plot::Plot() :
+	Quad(), rotation(0.f), area(AREA_GREEN), address(), roads(), zones(), buildings() {
 }
 
-Plot::Plot(float x, float y, float w, float h, float r) : Quad(x, y, w, h), rotation(r) {
-
+Plot::Plot(float x, float y, float w, float h, float r) :
+	Quad(x, y, w, h), rotation(r), area(AREA_GREEN), address(), roads(), zones(), buildings() {
 }
 
-Plot::Plot(Node n1, Node n2, Node n3, vector<float> margin) {
-    SetPosition(n1, n2, n3, margin);
+Plot::Plot(Node n1, Node n2, Node n3, vector<float> margin) :
+	Quad(), rotation(0.f), area(AREA_GREEN), address(), roads(), zones(), buildings() {
+	SetPosition(n1, n2, n3, margin);
 }
 
-Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
-    SetPosition(n1, n2, n3, n4, margin);
+Plot::Plot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) :
+	Quad(), rotation(0.f), area(AREA_GREEN), address(), roads(), zones(), buildings() {
+	SetPosition(n1, n2, n3, n4, margin);
 }
 
-Plot::~Plot() {
-    
-}
+Plot::~Plot() {}
 
 float Plot::GetRotation() const {
 	return rotation;
 }
 
 void Plot::SetRotation(float r) {
-    rotation = r;
+	rotation = r;
 }
 
 AREA_TYPE Plot::GetArea() const {
-    return area;
+	return area;
 }
 
-void Plot::SetArea(AREA_TYPE area) {
-    this->area = area;
+void Plot::SetArea(AREA_TYPE a) {
+	area = a;
 }
 
-vector<pair<Connection, float>> Plot::GetRoads() {
-    return roads;
+const vector<pair<Connection, float>>& Plot::GetRoads() const {
+	return roads;
 }
 
-void Plot::SetRoads(vector<pair<Connection, float>> roads) {
-    this->roads = roads;
+void Plot::SetRoads(const vector<pair<Connection, float>>& r) {
+	roads = r;
 }
 
 pair<float, float> Plot::GetVertex(int idx) const {
 	if (idx < 1 || idx > 4) {
-		THROW_EXCEPTION(InvalidArgumentException, "Plot has only 4 vertices.\n");
+		THROW_EXCEPTION(OutOfRangeException, "Plot vertex out of range [0, 3].\n");
 	}
 
-    float hx = sizeX / 2.0f;
-    float hy = sizeY / 2.0f;
-    float c = cos(rotation);
-    float s = sin(rotation);
+	float hx = sizeX / 2.0f;
+	float hy = sizeY / 2.0f;
+	float c = cos(rotation);
+	float s = sin(rotation);
 
-    switch (idx) {
-    case 1: // 右上
-        return { posX + hx * c - hy * s,
-                 posY + hx * s + hy * c };
-    case 2: // 左上
-        return { posX - hx * c - hy * s,
-                 posY - hx * s + hy * c };
-    case 3: // 左下
-        return { posX - hx * c + hy * s,
-                 posY - hx * s - hy * c };
-    case 4: // 右下
-        return { posX + hx * c + hy * s,
-                 posY + hx * s - hy * c };
-    default:
-        return { 0.f, 0.f };
-    }
+	switch (idx) {
+	case 1: // 右上
+		return { posX + hx * c - hy * s, posY + hx * s + hy * c };
+	case 2: // 左上
+		return { posX - hx * c - hy * s, posY - hx * s + hy * c };
+	case 3: // 左下
+		return { posX - hx * c + hy * s, posY - hx * s - hy * c };
+	case 4: // 右下
+		return { posX + hx * c + hy * s, posY + hx * s - hy * c };
+	default:
+		return { 0.f, 0.f };
+	}
 }
 
 pair<float, float> Plot::GetPosition(float x, float y) const {
-    float cosR = cos(rotation);
-    float sinR = sin(rotation);
+	float cosR = cos(rotation);
+	float sinR = sin(rotation);
 
-    float originX = posX - sizeX / 2.0f;
-    float originY = posY - sizeY / 2.0f;
+	float relativeX = x - sizeX / 2.0f;
+	float relativeY = y - sizeY / 2.0f;
 
-    float relativeX = x - sizeX / 2.0f;
-    float relativeY = y - sizeY / 2.0f;
+	float rotatedX = relativeX * cosR - relativeY * sinR;
+	float rotatedY = relativeX * sinR + relativeY * cosR;
 
-    float rotatedX = relativeX * cosR - relativeY * sinR;
-    float rotatedY = relativeX * sinR + relativeY * cosR;
-
-    return { posX + rotatedX , posY + rotatedY };
+	return { posX + rotatedX, posY + rotatedY };
 }
 
-void Plot::SetPosition(Node n1, Node n2, Node n3, vector<float> margin) {
-    if (margin.size() != 4) {
-        THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
-    }
+void Plot::SetPosition(Node n1, Node n2, Node n3, const vector<float>& margin) {
+	if (margin.size() != 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
+	}
 
-    float x1 = n1.GetX(), y1 = n1.GetY();
-    float x2 = n2.GetX(), y2 = n2.GetY();
-    float x3 = n3.GetX(), y3 = n3.GetY();
+	float x1 = n1.GetX(), y1 = n1.GetY();
+	float x2 = n2.GetX(), y2 = n2.GetY();
+	float x3 = n3.GetX(), y3 = n3.GetY();
 
-    // 向量 u = p2 - p1, v = p3 - p2
-    float ux = x2 - x1, uy = y2 - y1;
-    float vx = x3 - x2, vy = y3 - y2;
+	// 向量 u = p2 - p1, v = p3 - p2
+	float ux = x2 - x1, uy = y2 - y1;
+	float vx = x3 - x2, vy = y3 - y2;
 
-    // 检查垂直
-    float dot = ux * vx + uy * vy;
-    const float eps = 1e-5f;
-    if (abs(dot) > eps) {
-        THROW_EXCEPTION(InvalidArgumentException, "The given edges are not perpendicular.\n");
-    }
+	// 检查垂直
+	float dot = ux * vx + uy * vy;
+	const float eps = 1e-5f;
+	if (abs(dot) > eps) {
+		THROW_EXCEPTION(InvalidArgumentException, "Plot edges are not perpendicular.\n");
+	}
 
-    // 计算尺寸
-    float sx = sqrt(ux * ux + uy * uy);
-    float sy = sqrt(vx * vx + vy * vy);
+	// 计算尺寸
+	float sx = sqrt(ux * ux + uy * uy);
+	float sy = sqrt(vx * vx + vy * vy);
 
 	// 应用边距
 	sx -= margin[1] + margin[3];
 	sy -= margin[0] + margin[2];
 
-    // 计算中心点：p1 和 p3 的对角线中心
-    float cx = (x1 + x3) / 2.0f + (margin[3] - margin[1]) * ux / (2.0f * sx) + (margin[2] - margin[0]) * vx / (2.0f * sy);
-	float cy = (y1 + y3) / 2.0f + (margin[3] - margin[1]) * uy / (2.0f * sx) + (margin[2] - margin[0]) * vy / (2.0f * sy);
+	// 计算中心点：p1 和 p3 的对角线中心，加上边距偏移
+	float cx = (x1 + x3) / 2.0f
+		+ (margin[3] - margin[1]) * ux / (2.0f * sx)
+		+ (margin[2] - margin[0]) * vx / (2.0f * sy);
+	float cy = (y1 + y3) / 2.0f
+		+ (margin[3] - margin[1]) * uy / (2.0f * sx)
+		+ (margin[2] - margin[0]) * vy / (2.0f * sy);
 
-    // 计算旋转角度（p1p2 与 x 轴夹角）
-    float rot = atan2(uy, ux);
+	// 计算旋转角度（p1p2 与 x 轴夹角）
+	float rot = atan2(uy, ux);
 
-    // 更新成员变量
-    posX = cx;
-    posY = cy;
-    sizeX = sx;
-    sizeY = sy;
-    rotation = rot;
-    acreage = sx * sy * 100.f;
+	// 更新成员变量
+	posX = cx;
+	posY = cy;
+	sizeX = sx;
+	sizeY = sy;
+	rotation = rot;
+	acreage = sx * sy * 100.f;
 }
 
-void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4, vector<float> margin) {
-    if (margin.size() != 4) {
-        THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
-    }
+void Plot::SetPosition(Node n1, Node n2, Node n3, Node n4, const vector<float>& margin) {
+	if (margin.size() != 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
+	}
 
-    vector<Node> nodes = { n1, n2, n3, n4 };
+	vector<Node> nodes = { n1, n2, n3, n4 };
 
-    // 计算中心点
-    float cx = 0.0f, cy = 0.0f;
-    for (const auto& node : nodes) {
-        cx += node.GetX();
-        cy += node.GetY();
-    }
-    cx /= 4.0f;
-    cy /= 4.0f;
+	// 计算中心点
+	float cx = 0.0f, cy = 0.0f;
+	for (const auto& node : nodes) {
+		cx += node.GetX();
+		cy += node.GetY();
+	}
+	cx /= 4.0f;
+	cy /= 4.0f;
 
-    // 按顺时针排序
-    sort(nodes.begin(), nodes.end(),
-        [cx, cy](const Node& a, const Node& b) {
-            return atan2(a.GetY() - cy, a.GetX() - cx) >
-                atan2(b.GetY() - cy, b.GetX() - cx);
-        });
+	// 按顺时针排序
+	sort(nodes.begin(), nodes.end(),
+		[cx, cy](const Node& a, const Node& b) {
+			return atan2(a.GetY() - cy, a.GetX() - cx) >
+				atan2(b.GetY() - cy, b.GetX() - cx);
+		});
 
-    // 检查矩形条件
-    const float eps = 1e-2f;
+	// 检查矩形条件
+	const float eps = 1e-2f;
 
-    // 计算四个边向量
-    float u1x = nodes[1].GetX() - nodes[0].GetX();
-    float u1y = nodes[1].GetY() - nodes[0].GetY();
-    float u2x = nodes[2].GetX() - nodes[1].GetX();
-    float u2y = nodes[2].GetY() - nodes[1].GetY();
-    float u3x = nodes[3].GetX() - nodes[2].GetX();
-    float u3y = nodes[3].GetY() - nodes[2].GetY();
-    float u4x = nodes[0].GetX() - nodes[3].GetX();
-    float u4y = nodes[0].GetY() - nodes[3].GetY();
+	// 计算四个边向量
+	float u1x = nodes[1].GetX() - nodes[0].GetX();
+	float u1y = nodes[1].GetY() - nodes[0].GetY();
+	float u2x = nodes[2].GetX() - nodes[1].GetX();
+	float u2y = nodes[2].GetY() - nodes[1].GetY();
+	float u3x = nodes[3].GetX() - nodes[2].GetX();
+	float u3y = nodes[3].GetY() - nodes[2].GetY();
+	float u4x = nodes[0].GetX() - nodes[3].GetX();
+	float u4y = nodes[0].GetY() - nodes[3].GetY();
 
-    // 检查邻边垂直（点积为0）
-    float dot1 = u1x * u2x + u1y * u2y;
-    float dot2 = u2x * u3x + u2y * u3y;
-    float dot3 = u3x * u4x + u3y * u4y;
-    float dot4 = u4x * u1x + u4y * u1y;
+	// 检查邻边垂直（点积为0）
+	float dot1 = u1x * u2x + u1y * u2y;
+	float dot2 = u2x * u3x + u2y * u3y;
+	float dot3 = u3x * u4x + u3y * u4y;
+	float dot4 = u4x * u1x + u4y * u1y;
 
-    if (abs(dot1) > eps || abs(dot2) > eps ||
-        abs(dot3) > eps || abs(dot4) > eps) {
-        THROW_EXCEPTION(InvalidArgumentException, "The given points do not form a rectangle (not all angles are 90 degrees).\n");
-    }
+	if (abs(dot1) > eps || abs(dot2) > eps ||
+		abs(dot3) > eps || abs(dot4) > eps) {
+		THROW_EXCEPTION(InvalidArgumentException, "Plot edges are not perpendicular.\n");
+	}
 
-    // 检查对边长度相等
-    float len1 = sqrt(u1x * u1x + u1y * u1y);
-    float len2 = sqrt(u2x * u2x + u2y * u2y);
-    float len3 = sqrt(u3x * u3x + u3y * u3y);
-    float len4 = sqrt(u4x * u4x + u4y * u4y);
+	// 检查对边长度相等
+	float len1 = sqrt(u1x * u1x + u1y * u1y);
+	float len2 = sqrt(u2x * u2x + u2y * u2y);
+	float len3 = sqrt(u3x * u3x + u3y * u3y);
+	float len4 = sqrt(u4x * u4x + u4y * u4y);
 
-    if (abs(len1 - len3) > eps || abs(len2 - len4) > eps) {
-        THROW_EXCEPTION(InvalidArgumentException, "The given points do not form a rectangle (opposite sides not equal).\n");
-    }
+	if (abs(len1 - len3) > eps || abs(len2 - len4) > eps) {
+		THROW_EXCEPTION(InvalidArgumentException, "Plot opposite edges are not equal.\n");
+	}
 
-    // 计算尺寸（取相邻两边长度）
-    float sx = len1;
-    float sy = len2;
+	// 计算尺寸（取相邻两边长度）
+	float sx = len1;
+	float sy = len2;
 
-    // 计算旋转角度（使用第一条边 nodes[0]->nodes[1]）
-    float rot = atan2(u1y, u1x);
+	// 计算旋转角度（使用第一条边 nodes[0]->nodes[1]）
+	float rot = atan2(u1y, u1x);
 
 	// 应用边距
 	sx -= margin[1] + margin[3];
 	sy -= margin[0] + margin[2];
-	cx += (margin[3] - margin[1]) * u1x / (2.0f * sx) + (margin[2] - margin[0]) * u2x / (2.0f * sy);
-	cy += (margin[3] - margin[1]) * u1y / (2.0f * sx) + (margin[2] - margin[0]) * u2y / (2.0f * sy);
+	cx += (margin[3] - margin[1]) * u1x / (2.0f * sx)
+		+ (margin[2] - margin[0]) * u2x / (2.0f * sy);
+	cy += (margin[3] - margin[1]) * u1y / (2.0f * sx)
+		+ (margin[2] - margin[0]) * u2y / (2.0f * sy);
 
-    // 更新成员变量
-    posX = cx;
-    posY = cy;
-    sizeX = sx;
-    sizeY = sy;
-    rotation = rot;
-    acreage = sx * sy * 100.f;
+	// 更新成员变量
+	posX = cx;
+	posY = cy;
+	sizeX = sx;
+	sizeY = sy;
+	rotation = rot;
+	acreage = sx * sy * 100.f;
 }
 
 unordered_map<string, Zone*>& Plot::GetZones() {
-    return zones;
+	return zones;
 }
 
 unordered_map<string, Building*>& Plot::GetBuildings() {
-    return buildings;
+	return buildings;
 }
 
-void Plot::AddZone(string name, Zone* zone) {
-    if (zones.find(name) != zones.end()) {
-        THROW_EXCEPTION(InvalidArgumentException, "Duplicate zone name: " + name + ".\n");
-    }
-    zones[name] = zone;
+void Plot::AddZone(const string& name, Zone* zone) {
+	if (zones.find(name) != zones.end()) {
+		THROW_EXCEPTION(InvalidArgumentException, "Duplicate zone name: " + name + ".\n");
+	}
+	zones[name] = zone;
 }
 
-void Plot::AddBuilding(string name, Building* building) {
-    if (buildings.find(name) != buildings.end()) {
-        THROW_EXCEPTION(InvalidArgumentException, "Duplicate building name: " + name + ".\n");
-    }
-    buildings[name] = building;
+void Plot::AddBuilding(const string& name, Building* building) {
+	if (buildings.find(name) != buildings.end()) {
+		THROW_EXCEPTION(InvalidArgumentException, "Duplicate building name: " + name + ".\n");
+	}
+	buildings[name] = building;
 }
 
-Zone* Plot::GetZone(string name) const {
-    for (auto& zone : zones) {
-        if (zone.first == name) {
-            return zone.second;
-        }
-    }
-    return nullptr;
+Zone* Plot::GetZone(const string& name) const {
+	for (const auto& [zoneName, zonePtr] : zones) {
+		if (zoneName == name) {
+			return zonePtr;
+		}
+	}
+	return nullptr;
 }
 
-Building* Plot::GetBuilding(string name) const {
-    for (auto& building : buildings) {
-        if (building.first == name) {
-            return building.second;
-        }
-    }
-    return nullptr;
+Building* Plot::GetBuilding(const string& name) const {
+	for (const auto& [bldName, bldPtr] : buildings) {
+		if (bldName == name) {
+			return bldPtr;
+		}
+	}
+	return nullptr;
 }
 
-void Plot::RemoveZone(string name) {
-    for (auto it = zones.begin(); it != zones.end(); ) {
-        if (it->first == name) {
-            it = zones.erase(it);
-        }
-        else {
-            ++it;
-        }
-    }
+void Plot::RemoveZone(const string& name) {
+	for (auto it = zones.begin(); it != zones.end(); ) {
+		if (it->first == name) {
+			it = zones.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
-void Plot::RemoveBuilding(string name) {
-    for (auto it = buildings.begin(); it != buildings.end(); ) {
-        if (it->first == name) {
-            it = buildings.erase(it);
-        }
-        else {
-            ++it;
-        }
-    }
+void Plot::RemoveBuilding(const string& name) {
+	for (auto it = buildings.begin(); it != buildings.end(); ) {
+		if (it->first == name) {
+			it = buildings.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
-void Plot::SetAddress(std::string road, int id) {
-    address.first = road;
-    address.second = id;
+void Plot::SetAddress(const string& road, int id) {
+	address.first = road;
+	address.second = id;
 }
 
-std::string Plot::GetAddress() const {
-    return address.first + " " + to_string(address.second);
+string Plot::GetAddress() const {
+	return address.first + " " + to_string(address.second);
 }
