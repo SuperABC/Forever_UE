@@ -133,7 +133,7 @@ void TerrainFactory::RegisterTerrain(const string& id,
 }
 
 Terrain* TerrainFactory::CreateTerrain(const string& id) const {
-    // 根据配置构造园区
+    // 根据配置构造地形
     auto config = configs.find(id);
     if (config == configs.end() || !config->second) {
         return nullptr;
@@ -152,7 +152,7 @@ bool TerrainFactory::CheckRegistered(const string& id) const {
 }
 
 void TerrainFactory::SetConfig(const string& name, bool config) {
-    // 设置配置
+    // 设置启用配置
     configs[name] = config;
 }
 

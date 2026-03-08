@@ -332,11 +332,11 @@ private:
 
 class BuildingFactory {
 public:
-	// 构造建筑（包含new操作）
+	// 注册建筑
 	void RegisterBuilding(const std::string& id, const std::vector<float>& powers,
 		std::function<Building* ()> creator, std::function<void(Building*)> deleter);
 
-	// 创建建筑
+	// 创建建筑（包含new操作）
 	Building* CreateBuilding(const std::string& id);
 
 	// 检查是否注册

@@ -60,11 +60,11 @@ private:
 
 class TerrainFactory {
 public:
-    // 构造地形（包含new操作）
+    // 注册地形
     void RegisterTerrain(const std::string& id,
         std::function<Terrain* ()> creator, std::function<void(Terrain*)> deleter);
 
-    // 创建地形
+    // 创建地形（包含new操作）
     Terrain* CreateTerrain(const std::string& id) const;
 
     // 检查是否注册

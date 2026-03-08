@@ -90,11 +90,11 @@ class ZoneFactory {
 public:
     using GeneratorFunc = std::function<int(Plot*)>;
 
-    // 构造园区（包含new操作）
+    // 注册园区
     void RegisterZone(const std::string& id, GeneratorFunc generator,
         std::function<Zone* ()> creator, std::function<void(Zone*)> deleter);
 
-    // 创建园区
+    // 创建园区（包含new操作）
     Zone* CreateZone(const std::string& id);
 
     // 检查是否注册

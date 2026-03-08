@@ -187,11 +187,11 @@ private:
 
 class RoomFactory {
 public:
-	// 构造房间（包含new操作）
+	// 注册房间
 	void RegisterRoom(const std::string& id,
 		std::function<Room* ()> creator, std::function<void(Room*)> deleter);
 
-	// 创建房间
+	// 创建房间（包含new操作）
 	Room* CreateRoom(const std::string& id);
 
 	// 检查是否注册

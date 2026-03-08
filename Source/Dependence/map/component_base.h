@@ -48,11 +48,11 @@ private:
 
 class ComponentFactory {
 public:
-	// 构造组合（包含new操作）
+	// 注册组合
 	void RegisterComponent(const std::string& id,
 		std::function<Component* ()> creator, std::function<void(Component*)> deleter);
 
-	// 创建组合
+	// 创建组合（包含new操作）
 	Component* CreateComponent(const std::string& id);
 
 	// 检查是否注册

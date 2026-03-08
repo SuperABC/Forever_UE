@@ -868,7 +868,7 @@ bool BuildingFactory::CheckRegistered(const string& id) {
 }
 
 void BuildingFactory::SetConfig(const string& name, bool config) {
-	// 设置配置
+	// 设置启用配置
 	configs[name] = config;
 }
 

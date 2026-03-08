@@ -339,7 +339,7 @@ bool ZoneFactory::CheckRegistered(const string& id) {
 }
 
 void ZoneFactory::SetConfig(const string& name, bool config) {
-    // 设置配置
+    // 设置启用配置
     configs[name] = config;
 }
 

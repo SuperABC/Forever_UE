@@ -73,11 +73,11 @@ private:
 
 class RoadnetFactory {
 public:
-	// 构造路网（包含new操作）
+	// 注册路网
 	void RegisterRoadnet(const std::string& id,
 		std::function<Roadnet* ()> creator, std::function<void(Roadnet*)> deleter);
 
-	// 创建路网
+	// 创建路网（包含new操作）
 	Roadnet* CreateRoadnet(const std::string& id);
 
 	// 检查是否注册

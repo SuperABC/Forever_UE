@@ -71,7 +71,7 @@ bool ComponentFactory::CheckRegistered(const string& id) {
 }
 
 void ComponentFactory::SetConfig(const string& name, bool config) {
-	// 设置配置
+	// 设置启用配置
 	configs[name] = config;
 }
 

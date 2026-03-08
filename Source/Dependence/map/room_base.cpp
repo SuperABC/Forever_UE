@@ -240,7 +240,7 @@ bool RoomFactory::CheckRegistered(const string& id) {
 }
 
 void RoomFactory::SetConfig(const string& name, bool config) {
-	// 设置配置
+	// 设置启用配置
 	configs[name] = config;
 }
 
