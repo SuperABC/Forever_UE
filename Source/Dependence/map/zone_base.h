@@ -69,7 +69,7 @@ public:
     // 自动分布建筑
     void ArrangeBuildings();
 
-    // 获取世界位置
+    // 获取园区中心世界位置
     std::pair<float, float> GetPosition() const;
 
     // 获取地址

@@ -300,12 +300,10 @@ void Zone::ArrangeBuildings() {
 }
 
 pair<float, float> Zone::GetPosition() const {
-    // 获取世界位置
+    // 获取园区中心世界位置
     auto plot = GetParent();
     if (plot) {
-        auto center = plot->GetPosition(
-            GetPosX() - GetSizeX() / 2.f,
-            GetPosY() - GetSizeY() / 2.f);
+        auto center = plot->GetPosition(GetPosX(), GetPosY());
         return center;
     }
 

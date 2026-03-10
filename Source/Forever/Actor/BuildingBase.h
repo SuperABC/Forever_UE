@@ -68,13 +68,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World")
 	void SetInstance(FString name, AActor* actor);
 
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void EnterBuilding(FString building);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void LeaveBuilding(FString building);
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
-
-	std::unordered_map<std::string, AActor*> buildingInstances;
 
 private:
 	float GetRotation(FACE_DIRECTION direction);
@@ -82,4 +85,6 @@ private:
 	TArray<FWall> ConstructQuad(FVector center, FVector size, std::vector<bool> directions,
 		std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors,
 		std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows);
+
+	std::unordered_map<std::string, AActor*> buildingInstances;
 };

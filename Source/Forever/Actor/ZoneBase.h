@@ -52,6 +52,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World")
 	void SetInstance(FString name, AActor* actor);
 
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void EnterZone(FString zone);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void LeaveZone(FString zone);
+
 protected:
 	virtual void BeginPlay() override;
 

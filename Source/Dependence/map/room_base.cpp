@@ -103,9 +103,15 @@ string Room::GetAddress() const {
 	return GetParentBuilding()->GetAddress() + " " + address;
 }
 
-void Room::SetAddress(int number) {
+void Room::SetAddress(int floor, int number) {
 	// 设置四位门牌号
 	ostringstream oss;
+	if(floor < 0){
+		oss << 'b' << -floor;
+	}
+	else{
+		oss << floor;
+	}
 	oss << setw(4) << setfill('0') << number;
 	address = oss.str();
 }
@@ -205,6 +211,34 @@ vector<Manufacture*> Room::ClearManufactures() {
 	auto items = manufactures;
 	manufactures.clear();
 	return items;
+}
+
+std::pair<float, float> Room::GetPosition(float x, float y) const {
+	// 获取世界坐标
+	auto building = GetParentBuilding();
+	auto plot = GetParentBuilding()->GetParentPlot();
+	auto zone = building->GetParentZone();
+	if (zone) {
+		float plotX = zone->GetPosX() - zone->GetSizeX() / 2.f +
+			building->GetPosX() - building->GetSizeX() / 2.f +
+			building->GetConstruction().GetPosX() - building->GetConstruction().GetSizeX() / 2.f +
+			GetPosX() - GetSizeX() / 2.f + x;
+		float plotY = zone->GetPosY() - zone->GetSizeY() / 2.f +
+			building->GetPosY() - building->GetSizeY() / 2.f +
+			building->GetConstruction().GetPosY() - building->GetConstruction().GetSizeY() / 2.f +
+			GetPosY() - GetSizeY() / 2.f + y;
+		return plot->GetPosition(plotX, plotY);
+	}
+	else {
+		float plotX = building->GetPosX() - building->GetSizeX() / 2.f +
+			building->GetConstruction().GetPosX() - building->GetConstruction().GetSizeX() / 2.f +
+			GetPosX() - GetSizeX() / 2.f + x;
+		float plotY = building->GetPosY() - building->GetSizeY() / 2.f +
+			building->GetConstruction().GetPosY() - building->GetConstruction().GetSizeY() / 2.f +
+			GetPosY() - GetSizeY() / 2.f + y;
+		return plot->GetPosition(plotX, plotY);
+	}
+	return { 0.f, 0.f };
 }
 
 void RoomFactory::RegisterRoom(const string& id,

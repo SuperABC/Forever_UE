@@ -108,7 +108,7 @@ public:
 	std::string GetAddress() const;
 
 	// 设置门牌号
-	void SetAddress(int number);
+	void SetAddress(int floor, int number);
 
 	// 获取住户
 	const std::vector<int>& GetTenants() const;
@@ -148,6 +148,9 @@ public:
 
 	// 清空工坊（返回值需要delete）
 	std::vector<Manufacture*> ClearManufactures();
+
+	// 获取世界坐标
+	std::pair<float, float> GetPosition(float x, float y) const;
 
 private:
 	// 所在建筑

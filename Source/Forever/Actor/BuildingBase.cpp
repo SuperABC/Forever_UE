@@ -46,11 +46,13 @@ void ABuildingBase::Tick(float DeltaTime) {
 			auto center = plot->GetPosition(
 				building->GetPosX() - building->GetSizeX() / 2.f + construction.GetPosX(),
 				building->GetPosY() - building->GetSizeY() / 2.f + construction.GetPosY());
-			buildingInfo.center = FVector(center.first, center.second, 0.f);
+			buildingInfo.center = FVector(center.first, center.second,
+				building->GetHeight() * (building->GetLayers() - building->GetBasements()) / 2.f);
 			if ((location - buildingInfo.center).Size() > 32.f) {
 				continue;
 			}
-			buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(), 1.f);
+			buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(),
+				building->GetHeight() * (building->GetLayers() + building->GetBasements()));
 			buildingInfo.rotation = plot->GetRotation();
 			ConstructBuilding(building, buildingInfo);
 			buildings.Add(buildingInfo);
@@ -70,11 +72,13 @@ void ABuildingBase::Tick(float DeltaTime) {
 				auto center = plot->GetPosition(
 					zone->GetPosX() - zone->GetSizeX() / 2 + building->GetPosX() - building->GetSizeX() / 2.f + construction.GetPosX(),
 					zone->GetPosY() - zone->GetSizeY() / 2 + building->GetPosY() - building->GetSizeY() / 2.f + construction.GetPosY());
-				buildingInfo.center = FVector(center.first, center.second, 0.f);
+				buildingInfo.center = FVector(center.first, center.second,
+					building->GetHeight() * (building->GetLayers() - building->GetBasements()) / 2.f);
 				if ((location - buildingInfo.center).Size() > 32.f) {
 					continue;
 				}
-				buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(), 1.f);
+				buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(),
+					building->GetHeight() * (building->GetLayers() + building->GetBasements()));
 				buildingInfo.rotation = plot->GetRotation();
 				ConstructBuilding(building, buildingInfo);
 				buildings.Add(buildingInfo);
@@ -95,6 +99,20 @@ void ABuildingBase::SetInstance(FString name, AActor* actor) {
 	else {
 		THROW_EXCEPTION(InvalidConfigException, string("Duplicate building name: ") + TCHAR_TO_UTF8(*name) + ".\n");
 	}
+}
+
+void ABuildingBase::EnterBuilding(FString building) {
+	auto map = ((AGlobalBase*)global)->GetMap();
+	auto room = ((AGlobalBase*)global)->GetRoomActor();
+
+	room->AddBuilding(TCHAR_TO_UTF8(*building), map->GetBuilding(TCHAR_TO_UTF8(*building)));
+}
+
+void ABuildingBase::LeaveBuilding(FString building) {
+	auto map = ((AGlobalBase*)global)->GetMap();
+	auto room = ((AGlobalBase*)global)->GetRoomActor();
+
+	room->RemoveBuilding(TCHAR_TO_UTF8(*building));
 }
 
 float ABuildingBase::GetRotation(FACE_DIRECTION direction) {

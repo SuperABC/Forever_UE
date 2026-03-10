@@ -41,9 +41,9 @@ void AZoneBase::Tick(float DeltaTime) {
 			auto zone = plotZone.second;
 			FZone zoneInfo;
 			zoneInfo.name = UTF8_TO_TCHAR(plotZone.first.data());
-			auto center = plot->GetPosition(zone->GetPosX(), zone->GetPosY());
+			auto center = zone->GetPosition();
 			zoneInfo.center = FVector(center.first, center.second, 0.f);
-			zoneInfo.size = FVector(zone->GetSizeX(), zone->GetSizeY(), 1.f);
+			zoneInfo.size = FVector(zone->GetSizeX(), zone->GetSizeY(), 100.f);
 			zoneInfo.rotation = plot->GetRotation();
 			zoneInfo.fences.Add(
 				FFence(FVector(zone->GetSizeX() / 2.f - 0.2f, 0.f, 0.f),
@@ -74,4 +74,12 @@ void AZoneBase::SetInstance(FString name, AActor* actor) {
 	else {
 		THROW_EXCEPTION(InvalidConfigException, string("Duplicate zone name: ") + TCHAR_TO_UTF8(*name) + ".\n");
 	}
+}
+
+void AZoneBase::EnterZone(FString zone) {
+
+}
+
+void AZoneBase::LeaveZone(FString zone) {
+
 }

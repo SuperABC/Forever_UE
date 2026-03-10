@@ -259,7 +259,7 @@ public:
 	// 完成初始化
 	void FinishInit();
 
-	// 获取世界位置
+	// 获取建筑中心世界位置
 	std::pair<float, float> GetPosition() const;
 
 	// 获取地址
