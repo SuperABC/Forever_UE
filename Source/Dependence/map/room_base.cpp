@@ -98,12 +98,12 @@ void Room::SetWindows(const WallHole& windows) {
 	this->windows = windows;
 }
 
-string Room::GetAddress() const {
-	// 获取完整地址
-	return GetParentBuilding()->GetAddress() + " " + address;
+string Room::GetNumber() const {
+	// 获取门牌号
+	return address;
 }
 
-void Room::SetAddress(int floor, int number) {
+void Room::SetNumber(int floor, int number) {
 	// 设置四位门牌号
 	ostringstream oss;
 	if(floor < 0){
@@ -114,6 +114,11 @@ void Room::SetAddress(int floor, int number) {
 	}
 	oss << setw(4) << setfill('0') << number;
 	address = oss.str();
+}
+
+string Room::GetAddress() const {
+	// 获取完整地址
+	return GetParentBuilding()->GetAddress() + " " + address;
 }
 
 const vector<int>& Room::GetTenants() const {

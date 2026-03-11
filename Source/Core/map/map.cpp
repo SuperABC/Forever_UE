@@ -1070,15 +1070,21 @@ vector<Room*> Map::GetRooms() const {
     return rooms;
 }
 
-Zone* Map::GetZone(const string& name) {
+Zone* Map::GetZone(const string& name) const {
     auto it = zones.find(name);
     if (it == zones.end()) return nullptr;
     return it->second;
 }
 
-Building* Map::GetBuilding(const string& name) {
+Building* Map::GetBuilding(const string& name) const {
     auto it = buildings.find(name);
-    if (it == buildings.end()) return nullptr;
+    if (it == buildings.end()) {
+        for (auto& [name, zone] : zones) {
+            auto building = zone->GetBuilding(name);
+            if (building)return building;
+        }
+        return nullptr;
+    }
     return it->second;
 }
 

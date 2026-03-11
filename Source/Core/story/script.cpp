@@ -304,50 +304,32 @@ vector<Event*> Script::BuildEvent(JsonValue root, EventFactory* factory) const {
         }
         else if (type == "enter_zone") {
             auto zone = obj["zone"];
-            if (zone.IsNull()) {
-                THROW_EXCEPTION(InvalidInputException, "Missing zone for enter_zone event.\n");
-            }
             event = new EnterZoneEvent(obj["zone"].AsString());
         }
         else if (type == "leave_zone") {
             auto zone = obj["zone"];
-            if (zone.IsNull()) {
-                THROW_EXCEPTION(InvalidInputException, "Missing zone for leave_zone event.\n");
-            }
             event = new LeaveZoneEvent(obj["zone"].AsString());
         }
         else if (type == "enter_building") {
             auto zone = obj["zone"];
             auto building = obj["building"];
-            if (zone.IsNull() || building.IsNull()) {
-                THROW_EXCEPTION(InvalidInputException, "Missing zone or building for enter_building event.\n");
-            }
             event = new EnterBuildingEvent(obj["zone"].AsString(), obj["building"].AsString());
         }
         else if (type == "leave_building") {
             auto zone = obj["zone"];
             auto building = obj["building"];
-            if (zone.IsNull() || building.IsNull()) {
-                THROW_EXCEPTION(InvalidInputException, "Missing zone or building for leave_building event.\n");
-            }
             event = new LeaveBuildingEvent(obj["zone"].AsString(), obj["building"].AsString());
         }
         else if (type == "enter_room") {
             auto zone = obj["zone"];
             auto building = obj["building"];
             auto room = obj["room"];
-            if (zone.IsNull() || building.IsNull() || room.IsNull()) {
-                THROW_EXCEPTION(InvalidInputException, "Missing zone, building or room for enter_room event.\n");
-            }
             event = new EnterRoomEvent(obj["zone"].AsString(), obj["building"].AsString(), obj["room"].AsString());
         }
         else if (type == "leave_room") {
             auto zone = obj["zone"];
             auto building = obj["building"];
             auto room = obj["room"];
-            if (zone.IsNull() || building.IsNull() || room.IsNull()) {
-                THROW_EXCEPTION(InvalidInputException, "Missing zone, building or room for leave_room event.\n");
-            }
             event = new LeaveRoomEvent(obj["zone"].AsString(), obj["building"].AsString(), obj["room"].AsString());
         }
         else if (type == "deposit_change") {

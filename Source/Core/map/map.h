@@ -143,8 +143,8 @@ public:
     std::vector<Room*> GetRooms() const;
 
     // 获取/设置元素所属园区/建筑
-    Zone* GetZone(const std::string& name);
-    Building* GetBuilding(const std::string& name);
+    Zone* GetZone(const std::string& name) const;
+    Building* GetBuilding(const std::string& name) const;
     void SetZone(Zone* zone, const std::string& name);
     void SetBuilding(Building* building, const std::string& name);
     void SetBuilding(Building* building, const std::string& name, std::pair<float, float> offset);

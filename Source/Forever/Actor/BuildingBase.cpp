@@ -102,17 +102,37 @@ void ABuildingBase::SetInstance(FString name, AActor* actor) {
 }
 
 void ABuildingBase::EnterBuilding(FString building) {
+	auto story = ((AGlobalBase*)global)->GetStoryActor();
+	auto zone = ((AGlobalBase*)global)->GetStory()->GetValue("player.zone").second;
+	if (holds_alternative<string>(zone)) {
+		story->EnterBuilding(UTF8_TO_TCHAR(get<std::string>(zone).data()), building);
+	}
+	else {
+		story->EnterBuilding("", building);
+	}
+
+	((AGlobalBase*)global)->GetStory()->SetValue("player.building", TCHAR_TO_UTF8(*building));
+
 	auto map = ((AGlobalBase*)global)->GetMap();
 	auto room = ((AGlobalBase*)global)->GetRoomActor();
-
 	room->AddBuilding(TCHAR_TO_UTF8(*building), map->GetBuilding(TCHAR_TO_UTF8(*building)));
 }
 
 void ABuildingBase::LeaveBuilding(FString building) {
 	auto map = ((AGlobalBase*)global)->GetMap();
 	auto room = ((AGlobalBase*)global)->GetRoomActor();
-
 	room->RemoveBuilding(TCHAR_TO_UTF8(*building));
+
+	((AGlobalBase*)global)->GetStory()->SetValue("player.building", "");
+
+	auto story = ((AGlobalBase*)global)->GetStoryActor();
+	auto zone = ((AGlobalBase*)global)->GetStory()->GetValue("player.zone").second;
+	if (holds_alternative<string>(zone)) {
+		story->LeaveBuilding(UTF8_TO_TCHAR(get<std::string>(zone).data()), building);
+	}
+	else {
+		story->LeaveBuilding("", building);
+	}
 }
 
 float ABuildingBase::GetRotation(FACE_DIRECTION direction) {

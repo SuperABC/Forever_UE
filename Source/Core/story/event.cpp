@@ -333,7 +333,11 @@ bool EnterZoneEvent::operator==(Event* e) {
     auto other = dynamic_cast<EnterZoneEvent*>(e);
     if (!other) return false;
 
-    return zone == other->zone;
+    bool result = true;
+    if (zone.size() > 0 && other->zone.size() > 0)
+        result = (result && zone == other->zone);
+
+    return result;
 }
 
 void EnterZoneEvent::SetZone(string zone) {
@@ -371,7 +375,11 @@ bool LeaveZoneEvent::operator==(Event* e) {
     auto other = dynamic_cast<LeaveZoneEvent*>(e);
     if (!other) return false;
 
-    return zone == other->zone;
+    bool result = true;
+    if (zone.size() > 0 && other->zone.size() > 0)
+        result = (result && zone == other->zone);
+
+    return result;
 }
 
 void LeaveZoneEvent::SetZone(string zone) {
@@ -410,7 +418,13 @@ bool EnterBuildingEvent::operator==(Event* e) {
     auto other = dynamic_cast<EnterBuildingEvent*>(e);
     if (!other) return false;
 
-    return zone == other->zone && building == other->building;
+    bool result = true;
+    if (zone.size() > 0 && other->zone.size() > 0)
+        result = (result && zone == other->zone);
+    if (building.size() > 0 && other->building.size() > 0)
+        result = (result && building == other->building);
+
+    return result;
 }
 
 void EnterBuildingEvent::SetZone(string zone) {
@@ -457,7 +471,13 @@ bool LeaveBuildingEvent::operator==(Event* e) {
     auto other = dynamic_cast<LeaveBuildingEvent*>(e);
     if (!other) return false;
 
-    return zone == other->zone && building == other->building;
+    bool result = true;
+    if (zone.size() > 0 && other->zone.size() > 0)
+        result = (result && zone == other->zone);
+    if (building.size() > 0 && other->building.size() > 0)
+        result = (result && building == other->building);
+
+    return result;
 }
 
 void LeaveBuildingEvent::SetZone(string zone) {
@@ -504,7 +524,15 @@ bool EnterRoomEvent::operator==(Event* e) {
     auto other = dynamic_cast<EnterRoomEvent*>(e);
     if (!other) return false;
 
-    return zone == other->zone && building == other->building && room == other->room;
+    bool result = true;
+    if (zone.size() > 0 && other->zone.size() > 0)
+        result = (result && zone == other->zone);
+    if (building.size() > 0 && other->building.size() > 0)
+        result = (result && building == other->building);
+    if (room.size() > 0 && other->room.size() > 0)
+        result = (result && room == other->room);
+
+    return result;
 }
 
 void EnterRoomEvent::SetZone(string zone) {
@@ -559,7 +587,15 @@ bool LeaveRoomEvent::operator==(Event* e) {
     auto other = dynamic_cast<LeaveRoomEvent*>(e);
     if (!other) return false;
 
-    return zone == other->zone && building == other->building && room == other->room;
+    bool result = true;
+    if (zone.size() > 0 && other->zone.size() > 0)
+        result = (result && zone == other->zone);
+    if (building.size() > 0 && other->building.size() > 0)
+        result = (result && building == other->building);
+    if (room.size() > 0 && other->room.size() > 0)
+        result = (result && room == other->room);
+
+    return result;
 }
 
 void LeaveRoomEvent::SetZone(string zone) {

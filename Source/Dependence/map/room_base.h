@@ -105,10 +105,13 @@ public:
 	void SetWindows(const WallHole& windows);
 
 	// 获取门牌号
-	std::string GetAddress() const;
+	std::string GetNumber() const;
 
 	// 设置门牌号
-	void SetAddress(int floor, int number);
+	void SetNumber(int floor, int number);
+
+	// 获取完整地址
+	std::string GetAddress() const;
 
 	// 获取住户
 	const std::vector<int>& GetTenants() const;

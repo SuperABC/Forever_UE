@@ -702,7 +702,7 @@ void Building::AssignRoom(int level, int slot, string name,
 		single.GetSizeX(), single.GetSizeY());
 	room->SetDoors(single.GetDoors());
 	room->SetWindows(single.GetWindows());
-	room->SetAddress(idx, floors[idx]->AssignNumber());
+	room->SetNumber(idx, floors[idx]->AssignNumber());
 	component->AddRoom(room);
 
 	rooms.push_back(room);
@@ -742,7 +742,7 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage,
 				row.GetRight(), row.GetBottom() + div * (i + 1));
 			room->SetDoors(rows[slot].GetDoors());
 			room->SetWindows(rows[slot].GetWindows());
-			room->SetAddress(idx, floors[idx]->AssignNumber());
+			room->SetNumber(idx, floors[idx]->AssignNumber());
 			component->AddRoom(room);
 
 			rooms.push_back(room);
@@ -762,7 +762,7 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage,
 				row.GetLeft() + div * (i + 1), row.GetTop());
 			room->SetDoors(rows[slot].GetDoors());
 			room->SetWindows(rows[slot].GetWindows());
-			room->SetAddress(idx, floors[idx]->AssignNumber());
+			room->SetNumber(idx, floors[idx]->AssignNumber());
 			component->AddRoom(room);
 
 			rooms.push_back(room);

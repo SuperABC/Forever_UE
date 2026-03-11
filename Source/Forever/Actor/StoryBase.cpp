@@ -183,6 +183,236 @@ void AStoryBase::OptionDialog(FString name, FString option) {
 	delete event;
 }
 
+void AStoryBase::EnterZone(FString zone) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new EnterZoneEvent(TCHAR_TO_UTF8(*zone));
+
+	try {
+		auto [dialogs, changes] = story->MatchEvent(event);
+		for (auto& dialog : dialogs) {
+			if (story->JudgeCondition(dialog.GetCondition())) {
+				AddBack(&dialog);
+			}
+		}
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](string name) -> pair<bool, ValueType> {
+				return story->GetValue(name);
+			}
+		};
+		for (auto change : changes) {
+			if (!story->JudgeCondition(change->GetCondition()))continue;
+			((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+			ApplyChange(change, getValues);
+		}
+
+		((AGlobalBase*)global)->GetPopulaceActor()->TriggerEvent(event);
+	}
+	catch (ExceptionBase& e) {
+		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
+	}
+
+	delete event;
+}
+
+void AStoryBase::LeaveZone(FString zone) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new LeaveZoneEvent(TCHAR_TO_UTF8(*zone));
+
+	try {
+		auto [dialogs, changes] = story->MatchEvent(event);
+		for (auto& dialog : dialogs) {
+			if (story->JudgeCondition(dialog.GetCondition())) {
+				AddBack(&dialog);
+			}
+		}
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](string name) -> pair<bool, ValueType> {
+				return story->GetValue(name);
+			}
+		};
+		for (auto change : changes) {
+			if (!story->JudgeCondition(change->GetCondition()))continue;
+			((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+			ApplyChange(change, getValues);
+		}
+
+		((AGlobalBase*)global)->GetPopulaceActor()->TriggerEvent(event);
+	}
+	catch (ExceptionBase& e) {
+		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
+	}
+
+	delete event;
+}
+
+void AStoryBase::EnterBuilding(FString zone, FString building) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new EnterBuildingEvent(TCHAR_TO_UTF8(*zone), TCHAR_TO_UTF8(*building));
+
+	try {
+		auto [dialogs, changes] = story->MatchEvent(event);
+		for (auto& dialog : dialogs) {
+			if (story->JudgeCondition(dialog.GetCondition())) {
+				AddBack(&dialog);
+			}
+		}
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](string name) -> pair<bool, ValueType> {
+				return story->GetValue(name);
+			}
+		};
+		for (auto change : changes) {
+			if (!story->JudgeCondition(change->GetCondition()))continue;
+			((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+			ApplyChange(change, getValues);
+		}
+
+		((AGlobalBase*)global)->GetPopulaceActor()->TriggerEvent(event);
+	}
+	catch (ExceptionBase& e) {
+		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
+	}
+
+	delete event;
+}
+
+void AStoryBase::LeaveBuilding(FString zone, FString building) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new LeaveBuildingEvent(TCHAR_TO_UTF8(*zone), TCHAR_TO_UTF8(*building));
+
+	try {
+		auto [dialogs, changes] = story->MatchEvent(event);
+		for (auto& dialog : dialogs) {
+			if (story->JudgeCondition(dialog.GetCondition())) {
+				AddBack(&dialog);
+			}
+		}
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](string name) -> pair<bool, ValueType> {
+				return story->GetValue(name);
+			}
+		};
+		for (auto change : changes) {
+			if (!story->JudgeCondition(change->GetCondition()))continue;
+			((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+			ApplyChange(change, getValues);
+		}
+
+		((AGlobalBase*)global)->GetPopulaceActor()->TriggerEvent(event);
+	}
+	catch (ExceptionBase& e) {
+		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
+	}
+
+	delete event;
+}
+
+void AStoryBase::EnterRoom(FString zone, FString building, FString room) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new EnterRoomEvent(
+		TCHAR_TO_UTF8(*zone), TCHAR_TO_UTF8(*building), TCHAR_TO_UTF8(*room));
+
+	try {
+		auto [dialogs, changes] = story->MatchEvent(event);
+		for (auto& dialog : dialogs) {
+			if (story->JudgeCondition(dialog.GetCondition())) {
+				AddBack(&dialog);
+			}
+		}
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](string name) -> pair<bool, ValueType> {
+				return story->GetValue(name);
+			}
+		};
+		for (auto change : changes) {
+			if (!story->JudgeCondition(change->GetCondition()))continue;
+			((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+			ApplyChange(change, getValues);
+		}
+
+		((AGlobalBase*)global)->GetPopulaceActor()->TriggerEvent(event);
+	}
+	catch (ExceptionBase& e) {
+		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
+	}
+
+	delete event;
+}
+
+void AStoryBase::LeaveRoom(FString zone, FString building, FString room) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new LeaveRoomEvent(
+		TCHAR_TO_UTF8(*zone), TCHAR_TO_UTF8(*building), TCHAR_TO_UTF8(*room));
+
+	try {
+		auto [dialogs, changes] = story->MatchEvent(event);
+		for (auto& dialog : dialogs) {
+			if (story->JudgeCondition(dialog.GetCondition())) {
+				AddBack(&dialog);
+			}
+		}
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](string name) -> pair<bool, ValueType> {
+				return story->GetValue(name);
+			}
+		};
+		for (auto change : changes) {
+			if (!story->JudgeCondition(change->GetCondition()))continue;
+			((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
+			((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+
+			ApplyChange(change, getValues);
+		}
+
+		((AGlobalBase*)global)->GetPopulaceActor()->TriggerEvent(event);
+	}
+	catch (ExceptionBase& e) {
+		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
+	}
+
+	delete event;
+}
+
 void AStoryBase::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	auto type = change->GetType();

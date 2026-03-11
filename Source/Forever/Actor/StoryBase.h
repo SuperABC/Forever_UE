@@ -42,6 +42,18 @@ public:
 	void GameStart();
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void OptionDialog(FString name, FString option);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void EnterZone(FString zone);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void LeaveZone(FString zone);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void EnterBuilding(FString zone, FString building);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void LeaveBuilding(FString zone, FString building);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void EnterRoom(FString zone, FString building, FString room);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void LeaveRoom(FString zone, FString building, FString room);
 
 protected:
 	virtual void BeginPlay() override;
