@@ -145,7 +145,6 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 		plots.push_back(new Plot(nwNode, neNode, seNode, swNode,
 			{ 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f }));
-		if (i == 1) cout << plots.back()->GetPosX() << " " << plots.back()->GetPosY() << endl;
 		plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
 		plots.back()->SetRoads({
 			{Connection("城西北路", this, nwIdx, neIdx), 0.5f},
@@ -166,7 +165,6 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 		plots.push_back(new Plot(nwNode, neNode, seNode, swNode,
 			{ 0.5f, 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f) }));
-		if (i == 1) cout << plots.back()->GetPosX() << " " << plots.back()->GetPosY() << endl;
 		plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
 		plots.back()->SetRoads({
 			{Connection("城东北路", this, neIdx, nwIdx), 0.5f},
@@ -187,7 +185,6 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 		plots.push_back(new Plot(nwNode, neNode, seNode, swNode,
 			{ 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f }));
-		if (i == 1) cout << plots.back()->GetPosX() << " " << plots.back()->GetPosY() << endl;
 		plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
 		plots.back()->SetRoads({
 			{Connection("城北西路", this, nwIdx, swIdx), 0.5f},
@@ -208,7 +205,6 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 		plots.push_back(new Plot(nwNode, neNode, seNode, swNode,
 			{ (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f, 0.5f }));
-		if (i == 1) cout << plots.back()->GetPosX() << " " << plots.back()->GetPosY() << endl;
 		plots.back()->SetArea(AREA_RESIDENTIAL_LOW);
 		plots.back()->SetRoads({
 			{Connection("城南西路", this, swIdx, nwIdx), 0.5f},

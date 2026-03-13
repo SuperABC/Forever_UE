@@ -20,6 +20,8 @@ public:
 
 	static std::vector<float> GetPower();
 
+	virtual std::unordered_map<Plot*, int>& GetNum(const std::vector<Plot*>& plots);
+
 	virtual float RandomAcreage() const override;
 	virtual float GetAcreageMin() const override;
 	virtual float GetAcreageMax() const override;
@@ -44,6 +46,8 @@ public:
 	virtual std::string GetName() const override;
 
 	static std::vector<float> GetPower();
+
+	virtual std::unordered_map<Plot*, int>& GetNum(const std::vector<Plot*>& plots);
 
 	virtual float RandomAcreage() const override;
 	virtual float GetAcreageMin() const override;

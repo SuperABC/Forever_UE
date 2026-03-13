@@ -181,8 +181,11 @@ public:
 	virtual std::string GetType() const = 0;
 	virtual std::string GetName() const = 0;
 
-	// 获取全类型地块权重
+	// 获取全类型地块权重（分地块类型加权生成）
 	static std::vector<float> GetPower();
+
+	// 自定义生成（指定地块中最大建筑数）
+	virtual std::unordered_map<Plot*, int>& GetNum(const std::vector<Plot*>& plots) = 0;
 
 	// 随机生成参考面积（实际面积会存在小偏差）
 	virtual float RandomAcreage() const = 0;
@@ -292,6 +295,9 @@ protected:
 	// 在建筑内生成空组合
 	Component* CreateComponent(std::string name, ComponentFactory* factory);
 
+	// 独立创建数量（记录临时变量，否则析构崩溃）
+	std::unordered_map<Plot*, int> uniques;
+
 private:
 	// 根据转向修改矩形参数
 	static std::vector<float> InverseParams(std::vector<float>& params, int face);
@@ -350,6 +356,9 @@ public:
 
 	// 获取所有建筑全地块权重
 	const std::unordered_map<std::string, std::vector<float>> GetPowers();
+
+	// 自定义生成建筑
+	std::unordered_map<Plot*, std::vector<std::string>> GetNums(const std::vector<Plot*>& plots);
 
 	// 析构组合（包含delete操作）
 	void DestroyBuilding(Building* building) const;

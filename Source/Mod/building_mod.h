@@ -22,6 +22,10 @@ public:
 		return std::vector<float>(13, 0.1f);
 	}
 
+	virtual std::unordered_map<Plot*, int>& GetNum(const std::vector<Plot*>& plots) {
+		return uniques;
+	}
+
 	virtual float RandomAcreage() const override { return 10000.f; }
 	virtual float GetAcreageMin() const override { return 2000.f; }
 	virtual float GetAcreageMax() const override { return 20000.f; }

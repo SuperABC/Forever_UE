@@ -32,6 +32,10 @@ vector<float> DefaultResidentialBuilding::GetPower() {
 	return { 0.f, 1.f, 1.f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
 }
 
+unordered_map<Plot*, int>& DefaultResidentialBuilding::GetNum(const vector<Plot*>& plots) {
+	return uniques;
+}
+
 float DefaultResidentialBuilding::RandomAcreage() const {
 	return 600.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
 }
@@ -123,6 +127,10 @@ string DefaultWorkingBuilding::GetName() const {
 
 vector<float> DefaultWorkingBuilding::GetPower() {
 	return { 0.f, .5f, .5f, .5f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+}
+
+unordered_map<Plot*, int>& DefaultWorkingBuilding::GetNum(const vector<Plot*>& plots) {
+	return uniques;
 }
 
 float DefaultWorkingBuilding::RandomAcreage() const {

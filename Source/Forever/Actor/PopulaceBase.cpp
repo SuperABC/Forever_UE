@@ -32,8 +32,9 @@ void APopulaceBase::Tick(float DeltaTime) {
 		FPerson citizenInfo;
 		citizenInfo.name = UTF8_TO_TCHAR(citizen->GetName().data());
 		if (!citizen->GetHome())continue;
-		auto pos = citizen->GetHome()->GetParentBuilding()->GetPosition();
-		citizenInfo.pos = FVector(pos.first, pos.second, 0.f);
+		auto home = citizen->GetHome();
+		auto pos = citizen->GetHome()->GetPosition(home->GetSizeX() / 2.f, home->GetSizeY() / 2.f);
+		citizenInfo.pos = FVector(pos.first, pos.second, home->GetLayer() * home->GetParentBuilding()->GetHeight());
 		if ((location - citizenInfo.pos).Size() > 8.f) {
 			continue;
 		}

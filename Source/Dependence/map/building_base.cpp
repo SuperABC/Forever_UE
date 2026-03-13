@@ -725,7 +725,7 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage,
 	auto& row = rows[slot];
 
 	float num = row.GetAcreage() / acreage;
-	if (num - (int)num >= 0.5f)
+	if (num == 0 || num - (int)num >= 0.5f)
 		num = num + 1;
 
 	if (row.GetDirection() == 0 || row.GetDirection() == 1) {
@@ -894,6 +894,29 @@ const unordered_map<string, vector<float>> BuildingFactory::GetPowers() {
 	return result;
 }
 
+unordered_map<Plot*, vector<string>> BuildingFactory::GetNums(const std::vector<Plot*>& plots) {
+	unordered_map<Plot*, vector<string>> uniques;
+
+	for (auto registry : registries) {
+		if (configs[registry.first]) {
+			Building* tmp = CreateBuilding(registry.first);
+			auto nums = tmp->GetNum(plots);
+			for (auto& [plot, num] : nums) {
+				if (num < 0 || num > 16) {
+					DestroyBuilding(tmp);
+					THROW_EXCEPTION(InvalidConfigException, "Building number for type " + registry.first + " out of range.\n");
+				}
+				for (int i = 0; i < num; i++) {
+					uniques[plot].push_back(registry.first);
+				}
+			}
+			DestroyBuilding(tmp);
+		}
+	}
+
+	return uniques;
+}
+
 void BuildingFactory::DestroyBuilding(Building* building) const {
 	// 析构建筑
 	if (!building) return;
@@ -905,3 +928,4 @@ void BuildingFactory::DestroyBuilding(Building* building) const {
 		debugf("Deleter not found for %s\n", building->GetType().data());
 	}
 }
+

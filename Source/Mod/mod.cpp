@@ -53,7 +53,7 @@ extern "C" __declspec(dllexport) void RegisterModZones(ZoneFactory* factory) {
 }
 
 extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* factory) {
-    factory->RegisterBuilding(ModZone::GetId(), ModBuilding::GetPower(),
+    factory->RegisterBuilding(ModBuilding::GetId(), ModBuilding::GetPower(),
         []() {
             return new ModBuilding();
         },[](Building* building) {

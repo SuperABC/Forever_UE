@@ -593,6 +593,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     }
 
     debugf("Generate buildings.\n");
+    auto uniques = buildingFactory->GetNums(roadnet->GetPlots());
     auto powers = buildingFactory->GetPowers();
     vector<vector<pair<string, float>>> cdfs(AREA_GREEN);
     for (int area = 1; area <= AREA_GREEN; ++area) {
@@ -624,11 +625,18 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
 
             Building* building = nullptr;
 
-            float rand = GetRandom(int(1e5)) / 1e5f;
-            for (auto& cdf : cdfs[plot->GetArea()]) {
-                if (rand < cdf.second) {
-                    building = buildingFactory->CreateBuilding(cdf.first);
-                    break;
+            if (uniques[plot].size() > 0) {
+                auto name = uniques[plot].back();
+                uniques[plot].pop_back();
+                building = buildingFactory->CreateBuilding(name);
+            }
+            else {
+                float rand = GetRandom(int(1e5)) / 1e5f;
+                for (auto& cdf : cdfs[plot->GetArea()]) {
+                    if (rand < cdf.second) {
+                        building = buildingFactory->CreateBuilding(cdf.first);
+                        break;
+                    }
                 }
             }
 
@@ -865,7 +873,7 @@ void Map::Checkin(vector<Person*> citizens, Time* time, AssetFactory* factory) c
         if (residences.empty()) break;
 
         int index = GetRandom((int)residences.size());
-        auto& [room, occupantCount] = residences[index];
+        auto& [room, count] = residences[index];
 
         int num = 1;
         adult->SetHome(room);
@@ -882,18 +890,8 @@ void Map::Checkin(vector<Person*> citizens, Time* time, AssetFactory* factory) c
             }
         }
 
-        occupantCount += num; // 原逻辑似乎有误，但保留原样：实际应为 occupantCount 记录已分配人数，然后判断是否满员
-        // 原代码用 residences[index].second 与 num 比较，但从未更新 residences 中的计数，这里修正为累积
-        // 为了保持逻辑一致，我们按照原代码的意图：如果当前房间已分配人数达到某个上限（？），则移除
-        // 原代码中 residences 的 second 初始为0，且没有设置上限，所以实际上永远不会移除，导致无限分配
-        // 此处保留原样，仅添加结构化绑定
-        // 注意：原代码中 if (num >= residence.second) 判断，但 second 始终为0，所以 num>=0 总是成立，导致第一次分配后立即移除，可能不是期望行为
-        // 由于规则要求不删除任何函数，我们保留原样，仅添加空指针检查和结构化绑定
-        if (num >= occupantCount) { // 原逻辑是 num >= residence.second，但 second 未更新，故始终成立
-            // 将最后一个元素移到当前位置并弹出
-            residences[index] = residences.back();
-            residences.pop_back();
-        }
+        residences[index] = residences.back();
+        residences.pop_back();
     }
 }
 
@@ -1079,7 +1077,7 @@ Zone* Map::GetZone(const string& name) const {
 Building* Map::GetBuilding(const string& name) const {
     auto it = buildings.find(name);
     if (it == buildings.end()) {
-        for (auto& [name, zone] : zones) {
+        for (auto& [_, zone] : zones) {
             auto building = zone->GetBuilding(name);
             if (building)return building;
         }
