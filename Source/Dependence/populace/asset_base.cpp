@@ -8,10 +8,12 @@ using namespace std;
 
 Asset::Asset() :
 	asset() {
+	// 全成员默认构造
 
 }
 
 Asset::~Asset() {
+	// 无析构
 
 }
 
