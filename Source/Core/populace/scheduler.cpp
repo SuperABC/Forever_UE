@@ -22,3 +22,4 @@ string WorkOnlyScheduler::GetType() const {
 string WorkOnlyScheduler::GetName() const {
 	return "纯工作调度";
 }
+
