@@ -25,7 +25,7 @@ public:
 	~Populace();
 
 	// 设置资源路径
-	void SetResourcePath(std::string path);
+	void SetResourcePath(const std::string& path);
 
 	// 读取Mods
 	void InitAssets(std::unordered_map<std::string, HMODULE>& modHandles);
@@ -33,10 +33,10 @@ public:
 	void InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles);
 
 	// 读取配置文件
-	void ReadConfigs(std::string path) const;
+	void ReadConfigs(const std::string& path) const;
 
 	// 初始化全部人口
-	void Init(int accomodation, std::vector<std::string> nameholders, Time *time);
+	void Init(int accomodation, const std::vector<std::string>& nameholders, Time* time);
 
 	// 释放空间
 	void Destroy();
@@ -48,8 +48,8 @@ public:
 	void Print() const;
 
 	// 保存/加载人口
-	void Load(std::string path);
-	void Save(std::string path) const;
+	void Load(const std::string& path);
+	void Save(const std::string& path) const;
 
 	// 应用变更
 	void ApplyChange(Change* change, Story* story,
@@ -60,28 +60,22 @@ public:
 
 	// 分配剧情
 	void Workload(Story* story) const;
-	void Characterize(std::string path, Story* story) const;
+	void Characterize(const std::string& path, Story* story) const;
 
 	// 获取市民
 	std::vector<Person*>& GetCitizens();
-	Person* GetCitizen(std::string name);
+	Person* GetCitizen(const std::string& name);
 
 	// 获取Asset工厂
 	AssetFactory* GetAssetFactory();
 
 	// 触发事件
 	std::pair<std::vector<Dialog>, std::vector<Change*>> TriggerEvent(
-		std::string name, Event* event, Story* story) const;
+		const std::string& name, Event* event, Story* story) const;
 	std::pair<std::vector<Dialog>, std::vector<Change*>> TriggerEvent(
 		int id, Event* event, Story* story) const;
 
 private:
-	// 生成市民
-	void GenerateCitizens(int num, std::vector<std::string> nameholders, Time* time);
-	void GenerateEducations(Time* time);
-	void GenerateEmotions(Time* time);
-	void GenerateJobs();
-
 	// 资源路径
 	std::string resourcePath;
 
@@ -91,8 +85,13 @@ private:
 	static SchedulerFactory* schedulerFactory;
 
 	// 市民管理
-	Name* names = nullptr;
+	Name* names;
 	std::vector<Person*> citizens;
 	std::unordered_map<std::string, int> ids;
-};
 
+	// 生成市民
+	void GenerateCitizens(int num, const std::vector<std::string>& nameholders, Time* time);
+	void GenerateEducations(Time* time);
+	void GenerateEmotions(Time* time);
+	void GenerateJobs();
+};

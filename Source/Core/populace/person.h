@@ -10,10 +10,12 @@
 #include "utility.h"
 #include "commute.h"
 
-#include <string>
 #include <memory>
-#include <vector>
+#include <string>
+#include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #undef GetJob
 #undef AddJob
@@ -74,31 +76,31 @@ public:
 
 	// 管理亲属
 	void AddRelative(RELATIVE_TYPE type, Person* person);
-	Person* GetFather();
-	Person* GetMother();
-	Person* GetSpouse();
-	std::vector<Person*> GetChilds();
+	Person* GetFather() const;
+	Person* GetMother() const;
+	Person* GetSpouse() const;
+	std::vector<Person*> GetChilds() const;
 
 	// 管理资产
 	void AddAsset(Asset* asset);
 	std::vector<Asset*>& GetAssets();
-	std::vector<Asset*> GetAssets(std::string name);
-	Asset* GetAsset(std::string name);
+	std::vector<Asset*> GetAssets(const std::string& type) const;
+	Asset* GetAsset(const std::string& name) const;
 
 	// 管理职业
-	std::vector<Job*> GetJobs();
+	std::vector<Job*> GetJobs() const;
 	void AddJob(Job* job);
 	void RemoveJob(Job* job);
 	void SetWork(int job);
-	Job* GetWork();
+	Job* GetWork() const;
 
 	// 管理住址
-	Room* GetHome();
+	Room* GetHome() const;
 	void SetHome(Room* room);
 	void RemoveHome();
 
 	// 管理调度
-	Scheduler* GetScheduler();
+	Scheduler* GetScheduler() const;
 	void SetScheduler(Scheduler* scheduler);
 
 	// 管理经历
@@ -115,22 +117,22 @@ public:
 	std::pair<std::vector<Dialog>, std::vector<Change*>> MatchEvent(
 		Event* event, Story* story, Person* person);
 	void SetValue(const std::string& name, ValueType value);
-	std::pair<bool, ValueType> GetValue(const std::string& name);
-	void UpdateValues(Time *t);
-	bool AddOption(std::string option);
-	bool RemoveOption(std::string option);
-	std::unordered_set<std::string> GetOptions();
+	std::pair<bool, ValueType> GetValue(const std::string& name) const;
+	void UpdateValues(Time* t);
+	bool AddOption(const std::string& option);
+	bool RemoveOption(const std::string& option);
+	std::unordered_set<std::string> GetOptions() const;
 
 	// 实时状态
 	void SetStatus(Zone* zone);
 	void SetStatus(Building* building);
 	void SetStatus(Room* room);
 	void SetStatus(Room* target, std::vector<Connection> paths, Time time);
-	Plot* GetCurrentPlot();
-	Zone* GetCurrentZone();
-	Building* GetCurrentBuilding();
-	Room* GetCurrentRoom();
-	Commute GetCurrentCommute();
+	Plot* GetCurrentPlot() const;
+	Zone* GetCurrentZone() const;
+	Building* GetCurrentBuilding() const;
+	Room* GetCurrentRoom() const;
+	Commute GetCurrentCommute() const;
 
 private:
 	int id;
@@ -138,19 +140,20 @@ private:
 	GENDER_TYPE gender;
 	Time birthday;
 	Time marryday;
-	float height, weight;
+	float height;
+	float weight;
 	std::string nick;
 	int deposit;
 	int phone;
 
-	bool simulate = true;
+	bool simulate;
 
 	std::vector<std::pair<RELATIVE_TYPE, Person*>> relatives;
 	std::vector<std::pair<std::string, Person*>> acquaintances;
 
 	std::vector<Asset*> assets;
 	std::vector<Job*> jobs;
-	int working = -1;
+	int working;
 
 	Room* home;
 	Scheduler* scheduler;

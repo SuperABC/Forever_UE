@@ -3,12 +3,41 @@
 
 using namespace std;
 
-Person::Person() {
+Person::Person()
+	: id(0)
+	, name()
+	, gender(GENDER_FEMALE)
+	, birthday()
+	, marryday()
+	, height(0.0f)
+	, weight(0.0f)
+	, nick()
+	, deposit(0)
+	, phone(0)
+	, simulate(true)
+	, relatives()
+	, acquaintances()
+	, assets()
+	, jobs()
+	, working(-1)
+	, home(nullptr)
+	, scheduler(nullptr)
+	, educationExperiences()
+	, emotionExperiences()
+	, jobExperiences()
+	, scripts()
+	, variables()
+	, options()
+	, currentPlot(nullptr)
+	, currentZone(nullptr)
+	, currentBuilding(nullptr)
+	, currentRoom(nullptr)
+	, commute() {
 
 }
 
 Person::~Person() {
-	for(auto script : scripts) {
+	for (auto script : scripts) {
 		delete script;
 	}
 }
@@ -62,9 +91,13 @@ void Person::SetBirthday(const Time& birthday) {
 }
 
 int Person::GetAge(const Time* currentTime) const {
+	if (currentTime == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Time is null.\n");
+	}
 	int age = currentTime->GetYear() - birthday.GetYear();
 	if (currentTime->GetMonth() < birthday.GetMonth() ||
-		(currentTime->GetMonth() == birthday.GetMonth() && currentTime->GetDay() < birthday.GetDay())) {
+		(currentTime->GetMonth() == birthday.GetMonth() &&
+			currentTime->GetDay() < birthday.GetDay())) {
 		age--;
 	}
 	return age;
@@ -111,40 +144,47 @@ void Person::SetSimulate(int simulate) {
 }
 
 void Person::AddRelative(RELATIVE_TYPE type, Person* person) {
-	relatives.push_back(make_pair(type, person));
+	if (person == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Relative is null.\n");
+	}
+	relatives.emplace_back(type, person);
 }
 
-Person* Person::GetFather() {
-	for (auto relative : relatives) {
-		if (relative.first == RELATIVE_FATHER)return relative.second;
+Person* Person::GetFather() const {
+	for (const auto& [type, person] : relatives) {
+		if (type == RELATIVE_FATHER) return person;
 	}
 	return nullptr;
 }
 
-Person* Person::GetMother() {
-	for (auto relative : relatives) {
-		if (relative.first == RELATIVE_MOTHER)return relative.second;
+Person* Person::GetMother() const {
+	for (const auto& [type, person] : relatives) {
+		if (type == RELATIVE_MOTHER) return person;
 	}
 	return nullptr;
 }
 
-Person* Person::GetSpouse() {
-	for (auto relative : relatives) {
-		if (relative.first == RELATIVE_WIFE || relative.first == RELATIVE_HUSBAND)return relative.second;
+Person* Person::GetSpouse() const {
+	for (const auto& [type, person] : relatives) {
+		if (type == RELATIVE_WIFE || type == RELATIVE_HUSBAND) return person;
 	}
-
 	return nullptr;
 }
 
-vector<Person*> Person::GetChilds() {
-	vector<Person*>childs;
-	for (auto relative : relatives) {
-		if (relative.first == RELATIVE_SON || relative.first == RELATIVE_DAUGHTER)childs.push_back(relative.second);
+vector<Person*> Person::GetChilds() const {
+	vector<Person*> childs;
+	for (const auto& [type, person] : relatives) {
+		if (type == RELATIVE_SON || type == RELATIVE_DAUGHTER) {
+			childs.push_back(person);
+		}
 	}
 	return childs;
 }
 
 void Person::AddAsset(Asset* asset) {
+	if (asset == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Asset is null.\n");
+	}
 	assets.push_back(asset);
 }
 
@@ -152,55 +192,70 @@ vector<Asset*>& Person::GetAssets() {
 	return assets;
 }
 
-vector<Asset*> Person::GetAssets(string type) {
+vector<Asset*> Person::GetAssets(const string& type) const {
 	vector<Asset*> results;
-
-	for (auto& asset : assets) {
+	for (const auto& asset : assets) {
 		if (asset->GetType() == type) {
 			results.push_back(asset);
 		}
 	}
-
 	return results;
 }
 
-Asset* Person::GetAsset(string name) {
-	for (auto& asset : assets) {
+Asset* Person::GetAsset(const string& name) const {
+	for (const auto& asset : assets) {
 		if (asset->GetName() == name) {
 			return asset;
 		}
 	}
-
 	return nullptr;
 }
 
-vector<Job*> Person::GetJobs() {
+vector<Job*> Person::GetJobs() const {
 	return jobs;
 }
 
 void Person::AddJob(Job* job) {
+	if (job == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Job is null.\n");
+	}
 	jobs.push_back(job);
 }
 
 void Person::RemoveJob(Job* job) {
-	for (auto &j : jobs) {
-		if (j == job) {
-			j = *jobs.end();
-			jobs.pop_back();
+	if (job == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Job is null.\n");
+	}
+	for (auto it = jobs.begin(); it != jobs.end(); ++it) {
+		if (*it == job) {
+			int index = it - jobs.begin();
+			if (working == index) {
+				working = -1;
+			}
+			else if (working > index) {
+				--working;
+			}
+			jobs.erase(it);
 			break;
 		}
 	}
 }
 
 void Person::SetWork(int job) {
+	if (job < 0 || job >= static_cast<int>(jobs.size())) {
+		THROW_EXCEPTION(OutOfRangeException, "Job index out of range.\n");
+	}
 	working = job;
 }
 
-Job* Person::GetWork() {
+Job* Person::GetWork() const {
+	if (working < 0 || working >= static_cast<int>(jobs.size())) {
+		THROW_EXCEPTION(OutOfRangeException, "Working index out of range.\n");
+	}
 	return jobs[working];
 }
 
-Room* Person::GetHome() {
+Room* Person::GetHome() const {
 	return home;
 }
 
@@ -212,7 +267,7 @@ void Person::RemoveHome() {
 	home = nullptr;
 }
 
-Scheduler* Person::GetScheduler() {
+Scheduler* Person::GetScheduler() const {
 	return scheduler;
 }
 
@@ -245,11 +300,13 @@ vector<JobExperience>& Person::GetJobExperiences() {
 }
 
 void Person::ExperienceComposition() {
-	if (educationExperiences.size() == 0)return;
+	if (educationExperiences.empty()) {
+		return;
+	}
 
 	int idx = 0;
 	EducationExperience education = educationExperiences[0];
-	for (int i = 1; i < educationExperiences.size(); i++) {
+	for (size_t i = 1; i < educationExperiences.size(); ++i) {
 		if (education.GetSchool() == educationExperiences[i].GetSchool() &&
 			education.GetEndTime().GetYear() == educationExperiences[i].GetBeginTime().GetYear()) {
 			education.SetTime(education.GetBeginTime(), educationExperiences[i].GetEndTime());
@@ -265,13 +322,16 @@ void Person::ExperienceComposition() {
 }
 
 void Person::AddScript(Script* script) {
+	if (script == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Script is null.\n");
+	}
 	scripts.push_back(script);
 }
 
 pair<vector<Dialog>, vector<Change*>> Person::MatchEvent(
 	Event* event, Story* story, Person* person) {
 	pair<vector<Dialog>, vector<Change*>> results;
-	for (auto& script : scripts) {
+	for (const auto& script : scripts) {
 		auto result = script->MatchEvent(event, story, person);
 		results.first.insert(results.first.end(), result.first.begin(), result.first.end());
 		results.second.insert(results.second.end(), result.second.begin(), result.second.end());
@@ -279,25 +339,28 @@ pair<vector<Dialog>, vector<Change*>> Person::MatchEvent(
 	return results;
 }
 
-pair<bool, ValueType> Person::GetValue(const string& name) {
+void Person::SetValue(const string& name, ValueType value) {
+	variables[name] = value;
+}
+
+pair<bool, ValueType> Person::GetValue(const string& name) const {
 	auto it = variables.find(name);
 	if (it != variables.end()) {
 		return { true, it->second };
 	}
-	return { false, 0 };
+	return { false, ValueType() };
 }
 
-void Person::UpdateValues(Time *t) {
+void Person::UpdateValues(Time* t) {
+	if (t == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Time is null.\n");
+	}
 	variables["self.name"] = name;
 	variables["self.gender"] = gender == GENDER_FEMALE ? "female" : "male";
 	variables["self.age"] = GetAge(t);
 }
 
-void Person::SetValue(const string& name, ValueType value) {
-	variables[name] = value;
-}
-
-bool Person::AddOption(string option) {
+bool Person::AddOption(const string& option) {
 	if (options.find(option) == options.end()) {
 		options.insert(option);
 		return true;
@@ -305,7 +368,7 @@ bool Person::AddOption(string option) {
 	return false;
 }
 
-bool Person::RemoveOption(string option) {
+bool Person::RemoveOption(const string& option) {
 	if (options.find(option) != options.end()) {
 		options.erase(option);
 		return true;
@@ -313,11 +376,14 @@ bool Person::RemoveOption(string option) {
 	return false;
 }
 
-unordered_set<string> Person::GetOptions() {
+unordered_set<string> Person::GetOptions() const {
 	return options;
 }
 
 void Person::SetStatus(Zone* zone) {
+	if (zone == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Zone is null.\n");
+	}
 	currentPlot = zone->GetParent();
 	currentZone = zone;
 	currentBuilding = nullptr;
@@ -326,6 +392,9 @@ void Person::SetStatus(Zone* zone) {
 }
 
 void Person::SetStatus(Building* building) {
+	if (building == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Building is null.\n");
+	}
 	currentPlot = building->GetParentPlot();
 	currentZone = building->GetParentZone();
 	currentBuilding = building;
@@ -334,6 +403,9 @@ void Person::SetStatus(Building* building) {
 }
 
 void Person::SetStatus(Room* room) {
+	if (room == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Room is null.\n");
+	}
 	currentPlot = room->GetParentBuilding()->GetParentPlot();
 	currentZone = room->GetParentBuilding()->GetParentZone();
 	currentBuilding = room->GetParentBuilding();
@@ -342,6 +414,9 @@ void Person::SetStatus(Room* room) {
 }
 
 void Person::SetStatus(Room* target, vector<Connection> paths, Time time) {
+	if (target == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Target room is null.\n");
+	}
 	currentPlot = nullptr;
 	currentZone = nullptr;
 	currentBuilding = nullptr;
@@ -351,23 +426,22 @@ void Person::SetStatus(Room* target, vector<Connection> paths, Time time) {
 	commute.StartCommute(time);
 }
 
-Plot* Person::GetCurrentPlot() {
+Plot* Person::GetCurrentPlot() const {
 	return currentPlot;
 }
 
-Zone* Person::GetCurrentZone() {
+Zone* Person::GetCurrentZone() const {
 	return currentZone;
 }
 
-Building* Person::GetCurrentBuilding() {
+Building* Person::GetCurrentBuilding() const {
 	return currentBuilding;
 }
 
-Room* Person::GetCurrentRoom() {
+Room* Person::GetCurrentRoom() const {
 	return currentRoom;
 }
 
-Commute Person::GetCurrentCommute() {
+Commute Person::GetCurrentCommute() const {
 	return commute;
 }
-

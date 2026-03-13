@@ -2,67 +2,68 @@
 
 #include "person.h"
 
+#include <string>
+#include <vector>
+
 
 class Person;
 
 class Experience {
 public:
-    Experience() = default;
-    virtual ~Experience() = default;
+    Experience();
+    virtual ~Experience();
 
-    // 获取/设置经历时间
-    const Time& GetBeginTime() const { return begin; }
-    const Time& GetEndTime() const { return end; }
-    void SetTime(const Time& b, const Time& e) { begin = b; end = e; }
+    const Time& GetBeginTime() const;
+    const Time& GetEndTime() const;
+    void SetTime(const Time& b, const Time& e);
 
 private:
-    Time begin, end;
+    Time begin;
+    Time end;
 };
 
 class EducationExperience : public Experience {
 public:
-    EducationExperience() = default;
+    EducationExperience();
+    virtual ~EducationExperience() override;
 
-    // 设置教育经历属性
-    void SetSchool(const std::string& s) { school = s; }
-    const std::string& GetSchool() const { return school; }
-    void AddClassmate(Person* p) { classmates.push_back(p); }
-    void SetTeacher(Person* t) { teacher = t; }
-    const std::vector<Person*>& GetClassmates() const { return classmates; }
-    Person* GetTeacher() const { return teacher; }
-    void SetGraduate(bool g) { graduate = g; }
-    bool GetGraduate() const { return graduate; }
+    const std::string& GetSchool() const;
+    void SetSchool(const std::string& s);
+    void AddClassmate(Person* p);
+    Person* GetTeacher() const;
+    void SetTeacher(Person* t);
+    const std::vector<Person*>& GetClassmates() const;
+    bool GetGraduate() const;
+    void SetGraduate(bool g);
 
 private:
     std::string school;
     std::vector<Person*> classmates;
-    Person* teacher = nullptr;
-
-    bool graduate = true;
+    Person* teacher;
+    bool graduate;
 };
 
 class EmotionExperience : public Experience {
 public:
-    EmotionExperience() = default;
+    EmotionExperience();
+    virtual ~EmotionExperience() override;
 
-    // 获取/设置情感经历属性
-    Person* GetPerson() const { return person; }
-    void SetPerson(Person* p) { person = p; }
+    Person* GetPerson() const;
+    void SetPerson(Person* p);
 
 private:
     Person* person;
 };
 
-
 class JobExperience : public Experience {
 public:
-    JobExperience() = default;
+    JobExperience();
+    virtual ~JobExperience() override;
 
-    // 获取/设置工作经历属性
-    void SetOrganization(std::string o) { organization = o; }
-    std::string GetOrganization() const { return organization; }
-    void AddColleague(Person* p) { colleagues.push_back(p); }
-    const std::vector<Person*>& GetColleagues() const { return colleagues; }
+    const std::string& GetOrganization() const;
+    void SetOrganization(const std::string& o);
+    const std::vector<Person*>& GetColleagues() const;
+    void AddColleague(Person* p);
 
 private:
     std::string organization;
