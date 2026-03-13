@@ -4,7 +4,6 @@
 
 #include "person.h"
 #include "asset.h"
-#include "job.h"
 #include "name.h"
 #include "scheduler.h"
 #include "error.h"
@@ -30,7 +29,6 @@ public:
 
 	// 读取Mods
 	void InitAssets(std::unordered_map<std::string, HMODULE>& modHandles);
-	void InitJobs(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitNames(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles);
 
@@ -71,9 +69,6 @@ public:
 	// 获取Asset工厂
 	AssetFactory* GetAssetFactory();
 
-	// 获取Job工厂
-	JobFactory* GetJobFactory();
-
 	// 触发事件
 	std::pair<std::vector<Dialog>, std::vector<Change*>> TriggerEvent(
 		std::string name, Event* event, Story* story) const;
@@ -92,7 +87,6 @@ private:
 
 	// Mod管理
 	static AssetFactory* assetFactory;
-	static JobFactory* jobFactory;
 	static NameFactory* nameFactory;
 	static SchedulerFactory* schedulerFactory;
 

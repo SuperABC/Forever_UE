@@ -63,9 +63,6 @@
     <ClCompile Include="populace\name_base.cpp">
       <Filter>populace</Filter>
     </ClCompile>
-    <ClCompile Include="populace\job_base.cpp">
-      <Filter>populace</Filter>
-    </ClCompile>
     <ClCompile Include="populace\scheduler_base.cpp">
       <Filter>populace</Filter>
     </ClCompile>
@@ -111,6 +108,9 @@
     <ClCompile Include="player\skill_base.cpp">
       <Filter>player</Filter>
     </ClCompile>
+    <ClCompile Include="society\job_base.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_base.h">
@@ -150,9 +150,6 @@
       <Filter>populace</Filter>
     </ClInclude>
     <ClInclude Include="populace\asset_base.h">
-      <Filter>populace</Filter>
-    </ClInclude>
-    <ClInclude Include="populace\job_base.h">
       <Filter>populace</Filter>
     </ClInclude>
     <ClInclude Include="populace\scheduler_base.h">
@@ -196,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="player\skill_base.h">
       <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="society\job_base.h">
+      <Filter>society</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

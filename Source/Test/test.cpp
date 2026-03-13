@@ -380,13 +380,13 @@ int main() {
 	populace->SetResourcePath(REPLACE_PATH("../Resources/"));
 	populace->ReadConfigs("configs/config_populace.json");
 	populace->InitAssets(modHandles);
-	populace->InitJobs(modHandles);
 	populace->InitNames(modHandles);
 	populace->InitSchedulers(modHandles);
 
 	// 读取Society相关类及Mod
 	society->SetResourcePath(REPLACE_PATH("../Resources/"));
 	society->ReadConfigs("configs/config_society.json");
+	society->InitJobs(modHandles);
 	society->InitCalendars(modHandles);
 	society->InitOrganizations(modHandles);
 

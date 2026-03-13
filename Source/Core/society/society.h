@@ -4,6 +4,7 @@
 #include "../populace/populace.h"
 #include "../story/story.h"
 
+#include "job.h"
 #include "calendar.h"
 #include "organization.h"
 
@@ -22,6 +23,7 @@ public:
 	void SetResourcePath(std::string path);
 
 	// 读取Mods
+	void InitJobs(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitCalendars(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitOrganizations(std::unordered_map<std::string, HMODULE>& modHandles);
 
@@ -53,6 +55,7 @@ private:
 	std::string resourcePath;
 
 	// Mod管理
+	static JobFactory* jobFactory;
 	static CalendarFactory* calendarFactory;
 	static OrganizationFactory* organizationFactory;
 

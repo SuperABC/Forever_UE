@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "../map/room.h"
+#include "../society/job.h"
 #include "../story/script.h"
 
 #include "asset.h"
 #include "scheduler.h"
-#include "job.h"
 #include "experience.h"
 #include "utility.h"
 #include "commute.h"

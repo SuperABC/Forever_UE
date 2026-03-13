@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "../map/component_base.h"
-#include "../populace/job_base.h"
+
+#include "job_base.h"
 #include "organization_base.h"
 
 

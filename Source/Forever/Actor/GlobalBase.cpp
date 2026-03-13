@@ -68,13 +68,13 @@ void AGlobalBase::BeginPlay() {
 		populace->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
 		populace->ReadConfigs("configs/config_populace.json");
 		populace->InitAssets(modHandles);
-		populace->InitJobs(modHandles);
 		populace->InitNames(modHandles);
 		populace->InitSchedulers(modHandles);
 
 		// 读取Society相关类及Mod
 		society->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
 		society->ReadConfigs("configs/config_society.json");
+		society->InitJobs(modHandles);
 		society->InitCalendars(modHandles);
 		society->InitOrganizations(modHandles);
 

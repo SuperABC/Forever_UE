@@ -12,10 +12,14 @@
 
 using namespace std;
 
+JobFactory* Society::jobFactory = nullptr;
 CalendarFactory* Society::calendarFactory = nullptr;
 OrganizationFactory* Society::organizationFactory = nullptr;
 
 Society::Society() {
+    if (!jobFactory) {
+        jobFactory = new JobFactory();
+    }
     if (!calendarFactory) {
         calendarFactory = new CalendarFactory();
     }
@@ -25,13 +29,63 @@ Society::Society() {
 }
 
 Society::~Society() {
-    for(auto organization : organizations){
+    for(auto organization : organizations) {
+        for (auto& [_, jobs] : organization->GetJobs()) {
+            for (auto& [job, _] : jobs) {
+                jobFactory->DestroyJob(job);
+            }
+        }
         organizationFactory->DestroyOrganization(organization);
     }
 }
 
 void Society::SetResourcePath(string path) {
     resourcePath = path;
+}
+
+void Society::InitJobs(unordered_map<string, HMODULE>& modHandles) {
+    jobFactory->RegisterJob(DefaultJob::GetId(),
+        []() { return new DefaultJob(); },
+        [](Job* job) { delete job; }
+    );
+
+    string modPath = "Mod.dll";
+    HMODULE modHandle;
+    if (modHandles.find(modPath) != modHandles.end()) {
+        modHandle = modHandles[modPath];
+    }
+    else {
+        modHandle = LoadLibraryA(modPath.data());
+        modHandles[modPath] = modHandle;
+    }
+    if (modHandle) {
+        debugf("Mod dll loaded successfully.\n");
+        RegisterModJobsFunc registerFunc = (RegisterModJobsFunc)GetProcAddress(modHandle, "RegisterModJobs");
+        if (registerFunc) {
+            registerFunc(jobFactory);
+        }
+        else {
+            debugf("Incorrect dll content.\n");
+        }
+    }
+    else {
+        debugf("Failed to load mod.dll.\n");
+    }
+
+#ifdef MOD_TEST
+    auto jobList = { "mod" };
+    for (const auto& jobId : jobList) {
+        if (jobFactory->CheckRegistered(jobId)) {
+            auto job = jobFactory->CreateJob(jobId);
+            debugf("Created job: mod.\n");
+            delete job;
+        }
+        else {
+            debugf("Job not registered: %s.\n", jobId);
+        }
+    }
+#endif // MOD_TEST
+
 }
 
 void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles) {
@@ -142,6 +196,9 @@ void Society::ReadConfigs(string path) const {
         THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
     }
     if (reader.Parse(fin, root)) {
+        for (auto job : root["mods"]["job"]) {
+            jobFactory->SetConfig(job.AsString(), true);
+        }
         for (auto calendar : root["mods"]["calendar"]) {
             calendarFactory->SetConfig(calendar.AsString(), true);
         }
@@ -238,7 +295,7 @@ void Society::Init(Map* map, Populace* populace, Time* time) {
                 vector<Job*> jobs;
                 for (auto& componentName : jobArrangements[i].second) {
                     for (auto& jobName : componentName) {
-                        Job* job = populace->GetJobFactory()->CreateJob(jobName);
+                        Job* job = jobFactory->CreateJob(jobName);
                         if (job) {
                             jobs.push_back(job);
                         }

@@ -13,7 +13,6 @@
 using namespace std;
 
 AssetFactory* Populace::assetFactory = nullptr;
-JobFactory* Populace::jobFactory = nullptr;
 NameFactory* Populace::nameFactory = nullptr;
 SchedulerFactory* Populace::schedulerFactory = nullptr;
 
@@ -21,9 +20,6 @@ Populace::Populace() {
     if (!assetFactory) {
 		assetFactory = new AssetFactory();
     }
-	if (!jobFactory) {
-		jobFactory = new JobFactory();
-	}
 	if (!nameFactory) {
 		nameFactory = new NameFactory();
 	}
@@ -36,9 +32,6 @@ Populace::~Populace() {
 	for(auto citizen : citizens) {
 		for(auto asset : citizen->GetAssets()) {
 			assetFactory->DestroyAsset(asset);
-		}
-		for(auto job : citizen->GetJobs()) {
-			jobFactory->DestroyJob(job);
 		}
 		schedulerFactory->DestroyScheduler(citizen->GetScheduler());
 		delete citizen;
@@ -99,51 +92,6 @@ void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
 		}
 		else {
 			debugf("Asset not registered: %s.\n", assetId);
-		}
-	}
-#endif // MOD_TEST
-
-}
-
-void Populace::InitJobs(unordered_map<string, HMODULE>& modHandles) {
-	jobFactory->RegisterJob(DefaultJob::GetId(),
-		[]() { return new DefaultJob(); },
-		[](Job* job) { delete job; }
-	);
-
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
-		RegisterModJobsFunc registerFunc = (RegisterModJobsFunc)GetProcAddress(modHandle, "RegisterModJobs");
-		if (registerFunc) {
-			registerFunc(jobFactory);
-		}
-		else {
-			debugf("Incorrect dll content.\n");
-		}
-	}
-	else {
-		debugf("Failed to load mod.dll.\n");
-	}
-
-#ifdef MOD_TEST
-	auto jobList = { "mod" };
-	for (const auto& jobId : jobList) {
-		if (jobFactory->CheckRegistered(jobId)) {
-			auto job = jobFactory->CreateJob(jobId);
-			debugf("Created job: mod.\n");
-			delete job;
-		}
-		else {
-			debugf("Job not registered: %s.\n", jobId);
 		}
 	}
 #endif // MOD_TEST
@@ -257,9 +205,6 @@ void Populace::ReadConfigs(string path) const {
     if (reader.Parse(fin, root)) {
 		for (auto asset : root["mods"]["asset"]) {
 			assetFactory->SetConfig(asset.AsString(), true);
-		}
-		for (auto job : root["mods"]["job"]) {
-			jobFactory->SetConfig(job.AsString(), true);
 		}
 		nameFactory->SetConfig(root["mods"]["name"].AsString(), true);
 		for (auto scheduler : root["mods"]["scheduler"]) {
@@ -472,10 +417,6 @@ Person* Populace::GetCitizen(string name) {
 
 AssetFactory* Populace::GetAssetFactory() {
 	return assetFactory;
-}
-
-JobFactory* Populace::GetJobFactory() {
-	return jobFactory;
 }
 
 pair<vector<Dialog>, vector<Change*>> Populace::TriggerEvent(

@@ -72,9 +72,6 @@
     <ClCompile Include="populace\experience.cpp">
       <Filter>populace</Filter>
     </ClCompile>
-    <ClCompile Include="populace\job.cpp">
-      <Filter>populace</Filter>
-    </ClCompile>
     <ClCompile Include="populace\scheduler.cpp">
       <Filter>populace</Filter>
     </ClCompile>
@@ -122,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="player\skill.cpp">
       <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="society\job.cpp">
+      <Filter>society</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +176,6 @@
     <ClInclude Include="populace\asset.h">
       <Filter>populace</Filter>
     </ClInclude>
-    <ClInclude Include="populace\job.h">
-      <Filter>populace</Filter>
-    </ClInclude>
     <ClInclude Include="populace\scheduler.h">
       <Filter>populace</Filter>
     </ClInclude>
@@ -223,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="player\skill.h">
       <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="society\job.h">
+      <Filter>society</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
