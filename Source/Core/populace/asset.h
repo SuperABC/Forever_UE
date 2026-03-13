@@ -11,7 +11,7 @@ typedef void (*RegisterModAssetsFunc)(AssetFactory* factory);
 class ZoneAsset : public Asset {
 public:
 	ZoneAsset();
-	~ZoneAsset();
+	virtual ~ZoneAsset();
 
 	static std::string GetId();
 	virtual std::string GetType() const override;
@@ -22,7 +22,7 @@ public:
 class BuildingAsset : public Asset {
 public:
 	BuildingAsset();
-	~BuildingAsset();
+	virtual ~BuildingAsset();
 
 	static std::string GetId();
 	virtual std::string GetType() const override;
@@ -33,7 +33,7 @@ public:
 class RoomAsset : public Asset {
 public:
 	RoomAsset();
-	~RoomAsset();
+	virtual ~RoomAsset();
 
 	static std::string GetId();
 	virtual std::string GetType() const override;

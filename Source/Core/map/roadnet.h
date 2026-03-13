@@ -9,6 +9,9 @@ typedef void (*RegisterModRoadnetsFunc)(RoadnetFactory* factory);
 // 井字路网
 class JingRoadnet : public Roadnet {
 public:
+	JingRoadnet();
+	virtual ~JingRoadnet();
+
 	static std::string GetId();
 	virtual std::string GetType() const override;
 	virtual std::string GetName() const override;

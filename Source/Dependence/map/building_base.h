@@ -272,6 +272,9 @@ public:
 	static Layout* ReadTemplates(std::string path);
 
 protected:
+	// 独立创建数量（记录临时变量，否则析构崩溃）
+	std::unordered_map<Plot*, int> uniques;
+
 	// 分配楼层空间（将floors操作移动至对应dll，否则析构时崩溃）
 	void AllocateFloors();
 
@@ -294,9 +297,6 @@ protected:
 
 	// 在建筑内生成空组合
 	Component* CreateComponent(std::string name, ComponentFactory* factory);
-
-	// 独立创建数量（记录临时变量，否则析构崩溃）
-	std::unordered_map<Plot*, int> uniques;
 
 private:
 	// 根据转向修改矩形参数

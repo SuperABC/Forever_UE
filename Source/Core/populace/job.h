@@ -9,9 +9,12 @@ typedef void (*RegisterModJobsFunc)(JobFactory* factory);
 // 默认职业
 class DefaultJob : public Job {
 public:
-    static std::string GetId();
-    virtual std::string GetType() const override;
-    virtual std::string GetName() const override;
+    DefaultJob();
+    virtual ~DefaultJob();
 
-	virtual std::vector<std::string> GetScripts() const override;
+    static std::string GetId();
+    std::string GetType() const override;
+    std::string GetName() const override;
+
+    std::vector<std::string> GetScripts() const override;
 };

@@ -7,6 +7,14 @@ using namespace std;
 
 // 井字路网
 
+JingRoadnet::JingRoadnet() {
+
+}
+
+JingRoadnet::~JingRoadnet() {
+
+}
+
 string JingRoadnet::GetId() {
 	return "jing";
 }

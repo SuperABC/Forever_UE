@@ -12,7 +12,7 @@ typedef void (*RegisterModBuildingsFunc)(BuildingFactory* factory);
 class DefaultResidentialBuilding : public Building {
 public:
 	DefaultResidentialBuilding();
-	~DefaultResidentialBuilding();
+	virtual ~DefaultResidentialBuilding();
 
 	static std::string GetId();
 	virtual std::string GetType() const override;
@@ -39,7 +39,7 @@ private:
 class DefaultWorkingBuilding : public Building {
 public:
 	DefaultWorkingBuilding();
-	~DefaultWorkingBuilding();
+	virtual ~DefaultWorkingBuilding();
 
 	static std::string GetId();
 	virtual std::string GetType() const override;

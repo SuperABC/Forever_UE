@@ -77,9 +77,7 @@ void ComponentFactory::SetConfig(const string& name, bool config) {
 
 void ComponentFactory::DestroyComponent(Component* component) const {
 	// 析构组合
-	if (component == nullptr) {
-		return;
-	}
+	if (!component)return;
 	auto it = registries.find(component->GetType());
 	if (it != registries.end()) {
 		it->second.second(component);

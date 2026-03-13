@@ -13,7 +13,7 @@ public:
 
 	// 子类实现方法
 
-	// 动态返回姓名静态信息
+	// 统一类型定义
 	static std::string GetId();
 	virtual std::string GetType() const = 0;
 	virtual std::string GetName() const = 0;

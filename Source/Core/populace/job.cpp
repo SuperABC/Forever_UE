@@ -3,18 +3,26 @@
 
 using namespace std;
 
+DefaultJob::DefaultJob() : Job() {
+
+}
+
+DefaultJob::~DefaultJob() {
+
+}
+
 string DefaultJob::GetId() {
-	return "default";
+    return "default";
 }
 
 string DefaultJob::GetType() const {
-	return "default";
+    return "default";
 }
 
 string DefaultJob::GetName() const {
-	return "默认工作";
+    return "默认工作";
 }
 
 vector<string> DefaultJob::GetScripts() const {
-	return { "scripts/jobs/default.json" };
+    return { "scripts/jobs/default.json" };
 }
