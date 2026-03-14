@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "../common/error.h"
+#include "../common/utility.h"
+
 #include "organization_base.h"
 
 #include <memory>
@@ -22,21 +25,39 @@ public:
     }
 
     virtual std::vector<std::pair<std::string, std::vector<std::vector<std::string>>>> ArrageVacancies(
-        std::vector<std::pair<std::string, int>> components) const override {
-		return std::vector<std::pair<std::string, std::vector<std::vector<std::string>>>>();
+        const std::vector<std::pair<std::string, int>>& components) const override {
+        return std::vector<std::pair<std::string, std::vector<std::vector<std::string>>>>();
     }
 
     virtual void SetCalendar(CalendarFactory* factory) override {
-        for (auto component : jobs) {
-            for (auto job : component.second) {
+        if (factory == nullptr) {
+            THROW_EXCEPTION(NullPointerException, "Calendar factory is null.\n");
+        }
+        for (const auto& [component, vacancies] : jobs) {
+            for (const auto& [job, occupantId] : vacancies) {
                 Calendar* calendar = factory->CreateCalendar("mod");
-                job.first->SetCalendar(calendar);
+                if (calendar) {
+                    job->SetCalendar(calendar);
+                }
             }
         }
     }
 
     virtual void ArrangeRooms() override {
-
+        for (const auto& [component, vacancies] : jobs) {
+            if (component == nullptr) {
+                debugf("Organization component is null.\n");
+                continue;
+            }
+            const auto& rooms = component->GetRooms();
+            if (rooms.empty()) {
+                debugf("Organization component has no rooms.\n");
+                continue;
+            }
+            for (const auto& [job, occupantId] : vacancies) {
+                job->SetPosition(rooms[0]);
+            }
+        }
     }
 };
 

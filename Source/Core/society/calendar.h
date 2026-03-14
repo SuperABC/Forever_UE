@@ -19,8 +19,11 @@ public:
 	virtual std::string GetType() const override;
 	virtual std::string GetName() const override;
 
-	virtual Time SigninTime(Time date) const override;
-	virtual Time SignoutTime(Time date) const override;
+	virtual Time SigninTime(const Time& date) const override;
+	virtual Time SignoutTime(const Time& date) const override;
+
+private:
+	Time on, off;
 };
 
 // 全勤无休日程
@@ -33,9 +36,10 @@ public:
 	virtual std::string GetType() const override;
 	virtual std::string GetName() const override;
 
-	virtual Time SigninTime(Time date) const override;
-	virtual Time SignoutTime(Time date) const override;
+	virtual Time SigninTime(const Time& date) const override;
+	virtual Time SignoutTime(const Time& date) const override;
 
 private:
 	Time on, off;
 };
+

@@ -1,18 +1,21 @@
-﻿#include "organization.h"
+﻿#include "../common/error.h"
+#include "../common/utility.h"
+
+#include "organization.h"
 
 
 using namespace std;
 
 string DefaultOrganization::GetId() {
-	return "default";
+    return "default";
 }
 
 string DefaultOrganization::GetType() const {
-	return "default";
+    return "default";
 }
 
 string DefaultOrganization::GetName() const {
-	return "默认组织";
+    return "默认组织";
 }
 
 float DefaultOrganization::GetPower() {
@@ -22,36 +25,48 @@ float DefaultOrganization::GetPower() {
 vector<pair<string, pair<int, int>>> DefaultOrganization::ComponentRequirements() const {
     vector<pair<string, pair<int, int>>> requirements;
     requirements.emplace_back("default_working", make_pair(1, 1));
-
     return requirements;
 }
 
 vector<pair<string, vector<vector<string>>>> DefaultOrganization::ArrageVacancies(
-    vector<pair<string, int>> components) const {
+    const vector<pair<string, int>>& components) const {
     vector<pair<string, vector<vector<string>>>> jobs;
-    for (auto& comp : components) {
-        jobs.emplace_back(comp.first, vector<vector<string>>(comp.second));
-        for (int i = 0; i < comp.second; i++) {
+    for (const auto& [name, count] : components) {
+        jobs.emplace_back(name, vector<vector<string>>(count));
+        for (int i = 0; i < count; ++i) {
             jobs.back().second[i] = vector<string>(10, "default");
         }
     }
-
     return jobs;
 }
 
 void DefaultOrganization::SetCalendar(CalendarFactory* factory) {
-    for (auto &component : jobs) {
-        for (auto &job : component.second) {
+    if (factory == nullptr) {
+        THROW_EXCEPTION(NullPointerException, "Calendar factory is null.\n");
+    }
+    for (auto& [component, vacancies] : jobs) {
+        for (auto& [job, occupantId] : vacancies) {
             Calendar* calendar = factory->CreateCalendar("full");
-            job.first->SetCalendar(calendar);
+            if (calendar) {
+                job->SetCalendar(calendar);
+            }
         }
     }
 }
 
 void DefaultOrganization::ArrangeRooms() {
-    for (auto &component : jobs) {
-        for (auto &job : component.second) {
-            job.first->SetPosition(component.first->GetRooms()[0]);
+    for (auto& [component, vacancies] : jobs) {
+        if (component == nullptr) {
+            debugf("ArrangeRooms: component is null, skipping.\n");
+            continue;
+        }
+        const auto& rooms = component->GetRooms();
+        if (rooms.empty()) {
+            debugf("ArrangeRooms: component has no rooms.\n");
+            continue;
+        }
+        for (auto& [job, occupantId] : vacancies) {
+            job->SetPosition(rooms[0]);
         }
     }
 }

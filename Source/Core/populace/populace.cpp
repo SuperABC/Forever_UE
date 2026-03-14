@@ -416,7 +416,7 @@ void Populace::Schedule() const {
 		Scheduler* scheduler = schedulerFactory->CreateScheduler(selectedScheduler);
 		if (!scheduler) {
 			debugf("Warning: Failed to create scheduler '%s' for citizen %s.\n",
-				selectedScheduler.c_str(), citizen->GetName().c_str());
+				selectedScheduler.data(), citizen->GetName().data());
 			continue;
 		}
 		citizen->SetScheduler(scheduler);

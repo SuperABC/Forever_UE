@@ -228,7 +228,7 @@ void Person::RemoveJob(Job* job) {
 	}
 	for (auto it = jobs.begin(); it != jobs.end(); ++it) {
 		if (*it == job) {
-			int index = it - jobs.begin();
+			auto index = it - jobs.begin();
 			if (working == index) {
 				working = -1;
 			}

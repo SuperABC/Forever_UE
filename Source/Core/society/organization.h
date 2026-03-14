@@ -21,11 +21,10 @@ public:
     virtual std::vector<std::pair<std::string, std::pair<int, int>>> ComponentRequirements() const override;
 
     virtual std::vector<std::pair<std::string, std::vector<std::vector<std::string>>>> ArrageVacancies(
-        std::vector<std::pair<std::string, int>> components) const override;
+        const std::vector<std::pair<std::string, int>>& components) const override;
 
     virtual void SetCalendar(CalendarFactory* factory) override;
 
     virtual void ArrangeRooms() override;
 };
-
 

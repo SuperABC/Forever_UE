@@ -68,7 +68,7 @@ void JobFactory::SetConfig(const string& name, bool config) {
 }
 
 void JobFactory::DestroyJob(Job* job) const {
-    // 析构组合
+    // 析构职业
     if (!job) return;
     auto it = registries.find(job->GetType());
     if (it != registries.end()) {
