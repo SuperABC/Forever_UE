@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "../common/error.h"
+#include "../common/utility.h"
+
 #include "manufacture_base.h"
 
 #include <memory>

@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "../common/error.h"
+#include "../common/utility.h"
+
 #include "roadnet_base.h"
 
 #include <memory>

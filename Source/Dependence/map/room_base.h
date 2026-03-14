@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "../common/quad.h"
-
 #include "../industry/storage_base.h"
 #include "../industry/manufacture_base.h"
 
@@ -193,26 +192,27 @@ private:
 
 class RoomFactory {
 public:
-	// 注册房间
-	void RegisterRoom(const std::string& id,
-		std::function<Room* ()> creator, std::function<void(Room*)> deleter);
+    // 注册房间
+    void RegisterRoom(const std::string& id,
+        std::function<Room* ()> creator, std::function<void(Room*)> deleter);
 
-	// 创建房间（包含new操作）
-	Room* CreateRoom(const std::string& id);
+    // 创建房间（包含new操作）
+    Room* CreateRoom(const std::string& id) const;
 
-	// 检查是否注册
-	bool CheckRegistered(const std::string& id);
+    // 检查是否注册
+    bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
-	void SetConfig(const std::string& name, bool config);
+    // 设置启用配置
+    void SetConfig(const std::string& name, bool config);
 
-	// 析构房间（包含delete操作）
-	void DestroyRoom(Room* room) const;
+    // 析构房间（包含delete操作）
+    void DestroyRoom(Room* room) const;
 
 private:
-	std::unordered_map<
-		std::string,
-		std::pair<std::function<Room* ()>, std::function<void(Room*)>>
-	> registries;
-	std::unordered_map<std::string, bool> configs;
+    std::unordered_map<
+        std::string,
+        std::pair<std::function<Room* ()>, std::function<void(Room*)>>
+    > registries;
+    std::unordered_map<std::string, bool> configs;
 };
+

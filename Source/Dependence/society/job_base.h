@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "../common/utility.h"
 #include "../map/room_base.h"
 #include "../society/calendar_base.h"
 
@@ -39,7 +38,7 @@ public:
     // 设置工作房间
     void SetPosition(Room* room);
 
-protected:
+private:
     // 工作日历
     Calendar* calendar;
 
@@ -54,7 +53,7 @@ public:
         std::function<Job* ()> creator, std::function<void(Job*)> deleter);
 
     // 创建工作（包含new操作）
-    Job* CreateJob(const std::string& id);
+    Job* CreateJob(const std::string& id) const;
 
     // 检查是否注册
     bool CheckRegistered(const std::string& id) const;
@@ -72,3 +71,4 @@ private:
     > registries;
     std::unordered_map<std::string, bool> configs;
 };
+

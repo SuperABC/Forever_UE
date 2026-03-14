@@ -1,4 +1,7 @@
-﻿#include "building.h"
+﻿#include "../common/error.h"
+#include "../common/utility.h"
+
+#include "building.h"
 
 #include <cmath>
 

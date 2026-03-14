@@ -546,7 +546,7 @@ void Populace::GenerateCitizens(int num, const vector<string>& nameholders, Time
 	// 分配姓名
 	names = nameFactory->GetName();
 	if (!names) {
-		THROW_EXCEPTION(InvalidConfigException,
+		THROW_EXCEPTION(RuntimeException,
 			"No enabled name in config.\n");
 	}
 	for (const auto& holder : nameholders) {

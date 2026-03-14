@@ -36,37 +36,37 @@ public:
 	// 使用名字
 	bool RegisterName(const std::string& name);
 
-protected:
+private:
 	std::unordered_set<std::string> reserve;
 	std::unordered_set<std::string> roll;
 };
 
 class NameFactory {
 public:
-	// 注册姓名
-	void RegisterName(const std::string& id,
-		std::function<Name* ()> creator, std::function<void(Name*)> deleter);
+    // 注册姓名
+    void RegisterName(const std::string& id,
+        std::function<Name* ()> creator, std::function<void(Name*)> deleter);
 
-	// 创建姓名（包含new操作）
-	Name* CreateName(const std::string& id);
+    // 创建姓名（包含new操作）
+    Name* CreateName(const std::string& id) const;
 
-	// 检查是否注册
-	bool CheckRegistered(const std::string& id);
+    // 检查是否注册
+    bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
-	void SetConfig(const std::string& name, bool config);
+    // 设置启用配置
+    void SetConfig(const std::string& name, bool config);
 
-	// 获取启用姓名
-	Name* GetName() const;
+    // 获取启用姓名
+    Name* GetName() const;
 
-	// 析构姓名（包含delete操作）
-	void DestroyName(Name* name) const;
+    // 析构姓名（包含delete操作）
+    void DestroyName(Name* name) const;
 
 private:
-	std::unordered_map<
-		std::string,
-		std::pair<std::function<Name* ()>, std::function<void(Name*)>>
-	> registries;
-	std::unordered_map<std::string, bool> configs;
+    std::unordered_map<
+        std::string,
+        std::pair<std::function<Name* ()>, std::function<void(Name*)>>
+    > registries;
+    std::unordered_map<std::string, bool> configs;
 };
 

@@ -299,14 +299,14 @@ unordered_map<string, Building*>& Plot::GetBuildings() {
 
 void Plot::AddZone(const string& name, Zone* zone) {
 	if (zones.find(name) != zones.end()) {
-		THROW_EXCEPTION(InvalidArgumentException, "Duplicate zone name: " + name + ".\n");
+		THROW_EXCEPTION(RuntimeException, "Duplicate zone name: " + name + ".\n");
 	}
 	zones[name] = zone;
 }
 
 void Plot::AddBuilding(const string& name, Building* building) {
 	if (buildings.find(name) != buildings.end()) {
-		THROW_EXCEPTION(InvalidArgumentException, "Duplicate building name: " + name + ".\n");
+		THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + name + ".\n");
 	}
 	buildings[name] = building;
 }

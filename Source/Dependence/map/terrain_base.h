@@ -86,3 +86,4 @@ private:
     > registries;
     std::unordered_map<std::string, bool> configs;
 };
+

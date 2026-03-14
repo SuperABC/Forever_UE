@@ -26,32 +26,32 @@ public:
 	// 设置资产名称
 	void SetAsset(const std::string& asset);
 
-protected:
+private:
 	std::string asset;
 };
 
 class AssetFactory {
 public:
-	// 注册资产
-	void RegisterAsset(const std::string& id,
-		std::function<Asset* ()> creator, std::function<void(Asset*)> deleter);
+    // 注册资产
+    void RegisterAsset(const std::string& id,
+        std::function<Asset* ()> creator, std::function<void(Asset*)> deleter);
 
-	// 创建资产（包含new操作）
-	Asset* CreateAsset(const std::string& id);
+    // 创建资产（包含new操作）
+    Asset* CreateAsset(const std::string& id) const;
 
-	// 检查是否注册
-	bool CheckRegistered(const std::string& id) const;
+    // 检查是否注册
+    bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
-	void SetConfig(const std::string& name, bool config);
+    // 设置启用配置
+    void SetConfig(const std::string& name, bool config);
 
-	// 析构资产（包含delete操作）
-	void DestroyAsset(Asset* asset) const;
+    // 析构资产（包含delete操作）
+    void DestroyAsset(Asset* asset) const;
 
 private:
-	std::unordered_map<
-		std::string,
-		std::pair<std::function<Asset* ()>, std::function<void(Asset*)>>
-	> registries;
-	std::unordered_map<std::string, bool> configs;
+    std::unordered_map<
+        std::string,
+        std::pair<std::function<Asset* ()>, std::function<void(Asset*)>>
+    > registries;
+    std::unordered_map<std::string, bool> configs;
 };

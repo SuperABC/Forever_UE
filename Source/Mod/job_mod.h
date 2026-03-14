@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "../common/error.h"
+#include "../common/utility.h"
+
 #include "job_base.h"
 
 #include <memory>

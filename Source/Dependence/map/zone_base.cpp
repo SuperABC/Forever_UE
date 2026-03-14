@@ -1,4 +1,5 @@
 ﻿#include "../common/error.h"
+#include "../common/utility.h"
 
 #include "zone_base.h"
 
@@ -7,52 +8,52 @@
 
 using namespace std;
 
+// 全成员默认构造
 Zone::Zone() :
     parentPlot(nullptr),
     stated(false),
     owner(-1),
     buildings() {
-    // 全成员默认构造
 
 }
 
+// building在map中统一创建和析构
 Zone::~Zone() {
-    // building在map中统一创建和析构
 
 }
 
+// 获取所在地块
 Plot* Zone::GetParent() const {
-    // 获取所在地块
     return parentPlot;
 }
 
+// 设置所在地块
 void Zone::SetParent(Plot* plot) {
-    // 设置所在地块
     parentPlot = plot;
 }
 
+// 获取私人房东ID
 int Zone::GetOwner() const {
-    // 获取私人房东ID
     return owner;
 }
 
+// 设置私人房东ID
 void Zone::SetOwner(int owner) {
-    // 设置私人房东ID
     this->owner = owner;
 }
 
+// 获取是否由政府拥有
 bool Zone::GetStated() const {
-    // 获取是否由政府拥有
     return stated;
 }
 
+// 设置是否由政府拥有
 void Zone::SetStated(bool stated) {
-    // 设置是否由政府拥有
     this->stated = stated;
 }
 
+// 获取一栋建筑
 Building* Zone::GetBuilding(const string& name) {
-    // 获取一栋建筑
     auto it = buildings.find(name);
     if (it != buildings.end()) {
         return it->second;
@@ -60,15 +61,15 @@ Building* Zone::GetBuilding(const string& name) {
     return nullptr;
 }
 
+// 获取园区内所有建筑
 unordered_map<string, Building*>& Zone::GetBuildings() {
-    // 获取园区内所有建筑
     return buildings;
 }
 
+// 添加园区内建筑
 void Zone::AddBuildings(BuildingFactory* factory, const vector<pair<string, float>>& list) {
-    // 添加园区内建筑
     if (!factory) {
-        THROW_EXCEPTION(InvalidConfigException, "Factory pointer is null.\n");
+        THROW_EXCEPTION(RuntimeException, "Factory pointer is null.\n");
     }
 
     float acreageTmp = 0.f;
@@ -101,14 +102,14 @@ void Zone::AddBuildings(BuildingFactory* factory, const vector<pair<string, floa
         acreageTmp += acreageBuilding;
         building->SetAcreage(acreageBuilding);
         if (buildings.find(building->GetName()) != buildings.end()) {
-            THROW_EXCEPTION(InvalidConfigException, "Duplicate building name: " + building->GetName() + ".\n");
+            THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + building->GetName() + ".\n");
         }
         buildings[building->GetName()] = building;
     }
 }
 
+// 自动分布建筑
 void Zone::ArrangeBuildings() {
-    // 自动分布建筑
     if (buildings.empty()) {
         return;
     }
@@ -299,8 +300,8 @@ void Zone::ArrangeBuildings() {
     }
 }
 
+// 获取园区中心世界位置
 pair<float, float> Zone::GetPosition() const {
-    // 获取园区中心世界位置
     auto plot = GetParent();
     if (plot) {
         auto center = plot->GetPosition(GetPosX(), GetPosY());
@@ -310,67 +311,79 @@ pair<float, float> Zone::GetPosition() const {
     return { 0.f, 0.f };
 }
 
+// 获取完整地址
 string Zone::GetAddress() const {
-    // 获取完整地址
     auto plotAddress = GetParent()->GetAddress();
     return plotAddress + " " + GetName();
 }
 
+// 注册园区
 void ZoneFactory::RegisterZone(const string& id, GeneratorFunc generator,
     function<Zone* ()> creator, function<void(Zone*)> deleter) {
-    // 注册构造器和析构器
     registries[id] = { creator, deleter };
     generators[id] = generator;
 }
 
-Zone* ZoneFactory::CreateZone(const string& id) {
-    // 根据配置构造园区
+// 创建园区
+Zone* ZoneFactory::CreateZone(const string& id) const {
     auto config = configs.find(id);
     if (config == configs.end() || !config->second) {
+        debugf("Warning: Zone %s not enabled when creating.\n", id.data());
         return nullptr;
     }
 
     auto it = registries.find(id);
-    if (it != registries.end()) {
-        return it->second.first();
+    if (it == registries.end()) {
+        debugf("Warning: Zone %s not registered when creating.\n", id.data());
+        return nullptr;
     }
+
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Zone " + id + " creator is null.\n");
+    }
+
     return nullptr;
 }
 
-bool ZoneFactory::CheckRegistered(const string& id) {
-    // 检查是否注册
+// 检查是否注册
+bool ZoneFactory::CheckRegistered(const string& id) const {
     return registries.find(id) != registries.end();
 }
 
+// 设置启用配置
 void ZoneFactory::SetConfig(const string& name, bool config) {
-    // 设置启用配置
     configs[name] = config;
 }
 
-vector<string> ZoneFactory::GetTypes() {
-    // 获取所有启用园区
+// 获取所有启用园区
+vector<string> ZoneFactory::GetTypes() const {
     vector<string> types;
     for (const auto& [name, enabled] : configs) {
-        if(enabled)types.push_back(name);
+        if (enabled) types.push_back(name);
     }
     return types;
 }
 
-vector<Zone*> ZoneFactory::CreateZones(const string& type, Plot* plot) {
-    // 在地块内生成一类园区
+// 在地块内生成一类园区
+vector<Zone*> ZoneFactory::CreateZones(const string& type, Plot* plot) const {
     vector<Zone*> zones;
     auto config = configs.find(type);
     if (config == configs.end() || !config->second) {
+        debugf("Warning: Zone %s not enabled when creating.\n", type.data());
         return zones;
     }
+
     auto genIt = generators.find(type);
     if (genIt == generators.end()) {
-        debugf("Generator for zone type %s not found.\n", type.data());
+        debugf("Warning: Generator for zone %s not found when creating.\n", type.data());
         return zones;
     }
+
     int num = genIt->second(plot);
-    for (int i = 0; i < num; i++) {
-        auto zone = CreateZone(type);
+    for (int i = 0; i < num; ++i) {
+        Zone* zone = CreateZone(type);
         if (zone) {
             zones.push_back(zone);
         }
@@ -378,16 +391,23 @@ vector<Zone*> ZoneFactory::CreateZones(const string& type, Plot* plot) {
     return zones;
 }
 
-void ZoneFactory::DestroyZone(Zone* zone) {
-    // 析构园区
+// 析构园区
+void ZoneFactory::DestroyZone(Zone* zone) const {
     if (!zone) {
+        debugf("Warning: Zone is null when deleting.\n");
         return;
     }
+
     auto it = registries.find(zone->GetType());
-    if (it != registries.end()) {
-        it->second.second(zone);
+    if (it == registries.end()) {
+        debugf("Warning: Zone %s not registered when deleting.\n", zone->GetType().data());
+        return;
     }
-    else {
-        debugf("Deleter not found for %s.\n", zone->GetType().data());
+
+    if (it->second.second) {
+        it->second.second(zone);
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Zone " + zone->GetType() + " deleter is null.\n");
     }
 }
+

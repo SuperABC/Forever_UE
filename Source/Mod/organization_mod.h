@@ -3,6 +3,9 @@
 #include "../common/error.h"
 #include "../common/utility.h"
 
+#include "../common/error.h"
+#include "../common/utility.h"
+
 #include "organization_base.h"
 
 #include <memory>
@@ -33,7 +36,7 @@ public:
         if (factory == nullptr) {
             THROW_EXCEPTION(NullPointerException, "Calendar factory is null.\n");
         }
-        for (const auto& [component, vacancies] : jobs) {
+        for (const auto& [component, vacancies] : GetJobs()) {
             for (const auto& [job, occupantId] : vacancies) {
                 Calendar* calendar = factory->CreateCalendar("mod");
                 if (calendar) {
@@ -44,7 +47,7 @@ public:
     }
 
     virtual void ArrangeRooms() override {
-        for (const auto& [component, vacancies] : jobs) {
+        for (const auto& [component, vacancies] : GetJobs()) {
             if (component == nullptr) {
                 debugf("Organization component is null.\n");
                 continue;

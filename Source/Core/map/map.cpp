@@ -551,7 +551,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     debugf("Generate roadnet.\n");
     roadnet = roadnetFactory->GetRoadnet();
     if (!roadnet) {
-        THROW_EXCEPTION(InvalidConfigException, "No enabled roadnet in config.\n");
+        THROW_EXCEPTION(RuntimeException, "No enabled roadnet in config.\n");
     }
     roadnet->DistributeRoadnet(width, height, getTerrain, traffic->GetStationFactory(), traffic->GetRouteFactory());
     roadnet->AllocateAddress();
@@ -586,7 +586,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
                 building->SetParent(plot);
             }
             if (this->zones.find(z.first) != this->zones.end()) {
-                THROW_EXCEPTION(InvalidConfigException, "Duplicate zone name: " + z.first + ".\n");
+                THROW_EXCEPTION(RuntimeException, "Duplicate zone name: " + z.first + ".\n");
             }
             this->zones[z.first] = zone;
         }
@@ -661,7 +661,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
             building->SetParent(plot);
             plot->AddBuilding(building->GetName(), building);
             if (buildings.find(building->GetName()) != buildings.end()) {
-                THROW_EXCEPTION(InvalidConfigException, "Duplicate building name: " + building->GetName() + ".\n");
+                THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + building->GetName() + ".\n");
             }
             buildings[building->GetName()] = building;
         }

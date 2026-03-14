@@ -1,8 +1,5 @@
 ﻿#pragma once
 
-#include "utility.h"
-#include "error.h"
-
 #include <string>
 #include <memory>
 #include <functional>
@@ -37,40 +34,48 @@ enum class UnaryOperator : int {
 
 using ValueType = std::variant<int, double, bool, std::string>;
 
+// 表达式基类
 class Expression {
 public:
-    virtual ~Expression() = default;
+    Expression();
+    virtual ~Expression();
 
     virtual ValueType Evaluate(std::function<std::pair<bool, ValueType>(const std::string&)> getValue) const = 0;
     virtual ValueType Evaluate(std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) const = 0;
 };
 
+// 变量表达式
 class VariableExpression : public Expression {
 private:
     std::string name;
 public:
-    VariableExpression(const std::string& n);
+    VariableExpression(const std::string& expression);
+    virtual ~VariableExpression();
 
     ValueType Evaluate(std::function<std::pair<bool, ValueType>(const std::string&)> getValue) const override;
     ValueType Evaluate(std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) const override;
 };
 
+// 常量表达式
 class ConstantExpression : public Expression {
 private:
     ValueType value;
 public:
-    ConstantExpression(ValueType v);
+    ConstantExpression(ValueType expression);
+    ~ConstantExpression();
 
     ValueType Evaluate(std::function<std::pair<bool, ValueType>(const std::string&)> getValue) const override;
     ValueType Evaluate(std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) const override;
 };
 
+// 数组表达式
 class ArrayExpression : public Expression {
 private:
     std::vector<std::shared_ptr<Expression>> elements;
 
 public:
-    ArrayExpression(std::vector<std::shared_ptr<Expression>> es);
+    ArrayExpression(std::vector<std::shared_ptr<Expression>> expression);
+    ~ArrayExpression();
 
     std::vector<ValueType> GetElementValues(std::function<std::pair<bool, ValueType>(const std::string&)> getValue) const;
     std::vector<ValueType> GetElementValues(std::vector < std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) const;
@@ -79,6 +84,7 @@ public:
     ValueType Evaluate(std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) const override;
 };
 
+// 单目表达式
 class UnaryExpression : public Expression {
 private:
     UnaryOperator operand;
@@ -86,6 +92,7 @@ private:
 
 public:
     UnaryExpression(UnaryOperator op, std::shared_ptr<Expression> operand);
+    ~UnaryExpression();
 
     ValueType Evaluate(std::function<std::pair<bool, ValueType>(const std::string&)> getValue) const override;
     ValueType Evaluate(std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) const override;
@@ -98,6 +105,7 @@ private:
     bool ConvertToBool(const ValueType& value) const;
 };
 
+// 双目表达式
 class BinaryExpression : public Expression {
 private:
     std::shared_ptr<Expression> left;
@@ -106,6 +114,7 @@ private:
 
 public:
     BinaryExpression(std::shared_ptr<Expression> l, std::shared_ptr<Expression> r, BinaryOperator op);
+    ~BinaryExpression();
 
     ValueType Evaluate(std::function<std::pair<bool, ValueType>(const std::string&)> getValue) const override;
     ValueType Evaluate(std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) const override;
@@ -163,6 +172,7 @@ private:
     }
 };
 
+// 表达式接口
 class Condition {
 public:
     bool ParseCondition(const std::string& conditionStr);
@@ -193,5 +203,8 @@ bool IsOperatorChar(char c);
 bool IsSpaceChar(char c);
 bool IsIdentifierChar(char c);
 
+// 值转换字符串
 std::string ToString(const ValueType& value);
+
+// 读取字符串的表达式值
 ValueType FromString(const std::string& s);

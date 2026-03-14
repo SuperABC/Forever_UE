@@ -1,80 +1,99 @@
-﻿#include "job_base.h"
-#include "../common/error.h"
+﻿#include "../common/error.h"
 #include "../common/utility.h"
+
+#include "job_base.h"
 
 
 using namespace std;
 
+// 全成员默认构造
 Job::Job() :
     calendar(nullptr),
     position(nullptr) {
-    // 全成员默认构造
 
 }
 
+// calendar/position在map中统一创建和析构
 Job::~Job() {
-    // calendar/position在map中统一创建和析构
 
 }
 
+// 获取工作日历
 Calendar* Job::GetCalendar() const {
-    // 获取工作日历
     return calendar;
 }
 
+// 设置工作日历
 void Job::SetCalendar(Calendar* calendar) {
-    // 设置工作日历
     this->calendar = calendar;
 }
 
+// 获取工作房间
 Room* Job::GetPosition() const {
-    // 获取工作房间
     return position;
 }
 
+// 设置工作房间
 void Job::SetPosition(Room* room) {
-    // 设置工作房间
     position = room;
 }
 
+// 注册工作
 void JobFactory::RegisterJob(const string& id,
     function<Job* ()> creator, function<void(Job*)> deleter) {
-    // 注册构造器和析构器
     registries[id] = { creator, deleter };
 }
 
-Job* JobFactory::CreateJob(const string& id) {
-    // 根据配置构造职业
-    auto configIt = configs.find(id);
-    if (configIt == configs.end() || !configIt->second) {
+// 创建工作
+Job* JobFactory::CreateJob(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Job %s not enabled when creating.\n", id.data());
         return nullptr;
     }
 
     auto it = registries.find(id);
-    if (it != registries.end()) {
-        return it->second.first();
+    if (it == registries.end()) {
+        debugf("Warning: Job %s not registered when creating.\n", id.data());
+        return nullptr;
     }
+
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Job " + id + " creator is null.\n");
+    }
+
     return nullptr;
 }
 
+// 检查是否注册
 bool JobFactory::CheckRegistered(const string& id) const {
-    // 检查是否注册
     return registries.find(id) != registries.end();
 }
 
+// 设置启用配置
 void JobFactory::SetConfig(const string& name, bool config) {
-    // 设置启用配置
     configs[name] = config;
 }
 
+// 析构工作
 void JobFactory::DestroyJob(Job* job) const {
-    // 析构职业
-    if (!job) return;
-    auto it = registries.find(job->GetType());
-    if (it != registries.end()) {
-        it->second.second(job);
+    if (!job) {
+        debugf("Warning: Job is null when deleting.\n");
+        return;
     }
-    else {
-        debugf(("Deleter not found for " + job->GetType() + ".\n").data());
+
+    auto it = registries.find(job->GetType());
+    if (it == registries.end()) {
+        debugf("Warning: Job %s not registered when deleting.\n", job->GetType().data());
+        return;
+    }
+
+    if (it->second.second) {
+        it->second.second(job);
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Job " + job->GetType() + " deleter is null.\n");
     }
 }
+

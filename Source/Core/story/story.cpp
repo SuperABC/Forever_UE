@@ -202,7 +202,7 @@ ChangeFactory* Story::GetChangeFactory() {
 
 vector<string> Story::ReadNames(string name, string path) const {
 	if (!script) {
-		THROW_EXCEPTION(StructureCrashException, "Script not initialized.\n");
+		THROW_EXCEPTION(NullPointerException, "Script not initialized.\n");
 	}
 
 	return script->ReadNames(name, resourcePath + path, eventFactory, changeFactory);
@@ -210,7 +210,7 @@ vector<string> Story::ReadNames(string name, string path) const {
 
 void Story::ReadStory(string name, string path) {
 	if (!script) {
-		THROW_EXCEPTION(StructureCrashException, "Script not initialized.\n");
+		THROW_EXCEPTION(NullPointerException, "Script not initialized.\n");
 	}
 
 	script->ReadMilestones(name, resourcePath + path, eventFactory, changeFactory);
@@ -239,7 +239,7 @@ bool Story::JudgeCondition(Condition& condition, vector<function<pair<bool, Valu
 
 pair<vector<Dialog>, vector<Change*>> Story::MatchEvent(Event* event) {
 	if (!script) {
-		THROW_EXCEPTION(StructureCrashException, "Script not initialized.\n");
+		THROW_EXCEPTION(NullPointerException, "Script not initialized.\n");
 	}
 
 	return script->MatchEvent(event, this);

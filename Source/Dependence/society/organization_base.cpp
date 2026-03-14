@@ -6,29 +6,34 @@
 
 using namespace std;
 
+// 全成员默认构造
 Organization::Organization() :
     jobs() {
-    // 全成员默认构造
 
 }
 
+// 无析构
 Organization::~Organization() {
-    // 无析构
+
 }
 
+vector<pair<Component*, vector<pair<Job*, int>>>>& Organization::GetJobs() {
+    return jobs;
+}
+
+// 员工入职
 vector<Job*> Organization::EnrollEmployee(const vector<int>& ids) {
-    // 员工入职
     vector<Job*> positions;
 
     int i = 0;
     for (auto& [component, vacancies] : jobs) {
-        for (auto& [job, occupantId] : vacancies) {
-            if (occupantId < 0) {
+        for (auto& [job, employee] : vacancies) {
+            if (employee < 0) {
                 positions.push_back(job);
                 if (i >= ids.size()) {
                     return positions;
                 }
-                occupantId = ids[i];
+                employee = ids[i];
                 ++i;
             }
         }
@@ -37,13 +42,14 @@ vector<Job*> Organization::EnrollEmployee(const vector<int>& ids) {
     return positions;
 }
 
+// 获取全部职位
 const vector<pair<Component*, vector<pair<Job*, int>>>>& Organization::GetJobs() const {
-    // 获取全部职位
+    // 一个组织连接多个Component，每个Component中对应若干组职业与雇员
     return jobs;
 }
 
+// 添加职缺
 void Organization::AddVacancy(Component* component, const vector<Job*>& vacancies) {
-    // 添加职缺
     if (component == nullptr) {
         THROW_EXCEPTION(NullPointerException, "Vacancy component is null.\n");
     }
@@ -54,53 +60,68 @@ void Organization::AddVacancy(Component* component, const vector<Job*>& vacancie
     jobs.emplace_back(component, positions);
 }
 
+// 注册组织
 void OrganizationFactory::RegisterOrganization(const string& id, float power,
     function<Organization* ()> creator, function<void(Organization*)> deleter) {
-    // 注册构造器和析构器
     registries[id] = { creator, deleter };
     powers[id] = power;
 }
 
-Organization* OrganizationFactory::CreateOrganization(const string& id) {
-    // 根据配置构造组织
-    auto configIt = configs.find(id);
-    if (configIt == configs.end() || !configIt->second) {
+// 创建组织
+Organization* OrganizationFactory::CreateOrganization(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Organization %s not enabled when creating.\n", id.data());
         return nullptr;
     }
 
     auto it = registries.find(id);
-    if (it != registries.end()) {
-        return it->second.first();
+    if (it == registries.end()) {
+        debugf("Warning: Organization %s not registered when creating.\n", id.data());
+        return nullptr;
     }
+
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Organization " + id + " creator is null.\n");
+    }
+
     return nullptr;
 }
 
-bool OrganizationFactory::CheckRegistered(const string& id) {
-    // 检查是否注册
+// 检查是否注册
+bool OrganizationFactory::CheckRegistered(const string& id) const {
     return registries.find(id) != registries.end();
 }
 
+// 设置启用配置
 void OrganizationFactory::SetConfig(const string& name, bool config) {
-    // 设置启用配置
     configs[name] = config;
 }
 
+// 获取全部组织权重
 const unordered_map<string, float>& OrganizationFactory::GetPowers() const {
-    // 获取全部组织权重
     return powers;
 }
 
+// 析构组织
 void OrganizationFactory::DestroyOrganization(Organization* organization) const {
-    // 析构组织
     if (!organization) {
+        debugf("Warning: Organization is null when deleting.\n");
         return;
     }
+
     auto it = registries.find(organization->GetType());
-    if (it != registries.end()) {
-        it->second.second(organization);
+    if (it == registries.end()) {
+        debugf("Warning: Organization %s not registered when deleting.\n", organization->GetType().data());
+        return;
     }
-    else {
-        debugf("Deleter not found for %s.\n", organization->GetType().data());
+
+    if (it->second.second) {
+        it->second.second(organization);
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Organization " + organization->GetType() + " deleter is null.\n");
     }
 }
 

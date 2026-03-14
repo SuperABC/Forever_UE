@@ -28,9 +28,11 @@ public:
     static float GetPower();
 
     // 所需组合及数量范围
+    // 返回每个需要的组合类型与组合数量上下限
     virtual std::vector<std::pair<std::string, std::pair<int, int>>> ComponentRequirements() const = 0;
 
     // 根据实际组合安排工作岗位
+    // 输入全部的组合类型与组合数量，返回所有组合类型与每个类型中所有组合中的根据数量重复的职业类型
     virtual std::vector<std::pair<std::string, std::vector<std::vector<std::string>>>> ArrageVacancies(
         const std::vector<std::pair<std::string, int>>& components) const = 0;
 
@@ -42,6 +44,9 @@ public:
 
     // 父类实现方法
 
+    // 获取全部组织职位
+    std::vector<std::pair<Component*, std::vector<std::pair<Job*, int>>>>& GetJobs();
+
     // 员工入职
     virtual std::vector<Job*> EnrollEmployee(const std::vector<int>& ids);
 
@@ -51,7 +56,7 @@ public:
     // 添加职缺
     void AddVacancy(Component* component, const std::vector<Job*>& vacancies);
 
-protected:
+private:
     std::vector<std::pair<Component*, std::vector<std::pair<Job*, int>>>> jobs;
 };
 
@@ -62,10 +67,10 @@ public:
         std::function<Organization* ()> creator, std::function<void(Organization*)> deleter);
 
     // 创建组织（包含new操作）
-    Organization* CreateOrganization(const std::string& id);
+    Organization* CreateOrganization(const std::string& id) const;
 
     // 检查是否注册
-    bool CheckRegistered(const std::string& id);
+    bool CheckRegistered(const std::string& id) const;
 
     // 设置启用配置
     void SetConfig(const std::string& name, bool config);

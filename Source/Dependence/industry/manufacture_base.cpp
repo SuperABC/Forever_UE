@@ -1,11 +1,35 @@
-﻿#include "manufacture_base.h"
+﻿#include "../common/error.h"
+#include "../common/utility.h"
+
+#include "manufacture_base.h"
+
 #include <unordered_set>
+
 
 using namespace std;
 
 unordered_map<string, unordered_map<string, float>> Manufacture::ingredientsCache = {};
 unordered_map<string, unordered_map<string, float>> Manufacture::byproductsCache = {};
 
+// 全成员默认构造
+Manufacture::Manufacture() :
+    inputs(),
+    outputs(),
+    currentInput(0.f),
+    currentOutput(0.f),
+    currentWorkload(0.f),
+    ingredients(),
+    targets(),
+    byproducts() {
+
+}
+
+// inputs/outputs在industry中统一创建和析构
+Manufacture::~Manufacture() {
+
+}
+
+// 计算全部输入输出
 void Manufacture::CalculateTargets(ProductFactory* factory) {
     auto originTargets = this->ProductTargets();
 
@@ -25,7 +49,7 @@ void Manufacture::CalculateTargets(ProductFactory* factory) {
         const string& id = p.first;
         Product* product = factory->CreateProduct(id);
         if (!product) {
-            THROW_EXCEPTION(InvalidConfigException, "Product not available or not enabled: " + id);
+            THROW_EXCEPTION(RuntimeException, "Product not available or not enabled: " + id);
         }
         ingredientsCache[id] = product->GetIngredients();
         byproductsCache[id] = product->GetByproducts();
@@ -57,7 +81,7 @@ void Manufacture::CalculateTargets(ProductFactory* factory) {
     for (auto& node : targetSet) {
         if (state[node] == 0) {
             if (dfs(node)) {
-                THROW_EXCEPTION(InvalidConfigException, "Cyclic dependency detected among target products.");
+                THROW_EXCEPTION(RuntimeException, "Cyclic dependency detected among target products.");
             }
         }
     }
@@ -109,7 +133,7 @@ void Manufacture::CalculateTargets(ProductFactory* factory) {
     }
 
     if (iter >= MAX_DEPTH) {
-        THROW_EXCEPTION(InvalidConfigException, "Maximum iteration depth reached, possible cyclic dependency.");
+        THROW_EXCEPTION(RuntimeException, "Maximum iteration depth reached, possible cyclic dependency.");
     }
 
     unordered_map<string, float> byproducts_result;
@@ -127,66 +151,99 @@ void Manufacture::CalculateTargets(ProductFactory* factory) {
     byproducts = byproducts_result;
 }
 
-void Manufacture::SetInput(string product, Storage* input, ProductFactory* factory) {
-    input->AddOutcome(product, 0.f, factory);
-    inputs[product] = input;
-}
-
+// 获取输入
 unordered_map<string, Storage*> Manufacture::GetInputs() const {
     return inputs;
 }
 
-void Manufacture::SetOutput(string product, Storage* output, ProductFactory* factory) {
-    output->AddIncome(product, 0.f, factory);
-    outputs[product] = output;
+// 设置输入
+void Manufacture::SetInput(const string& product, Storage* input, ProductFactory* factory) {
+    input->AddOutcome(product, 0.f, factory);
+    inputs[product] = input;
 }
 
+// 获取输出
 unordered_map<string, Storage*> Manufacture::GetOutputs() const {
     return outputs;
 }
 
+// 设置输出
+void Manufacture::SetOutput(const string& product, Storage* output, ProductFactory* factory) {
+    output->AddIncome(product, 0.f, factory);
+    outputs[product] = output;
+}
+
+// 获取原料配比
 unordered_map<string, float> Manufacture::GetIngredients() const {
     return ingredients;
 }
 
+// 获取产出配比
 unordered_map<string, float> Manufacture::GetTargets() const {
     return targets;
 }
 
+// 获取副产物配比
 unordered_map<string, float> Manufacture::GetByproducts() const {
     return byproducts;
 }
 
+// 注册工坊
 void ManufactureFactory::RegisterManufacture(const string& id,
     function<Manufacture*()> creator, function<void(Manufacture*)> deleter) {
     registries[id] = {creator, deleter};
 }
 
-Manufacture* ManufactureFactory::CreateManufacture(const string& id) {
-    if (configs.find(id) == configs.end() || !configs.find(id)->second)
+// 创建工坊
+Manufacture* ManufactureFactory::CreateManufacture(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Manufacture %s not enabled when creating.\n", id.data());
         return nullptr;
+    }
 
     auto it = registries.find(id);
-    if (it != registries.end()) {
-        return it->second.first();
+    if (it == registries.end()) {
+        debugf("Warning: Manufacture %s not registered when creating.\n", id.data());
+        return nullptr;
     }
+
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Manufacture " + id + " creator is null.\n");
+    }
+
     return nullptr;
 }
 
-bool ManufactureFactory::CheckRegistered(const string& id) {
+// 检查是否注册
+bool ManufactureFactory::CheckRegistered(const string& id) const {
     return registries.find(id) != registries.end();
 }
 
-void ManufactureFactory::SetConfig(string name, bool config) {
+// 设置启用配置
+void ManufactureFactory::SetConfig(const string& name, bool config) {
     configs[name] = config;
 }
 
+// 析构工坊
 void ManufactureFactory::DestroyManufacture(Manufacture* manufacture) const {
-    if (!manufacture) return;
+    if (!manufacture) {
+        debugf("Warning: Manufacture is null when deleting.\n");
+        return;
+    }
+
     auto it = registries.find(manufacture->GetType());
-    if (it != registries.end()) {
+    if (it == registries.end()) {
+        debugf("Warning: Manufacture  %s  not registered when deleting.\n", manufacture->GetType().data());
+        return;
+    }
+
+    if (it->second.second) {
         it->second.second(manufacture);
     } else {
-        THROW_EXCEPTION(StructureCrashException, "Deleter not found for " + manufacture->GetType() + ".\n");
+        THROW_EXCEPTION(NullPointerException, "Manufacture " + manufacture->GetType() + " deleter is null.\n");
     }
 }
+

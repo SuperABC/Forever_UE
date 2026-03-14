@@ -1,6 +1,6 @@
 ﻿#include "../common/error.h"
-#include "../common/json.h"
 #include "../common/utility.h"
+#include "../common/json.h"
 
 #include "building_base.h"
 
@@ -277,6 +277,7 @@ int Floor::AssignNumber() {
 	return number++;
 }
 
+// 全成员默认构造
 Building::Building() :
 	parentZone(nullptr),
 	parentPlot(nullptr),
@@ -286,117 +287,116 @@ Building::Building() :
 	basements(0),
 	height(0.4f),
 	construction() {
-	// 全成员默认构造
 
 }
 
+// room/component在map中统一创建和析构
 Building::~Building() {
-	// room/component在map中统一创建和析构
 	for (auto floor : floors) {
 		if (floor) delete floor;
 	}
 }
 
+// 获取所在地块
 void Building::SetParent(Plot* plot) {
-	// 获取所在地块
 	parentPlot = plot;
 }
 
+// 设置所在地块
 void Building::SetParent(Zone* zone) {
-	// 设置所在地块
 	parentZone = zone;
 }
 
+// 获取所在园区
 Plot* Building::GetParentPlot() const {
-	// 获取所在园区
 	return parentPlot;
 }
 
+// 设置所在园区
 Zone* Building::GetParentZone() const {
-	// 设置所在园区
 	return parentZone;
 }
 
+// 获取私人房东ID
 int Building::GetOwner() const {
-	// 获取私人房东ID
 	return owner;
 }
 
+// 设置私人房东ID
 void Building::SetOwner(int owner) {
-	// 设置私人房东ID
 	this->owner = owner;
 }
 
+// 获取是否由政府拥有
 bool Building::GetStated() const {
-	// 获取是否由政府拥有
 	return stated;
 }
 
+// 设置是否由政府拥有
 void Building::SetStated(bool stated) {
-	// 设置是否由政府拥有
 	this->stated = stated;
 }
 
+// 获取总地面层数
 int Building::GetLayers() const {
-	// 获取总地面层数
 	return layers;
 }
 
+// 设置总地面层数
 void Building::SetLayers(int layers) {
-	// 设置总地面层数
 	this->layers = layers;
 }
 
+// 获取总地下层数
 int Building::GetBasements() const {
-	// 获取总地下层数
 	return basements;
 }
 
+// 设置总地下层数
 void Building::SetBasements(int basements) {
-	// 设置总地下层数
 	this->basements = basements;
 }
 
+// 获取层高
 float Building::GetHeight() const {
-	// 获取层高
 	return height;
 }
 
+// 设置层高
 void Building::SetHeight(float height) {
-	// 设置层高
 	this->height = height;
 }
 
+// 获取建筑楼体范围
 const Quad Building::GetConstruction() const {
-	// 获取建筑楼体范围
 	return construction;
 }
 
+// 获取楼内全部组合
 vector<Component*>& Building::GetComponents() {
-	// 获取楼内全部组合
 	return components;
 }
 
+// 获取楼内全部房间
 vector<Room*>& Building::GetRooms() {
-	// 获取楼内全部房间
 	return rooms;
 }
 
+// 获取楼层
 Floor* Building::GetFloor(int level) const {
-	// 获取楼层
 	int idx = basements + level;
 	if (idx >= 0 && idx < floors.size())
 		return floors[idx];
 	return nullptr;
 }
 
+// 完成初始化
 void Building::FinishInit() {
-	// 完成初始化
 	construction = LayoutConstruction();
 }
 
+// 获取建筑中心世界位置
 pair<float, float> Building::GetPosition() const {
-	// 获取建筑中心世界位置
 	auto zone = GetParentZone();
 	if (zone) {
 		auto plot = zone->GetParent();
@@ -419,8 +419,8 @@ pair<float, float> Building::GetPosition() const {
 	return { 0.f, 0.f };
 }
 
+// 获取完整地址
 string Building::GetAddress() const {
-	// 获取完整地址
 	auto plotAddress = GetParentPlot()->GetAddress();
 	if (GetParentZone()) {
 		return plotAddress + " " + GetParentZone()->GetAddress() + " " + GetName();
@@ -430,8 +430,8 @@ string Building::GetAddress() const {
 	}
 }
 
+// 读取所有布局模板
 Layout* Building::ReadTemplates(string path) {
-	// 读取所有布局模板
 	if (!filesystem::exists(REPLACE_PATH(path))) {
 		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
 	}
@@ -606,13 +606,13 @@ Layout* Building::ReadTemplates(string path) {
 	return layout;
 }
 
+// 分配楼层空间（将floors操作移动至对应dll，否则析构时崩溃）
 void Building::AllocateFloors() {
-	// 分配楼层空间（将floors操作移动至对应dll，否则析构时崩溃）
 	floors.resize(GetBasements() + GetLayers());
 }
 
+// 根据模板生成一层楼层
 void Building::ReadFloor(int level, int face, string name, Layout* layout) {
-	// 根据模板生成一层楼层
 	if (!layout) {
 		THROW_EXCEPTION(InvalidArgumentException, "Layout pointer is null.\n");
 	}
@@ -653,8 +653,8 @@ void Building::ReadFloor(int level, int face, string name, Layout* layout) {
 	floors[idx] = floor;
 }
 
+// 按照单一模板生成所有楼层
 void Building::ReadFloors(int face, string name, Layout* layout) {
-	// 按照单一模板生成所有楼层
 	if (!layout) {
 		THROW_EXCEPTION(InvalidArgumentException, "Layout pointer is null.\n");
 	}
@@ -663,8 +663,8 @@ void Building::ReadFloors(int face, string name, Layout* layout) {
 	}
 }
 
+// 按照层数个模板生成所有楼层
 void Building::ReadFloors(int face, vector<string> names, Layout* layout) {
-	// 按照层数个模板生成所有楼层
 	if (!layout) {
 		THROW_EXCEPTION(InvalidArgumentException, "Layout pointer is null.\n");
 	}
@@ -676,9 +676,9 @@ void Building::ReadFloors(int face, vector<string> names, Layout* layout) {
 	}
 }
 
+// 为模板中第slot个独立房间生成房间
 void Building::AssignRoom(int level, int slot, string name,
 	Component* component, RoomFactory* factory) {
-	// 为模板中第slot个独立房间生成房间
 	if (!component || !factory) {
 		THROW_EXCEPTION(InvalidArgumentException, "Component or factory is null.\n");
 	}
@@ -708,9 +708,9 @@ void Building::AssignRoom(int level, int slot, string name,
 	rooms.push_back(room);
 }
 
+// 为模板中第slot个联排房间生成房间
 void Building::ArrangeRow(int level, int slot, string name, float acreage,
 	Component* component, RoomFactory* factory) {
-	// 为模板中第slot个联排房间生成房间
 	if (!component || !factory) {
 		THROW_EXCEPTION(InvalidArgumentException, "Component or factory is null.\n");
 	}
@@ -770,22 +770,22 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage,
 	}
 }
 
+// 在建筑内生成空组合
 Component* Building::CreateComponent(string name, ComponentFactory* factory) {
-	// 在建筑内生成空组合
 	if (!factory) {
 		THROW_EXCEPTION(InvalidArgumentException, "Factory pointer is null.\n");
 	}
 	Component* component = factory->CreateComponent(name);
 	if (!component) {
-		debugf("Failed to create component %s\n", name.data());
+		debugf("Warning: Failed to create component %s\n", name.data());
 		return nullptr;
 	}
 	components.push_back(component);
 	return component;
 }
 
+// 根据转向修改矩形参数
 vector<float> Building::InverseParams(vector<float>& params, int face) {
-	// 根据转向修改矩形参数
 	if (face < 0 || face >= 4) {
 		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
 	}
@@ -833,8 +833,8 @@ vector<float> Building::InverseParams(vector<float>& params, int face) {
 	return inversed;
 }
 
+// 根据转向修改朝向参数
 int Building::InverseDirection(int direction, int face) {
-	// 根据转向修改朝向参数
 	if (face < 0 || face >= 4) {
 		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
 	}
@@ -854,78 +854,105 @@ int Building::InverseDirection(int direction, int face) {
 	}
 }
 
+// 注册建筑
 void BuildingFactory::RegisterBuilding(const string& id, const vector<float>& power,
-	function<Building* ()> creator, function<void(Building*)> deleter) {
-	// 注册构造器和析构器
-	registries[id] = { creator, deleter };
-	powers[id] = power;
+    function<Building* ()> creator, function<void(Building*)> deleter) {
+    registries[id] = { creator, deleter };
+    powers[id] = power;
 }
 
-Building* BuildingFactory::CreateBuilding(const string& id) {
-	// 根据配置构造建筑
-	auto cit = configs.find(id);
-	if (cit == configs.end() || !cit->second) return nullptr;
+// 创建建筑
+Building* BuildingFactory::CreateBuilding(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Building %s not enabled when creating.\n", id.data());
+        return nullptr;
+    }
 
-	auto it = registries.find(id);
-	if (it != registries.end()) {
-		return it->second.first();
-	}
-	return nullptr;
+    auto it = registries.find(id);
+    if (it == registries.end()) {
+        debugf("Warning: Building %s not registered when creating.\n", id.data());
+        return nullptr;
+    }
+
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Building " + id + " creator is null.\n");
+    }
+
+    return nullptr;
 }
 
-bool BuildingFactory::CheckRegistered(const string& id) {
-	// 检查是否注册
-	return registries.find(id) != registries.end();
+// 检查是否注册
+bool BuildingFactory::CheckRegistered(const string& id) const {
+    return registries.find(id) != registries.end();
 }
 
+// 设置启用配置
 void BuildingFactory::SetConfig(const string& name, bool config) {
-	// 设置启用配置
-	configs[name] = config;
+    configs[name] = config;
 }
 
-const unordered_map<string, vector<float>> BuildingFactory::GetPowers() {
-	// 获取所有启用建筑全地块权重
-	auto result = powers;
-	for (auto &[name, power] : powers) {
-		if (configs.find(name) == configs.end() || !configs[name]) {
-			result.erase(name);
-		}
-	}
-	return result;
+// 获取所有启用建筑全地块权重
+const unordered_map<string, vector<float>> BuildingFactory::GetPowers() const {
+    auto result = powers;
+    for (auto &[name, power] : powers) {
+        if (configs.find(name) == configs.end() || !configs.at(name)) {
+            result.erase(name);
+        }
+    }
+    return result;
 }
 
-unordered_map<Plot*, vector<string>> BuildingFactory::GetNums(const std::vector<Plot*>& plots) {
-	unordered_map<Plot*, vector<string>> uniques;
+// 自定义生成建筑数量
+unordered_map<Plot*, vector<string>> BuildingFactory::GetNums(const std::vector<Plot*>& plots) const {
+    unordered_map<Plot*, vector<string>> uniques;
 
-	for (auto registry : registries) {
-		if (configs[registry.first]) {
-			Building* tmp = CreateBuilding(registry.first);
-			auto nums = tmp->GetNum(plots);
-			for (auto& [plot, num] : nums) {
-				if (num < 0 || num > 16) {
-					DestroyBuilding(tmp);
-					THROW_EXCEPTION(InvalidConfigException, "Building number for type " + registry.first + " out of range.\n");
-				}
-				for (int i = 0; i < num; i++) {
-					uniques[plot].push_back(registry.first);
-				}
-			}
-			DestroyBuilding(tmp);
-		}
-	}
+    for (auto registry : registries) {
+        if (configs.find(registry.first) == configs.end() || !configs.at(registry.first)) {
+            continue;
+        }
 
-	return uniques;
+        Building* building = CreateBuilding(registry.first);
+        if (!building) {
+            continue;
+        }
+
+        auto nums = building->GetNum(plots);
+        for (auto& [plot, num] : nums) {
+            if (num < 0 || num > 16) {
+                DestroyBuilding(building);
+                THROW_EXCEPTION(RuntimeException, "Building number for type " + registry.first + " out of range.\n");
+            }
+            for (int i = 0; i < num; i++) {
+                uniques[plot].push_back(registry.first);
+            }
+        }
+        DestroyBuilding(building);
+    }
+
+    return uniques;
 }
 
+// 析构建筑
 void BuildingFactory::DestroyBuilding(Building* building) const {
-	// 析构建筑
-	if (!building) return;
-	auto it = registries.find(building->GetType());
-	if (it != registries.end()) {
-		it->second.second(building);
-	}
-	else {
-		debugf("Deleter not found for %s\n", building->GetType().data());
-	}
+    if (!building) {
+        debugf("Warning: Building is null when deleting.\n");
+        return;
+    }
+
+    auto it = registries.find(building->GetType());
+    if (it == registries.end()) {
+        debugf("Warning: Building %s not registered when deleting.\n", building->GetType().data());
+        return;
+    }
+
+    if (it->second.second) {
+        it->second.second(building);
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Building " + building->GetType() + " deleter is null.\n");
+    }
 }
+
 

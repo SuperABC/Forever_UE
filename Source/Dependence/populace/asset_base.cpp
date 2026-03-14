@@ -6,68 +6,82 @@
 
 using namespace std;
 
+// 全成员默认构造
 Asset::Asset() :
 	asset() {
-	// 全成员默认构造
 
 }
 
+// 无析构
 Asset::~Asset() {
-	// 无析构
 
 }
 
+// 获取资产名称
 const string& Asset::GetAsset() const {
-	// 获取资产名称
 	return asset;
 }
 
+// 设置资产名称
 void Asset::SetAsset(const string& asset) {
-	// 设置资产名称
 	this->asset = asset;
 }
 
+// 注册资产
 void AssetFactory::RegisterAsset(const string& id,
-	function<Asset* ()> creator, function<void(Asset*)> deleter) {
-	// 注册构造器和析构器
-	registries[id] = { creator, deleter };
+    function<Asset* ()> creator, function<void(Asset*)> deleter) {
+    registries[id] = { creator, deleter };
 }
 
-Asset* AssetFactory::CreateAsset(const string& id) {
-	// 根据配置构造资产
-	auto config = configs.find(id);
-	if (config == configs.end() || !config->second) {
-		return nullptr;
-	}
+// 创建资产
+Asset* AssetFactory::CreateAsset(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Asset %s not enabled when creating.\n", id.data());
+        return nullptr;
+    }
 
-	auto it = registries.find(id);
-	if (it != registries.end()) {
-		return it->second.first();
-	}
-	return nullptr;
+    auto it = registries.find(id);
+    if (it == registries.end()) {
+        debugf("Warning: Asset  %s  not registered when creating.\n", id.data());
+        return nullptr;
+    }
+
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Asset " + id + " creator is null.\n");
+    }
+
+    return nullptr;
 }
 
+// 检查是否注册
 bool AssetFactory::CheckRegistered(const string& id) const {
-	// 检查是否注册
-	return registries.find(id) != registries.end();
+    return registries.find(id) != registries.end();
 }
 
+// 设置启用配置
 void AssetFactory::SetConfig(const string& name, bool config) {
-	// 设置启用配置
-	configs[name] = config;
+    configs[name] = config;
 }
 
+// 析构资产
 void AssetFactory::DestroyAsset(Asset* asset) const {
-	// 析构资产
-	if (!asset) {
-		debugf("Asset is null before destroying.\n");
-		return;
-	}
-	auto it = registries.find(asset->GetType());
-	if (it != registries.end()) {
-		it->second.second(asset);
-	}
-	else {
-		debugf("Deleter not found for %s.\n", asset->GetType().data());
-	}
+    if (!asset) {
+        debugf("Warning: Asset is null when deleting.\n");
+        return;
+    }
+
+    auto it = registries.find(asset->GetType());
+    if (it == registries.end()) {
+        debugf("Warning: Asset %s not registered when deleting.\n", asset->GetType().data());
+        return;
+    }
+
+    if (it->second.second) {
+        it->second.second(asset);
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Asset " + asset->GetType() + " deleter is null.\n");
+    }
 }

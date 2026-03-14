@@ -6,22 +6,23 @@
 
 using namespace std;
 
+// 全成员默认构造
 Terrain::Terrain() :
     dx{ -1, 1, 0, 0 },
     dy{ 0, 0, -1, 1 } {
-    // 全成员默认构造
 
 }
 
+// 无析构
 Terrain::~Terrain() {
 
 }
 
+// 地形填充，若ovewrite为true，则全图填充，否则只填充平原
 int Terrain::FloodTerrain(
     int x, int y, int num, bool overwrite, int width, int height,
     function<bool(int, int, const string&, float)> set,
     function<string(int, int)> get) const {
-    // 地形填充，若ovewrite为true，则全图填充，否则只填充平原
     vector<pair<int, int>> q;
 
     if (x < 0 || x >= width - 1 || y < 0 || y >= height - 1)
@@ -55,11 +56,11 @@ int Terrain::FloodTerrain(
     return count;
 }
 
+// 检查地形填充处是否为当前边界
 bool Terrain::CheckBoundary(
     int x, int y, bool overwrite, int width, int height,
     function<bool(int, int, const string&, float)> set,
     function<string(int, int)> get) const {
-    // 检查地形填充处是否为当前边界
     if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
         return true;
     for (int i = 0; i < 4; ++i) {
@@ -77,10 +78,10 @@ bool Terrain::CheckBoundary(
     return false;
 }
 
+// 更新地形填充边界
 void Terrain::UpdateBoundary(
     int x, int y, vector<pair<int, int>>& q, bool overwrite, int width, int height,
     function<bool(int, int, const string&, float)> set,
-    // 更新地形填充边界
     function<string(int, int)> get) const {
     for (int i = 0; i < 4; ++i) {
         int nx = x + dx[i];
@@ -100,10 +101,10 @@ void Terrain::UpdateBoundary(
     }
 }
 
+// 地形滤波
 void Terrain::ShapeFilter(int x, int y, int width, int height,
     function<bool(int, int, const string&, float)> set,
     function<string(int, int)> get, int side, float threshold) const {
-    // 地形滤波
     if (get(x, y) == GetType())
         return;
 
@@ -126,57 +127,77 @@ void Terrain::ShapeFilter(int x, int y, int width, int height,
         set(x, y, GetType(), 0.f);
 }
 
+// 注册地形
 void TerrainFactory::RegisterTerrain(const string& id,
     function<Terrain* ()> creator, function<void(Terrain*)> deleter) {
-    // 注册构造器和析构器
     registries[id] = { creator, deleter };
 }
 
+// 创建地形
 Terrain* TerrainFactory::CreateTerrain(const string& id) const {
-    // 根据配置构造地形
     auto config = configs.find(id);
     if (config == configs.end() || !config->second) {
+        debugf("Warning: Terrain %s not enabled when creating.\n", id.data());
         return nullptr;
     }
 
     auto it = registries.find(id);
-    if (it != registries.end()) {
+    if(it == registries.end()) {
+        debugf("Warning: Terrain %s not registered when creating.\n", id.data());
+        return nullptr;
+    }
+    
+    if(it->second.first){
         return it->second.first();
     }
+    else {
+        THROW_EXCEPTION(NullPointerException, "Terrain " + id + " creater is null.\n");
+    }
+
     return nullptr;
 }
 
+// 检查是否注册
 bool TerrainFactory::CheckRegistered(const string& id) const {
-    // 检查是否注册
     return registries.find(id) != registries.end();
 }
 
+// 设置启用配置
 void TerrainFactory::SetConfig(const string& name, bool config) {
-    // 设置启用配置
     configs[name] = config;
 }
 
+// 获取所有启用地形
 vector<Terrain*> TerrainFactory::GetTerrains() const {
-    // 获取所有启用地形
     vector<Terrain*> terrains;
-    for (auto& r : registries) {
-        if (configs.find(r.first)->second) {
-            terrains.push_back(r.second.first());
+    for (auto& registry : registries) {
+        if (configs.find(registry.first)->second) {
+            terrains.push_back(registry.second.first());
         }
     }
     return terrains;
 }
 
+// 析构地形
 void TerrainFactory::DestroyTerrains(const vector<Terrain*>& terrains) const {
-    // 析构地形（包含delete操作）
     for(auto terrain : terrains){
-        if(!terrain)continue;
-        auto it = registries.find(terrain->GetType());
-        if (it != registries.end()) {
-            return it->second.second(terrain);
+        if (!terrain) {
+            debugf("Warning: Terrain is null when deleting.\n");
+            return;
         }
-        else{
-            debugf(("Deleter not found for " + terrain->GetType() + ".\n").data());
+
+        auto it = registries.find(terrain->GetType());
+        if (it == registries.end()) {
+            debugf("Warning: Terrain %s not registered when deleting.\n", terrain->GetType().data());
+            continue;
+        }
+
+        if(it->second.second){
+            it->second.second(terrain);
+        }
+        else {
+            THROW_EXCEPTION(NullPointerException, "Terrain " + terrain->GetType() + " deleter is null.\n");
         }
     }
 }
+

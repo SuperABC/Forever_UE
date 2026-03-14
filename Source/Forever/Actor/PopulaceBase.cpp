@@ -153,7 +153,7 @@ void APopulaceBase::AddInstance(FString name, AActor* actor) {
 		personInstances[TCHAR_TO_UTF8(*name)] = actor;
 	}
 	else {
-		THROW_EXCEPTION(InvalidConfigException, string("Duplicate person name: ") + TCHAR_TO_UTF8(*name) + ".\n");
+		THROW_EXCEPTION(RuntimeException, string("Duplicate person name: ") + TCHAR_TO_UTF8(*name) + ".\n");
 	}
 }
 
@@ -163,7 +163,7 @@ void APopulaceBase::RemoveInstance(FString name, AActor*& instance) {
 		personInstances.erase(TCHAR_TO_UTF8(*name));
 	}
 	else {
-		THROW_EXCEPTION(InvalidConfigException, string("Person not found: ") + TCHAR_TO_UTF8(*name) + ".\n");
+		THROW_EXCEPTION(RuntimeException, string("Person not found: ") + TCHAR_TO_UTF8(*name) + ".\n");
 	}
 }
 

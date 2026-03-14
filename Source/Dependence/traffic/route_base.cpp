@@ -1,6 +1,8 @@
-﻿#include "route_base.h"
-#include "../common/error.h"
+﻿#include "../common/error.h"
 #include "../common/utility.h"
+
+#include "route_base.h"
+
 
 using namespace std;
 
@@ -15,15 +17,26 @@ BezierCurve::BezierCurve(string station1, int slot1, glm::vec3 pos1, glm::vec3 d
 BezierCurve::~BezierCurve() {
 }
 
-Route::Route() {
+// 全成员默认构造
+Route::Route() :
+    stations(),
+    connections(){
+
 }
 
+// Station在traffic中统一创建和析构
 Route::~Route() {
     for (auto connection : connections) {
         delete connection;
     }
 }
 
+// 获取路线连接图
+vector<BezierCurve*> Route::GetConnections() {
+    return connections;
+}
+
+// 路线图中加入车站
 bool Route::AddStation(string connectStation, int connectSlot, Station* newStation, int newSlot, string name) {
     if (stations.find(name) != stations.end()) return false;
     if (stations.find(connectStation) == stations.end()) return false;
@@ -45,6 +58,7 @@ bool Route::AddStation(string connectStation, int connectSlot, Station* newStati
     return true;
 }
 
+// 连接两个已有车站
 bool Route::AddConnection(string connect1, int slot1, string connect2, int slot2) {
     if (stations.find(connect1) == stations.end() || stations.find(connect2) == stations.end()) {
         return false;
@@ -58,40 +72,62 @@ bool Route::AddConnection(string connect1, int slot1, string connect2, int slot2
     return true;
 }
 
-vector<BezierCurve*> Route::GetConnections() {
-    return connections;
-}
-
+// 注册线路
 void RouteFactory::RegisterRoute(const string& id,
-	function<Route*()> creator, function<void(Route*)> deleter) {
+    function<Route*()> creator, function<void(Route*)> deleter) {
     registries[id] = {creator, deleter};
 }
 
-Route* RouteFactory::CreateRoute(const string& id) {
-    if (configs.find(id) == configs.end() || !configs.find(id)->second)
+// 创建线路
+Route* RouteFactory::CreateRoute(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Route %s not enabled when creating.\n", id.data());
         return nullptr;
+    }
 
     auto it = registries.find(id);
-    if (it != registries.end()) {
-        return it->second.first();
+    if (it == registries.end()) {
+        debugf("Warning: Route %s not registered when creating.\n", id.data());
+        return nullptr;
     }
+
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Route " + id + " creator is null.\n");
+    }
+
     return nullptr;
 }
 
-bool RouteFactory::CheckRegistered(const string& id) {
+// 检查是否注册
+bool RouteFactory::CheckRegistered(const string& id) const {
     return registries.find(id) != registries.end();
 }
 
-void RouteFactory::SetConfig(string name, bool config) {
+// 设置启用配置
+void RouteFactory::SetConfig(const string& name, bool config) {
     configs[name] = config;
 }
 
+// 析构线路
 void RouteFactory::DestroyRoute(Route* route) const {
-    if (!route) return;
+    if (!route) {
+        debugf("Warning: Route is null when deleting.\n");
+        return;
+    }
+
     auto it = registries.find(route->GetType());
-    if (it != registries.end()) {
+    if (it == registries.end()) {
+        debugf("Warning: Route %s not registered when deleting.\n", route->GetType().data());
+        return;
+    }
+
+    if (it->second.second) {
         it->second.second(route);
     } else {
-        debugf(("Deleter not found for " + route->GetType() + ".\n").data());
+        THROW_EXCEPTION(NullPointerException, "Route " + route->GetType() + " deleter is null.\n");
     }
 }
+

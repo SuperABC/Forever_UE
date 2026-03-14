@@ -99,7 +99,7 @@ void ABuildingBase::SetInstance(FString name, AActor* actor) {
 		buildingInstances[TCHAR_TO_UTF8(*name)] = actor;
 	}
 	else {
-		THROW_EXCEPTION(InvalidConfigException, string("Duplicate building name: ") + TCHAR_TO_UTF8(*name) + ".\n");
+		THROW_EXCEPTION(RuntimeException, string("Duplicate building name: ") + TCHAR_TO_UTF8(*name) + ".\n");
 	}
 }
 

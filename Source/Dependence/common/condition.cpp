@@ -1,4 +1,6 @@
 ﻿#include "condition.h"
+#include "utility.h"
+#include "error.h"
 
 #include <iostream>
 #include <vector>
@@ -13,7 +15,20 @@
 
 using namespace std;
 
-VariableExpression::VariableExpression(const string& n) : name(n) {
+Expression::Expression() {
+
+}
+
+Expression::~Expression() {
+
+}
+
+VariableExpression::VariableExpression(const string& expression) :
+    name(expression) {
+
+}
+
+VariableExpression::~VariableExpression() {
 
 }
 
@@ -32,8 +47,12 @@ ValueType VariableExpression::Evaluate(vector<function<pair<bool, ValueType>(con
     return 0;
 }
 
-ConstantExpression::ConstantExpression(ValueType v) : value(v) {
+ConstantExpression::ConstantExpression(ValueType expression) : value(expression) {
 
+}
+
+ConstantExpression::~ConstantExpression() {
+    
 }
 
 ValueType ConstantExpression::Evaluate(function<pair<bool, ValueType>(const string&)> getValue) const {
@@ -44,8 +63,13 @@ ValueType ConstantExpression::Evaluate(vector<function<pair<bool, ValueType>(con
     return value;
 }
 
-ArrayExpression::ArrayExpression(vector<shared_ptr<Expression>> es)
-    : elements(move(es)) {
+ArrayExpression::ArrayExpression(vector<shared_ptr<Expression>> expression)
+    : elements(move(expression)) {
+
+}
+
+ArrayExpression::~ArrayExpression() {
+    
 }
 
 ValueType ArrayExpression::Evaluate(function<pair<bool, ValueType>(const string&)> getValue) const {
@@ -84,6 +108,10 @@ UnaryExpression::UnaryExpression(UnaryOperator op, shared_ptr<Expression> operan
 
 }
 
+UnaryExpression::~UnaryExpression() {
+    
+}
+
 ValueType UnaryExpression::Evaluate(function<pair<bool, ValueType>(const string&)> getValue) const {
     vector<function<pair<bool, ValueType>(const string&)>> getValues = { getValue };
     return Evaluate(getValues);
@@ -98,7 +126,7 @@ ValueType UnaryExpression::Evaluate(vector<function<pair<bool, ValueType>(const 
     case UnaryOperator::LOGICAL_NOT:
         return ApplyLogicalNot(value);
     default:
-        THROW_EXCEPTION(InvalidConfigException, "Unknown unary operator.\n");
+        THROW_EXCEPTION(InvalidArgumentException, "Unknown unary operator.\n");
     }
 }
 
@@ -109,14 +137,14 @@ ValueType UnaryExpression::ApplyNegate(const ValueType& value) const {
             return -v;
         }
         else {
-            THROW_EXCEPTION(InvalidConfigException, "Cannot apply negate to boolean or non-numeric type.\n");
+            THROW_EXCEPTION(RuntimeException, "Cannot apply negate to boolean or non-numeric type.\n");
         }
         }, value);
 }
 
 ValueType UnaryExpression::ApplyLogicalNot(const ValueType& value) const {
-    bool bool_val = ConvertToBool(value);
-    return !bool_val;
+    bool v = ConvertToBool(value);
+    return !v;
 }
 
 bool UnaryExpression::ConvertToBool(const ValueType& value) const {
@@ -146,6 +174,10 @@ BinaryExpression::BinaryExpression(shared_ptr<Expression> l,
     : left(move(l)), right(move(r)), operand(op) {
 }
 
+BinaryExpression::~BinaryExpression() {
+    
+}
+
 ValueType BinaryExpression::Evaluate(function<pair<bool, ValueType>(const string&)> getValue) const {
     vector<function<pair<bool, ValueType>(const string&)>> getValues = { getValue };
     return Evaluate(getValues);
@@ -155,7 +187,7 @@ ValueType BinaryExpression::Evaluate(vector<function<pair<bool, ValueType>(const
     if (operand == BinaryOperator::INCLUDE) {
         auto array_expr = dynamic_cast<ArrayExpression*>(right.get());
         if (!array_expr) {
-            THROW_EXCEPTION(InvalidConfigException, "Right operand of 'in' must be an array.\n");
+            THROW_EXCEPTION(RuntimeException, "Right operand of 'in' must be an array.\n");
         }
 
         auto array_values = array_expr->GetElementValues(getValues);
@@ -207,7 +239,7 @@ ValueType BinaryExpression::Evaluate(vector<function<pair<bool, ValueType>(const
         return ComputeArithmetic(left_val, right_val, operand);
 
     default:
-        THROW_EXCEPTION(InvalidConfigException, "Unknown operator.\n");
+        THROW_EXCEPTION(RuntimeException, "Unknown binary operator.\n");
     }
 }
 
@@ -216,7 +248,7 @@ bool BinaryExpression::GetComparisonResult(const ValueType& left, const ValueTyp
     if (auto bool_result = get_if<bool>(&result)) {
         return *bool_result;
     }
-    THROW_EXCEPTION(InvalidConfigException, "Comparison must return boolean value.\n");
+    THROW_EXCEPTION(RuntimeException, "Comparison must return boolean value.\n");
 }
 
 ValueType BinaryExpression::CompareValues(const ValueType& left, const ValueType& right, BinaryOperator op) const {
@@ -251,7 +283,7 @@ ValueType BinaryExpression::ComputeArithmetic(const ValueType& left, const Value
                     return to_string(v);
                 }
                 else {
-                    THROW_EXCEPTION(ArithmeticException, "Unsupported type for string concatenation.\n");
+                    THROW_EXCEPTION(RuntimeException, "Unsupported type for string concatenation.\n");
                 }
                 }, left);
 
@@ -267,7 +299,7 @@ ValueType BinaryExpression::ComputeArithmetic(const ValueType& left, const Value
                     return to_string(v);
                 }
                 else {
-                    THROW_EXCEPTION(ArithmeticException, "Unsupported type for string concatenation.\n");
+                    THROW_EXCEPTION(RuntimeException, "Unsupported type for string concatenation.\n");
                 }
                 }, right);
 
@@ -287,12 +319,12 @@ ValueType BinaryExpression::ComputeArithmetic(const ValueType& left, const Value
             case BinaryOperator::MULTIPLY: return l * r;
             case BinaryOperator::DIVIDE:
                 if (r == 0) {
-                    THROW_EXCEPTION(ArithmeticException, "Division by zero.\n");
+                    THROW_EXCEPTION(RuntimeException, "Division by zero.\n");
                 }
                 return l / r;
             case BinaryOperator::MODULO:
                 if (r == 0) {
-                    THROW_EXCEPTION(ArithmeticException, "Modulo by zero.\n");
+                    THROW_EXCEPTION(RuntimeException, "Modulo by zero.\n");
                 }
                 return l % r;
             case BinaryOperator::EXPONENT: {
@@ -307,7 +339,7 @@ ValueType BinaryExpression::ComputeArithmetic(const ValueType& left, const Value
                 return result;
             }
             default:
-                THROW_EXCEPTION(ArithmeticException, "Unsupported arithmetic operator.\n");
+                THROW_EXCEPTION(RuntimeException, "Unsupported arithmetic operator.\n");
             }
         }
         // 如果至少有一个操作数是浮点数，进行浮点数运算
@@ -322,22 +354,22 @@ ValueType BinaryExpression::ComputeArithmetic(const ValueType& left, const Value
             case BinaryOperator::MULTIPLY: return l_val * r_val;
             case BinaryOperator::DIVIDE:
                 if (abs(r_val) < 1e-10) {
-                    THROW_EXCEPTION(ArithmeticException, "Division by zero.\n");
+                    THROW_EXCEPTION(RuntimeException, "Division by zero.\n");
                 }
                 return l_val / r_val;
             case BinaryOperator::MODULO:
                 if (abs(r_val) < 1e-10) {
-                    THROW_EXCEPTION(ArithmeticException, "Modulo by zero.\n");
+                    THROW_EXCEPTION(RuntimeException, "Modulo by zero.\n");
                 }
                 return fmod(l_val, r_val);
             case BinaryOperator::EXPONENT:
                 return pow(l_val, r_val);
             default:
-                THROW_EXCEPTION(ArithmeticException, "Unsupported arithmetic operator.\n");
+                THROW_EXCEPTION(RuntimeException, "Unsupported arithmetic operator.\n");
             }
         }
         else {
-            THROW_EXCEPTION(ArithmeticException, "Arithmetic operations only supported for numeric types.\n");
+            THROW_EXCEPTION(RuntimeException, "Arithmetic operations only supported for numeric types.\n");
         }
         }, left, right);
 }
@@ -390,7 +422,7 @@ bool Condition::EvaluateBool(vector<function<pair<bool, ValueType>(const string&
     if (auto bool_val = get_if<bool>(&result)) {
         return *bool_val;
     }
-    THROW_EXCEPTION(InvalidConfigException, "Condition must Evaluate to boolean.\n");
+    THROW_EXCEPTION(RuntimeException, "Condition must Evaluate to boolean.\n");
 }
 
 ValueType Condition::EvaluateValue(function<pair<bool, ValueType>(const string&)> getValue) const {
@@ -480,7 +512,7 @@ vector<string> Condition::InfixToPostfix(const vector<string>& infix) {
                 opStack.pop();
             }
             if (opStack.empty()) {
-                THROW_EXCEPTION(InvalidConfigException, "Mismatched parentheses.\n");
+                THROW_EXCEPTION(RuntimeException, "Mismatched parentheses.\n");
             }
             opStack.pop();
         }
@@ -497,7 +529,7 @@ vector<string> Condition::InfixToPostfix(const vector<string>& infix) {
 
     while (!opStack.empty()) {
         if (opStack.top() == "(") {
-            THROW_EXCEPTION(InvalidConfigException, "Mismatched parentheses.\n");
+            THROW_EXCEPTION(RuntimeException, "Mismatched parentheses.\n");
         }
         postfix.push_back(opStack.top());
         opStack.pop();
@@ -523,7 +555,7 @@ shared_ptr<Expression> Condition::ParsePostfix(const vector<string>& postfix) {
                 }
 
                 if (IsOperator(postfix[j])) {
-                    THROW_EXCEPTION(InvalidConfigException, "Unexpected operator in array: " + postfix[j] + ".\n");
+                    THROW_EXCEPTION(RuntimeException, "Unexpected operator in array: " + postfix[j] + ".\n");
                 }
 
                 elements.push_back(ParseOperand(postfix[j]));
@@ -531,7 +563,7 @@ shared_ptr<Expression> Condition::ParsePostfix(const vector<string>& postfix) {
             }
 
             if (j >= postfix.size() || postfix[j] != "]") {
-                THROW_EXCEPTION(InvalidConfigException, "Unclosed array.\n");
+                THROW_EXCEPTION(RuntimeException, "Unclosed array.\n");
             }
 
             exprStack.push(make_unique<ArrayExpression>(move(elements)));
@@ -539,7 +571,7 @@ shared_ptr<Expression> Condition::ParsePostfix(const vector<string>& postfix) {
         }
         else if (IsOperator(token)) {
             if (exprStack.size() < 2) {
-                THROW_EXCEPTION(InvalidConfigException, "Insufficient operands for operator: " + token + ".\n");
+                THROW_EXCEPTION(RuntimeException, "Insufficient operands for operator: " + token + ".\n");
             }
 
             auto right = move(exprStack.top());
@@ -566,7 +598,7 @@ shared_ptr<Expression> Condition::ParsePostfix(const vector<string>& postfix) {
     }
 
     if (exprStack.size() != 1) {
-        THROW_EXCEPTION(InvalidConfigException, "Invalid expression.\n");
+        THROW_EXCEPTION(RuntimeException, "Invalid expression.\n");
     }
 
     return move(exprStack.top());

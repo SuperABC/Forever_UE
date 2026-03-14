@@ -72,7 +72,7 @@ void AZoneBase::SetInstance(FString name, AActor* actor) {
 		zoneInstances[TCHAR_TO_UTF8(*name)] = actor;
 	}
 	else {
-		THROW_EXCEPTION(InvalidConfigException, string("Duplicate zone name: ") + TCHAR_TO_UTF8(*name) + ".\n");
+		THROW_EXCEPTION(RuntimeException, string("Duplicate zone name: ") + TCHAR_TO_UTF8(*name) + ".\n");
 	}
 }
 

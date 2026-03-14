@@ -14,7 +14,6 @@ public:
 
     virtual ~ExceptionBase() noexcept = default;
 
-    // 获取报错信息
     const char* what() const noexcept override;
     virtual std::string GetDetailedInfo() const;
     const std::string& getMessage() const noexcept { return m_message; }
@@ -32,64 +31,56 @@ protected:
     std::string m_what;
 };
 
+// 访问空指针
 class NullPointerException : public ExceptionBase {
 public:
     using ExceptionBase::ExceptionBase;
 };
 
+// 命令行输入有误
 class CommandException : public ExceptionBase {
 public:
     using ExceptionBase::ExceptionBase;
 };
 
-class StructureCrashException : public ExceptionBase {
-public:
-    using ExceptionBase::ExceptionBase;
-};
-
+// 函数参数有误
 class InvalidArgumentException : public ExceptionBase {
 public:
     using ExceptionBase::ExceptionBase;
 };
 
-class InvalidConfigException : public ExceptionBase {
-public:
-    using ExceptionBase::ExceptionBase;
-};
-
-class ArithmeticException : public ExceptionBase {
-    using ExceptionBase::ExceptionBase;
-};
-
+// 输入输出异常
 class IOException : public ExceptionBase {
 public:
     using ExceptionBase::ExceptionBase;
 };
 
+// 数组访问越界
 class OutOfRangeException : public ExceptionBase {
     using ExceptionBase::ExceptionBase;
 };
 
+// 死循环
 class DeadLoopException : public ExceptionBase {
     using ExceptionBase::ExceptionBase;
 };
 
+// 网络异常
 class NetworkException : public ExceptionBase {
     using ExceptionBase::ExceptionBase;
 };
 
+// 内存异常
 class MemoryException : public ExceptionBase {
     using ExceptionBase::ExceptionBase;
 };
 
+// Jsong格式有误
 class JsonFormatException : public ExceptionBase {
     using ExceptionBase::ExceptionBase;
 };
 
-class InvalidInputException : public ExceptionBase {
-    using ExceptionBase::ExceptionBase;
-};
-
+// 其他
 class RuntimeException : public ExceptionBase {
     using ExceptionBase::ExceptionBase;
 };

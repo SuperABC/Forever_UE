@@ -1,4 +1,5 @@
 ﻿#include "../common/error.h"
+#include "../common/utility.h"
 
 #include "roadnet_base.h"
 
@@ -23,13 +24,13 @@ struct pair_hash {
 	}
 };
 
+// 全成员默认构造
 Roadnet::Roadnet() :
 	nodes(),
 	connections(),
 	plots(),
 	routes(),
 	addresses() {
-	// 全成员默认构造
 
 }
 
@@ -40,23 +41,23 @@ Roadnet::~Roadnet() {
 	}
 }
 
+// 获取所有节点
 const vector<Node>& Roadnet::GetNodes() const {
-	// 获取所有节点
 	return nodes;
 }
 
+// 获取所有公路
 const vector<Connection>& Roadnet::GetConnections() const {
-	// 获取所有公路
 	return connections;
 }
 
+// 获取所有地块
 const vector<Plot*>& Roadnet::GetPlots() const {
-	// 获取所有地块
 	return plots;
 }
 
+// 分配地块地址
 void Roadnet::AllocateAddress() {
-	// 分配地块地址
 	addresses.clear();
 
 	for (auto& plot : plots) {
@@ -71,8 +72,8 @@ void Roadnet::AllocateAddress() {
 	}
 }
 
+// 寻址地块
 Plot* Roadnet::LocatePlot(const string& road, int id) const {
-	// 寻址地块
 	if (addresses.find(road) == addresses.end()) {
 		return nullptr;
 	}
@@ -83,8 +84,8 @@ Plot* Roadnet::LocatePlot(const string& road, int id) const {
 	return plots[id];
 }
 
+// 自动寻路
 const vector<Connection> Roadnet::AutoNavigate(
-	// 自动寻路
 	const vector<pair<Connection, float>>& startRoads,
 	const vector<pair<Connection, float>>& endRoads) const {
 	if (startRoads.empty() || endRoads.empty()) return {};
@@ -195,7 +196,7 @@ const vector<Connection> Roadnet::AutoNavigate(
 						prevConnection[neighborId] = it->second;
 					}
 					else {
-						debugf("Missing connection index for (%d, %d).\n", currentNode, neighborId);
+						debugf("Warning: Missing connection index for (%d, %d).\n", currentNode, neighborId);
 					}
 				}
 
@@ -234,7 +235,7 @@ const vector<Connection> Roadnet::AutoNavigate(
 		}
 	}
 	if (!foundStart) {
-		debugf("Start road not found for node %d.\n", firstRealNode);
+		debugf("Warning: Start road not found for node %d.\n", firstRealNode);
 	}
 
 	for (size_t i = 2; i < nodePath.size() - 1; i++) {
@@ -254,7 +255,7 @@ const vector<Connection> Roadnet::AutoNavigate(
 			}
 		}
 		else {
-			debugf("Missing connection between %d and %d.\n", from, to);
+			debugf("Warning: Missing connection between %d and %d.\n", from, to);
 		}
 	}
 	int lastRealNode = nodePath[nodePath.size() - 2];
@@ -271,16 +272,16 @@ const vector<Connection> Roadnet::AutoNavigate(
 		}
 	}
 	if (!foundEnd) {
-		debugf("End road not found for node %d.\n", lastRealNode);
+		debugf("Warning: End road not found for node %d.\n", lastRealNode);
 	}
 
 	return path;
 }
 
+// 自动寻路
 const vector<Connection> Roadnet::AutoNavigate(const Plot* startPlot, const Plot* endPlot) const {
-	// 自动寻路
 	if (!startPlot || !endPlot) {
-		debugf("Null plot pointer in AutoNavigate.\n");
+		debugf("Warning: Null plot pointer in AutoNavigate.\n");
 		return {};
 	}
 	if (startPlot == endPlot) return {};
@@ -291,11 +292,11 @@ const vector<Connection> Roadnet::AutoNavigate(const Plot* startPlot, const Plot
 	return AutoNavigate(startRoads, endRoads);
 }
 
+// 自动寻路
 const vector<Connection> Roadnet::AutoNavigate(
 	const vector<pair<Connection, float>>& startRoads, const Plot* endPlot) const {
-	// 自动寻路
 	if (!endPlot) {
-		debugf("Null endPlot in AutoNavigate.\n");
+		debugf("Warning: Null endPlot in AutoNavigate.\n");
 		return {};
 	}
 
@@ -303,11 +304,11 @@ const vector<Connection> Roadnet::AutoNavigate(
 	return AutoNavigate(startRoads, endRoads);
 }
 
+// 自动寻路
 const vector<Connection> Roadnet::AutoNavigate(
 	const Plot* startPlot, const vector<pair<Connection, float>>& endRoads) const {
-	// 自动寻路
 	if (!startPlot) {
-		debugf("Null startPlot in AutoNavigate.\n");
+		debugf("Warning: Null startPlot in AutoNavigate.\n");
 		return {};
 	}
 
@@ -315,60 +316,72 @@ const vector<Connection> Roadnet::AutoNavigate(
 	return AutoNavigate(startRoads, endRoads);
 }
 
+// 注册路网
 void RoadnetFactory::RegisterRoadnet(const string& id,
-	function<Roadnet* ()> creator, function<void(Roadnet*)> deleter) {
-	// 注册构造器和析构器
-	registries[id] = { creator, deleter };
+    function<Roadnet* ()> creator, function<void(Roadnet*)> deleter) {
+    registries[id] = { creator, deleter };
 }
 
-Roadnet* RoadnetFactory::CreateRoadnet(const string& id) {
-	// 创建路网
-	auto config = configs.find(id);
-	if (config == configs.end() || !config->second) {
-		return nullptr;
-	}
+// 创建路网
+Roadnet* RoadnetFactory::CreateRoadnet(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Roadnet %s not enabled when creating.\n", id.data());
+        return nullptr;
+    }
 
-	auto it = registries.find(id);
-	if (it != registries.end()) {
-		return it->second.first();
-	}
-	return nullptr;
+    auto it = registries.find(id);
+    if (it == registries.end()) {
+        debugf("Warning: Roadnet %s not registered when creating.\n", id.data());
+        return nullptr;
+    }
+
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Roadnet " + id + " creator is null.\n");
+    }
+
+    return nullptr;
 }
 
-bool RoadnetFactory::CheckRegistered(const string& id) {
-	// 检查是否注册
-	return registries.find(id) != registries.end();
+// 检查是否注册
+bool RoadnetFactory::CheckRegistered(const string& id) const {
+    return registries.find(id) != registries.end();
 }
 
-void RoadnetFactory::SetConfig(string name, bool config) {
-	// 设置启用配置
-	configs[name] = config;
+// 设置启用配置
+void RoadnetFactory::SetConfig(const string& name, bool config) {
+    configs[name] = config;
 }
 
+// 获取启用路网
 Roadnet* RoadnetFactory::GetRoadnet() const {
-	// 获取启用路网
-	for (const auto& [name, enabled] : configs) {
-		if (enabled) {
-			auto it = registries.find(name);
-			if (it != registries.end()) {
-				return it->second.first();
-			}
-		}
-	}
-	return nullptr;
+    for (const auto& [name, enabled] : configs) {
+        if (enabled) {
+			return CreateRoadnet(name);
+        }
+    }
+    return nullptr;
 }
 
+// 析构路网
 void RoadnetFactory::DestroyRoadnet(Roadnet* roadnet) const {
-	// 析构路网（包含delete操作）
-	if (!roadnet) {
-		debugf("Roadnet is null before destroying.\n");
-		return;
-	}
-	auto it = registries.find(roadnet->GetType());
-	if (it != registries.end()) {
-		it->second.second(roadnet);
-	}
-	else {
-		debugf("Deleter not found for %s.\n", roadnet->GetType().data());
-	}
+    if (!roadnet) {
+        debugf("Warning: Roadnet is null when deleting.\n");
+        return;
+    }
+
+    auto it = registries.find(roadnet->GetType());
+    if (it == registries.end()) {
+        debugf("Warning: Roadnet %s not registered when deleting.\n", roadnet->GetType().data());
+        return;
+    }
+
+    if (it->second.second) {
+        it->second.second(roadnet);
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Roadnet " + roadnet->GetType() + " deleter is null.\n");
+    }
 }
+

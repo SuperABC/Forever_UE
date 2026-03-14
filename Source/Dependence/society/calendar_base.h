@@ -28,32 +28,32 @@ public:
 
 	// 父类实现方法
 
-protected:
+private:
 };
 
 class CalendarFactory {
 public:
-	// 注册日程
-	void RegisterCalendar(const std::string& id,
-		std::function<Calendar* ()> creator, std::function<void(Calendar*)> deleter);
+    // 注册日程
+    void RegisterCalendar(const std::string& id,
+        std::function<Calendar* ()> creator, std::function<void(Calendar*)> deleter);
 
-	// 创建日程（包含new操作）
-	Calendar* CreateCalendar(const std::string& id);
+    // 创建日程（包含new操作）
+    Calendar* CreateCalendar(const std::string& id) const;
 
-	// 检查是否注册
-	bool CheckRegistered(const std::string& id);
+    // 检查是否注册
+    bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
-	void SetConfig(const std::string& name, bool config);
+    // 设置启用配置
+    void SetConfig(const std::string& name, bool config);
 
-	// 析构日程（包含delete操作）
-	void DestroyCalendar(Calendar* calendar) const;
+    // 析构日程（包含delete操作）
+    void DestroyCalendar(Calendar* calendar) const;
 
 private:
-	std::unordered_map<
-		std::string,
-		std::pair<std::function<Calendar* ()>, std::function<void(Calendar*)>>
-	> registries;
-	std::unordered_map<std::string, bool> configs;
+    std::unordered_map<
+        std::string,
+        std::pair<std::function<Calendar* ()>, std::function<void(Calendar*)>>
+    > registries;
+    std::unordered_map<std::string, bool> configs;
 };
 

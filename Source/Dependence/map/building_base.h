@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "../common/quad.h"
 #include "../common/plot.h"
 
 #include "room_base.h"
@@ -341,33 +340,34 @@ private:
 
 class BuildingFactory {
 public:
-	// 注册建筑
-	void RegisterBuilding(const std::string& id, const std::vector<float>& powers,
-		std::function<Building* ()> creator, std::function<void(Building*)> deleter);
+    // 注册建筑
+    void RegisterBuilding(const std::string& id, const std::vector<float>& powers,
+        std::function<Building* ()> creator, std::function<void(Building*)> deleter);
 
-	// 创建建筑（包含new操作）
-	Building* CreateBuilding(const std::string& id);
+    // 创建建筑（包含new操作）
+    Building* CreateBuilding(const std::string& id) const;
 
-	// 检查是否注册
-	bool CheckRegistered(const std::string& id);
+    // 检查是否注册
+    bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
-	void SetConfig(const std::string& name, bool config);
+    // 设置启用配置
+    void SetConfig(const std::string& name, bool config);
 
-	// 获取所有建筑全地块权重
-	const std::unordered_map<std::string, std::vector<float>> GetPowers();
+    // 获取所有建筑全地块权重
+    const std::unordered_map<std::string, std::vector<float>> GetPowers() const;
 
-	// 自定义生成建筑
-	std::unordered_map<Plot*, std::vector<std::string>> GetNums(const std::vector<Plot*>& plots);
+    // 自定义生成建筑数量
+    std::unordered_map<Plot*, std::vector<std::string>> GetNums(const std::vector<Plot*>& plots) const;
 
-	// 析构组合（包含delete操作）
-	void DestroyBuilding(Building* building) const;
+    // 析构组合（包含delete操作）
+    void DestroyBuilding(Building* building) const;
 
 private:
-	std::unordered_map<
-		std::string,
-		std::pair<std::function<Building* ()>, std::function<void(Building*)>>
-	> registries;
-	std::unordered_map<std::string, bool> configs;
-	std::unordered_map<std::string, std::vector<float>> powers;
+    std::unordered_map<
+        std::string,
+        std::pair<std::function<Building* ()>, std::function<void(Building*)>>
+    > registries;
+    std::unordered_map<std::string, bool> configs;
+    std::unordered_map<std::string, std::vector<float>> powers;
 };
+

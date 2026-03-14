@@ -48,26 +48,27 @@ private:
 
 class ComponentFactory {
 public:
-	// 注册组合
-	void RegisterComponent(const std::string& id,
-		std::function<Component* ()> creator, std::function<void(Component*)> deleter);
+    // 注册组合
+    void RegisterComponent(const std::string& id,
+        std::function<Component* ()> creator, std::function<void(Component*)> deleter);
 
-	// 创建组合（包含new操作）
-	Component* CreateComponent(const std::string& id);
+    // 创建组合（包含new操作）
+    Component* CreateComponent(const std::string& id) const;
 
-	// 检查是否注册
-	bool CheckRegistered(const std::string& id);
+    // 检查是否注册
+    bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
-	void SetConfig(const std::string& name, bool config);
+    // 设置启用配置
+    void SetConfig(const std::string& name, bool config);
 
-	// 析构组合（包含delete操作）
-	void DestroyComponent(Component* component) const;
+    // 析构组合（包含delete操作）
+    void DestroyComponent(Component* component) const;
 
 private:
-	std::unordered_map<
-		std::string,
-		std::pair<std::function<Component* ()>, std::function<void(Component*)>>
-	> registries;
-	std::unordered_map<std::string, bool> configs;
+    std::unordered_map<
+        std::string,
+        std::pair<std::function<Component* ()>, std::function<void(Component*)>>
+    > registries;
+    std::unordered_map<std::string, bool> configs;
 };
+

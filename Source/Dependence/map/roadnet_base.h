@@ -73,29 +73,30 @@ private:
 
 class RoadnetFactory {
 public:
-	// 注册路网
-	void RegisterRoadnet(const std::string& id,
-		std::function<Roadnet* ()> creator, std::function<void(Roadnet*)> deleter);
+    // 注册路网
+    void RegisterRoadnet(const std::string& id,
+        std::function<Roadnet* ()> creator, std::function<void(Roadnet*)> deleter);
 
-	// 创建路网（包含new操作）
-	Roadnet* CreateRoadnet(const std::string& id);
+    // 创建路网（包含new操作）
+    Roadnet* CreateRoadnet(const std::string& id) const;
 
-	// 检查是否注册
-	bool CheckRegistered(const std::string& id);
+    // 检查是否注册
+    bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
-	void SetConfig(std::string name, bool config);
+    // 设置启用配置
+    void SetConfig(const std::string& name, bool config);
 
-	// 获取启用路网
-	Roadnet* GetRoadnet() const;
+    // 获取启用路网
+    Roadnet* GetRoadnet() const;
 
-	// 析构路网（包含delete操作）
-	void DestroyRoadnet(Roadnet* roadnet) const;
+    // 析构路网（包含delete操作）
+    void DestroyRoadnet(Roadnet* roadnet) const;
 
 private:
-	std::unordered_map<
-		std::string,
-		std::pair<std::function<Roadnet* ()>, std::function<void(Roadnet*)>>
-	> registries;
-	std::unordered_map<std::string, bool> configs;
+    std::unordered_map<
+        std::string,
+        std::pair<std::function<Roadnet* ()>, std::function<void(Roadnet*)>>
+    > registries;
+    std::unordered_map<std::string, bool> configs;
 };
+

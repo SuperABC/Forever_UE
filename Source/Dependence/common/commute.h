@@ -14,22 +14,22 @@ public:
 
 	// 通勤有效性
 	void SetNull();
-	bool IsNull();
+	bool IsNull() const;
 
 	// 通勤目标
+	Room* GetTarget() const;
 	void SetTarget(Room* target);
-	Room* GetTarget();
 
 	// 通勤开始
-	void SetPaths(std::vector<Connection> paths);
+	void SetPaths(const std::vector<Connection>& paths);
 	void StartCommute(Time time);
 
 	// 通勤结束
 	void FinishCommute();
 
 	// 实时位置
-	std::pair<Connection, float> RealtimeConnection(Time time);
-	bool AtConnection(Connection connection, Time time) const;
+	std::pair<Connection, float> RealtimeConnection(const Time& time);
+	bool AtConnection(const Connection& connection, const Time& time) const;
 
 private:
 	std::vector<Connection> currentPaths;

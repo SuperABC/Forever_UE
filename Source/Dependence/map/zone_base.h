@@ -2,7 +2,6 @@
 
 #include "../common/quad.h"
 #include "../common/plot.h"
-#include "../common/utility.h"
 
 #include "building_base.h"
 
@@ -98,22 +97,22 @@ public:
         std::function<Zone* ()> creator, std::function<void(Zone*)> deleter);
 
     // 创建园区（包含new操作）
-    Zone* CreateZone(const std::string& id);
+    Zone* CreateZone(const std::string& id) const;
 
     // 检查是否注册
-    bool CheckRegistered(const std::string& id);
+    bool CheckRegistered(const std::string& id) const;
 
     // 设置启用配置
     void SetConfig(const std::string& name, bool config);
 
     // 获取所有启用园区
-    std::vector<std::string> GetTypes();
+    std::vector<std::string> GetTypes() const;
 
     // 在地块内生成一类园区
-    std::vector<Zone*> CreateZones(const std::string& type, Plot* plot);
+    std::vector<Zone*> CreateZones(const std::string& type, Plot* plot) const;
 
     // 析构园区（包含delete操作）
-    void DestroyZone(Zone* zone);
+    void DestroyZone(Zone* zone) const;
 
 private:
     std::unordered_map<

@@ -44,7 +44,7 @@ void DefaultOrganization::SetCalendar(CalendarFactory* factory) {
     if (factory == nullptr) {
         THROW_EXCEPTION(NullPointerException, "Calendar factory is null.\n");
     }
-    for (auto& [component, vacancies] : jobs) {
+    for (auto& [component, vacancies] : GetJobs()) {
         for (auto& [job, occupantId] : vacancies) {
             Calendar* calendar = factory->CreateCalendar("full");
             if (calendar) {
@@ -55,7 +55,7 @@ void DefaultOrganization::SetCalendar(CalendarFactory* factory) {
 }
 
 void DefaultOrganization::ArrangeRooms() {
-    for (auto& [component, vacancies] : jobs) {
+    for (auto& [component, vacancies] : GetJobs()) {
         if (component == nullptr) {
             debugf("ArrangeRooms: component is null, skipping.\n");
             continue;

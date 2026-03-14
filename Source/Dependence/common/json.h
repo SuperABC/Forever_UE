@@ -38,31 +38,25 @@ enum CommentPlacement : int {
     COMMENT_MULTIPLE
 };
 
-// 字符串比较函数，特别处理数字索引
 struct StringCompare {
     bool operator()(const std::string& s1, const std::string& s2) const {
-        // 如果两个字符串都可以解析为数字，按数字比较
         char* end1, * end2;
         long long n1 = strtoll(s1.data(), &end1, 10);
         long long n2 = strtoll(s2.data(), &end2, 10);
 
-        // 如果两个字符串都可以完全转换为数字，按数字比较
         if (end1 != s1.data() && *end1 == '\0' &&
             end2 != s2.data() && *end2 == '\0') {
             return n1 < n2;
         }
 
-        // 否则按字符串字典序比较
         return s1 < s2;
     }
 };
 
-// 表示一个JSON值
 class JsonValue {
     friend class ValueIteratorBase;
 
 public:
-    // 使用自定义比较函数的map类型
     std::map<std::string, JsonValue, StringCompare> ObjectValues;
 
     static const JsonValue& null;
@@ -162,7 +156,6 @@ private:
         std::string comment;
     };
 
-    // 基本类型值的联合体
     union {
         long long valueInt;
         unsigned long long valueUint;

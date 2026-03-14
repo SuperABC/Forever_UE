@@ -1,4 +1,7 @@
-﻿#include "room_base.h"
+﻿#include "../common/error.h"
+#include "../common/utility.h"
+
+#include "room_base.h"
 
 #include <sstream>
 #include <iomanip>
@@ -6,6 +9,7 @@
 
 using namespace std;
 
+// 全成员默认构造
 Room::Room() :
 	parentBuilding(nullptr),
 	parentComponent(nullptr),
@@ -19,92 +23,91 @@ Room::Room() :
 	workers(),
 	storage(nullptr),
 	manufactures() {
-	// 全成员默认构造
 
 }
 
+// storage/manufacture在industry中统一创建和析构
 Room::~Room() {
-	// storage/manufacture在industry中统一创建和析构（运行中动态析构room存在泄漏）
 
 }
 
+// 获取所在建筑
 Building* Room::GetParentBuilding() const {
-	// 获取所在建筑
 	return parentBuilding;
 }
 
+// 获取所在组合
 Component* Room::GetParentComponent() const {
-	// 获取所在组合
 	return parentComponent;
 }
 
+// 设置所在建筑
 void Room::SetParent(Building* building) {
-	// 设置所在建筑
 	parentBuilding = building;
 }
 
+// 设置所在组合
 void Room::SetParent(Component* component) {
-	// 设置所在组合
 	parentComponent = component;
 }
 
+// 获取私人房东ID
 int Room::GetOwner() const {
-	// 获取私人房东ID
 	return owner;
 }
 
+// 设置私人房东ID
 void Room::SetOwner(int owner) {
-	// 设置私人房东ID
 	this->owner = owner;
 }
 
+// 获取是否由政府拥有
 bool Room::GetStated() const {
-	// 获取是否由政府拥有
 	return stated;
 }
 
+// 设置是否由政府拥有
 void Room::SetStated(bool stated) {
-	// 设置是否由政府拥有
 	this->stated = stated;
 }
 
+// 获取所在楼层
 int Room::GetLayer() const {
-	// 获取所在楼层
 	return layer;
 }
 
+// 设置所在楼层
 void Room::SetLayer(int layer) {
-	// 设置所在楼层
 	this->layer = layer;
 }
 
+// 获取门框
 const Room::WallHole& Room::GetDoors() const {
-	// 获取门框
 	return doors;
 }
 
+// 设置门框
 void Room::SetDoors(const WallHole& doors) {
-	// 设置门框
 	this->doors = doors;
 }
 
+// 获取窗框
 const Room::WallHole& Room::GetWindows() const {
-	// 获取窗框
 	return windows;
 }
 
+// 设置窗框
 void Room::SetWindows(const WallHole& windows) {
-	// 设置窗框
 	this->windows = windows;
 }
 
+// 获取门牌号
 string Room::GetNumber() const {
-	// 获取门牌号
 	return address;
 }
 
+// 设置四位门牌号
 void Room::SetNumber(int floor, int number) {
-	// 设置四位门牌号
 	ostringstream oss;
 	if(floor < 0){
 		oss << 'b' << -floor;
@@ -116,23 +119,23 @@ void Room::SetNumber(int floor, int number) {
 	address = oss.str();
 }
 
+// 获取完整地址
 string Room::GetAddress() const {
-	// 获取完整地址
 	return GetParentBuilding()->GetAddress() + " " + address;
 }
 
+// 获取住户
 const vector<int>& Room::GetTenants() const {
-	// 获取住户
 	return tenants;
 }
 
+// 添加住户
 void Room::AddTenant(int id) {
-	// 添加住户
 	tenants.push_back(id);
 }
 
+// 移除住户并返回是否找到
 bool Room::RemoveTenant(int id) {
-	// 移除住户并返回是否找到
 	for (auto& tenant : tenants) {
 		if (tenant == id) {
 			tenant = tenants.back();
@@ -143,18 +146,18 @@ bool Room::RemoveTenant(int id) {
 	return false;
 }
 
+// 获取工人
 const vector<int>& Room::GetWorkers() const {
-	// 获取工人
 	return workers;
 }
 
+// 添加住户
 void Room::AddWorker(int id) {
-	// 添加住户
 	workers.push_back(id);
 }
 
+// 移除工人并返回是否找到
 bool Room::RemoveWorker(int id) {
-	// 移除工人并返回是否找到
 	for (auto& worker : workers) {
 		if (worker == id) {
 			worker = workers.back();
@@ -165,41 +168,41 @@ bool Room::RemoveWorker(int id) {
 	return false;
 }
 
+// 获取仓库
 Storage* Room::GetStorage() const {
-	// 获取仓库
 	return storage;
 }
 
+// 设置仓库
 void Room::SetStorage(Storage* storage) {
-	// 设置仓库
 	if (storage == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Storage is null when attaching to room.");
 	}
 	this->storage = storage;
 }
 
+// 移除仓库并返回
 Storage* Room::RemoveStorage() {
-	// 移除仓库并返回
 	auto item = storage;
 	storage = nullptr;
 	return item;
 }
 
+// 获取工坊
 const vector<Manufacture*>& Room::GetManufactures() const {
-	// 获取工坊
 	return manufactures;
 }
 
+// 添加工坊
 void Room::AddManufacture(Manufacture* manufacture) {
-	// 添加工坊
 	if (manufacture == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Manufacture is null when attaching to room.");
 	}
 	manufactures.push_back(manufacture);
 }
 
+// 移除第一个符合名字的工坊并返回
 Manufacture* Room::RemoveManufacture(const string& name) {
-	// 移除第一个符合名字的工坊并返回
 	for (auto& manufacture : manufactures) {
 		if (manufacture->GetName() == name) {
 			auto item = manufacture;
@@ -211,15 +214,15 @@ Manufacture* Room::RemoveManufacture(const string& name) {
 	return nullptr;
 }
 
+// 清空工坊并返回
 vector<Manufacture*> Room::ClearManufactures() {
-	// 清空工坊并返回
 	auto items = manufactures;
 	manufactures.clear();
 	return items;
 }
 
+// 获取世界坐标
 std::pair<float, float> Room::GetPosition(float x, float y) const {
-	// 获取世界坐标
 	auto building = GetParentBuilding();
 	auto plot = GetParentBuilding()->GetParentPlot();
 	auto zone = building->GetParentZone();
@@ -246,53 +249,62 @@ std::pair<float, float> Room::GetPosition(float x, float y) const {
 	return { 0.f, 0.f };
 }
 
+// 注册房间
 void RoomFactory::RegisterRoom(const string& id,
-	function<Room* ()> creator, function<void(Room*)> deleter) {
-	// 注册构造器和析构器
-	registries[id] = { creator, deleter };
+    function<Room* ()> creator, function<void(Room*)> deleter) {
+    registries[id] = { creator, deleter };
 }
 
-Room* RoomFactory::CreateRoom(const string& id) {
-	// 根据配置构造房间
-	auto config = configs.find(id);
-	if (config == configs.end() || !config->second) {
-		debugf("Room %s not enabled or not configured.\n", id.data());
-		return nullptr;
-	}
+// 创建房间
+Room* RoomFactory::CreateRoom(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Room %s not enabled when creating.\n", id.data());
+        return nullptr;
+    }
 
-	auto it = registries.find(id);
-	if (it != registries.end()) {
-		Room* room = it->second.first();
-		if (room == nullptr) {
-			debugf("Creat room %s failed.\n", id.data());
-		}
-		return room;
-	}
+    auto it = registries.find(id);
+    if (it == registries.end()) {
+        debugf("Warning: Room %s not registered when creating.\n", id.data());
+        return nullptr;
+    }
 
-	debugf("Room %s not registered.\n", id.data());
-	return nullptr;
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Room " + id + " creator is null.\n");
+    }
+
+    return nullptr;
 }
 
-bool RoomFactory::CheckRegistered(const string& id) {
-	// 检查是否注册
-	return registries.find(id) != registries.end();
+// 检查是否注册
+bool RoomFactory::CheckRegistered(const string& id) const {
+    return registries.find(id) != registries.end();
 }
 
+// 设置启用配置
 void RoomFactory::SetConfig(const string& name, bool config) {
-	// 设置启用配置
-	configs[name] = config;
+    configs[name] = config;
 }
 
+// 析构房间
 void RoomFactory::DestroyRoom(Room* room) const {
-	// 析构房间
-	if (!room) {
-		return;
-	}
-	auto it = registries.find(room->GetType());
-	if (it != registries.end()) {
-		it->second.second(room);
-	}
-	else {
-		debugf(("Deleter not found for " + room->GetType() + ".\n").data());
-	}
+    if (!room) {
+        debugf("Warning: Room is null when deleting.\n");
+        return;
+    }
+
+    auto it = registries.find(room->GetType());
+    if (it == registries.end()) {
+        debugf("Warning: Room %s not registered when deleting.\n", room->GetType().data());
+        return;
+    }
+
+    if (it->second.second) {
+        it->second.second(room);
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Room " + room->GetType() + " deleter is null.\n");
+    }
 }
+

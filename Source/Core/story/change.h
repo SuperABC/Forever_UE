@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "../common/utility.h"
+
 #include "change_base.h"
 #include "condition.h"
 

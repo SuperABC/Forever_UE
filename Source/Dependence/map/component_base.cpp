@@ -1,88 +1,101 @@
-﻿#include "component_base.h"
-#include "building_base.h"
+﻿#include "../common/error.h"
+#include "../common/utility.h"
+
+#include "component_base.h"
 
 
 using namespace std;
 
+// 全成员默认构造
 Component::Component() :
 	parentBuilding(nullptr) {
-	// 全成员默认构造
 
 }
 
+// room/building在map中统一创建和析构
 Component::~Component() {
-	// room/building在map中统一创建和析构
 
 }
 
+// 获取所在建筑
 Building* Component::GetParent() const {
-	// 获取所在建筑
 	return parentBuilding;
 }
 
+// 设置所在建筑
 void Component::SetParent(Building* building) {
-	// 设置所在建筑
 	parentBuilding = building;
 }
 
+// 获取所有包含房间
 vector<Room*>& Component::GetRooms() {
-	// 获取所有包含房间
 	return rooms;
 }
 
+// 添加房间
 void Component::AddRoom(Room* room) {
-	// 添加房间
 	if (room == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Room is null when adding to component.");
 	}
 	rooms.push_back(room);
 }
 
+// 注册组合
 void ComponentFactory::RegisterComponent(const string& id,
-	function<Component* ()> creator, function<void(Component*)> deleter) {
-	// 注册构造器和析构器
-	registries[id] = { creator, deleter };
+    function<Component* ()> creator, function<void(Component*)> deleter) {
+    registries[id] = { creator, deleter };
 }
 
-Component* ComponentFactory::CreateComponent(const string& id) {
-	// 根据配置构造组合
-	auto configIt = configs.find(id);
-	if (configIt == configs.end() || !configIt->second) {
-		debugf("Component %s not enabled or not configured.\n", id.data());
-		return nullptr;
-	}
+// 创建组合
+Component* ComponentFactory::CreateComponent(const string& id) const {
+    auto config = configs.find(id);
+    if (config == configs.end() || !config->second) {
+        debugf("Warning: Component %s not enabled when creating.\n", id.data());
+        return nullptr;
+    }
 
-	auto it = registries.find(id);
-	if (it != registries.end()) {
-		Component* component = it->second.first();
-		if (component == nullptr) {
-			debugf("Creat component %s failed.\n", id.data());
-		}
-		return component;
-	}
+    auto it = registries.find(id);
+    if (it == registries.end()) {
+        debugf("Warning: Component %s not registered when creating.\n", id.data());
+        return nullptr;
+    }
 
-	debugf("Component %s not registered.\n", id.data());
-	return nullptr;
+    if (it->second.first) {
+        return it->second.first();
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Component " + id + " creator is null.\n");
+    }
+
+    return nullptr;
 }
 
-bool ComponentFactory::CheckRegistered(const string& id) {
-	// 检查是否注册
-	return registries.find(id) != registries.end();
+// 检查是否注册
+bool ComponentFactory::CheckRegistered(const string& id) const {
+    return registries.find(id) != registries.end();
 }
 
+// 设置启用配置
 void ComponentFactory::SetConfig(const string& name, bool config) {
-	// 设置启用配置
-	configs[name] = config;
+    configs[name] = config;
 }
 
+// 析构组合
 void ComponentFactory::DestroyComponent(Component* component) const {
-	// 析构组合
-	if (!component)return;
-	auto it = registries.find(component->GetType());
-	if (it != registries.end()) {
-		it->second.second(component);
-	}
-	else {
-		debugf("Deleter not found for %s.\n", component->GetType().data());
-	}
+    if (!component) {
+        debugf("Warning: Component is null when deleting.\n");
+        return;
+    }
+
+    auto it = registries.find(component->GetType());
+    if (it == registries.end()) {
+        debugf("Warning: Component %s not registered when deleting.\n", component->GetType().data());
+        return;
+    }
+
+    if (it->second.second) {
+        it->second.second(component);
+    } else {
+        THROW_EXCEPTION(NullPointerException, "Component " + component->GetType() + " deleter is null.\n");
+    }
 }
+

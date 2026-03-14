@@ -29,7 +29,7 @@ public:
     // 设置状态
     void SetStatus(const std::string& status);
 
-protected:
+private:
     std::string status;
 };
 
