@@ -9,7 +9,7 @@
 // 子类注册函数
 typedef void (*RegisterModManufacturesFunc)(ManufactureFactory* factory);
 
-// 标准双休日程
+// 默认工坊
 class DefaultManufacture : public Manufacture {
 public:
     static std::string GetId();

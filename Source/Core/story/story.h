@@ -30,15 +30,14 @@ public:
 	~Story();
 
 	// 设置资源路径
-	void SetResourcePath(std::string path);
+	void SetResourcePath(const std::string& path);
 
 	// 读取Mods
 	void InitEvents(std::unordered_map<std::string, HMODULE>& modHandles);
 	void InitChanges(std::unordered_map<std::string, HMODULE>& modHandles);
 
-
 	// 读取配置文件
-	void ReadConfigs(std::string path) const;
+	void ReadConfigs(const std::string& path) const;
 
 	// 初始化全部剧情
 	void Init();
@@ -53,33 +52,39 @@ public:
 	void Print() const;
 
 	// 保存/读取剧情
-	void Load(std::string path);
-	void Save(std::string path) const;
+	void Load(const std::string& path);
+	void Save(const std::string& path) const;
 
 	// 应用变更
 	void ApplyChange(Change* change, Story* story,
-		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+		std::vector<std::function<std::pair<bool, ValueType>(
+			const std::string&)>>&getValues);
 
 	// 获取工厂
-	EventFactory* GetEventFactory();
-	ChangeFactory* GetChangeFactory();
+	EventFactory* GetEventFactory() const;
+	ChangeFactory* GetChangeFactory() const;
 
 	// 读取剧本
-	std::vector<std::string> ReadNames(std::string name, std::string path) const;
-	void ReadStory(std::string name, std::string path);
+	std::vector<std::string> ReadNames(const std::string& name,
+		const std::string& path) const;
+	void ReadStory(const std::string& name, const std::string& path);
 
 	// 判断条件
-	bool JudgeCondition(Condition& condition) const;
-	bool JudgeCondition(Condition& condition, Person* person) const;
-	bool JudgeCondition(Condition& condition, std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) const;
+	bool JudgeCondition(const Condition& condition) const;
+	bool JudgeCondition(const Condition& condition,
+		const Person* person) const;
+	bool JudgeCondition(const Condition& condition,
+		std::vector<std::function<std::pair<bool, ValueType>(
+			const std::string&)>> getValues) const;
 
 	// 匹配事件
-	std::pair<std::vector<Dialog>, std::vector<Change*>> MatchEvent(Event* event);
+	std::pair<std::vector<Dialog>, std::vector<Change*>> MatchEvent(
+		Event* event);
 
 	// 变量管理
-	void InitVariables(Time *t);
-	void SetValue(const std::string& name, ValueType value);
 	std::pair<bool, ValueType> GetValue(const std::string& name) const;
+	void SetValue(const std::string& name, ValueType value);
+	void InitVariables(Time* t);
 
 private:
 	// 变量管理
@@ -92,8 +97,7 @@ private:
 	static EventFactory* eventFactory;
 	static ChangeFactory* changeFactory;
 
-	Script* script = nullptr;
+	Script* script;
 	std::unordered_map<std::string, ValueType> variables;
-
 };
 

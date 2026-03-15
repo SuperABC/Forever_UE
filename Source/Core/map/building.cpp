@@ -5,6 +5,7 @@
 
 #include <cmath>
 
+
 using namespace std;
 
 // 默认住宅建筑
@@ -69,7 +70,7 @@ Quad DefaultResidentialBuilding::LayoutConstruction() {
 void DefaultResidentialBuilding::LayoutRooms(
 	ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) {
 	if (!componentFactory || !roomFactory || !layout) {
-		THROW_EXCEPTION(InvalidArgumentException, "Null pointer passed to LayoutRooms.\n");
+		THROW_EXCEPTION(NullPointerException, "Layout rooms with null pointer.\n");
 	}
 	AllocateFloors();
 
@@ -166,7 +167,7 @@ Quad DefaultWorkingBuilding::LayoutConstruction() {
 void DefaultWorkingBuilding::LayoutRooms(
 	ComponentFactory* componentFactory, RoomFactory* roomFactory, Layout* layout) {
 	if (!componentFactory || !roomFactory || !layout) {
-		THROW_EXCEPTION(InvalidArgumentException, "Null pointer passed to LayoutRooms.\n");
+		THROW_EXCEPTION(NullPointerException, "Layout rooms with null pointer.\n");
 	}
 	AllocateFloors();
 

@@ -16,11 +16,11 @@ AssetFactory* Populace::assetFactory = nullptr;
 NameFactory* Populace::nameFactory = nullptr;
 SchedulerFactory* Populace::schedulerFactory = nullptr;
 
-Populace::Populace()
-	: resourcePath()
-	, names(nullptr)
-	, citizens()
-	, ids() {
+Populace::Populace() :
+	resourcePath(),
+	names(nullptr),
+	citizens(),
+	ids() {
 	if (!assetFactory) {
 		assetFactory = new AssetFactory();
 	}
@@ -75,7 +75,7 @@ void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
+		debugf("Log: Mod dll loaded successfully.\n");
 
 		RegisterModAssetsFunc registerFunc =
 			(RegisterModAssetsFunc)GetProcAddress(modHandle, "RegisterModAssets");
@@ -83,11 +83,11 @@ void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
 			registerFunc(assetFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod.dll.\n");
+		debugf("Warning: Failed to load mod.dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -95,11 +95,11 @@ void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& assetId : assetList) {
 		if (assetFactory->CheckRegistered(assetId)) {
 			auto asset = assetFactory->CreateAsset(assetId);
-			debugf("Created asset: mod.\n");
-			delete asset;
+			debugf("Log: Created test asset %s.\n", assetId);
+			assetFactory->DestroyAsset(asset);
 		}
 		else {
-			debugf("Asset not registered: %s.\n", assetId);
+			debugf("Warning: Asset %s not registered.\n", assetId);
 		}
 	}
 #endif // MOD_TEST
@@ -121,7 +121,7 @@ void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
+		debugf("Log: Mod dll loaded successfully.\n");
 
 		RegisterModNamesFunc registerFunc =
 			(RegisterModNamesFunc)GetProcAddress(modHandle, "RegisterModNames");
@@ -129,11 +129,11 @@ void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
 			registerFunc(nameFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod.dll.\n");
+		debugf("Warning: Failed to load mod.dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -141,11 +141,11 @@ void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& nameId : nameList) {
 		if (nameFactory->CheckRegistered(nameId)) {
 			auto name = nameFactory->CreateName(nameId);
-			debugf("Created name: mod.\n");
-			delete name;
+			debugf("Log: Created test name %s.\n", nameId);
+			nameFactory->DestroyName(name);
 		}
 		else {
-			debugf("Name not registered: %s.\n", nameId);
+			debugf("Warning: Name %s not registered.\n", nameId);
 		}
 	}
 #endif // MOD_TEST
@@ -168,18 +168,18 @@ void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
+		debugf("Log: Mod dll loaded successfully.\n");
 		RegisterModSchedulersFunc registerFunc =
 			(RegisterModSchedulersFunc)GetProcAddress(modHandle, "RegisterModSchedulers");
 		if (registerFunc) {
 			registerFunc(schedulerFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod.dll.\n");
+		debugf("Warning: Failed to load mod.dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -187,11 +187,11 @@ void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& schedulerId : schedulerList) {
 		if (schedulerFactory->CheckRegistered(schedulerId)) {
 			auto scheduler = schedulerFactory->CreateScheduler(schedulerId);
-			debugf("Created scheduler: mod.\n");
-			delete scheduler;
+			debugf("Log: Created test scheduler %s.\n", schedulerId);
+			schedulerFactory->DestroyScheduler(scheduler);
 		}
 		else {
-			debugf("Scheduler not registered: %s.\n", schedulerId);
+			debugf("Warning: Scheduler %s not registered.\n", schedulerId);
 		}
 	}
 #endif // MOD_TEST
@@ -272,10 +272,10 @@ void Populace::Save(const string& path) const {
 void Populace::ApplyChange(Change* change, Story* story,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!change) {
-		THROW_EXCEPTION(NullPointerException, "Change pointer is null in ApplyChange.\n");
+		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
 	}
 	if (!story) {
-		THROW_EXCEPTION(NullPointerException, "Story pointer is null in ApplyChange.\n");
+		THROW_EXCEPTION(NullPointerException, "Story is null.\n");
 	}
 
 	auto type = change->GetType();
@@ -283,8 +283,7 @@ void Populace::ApplyChange(Change* change, Story* story,
 	if (type == "add_option") {
 		auto obj = dynamic_cast<AddOptionChange*>(change);
 		if (!obj) {
-			THROW_EXCEPTION(InvalidArgumentException,
-				"Failed to cast Change to AddOptionChange.\n");
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to AddOptionChange.\n");
 		}
 
 		Condition conditionTarget;
@@ -292,8 +291,7 @@ void Populace::ApplyChange(Change* change, Story* story,
 		string targetName = ToString(conditionTarget.EvaluateValue(getValues));
 		Person* target = GetCitizen(targetName);
 		if (!target) {
-			THROW_EXCEPTION(InvalidArgumentException,
-				"Target citizen not found: " + targetName + ".\n");
+			THROW_EXCEPTION(InvalidArgumentException, "Target citizen not found: " + targetName + ".\n");
 		}
 
 		Condition conditionOption;
@@ -305,8 +303,7 @@ void Populace::ApplyChange(Change* change, Story* story,
 	else if (type == "remove_option") {
 		auto obj = dynamic_cast<RemoveOptionChange*>(change);
 		if (!obj) {
-			THROW_EXCEPTION(InvalidArgumentException,
-				"Failed to cast Change to RemoveOptionChange.\n");
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to RemoveOptionChange.\n");
 		}
 
 		Condition conditionTarget;
@@ -314,8 +311,7 @@ void Populace::ApplyChange(Change* change, Story* story,
 		string targetName = ToString(conditionTarget.EvaluateValue(getValues));
 		Person* target = GetCitizen(targetName);
 		if (!target) {
-			THROW_EXCEPTION(InvalidArgumentException,
-				"Target citizen not found: " + targetName + ".\n");
+			THROW_EXCEPTION(InvalidArgumentException, "Target citizen not found: " + targetName + ".\n");
 		}
 
 		Condition conditionOption;
@@ -330,8 +326,7 @@ void Populace::ApplyChange(Change* change, Story* story,
 	else if (type == "spawn_npc") {
 		auto obj = dynamic_cast<SpawnNpcChange*>(change);
 		if (!obj) {
-			THROW_EXCEPTION(InvalidArgumentException,
-				"Failed to cast Change to SpawnNpcChange.\n");
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to SpawnNpcChange.\n");
 		}
 
 		Condition condition;
@@ -359,8 +354,7 @@ void Populace::ApplyChange(Change* change, Story* story,
 	else if (type == "remove_npc") {
 		auto obj = dynamic_cast<RemoveNpcChange*>(change);
 		if (!obj) {
-			THROW_EXCEPTION(InvalidArgumentException,
-				"Failed to cast Change to RemoveNpcChange.\n");
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to RemoveNpcChange.\n");
 		}
 
 		Condition conditionTarget;
@@ -369,14 +363,12 @@ void Populace::ApplyChange(Change* change, Story* story,
 		Person* person = GetCitizen(targetName);
 
 		if (!person) {
-			THROW_EXCEPTION(InvalidArgumentException,
-				"Target citizen not found: " + targetName + ".\n");
+			THROW_EXCEPTION(InvalidArgumentException, "Target citizen not found: " + targetName + ".\n");
 		}
 
 		int id = person->GetId();
 		if (id < 0 || id >= static_cast<int>(citizens.size())) {
-			THROW_EXCEPTION(OutOfRangeException,
-				"Citizen ID out of range: " + to_string(id) + ".\n");
+			THROW_EXCEPTION(OutOfRangeException, "Citizen ID out of range: " + to_string(id) + ".\n");
 		}
 		delete citizens[id];
 		citizens[id] = nullptr;
@@ -394,8 +386,7 @@ void Populace::Schedule() const {
 		cdfs.emplace_back(id, sum);
 	}
 	if (sum == 0.f) {
-		THROW_EXCEPTION(InvalidArgumentException,
-			"No valid organization for generation.\n");
+		THROW_EXCEPTION(InvalidArgumentException, "No valid organization for generation.\n");
 	}
 	for (auto& cdf : cdfs) {
 		cdf.second /= sum;
@@ -425,7 +416,7 @@ void Populace::Schedule() const {
 
 void Populace::Workload(Story* story) const {
 	if (!story) {
-		THROW_EXCEPTION(NullPointerException, "Story pointer is null in Workload.\n");
+		THROW_EXCEPTION(NullPointerException, "Story is null.\n");
 	}
 	// 添加职业剧本
 	unordered_map<string, Script*> jobScripts;
@@ -441,12 +432,12 @@ void Populace::Workload(Story* story) const {
 			}
 		}
 	}
-	debugf("Generate workloads.\n");
+	debugf("Log: Generate workloads.\n");
 }
 
 void Populace::Characterize(const string& path, Story* story) const {
 	if (!story) {
-		THROW_EXCEPTION(NullPointerException, "Story pointer is null in Characterize.\n");
+		THROW_EXCEPTION(NullPointerException, "Story is null.\n");
 	}
 	// 汇总个性剧本
 	vector<string> characters;
@@ -456,7 +447,7 @@ void Populace::Characterize(const string& path, Story* story) const {
 		}
 	}
 	if (characters.empty()) {
-		debugf("No character scripts found.\n");
+		debugf("Warning: No character scripts found.\n");
 		return;
 	}
 
@@ -469,7 +460,7 @@ void Populace::Characterize(const string& path, Story* story) const {
 			story->GetEventFactory(), story->GetChangeFactory());
 		citizen->AddScript(script);
 	}
-	debugf("Generate characters.\n");
+	debugf("Log: Generate characters.\n");
 }
 
 vector<Person*>& Populace::GetCitizens() {
@@ -492,10 +483,10 @@ AssetFactory* Populace::GetAssetFactory() {
 pair<vector<Dialog>, vector<Change*>> Populace::TriggerEvent(
 	const string& name, Event* event, Story* story) const {
 	if (!event) {
-		THROW_EXCEPTION(NullPointerException, "Event pointer is null in TriggerEvent.\n");
+		THROW_EXCEPTION(NullPointerException, "Event is null.\n");
 	}
 	if (!story) {
-		THROW_EXCEPTION(NullPointerException, "Story pointer is null in TriggerEvent.\n");
+		THROW_EXCEPTION(NullPointerException, "Story is null.\n");
 	}
 	for (auto citizen : citizens) {
 		if (citizen && citizen->GetName() == name) {
@@ -508,10 +499,10 @@ pair<vector<Dialog>, vector<Change*>> Populace::TriggerEvent(
 pair<vector<Dialog>, vector<Change*>> Populace::TriggerEvent(
 	int id, Event* event, Story* story) const {
 	if (!event) {
-		THROW_EXCEPTION(NullPointerException, "Event pointer is null in TriggerEvent.\n");
+		THROW_EXCEPTION(NullPointerException, "Event is null.\n");
 	}
 	if (!story) {
-		THROW_EXCEPTION(NullPointerException, "Story pointer is null in TriggerEvent.\n");
+		THROW_EXCEPTION(NullPointerException, "Story is null.\n");
 	}
 	if (id >= 0 && id < static_cast<int>(citizens.size()) && citizens[id]) {
 		return citizens[id]->MatchEvent(event, story, citizens[id]);
@@ -521,7 +512,7 @@ pair<vector<Dialog>, vector<Change*>> Populace::TriggerEvent(
 
 void Populace::GenerateCitizens(int num, const vector<string>& nameholders, Time* time) {
 	if (!time) {
-		THROW_EXCEPTION(NullPointerException, "Time pointer is null in GenerateCitizens.\n");
+		THROW_EXCEPTION(NullPointerException, "Time is null.\n");
 	}
 	enum LIFE_TYPE : int {
 		LIFE_SINGLE,
@@ -546,8 +537,7 @@ void Populace::GenerateCitizens(int num, const vector<string>& nameholders, Time
 	// 分配姓名
 	names = nameFactory->GetName();
 	if (!names) {
-		THROW_EXCEPTION(RuntimeException,
-			"No enabled name in config.\n");
+		THROW_EXCEPTION(RuntimeException, "No enabled name in config.\n");
 	}
 	for (const auto& holder : nameholders) {
 		names->ReserveName(holder);
@@ -818,12 +808,12 @@ void Populace::GenerateCitizens(int num, const vector<string>& nameholders, Time
 			}
 		}
 	}
-	debugf("Generate %d citizens.\n", citizens.size());
+	debugf("Log: Generate %d citizens.\n", citizens.size());
 }
 
 void Populace::GenerateEducations(Time* time) {
 	if (!time) {
-		THROW_EXCEPTION(NullPointerException, "Time pointer is null in GenerateEducations.\n");
+		THROW_EXCEPTION(NullPointerException, "Time is null.\n");
 	}
 	enum EducationLevel : int {
 		EDUCATION_PRIMARY,
@@ -1214,12 +1204,12 @@ void Populace::GenerateEducations(Time* time) {
 			citizen->ExperienceComposition();
 		}
 	}
-	debugf("Generate educations.\n");
+	debugf("Log: Generate educations.\n");
 }
 
 void Populace::GenerateEmotions(Time* time) {
 	if (!time) {
-		THROW_EXCEPTION(NullPointerException, "Time pointer is null in GenerateEmotions.\n");
+		THROW_EXCEPTION(NullPointerException, "Time is null.\n");
 	}
 	for (auto citizen : citizens) {
 		if (!citizen) continue;
@@ -1433,9 +1423,9 @@ void Populace::GenerateEmotions(Time* time) {
 			}
 		}
 	}
-	debugf("Generate emotions.\n");
+	debugf("Log: Generate emotions.\n");
 }
 
 void Populace::GenerateJobs() {
-	debugf("Generate jobs.\n");
+	debugf("Log: Generate jobs.\n");
 }

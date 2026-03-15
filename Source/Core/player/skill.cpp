@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 默认技能
+
 string DefaultSkill::GetId() {
 	return "default";
 }

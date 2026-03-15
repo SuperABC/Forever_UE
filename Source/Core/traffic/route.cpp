@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 飞机航线
+
 string AirRoute::GetId() {
 	return "air";
 }

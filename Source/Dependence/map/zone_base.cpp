@@ -69,7 +69,7 @@ unordered_map<string, Building*>& Zone::GetBuildings() {
 // 添加园区内建筑
 void Zone::AddBuildings(BuildingFactory* factory, const vector<pair<string, float>>& list) {
     if (!factory) {
-        THROW_EXCEPTION(RuntimeException, "Factory pointer is null.\n");
+        THROW_EXCEPTION(RuntimeException, "Building factory is null.\n");
     }
 
     float acreageTmp = 0.f;

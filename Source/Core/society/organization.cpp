@@ -6,6 +6,8 @@
 
 using namespace std;
 
+// 默认组织
+
 string DefaultOrganization::GetId() {
     return "default";
 }
@@ -57,12 +59,12 @@ void DefaultOrganization::SetCalendar(CalendarFactory* factory) {
 void DefaultOrganization::ArrangeRooms() {
     for (auto& [component, vacancies] : GetJobs()) {
         if (component == nullptr) {
-            debugf("ArrangeRooms: component is null, skipping.\n");
+            debugf("Warning: Component is null.\n");
             continue;
         }
         const auto& rooms = component->GetRooms();
         if (rooms.empty()) {
-            debugf("ArrangeRooms: component has no rooms.\n");
+            debugf("Warning: Component has no rooms.\n");
             continue;
         }
         for (auto& [job, occupantId] : vacancies) {

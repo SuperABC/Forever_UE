@@ -45,7 +45,7 @@ void OceanTerrain::DistributeTerrain(
     // 处理西面海面区域
     if (distribute & 1) {
         int distance = width / 16 + GetRandom(width / 16);
-        debugf("Sea in the west %d.\n", distance);
+        debugf("Log: Sea in the west %d.\n", distance);
         float shift = 0.0f, slope = 0.0f;
         for (int y = 0; y < height; y++) {
             int limit = distance + (int)shift;
@@ -70,7 +70,7 @@ void OceanTerrain::DistributeTerrain(
     // 处理东面海面区域
     if (distribute & 2) {
         int distance = width / 16 + GetRandom(width / 16);
-        debugf("Sea in the east %d.\n", distance);
+        debugf("Log: Sea in the east %d.\n", distance);
         float shift = 0.0f, slope = 0.0f;
         for (int y = 0; y < height; y++) {
             int start = width - distance - (int)shift;
@@ -95,7 +95,7 @@ void OceanTerrain::DistributeTerrain(
     // 处理北面海面区域
     if (distribute & 4) {
         int distance = height / 16 + GetRandom(height / 16);
-        debugf("Sea in the north %d.\n", distance);
+        debugf("Log: Sea in the north %d.\n", distance);
         float shift = 0.0f, slope = 0.0f;
         for (int x = 0; x < width; x++) {
             int limit = distance + (int)shift;
@@ -120,7 +120,7 @@ void OceanTerrain::DistributeTerrain(
     // 处理南面海面区域
     if (distribute & 8) {
         int distance = height / 16 + GetRandom(height / 16);
-        debugf("Sea in the south %d.\n", distance);
+        debugf("Log: Sea in the south %d.\n", distance);
         float shift = 0.0f, slope = 0.0f;
         for (int x = 0; x < width; x++) {
             int start = height - distance - (int)shift;
@@ -201,5 +201,5 @@ void MountainTerrain::DistributeTerrain(
             ShapeFilter(i, j, width, height, setElement, getTerrain, 2, 0.5f);
         }
     }
-    debugf("Generate mountain %d.\n", mountain);
+    debugf("Log: Generate mountain %d.\n", mountain);
 }

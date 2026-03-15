@@ -51,7 +51,6 @@ void ABuildingBase::Tick(float DeltaTime) {
 			if ((location - buildingInfo.center).Size() > 32.f) {
 				continue;
 			}
-			debugf("%s\n", plotBuilding.first.data());
 			buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(),
 				building->GetHeight() * (building->GetLayers() + building->GetBasements()));
 			buildingInfo.rotation = plot->GetRotation();
@@ -78,7 +77,6 @@ void ABuildingBase::Tick(float DeltaTime) {
 				if ((location - buildingInfo.center).Size() > 32.f) {
 					continue;
 				}
-				debugf("%s\n", zoneBuilding.first.data());
 				buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(),
 					building->GetHeight() * (building->GetLayers() + building->GetBasements()));
 				buildingInfo.rotation = plot->GetRotation();

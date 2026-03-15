@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 默认产品
+
 string DefaultProduct::GetId() {
 	return "default";
 }

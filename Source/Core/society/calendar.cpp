@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 标准双休日程
+
 StandardCalendar::StandardCalendar() :
 	on(Time(string("9:00:00.000"))), off(Time(string("17:00:00.000"))) {
 
@@ -47,6 +49,8 @@ Time StandardCalendar::SignoutTime(const Time& date) const {
 		return Time();
 	}
 }
+
+// 全勤无休日程
 
 FullCalendar::FullCalendar() :
 	on(Time(string("00:00:01.000"))), off(Time(string("23:59:59.000"))) {

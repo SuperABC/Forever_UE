@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 默认工坊
+
 string DefaultManufacture::GetId() {
 	return "default";
 }

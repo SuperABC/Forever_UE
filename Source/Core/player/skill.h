@@ -9,7 +9,7 @@
 // 子类注册函数
 typedef void (*RegisterModSkillsFunc)(SkillFactory* factory);
 
-// 标准双休日程
+// 默认技能
 class DefaultSkill : public Skill {
 public:
     static std::string GetId();

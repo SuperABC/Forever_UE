@@ -14,11 +14,13 @@ using namespace std;
 
 SkillFactory* Player::skillFactory = nullptr;
 
-Player::Player() {
+Player::Player() :
+	resourcePath(),
+	time(nullptr),
+	skills() {
 	if (!skillFactory) {
 		skillFactory = new SkillFactory();
 	}
-
 	time = new Time();
 }
 
@@ -26,7 +28,7 @@ Player::~Player() {
 	delete time;
 }
 
-void Player::SetResourcePath(string path) {
+void Player::SetResourcePath(const string& path) {
 	resourcePath = path;
 }
 
@@ -46,17 +48,18 @@ void Player::InitSkills(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
-		RegisterModSkillsFunc registerFunc = (RegisterModSkillsFunc)GetProcAddress(modHandle, "RegisterModSkills");
+		debugf("Log: Mod dll loaded successfully.\n");
+		RegisterModSkillsFunc registerFunc =
+			(RegisterModSkillsFunc)GetProcAddress(modHandle, "RegisterModSkills");
 		if (registerFunc) {
 			registerFunc(skillFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod dll.\n");
+		debugf("Warning: Failed to load mod dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -64,33 +67,32 @@ void Player::InitSkills(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& skillId : skillList) {
 		if (skillFactory->CheckRegistered(skillId)) {
 			auto skill = skillFactory->CreateSkill(skillId);
-			debugf("Created skill: mod.\n");
-			delete skill;
+			debugf("Log: Created test skill %s.\n", skillId);
+			skillFactory->DestroySkill(skill);
 		}
 		else {
-			debugf("Skill not registered: %s.\n", skillId);
+			debugf("Warning: Skill %s not registered.\n", skillId);
 		}
 	}
 #endif // MOD_TEST
-
 }
 
 void Player::Init() {
 	skills = skillFactory->GetSkills();
 }
 
-void Player::ReadConfigs(string path) const {
-	path = resourcePath + path;
-	if (!filesystem::exists(path)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+void Player::ReadConfigs(const string& path) const {
+	string fullPath = resourcePath + path;
+	if (!filesystem::exists(fullPath)) {
+		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
 	}
 
 	JsonReader reader;
 	JsonValue root;
 
-	ifstream fin(path);
+	ifstream fin(fullPath);
 	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
 	}
 	if (reader.Parse(fin, root)) {
 		for (auto skill : root["mods"]["skill"]) {
@@ -116,16 +118,22 @@ void Player::Print() const {
 
 }
 
-void Player::Load(string path) {
+void Player::Load(const string& path) {
 
 }
 
-void Player::Save(string path) const {
+void Player::Save(const string& path) const {
 
 }
 
 void Player::ApplyChange(Change* change, Story* story,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (change == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Change pointer is null in ApplyChange.\n");
+	}
+	if (story == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Story pointer is null in ApplyChange.\n");
+	}
 
 }
 

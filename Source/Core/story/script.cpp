@@ -513,7 +513,7 @@ vector<Event*> Script::BuildEvent(JsonValue root, EventFactory* factory) const {
         }
 
         if (!event) {
-            THROW_EXCEPTION(InvalidArgumentException, "Invalid event type: " + type + ".\n");
+            THROW_EXCEPTION(RuntimeException, "Invalid event type: " + type + ".\n");
         }
 
         // 设置条件

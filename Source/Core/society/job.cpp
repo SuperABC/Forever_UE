@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 默认职业
+
 DefaultJob::DefaultJob() : Job() {
 
 }

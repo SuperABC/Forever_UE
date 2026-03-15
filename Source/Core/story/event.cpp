@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 游戏开始
+
 GameStartEvent::GameStartEvent() {
 
 }
@@ -28,6 +30,8 @@ bool GameStartEvent::operator==(Event* e) {
     if (GetType() != e->GetType()) return false;
     return true;
 }
+
+// 游戏成功
 
 GameSuccessEvent::GameSuccessEvent(string result) : result(result) {
 
@@ -67,6 +71,8 @@ string GameSuccessEvent::GetResult() {
     return result;
 }
 
+// 游戏失败
+
 GameFailEvent::GameFailEvent(string result) : result(result) {
 
 }
@@ -104,6 +110,8 @@ void GameFailEvent::SetResult(string result) {
 string GameFailEvent::GetResult() {
     return result;
 }
+
+// 选项对话
 
 OptionDialogEvent::OptionDialogEvent(string target, string option)
     : idx(-1), target(target), option(option) {
@@ -170,6 +178,8 @@ string OptionDialogEvent::GetOption() const {
     return option;
 }
 
+// NPC相遇
+
 NPCMeetEvent::NPCMeetEvent(string npc) : npc(npc) {
 
 }
@@ -207,6 +217,8 @@ void NPCMeetEvent::SetNPC(string npc) {
 string NPCMeetEvent::GetNPC() const {
     return npc;
 }
+
+// 市民出生
 
 CitizenBornEvent::CitizenBornEvent(string name, GENDER_TYPE gender)
     : name(name), gender(gender) {
@@ -259,6 +271,8 @@ string CitizenBornEvent::GetGender() {
     }
 }
 
+// 市民死亡
+
 CitizenDeceaseEvent::CitizenDeceaseEvent(string name, string reason)
     : name(name), reason(reason) {
 
@@ -306,6 +320,8 @@ string CitizenDeceaseEvent::GetReason() {
     return reason;
 }
 
+// 进入园区
+
 EnterZoneEvent::EnterZoneEvent(string zone) : zone(zone) {
 
 }
@@ -348,6 +364,8 @@ string EnterZoneEvent::GetZone() {
     return zone;
 }
 
+// 离开园区
+
 LeaveZoneEvent::LeaveZoneEvent(string zone) : zone(zone) {
 
 }
@@ -389,6 +407,8 @@ void LeaveZoneEvent::SetZone(string zone) {
 string LeaveZoneEvent::GetZone() {
     return zone;
 }
+
+// 进入建筑
 
 EnterBuildingEvent::EnterBuildingEvent(string zone, string building)
     : zone(zone), building(building) {
@@ -443,6 +463,8 @@ string EnterBuildingEvent::GetBuilding() {
     return building;
 }
 
+// 离开建筑
+
 LeaveBuildingEvent::LeaveBuildingEvent(string zone, string building)
     : zone(zone), building(building) {
 
@@ -495,6 +517,8 @@ void LeaveBuildingEvent::SetBuilding(string building) {
 string LeaveBuildingEvent::GetBuilding() {
     return building;
 }
+
+// 进入房间
 
 EnterRoomEvent::EnterRoomEvent(string zone, string building, string room)
     : zone(zone), building(building), room(room) {
@@ -559,6 +583,8 @@ string EnterRoomEvent::GetRoom() {
     return room;
 }
 
+// 离开房间
+
 LeaveRoomEvent::LeaveRoomEvent(string zone, string building, string room)
     : zone(zone), building(building), room(room) {
 
@@ -622,6 +648,8 @@ string LeaveRoomEvent::GetRoom() {
     return room;
 }
 
+// 存款变化
+
 DepositChangeEvent::DepositChangeEvent(int result, int delta)
     : result(result), delta(delta) {
 
@@ -668,6 +696,8 @@ void DepositChangeEvent::SetDelta(int delta) {
 int DepositChangeEvent::GetDelta() {
     return delta;
 }
+
+// 现金变化
 
 CashChangeEvent::CashChangeEvent(int result, int delta)
     : result(result), delta(delta) {
@@ -716,6 +746,8 @@ int CashChangeEvent::GetDelta() {
     return delta;
 }
 
+// 获取物品
+
 GetItemEvent::GetItemEvent(string item, int num)
     : item(item), num(num) {
 
@@ -762,6 +794,8 @@ void GetItemEvent::SetNum(int num) {
 int GetItemEvent::GetNum() {
     return num;
 }
+
+// 失去物品
 
 LoseItemEvent::LoseItemEvent(string item, int num)
     : item(item), num(num) {
@@ -810,6 +844,8 @@ int LoseItemEvent::GetNum() {
     return num;
 }
 
+// 受伤
+
 PlayerInjuredEvent::PlayerInjuredEvent(string wound) : wound(wound) {
 
 }
@@ -847,6 +883,8 @@ void PlayerInjuredEvent::SetWound(string wound) {
 string PlayerInjuredEvent::GetWound() {
     return wound;
 }
+
+// 痊愈
 
 PlayerCuredEvent::PlayerCuredEvent(string wound) : wound(wound) {
 
@@ -886,6 +924,8 @@ string PlayerCuredEvent::GetWound() {
     return wound;
 }
 
+// 生病
+
 PlayerIllEvent::PlayerIllEvent(string illness) : illness(illness) {
 
 }
@@ -923,6 +963,8 @@ void PlayerIllEvent::SetIllness(string illness) {
 string PlayerIllEvent::GetIllness() {
     return illness;
 }
+
+// 康复
 
 PlayerRecoverEvent::PlayerRecoverEvent(string illness) : illness(illness) {
 
@@ -962,6 +1004,8 @@ string PlayerRecoverEvent::GetIllness() {
     return illness;
 }
 
+// 短暂休息
+
 PlayerRestEvent::PlayerRestEvent(int minute) : minute(minute) {
 
 }
@@ -999,6 +1043,8 @@ void PlayerRestEvent::SetMinute(int minute) {
 int PlayerRestEvent::GetMinute() {
     return minute;
 }
+
+// 睡觉
 
 PlayerSleepEvent::PlayerSleepEvent(int hour) : hour(hour) {
 
@@ -1038,6 +1084,8 @@ int PlayerSleepEvent::GetHour() {
     return hour;
 }
 
+// 计时器
+
 TimeUpEvent::TimeUpEvent(string timer) : timer(timer) {
 
 }
@@ -1075,6 +1123,8 @@ void TimeUpEvent::SetTimer(string timer) {
 string TimeUpEvent::GetTimer() {
     return timer;
 }
+
+// 计数器
 
 CountUpEvent::CountUpEvent(string counter) : counter(counter) {
 
@@ -1114,6 +1164,8 @@ string CountUpEvent::GetCounter() {
     return counter;
 }
 
+// 使用技能
+
 UseSkillEvent::UseSkillEvent(string skill) : skill(skill) {
 
 }
@@ -1151,6 +1203,8 @@ void UseSkillEvent::SetSkill(string skill) {
 string UseSkillEvent::GetSkill() {
     return skill;
 }
+
+// 技能变化
 
 SkillChangeEvent::SkillChangeEvent(string skill, int level)
     : skill(skill), level(level) {
@@ -1199,6 +1253,8 @@ int SkillChangeEvent::GetLevel() {
     return level;
 }
 
+// 战斗胜利
+
 BattleWinEvent::BattleWinEvent(string enemy) : enemy(enemy) {
 
 }
@@ -1236,6 +1292,8 @@ void BattleWinEvent::SetEnemy(string enemy) {
 string BattleWinEvent::GetEnemy() {
     return enemy;
 }
+
+// 战斗失败
 
 BattleLoseEvent::BattleLoseEvent(string enemy) : enemy(enemy) {
 
@@ -1275,6 +1333,8 @@ string BattleLoseEvent::GetEnemy() {
     return enemy;
 }
 
+// 逃跑成功
+
 EscapeSuccessEvent::EscapeSuccessEvent(string enemy) : enemy(enemy) {
 
 }
@@ -1313,6 +1373,8 @@ string EscapeSuccessEvent::GetEnemy() {
     return enemy;
 }
 
+// 逃跑失败
+
 EscapeFailEvent::EscapeFailEvent(string enemy) : enemy(enemy) {
 
 }
@@ -1350,6 +1412,8 @@ void EscapeFailEvent::SetEnemy(string enemy) {
 string EscapeFailEvent::GetEnemy() {
     return enemy;
 }
+
+// 修炼变化
 
 CultivationChangeEvent::CultivationChangeEvent(string method, int level)
     : method(method), level(level) {
@@ -1398,6 +1462,8 @@ int CultivationChangeEvent::GetLevel() {
     return level;
 }
 
+// 通缉变化
+
 WantedChangeEvent::WantedChangeEvent(string reason, int level)
     : reason(reason), level(level) {
 
@@ -1445,6 +1511,8 @@ int WantedChangeEvent::GetLevel() {
     return level;
 }
 
+// 被捕
+
 PlayerArrestedEvent::PlayerArrestedEvent(string reason) : reason(reason) {
 
 }
@@ -1482,6 +1550,8 @@ void PlayerArrestedEvent::SetReason(string reason) {
 string PlayerArrestedEvent::GetReason() {
     return reason;
 }
+
+// 释放
 
 PlayerReleasedEvent::PlayerReleasedEvent(string reason) : reason(reason) {
 
@@ -1521,6 +1591,8 @@ string PlayerReleasedEvent::GetReason() {
     return reason;
 }
 
+// 天气变化
+
 WeatherChangeEvent::WeatherChangeEvent(string weather) : weather(weather) {
 
 }
@@ -1558,6 +1630,8 @@ void WeatherChangeEvent::SetWeather(string weather) {
 string WeatherChangeEvent::GetWeather() {
     return weather;
 }
+
+// 政策变化
 
 PolicyChangeEvent::PolicyChangeEvent(string policy, bool status)
     : policy(policy), status(status) {

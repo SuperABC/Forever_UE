@@ -2,7 +2,8 @@
 
 using namespace std;
 
-// SetValueChange 类
+// 变量赋值
+
 SetValueChange::SetValueChange() {
 
 }
@@ -48,7 +49,8 @@ string SetValueChange::GetValue() {
     return value;
 }
 
-// RemoveValueChange 类
+// 移除变量
+
 RemoveValueChange::RemoveValueChange() {
 
 }
@@ -86,7 +88,8 @@ vector<Change*> RemoveValueChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// DeactivateMileStone 类
+// 停用里程碑
+
 DeactivateMilestoneChange::DeactivateMilestoneChange() {
 
 }
@@ -124,7 +127,8 @@ vector<Change*> DeactivateMilestoneChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// AddOptionChange 类
+// 添加选项
+
 AddOptionChange::AddOptionChange() {
 
 }
@@ -170,7 +174,8 @@ vector<Change*> AddOptionChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// RemoveOptionChange 类
+// 移除选项
+
 RemoveOptionChange::RemoveOptionChange() {
 
 }
@@ -216,7 +221,8 @@ vector<Change*> RemoveOptionChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// SpawnNpcChange 类
+// 生成NPC
+
 SpawnNpcChange::SpawnNpcChange() {
 
 }
@@ -278,7 +284,8 @@ vector<Change*> SpawnNpcChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// RemoveNpcChange 类
+// 移除NPC
+
 RemoveNpcChange::RemoveNpcChange() {
 
 }
@@ -316,7 +323,8 @@ vector<Change*> RemoveNpcChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// NPCNavigateChange 类
+// NPC自动导航
+
 NPCNavigateChange::NPCNavigateChange() {
 
 }
@@ -362,7 +370,8 @@ vector<Change*> NPCNavigateChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// TeleportCitizenChange 类
+// 瞬移市民
+
 TeleportCitizenChange::TeleportCitizenChange() {
 
 }
@@ -408,7 +417,8 @@ vector<Change*> TeleportCitizenChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// TeleportPlayerChange 类
+// 瞬移角色
+
 TeleportPlayerChange::TeleportPlayerChange() {
 
 }
@@ -446,7 +456,8 @@ vector<Change*> TeleportPlayerChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// BankTransactionChange 类
+// 存款收支
+
 BankTransactionChange::BankTransactionChange() {
 
 }
@@ -484,7 +495,8 @@ vector<Change*> BankTransactionChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// CashTransactionChange 类
+// 现金收支
+
 CashTransactionChange::CashTransactionChange() {
 
 }
@@ -522,7 +534,8 @@ vector<Change*> CashTransactionChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// GiveItemChange 类
+// 给予物品
+
 GiveItemChange::GiveItemChange() {
 
 }
@@ -568,7 +581,8 @@ vector<Change*> GiveItemChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// RemoveItemChange 类
+// 扣除物品
+
 RemoveItemChange::RemoveItemChange() {
 
 }
@@ -614,7 +628,8 @@ vector<Change*> RemoveItemChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// PlayerInjuredChange 类
+// 受伤
+
 PlayerInjuredChange::PlayerInjuredChange() {
 
 }
@@ -652,7 +667,8 @@ vector<Change*> PlayerInjuredChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// PlayerCuredChange 类
+// 痊愈
+
 PlayerCuredChange::PlayerCuredChange() {
 
 }
@@ -690,7 +706,8 @@ vector<Change*> PlayerCuredChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// PlayerIllChange 类
+// 生病
+
 PlayerIllChange::PlayerIllChange() {
 
 }
@@ -728,7 +745,8 @@ vector<Change*> PlayerIllChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// PlayerRecoverChange 类
+// 康复
+
 PlayerRecoverChange::PlayerRecoverChange() {
 
 }
@@ -766,7 +784,8 @@ vector<Change*> PlayerRecoverChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// PlayerSleepChange 类
+// 强制睡眠
+
 PlayerSleepChange::PlayerSleepChange() {
 
 }
@@ -804,7 +823,8 @@ vector<Change*> PlayerSleepChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// CreateTimerChange 类
+// 创建计时器
+
 CreateTimerChange::CreateTimerChange() {
 
 }
@@ -858,7 +878,8 @@ vector<Change*> CreateTimerChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// PauseTimerChange 类
+// 暂停计时器
+
 PauseTimerChange::PauseTimerChange() {
 
 }
@@ -896,7 +917,8 @@ vector<Change*> PauseTimerChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// ResumeTimerChange 类
+// 恢复计时器
+
 ResumeTimerChange::ResumeTimerChange() {
 
 }
@@ -934,7 +956,8 @@ vector<Change*> ResumeTimerChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// RemoveTimerChange 类
+// 删除计时器
+
 RemoveTimerChange::RemoveTimerChange() {
 
 }
@@ -972,7 +995,8 @@ vector<Change*> RemoveTimerChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// ResetTimerChange 类
+// 重置计时器
+
 ResetTimerChange::ResetTimerChange() {
 
 }
@@ -1010,7 +1034,8 @@ vector<Change*> ResetTimerChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// CreateCounterChange 类
+// 创建计数器
+
 CreateCounterChange::CreateCounterChange() {
 
 }
@@ -1056,7 +1081,8 @@ vector<Change*> CreateCounterChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// CallCounterChange 类
+// 调用计数器
+
 CallCounterChange::CallCounterChange() {
 
 }
@@ -1102,7 +1128,8 @@ vector<Change*> CallCounterChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// RemoveCounterChange 类
+// 删除计数器
+
 RemoveCounterChange::RemoveCounterChange() {
 
 }
@@ -1140,7 +1167,8 @@ vector<Change*> RemoveCounterChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// EnterBattleChange 类
+// 进入战斗
+
 EnterBattleChange::EnterBattleChange() {
 
 }
@@ -1178,7 +1206,8 @@ vector<Change*> EnterBattleChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// ChangeTimeChange 类
+// 变化时间
+
 ChangeTimeChange::ChangeTimeChange() {
 
 }
@@ -1216,7 +1245,8 @@ vector<Change*> ChangeTimeChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// ChangeCultivationChange 类
+// 变化修炼
+
 ChangeCultivationChange::ChangeCultivationChange() {
 
 }
@@ -1262,7 +1292,8 @@ vector<Change*> ChangeCultivationChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// ChangeWantedChange 类
+// 变化通缉
+
 ChangeWantedChange::ChangeWantedChange() {
 
 }
@@ -1308,7 +1339,8 @@ vector<Change*> ChangeWantedChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// ChangeWeatherChange 类
+// 变化天气
+
 ChangeWeatherChange::ChangeWeatherChange() {
 
 }
@@ -1346,7 +1378,8 @@ vector<Change*> ChangeWeatherChange::ApplyChange() {
     return vector<Change*>();
 }
 
-// ChangePolicyChange 类
+// 变化政策
+
 ChangePolicyChange::ChangePolicyChange() {
 
 }

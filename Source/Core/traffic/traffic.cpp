@@ -16,7 +16,8 @@ RouteFactory* Traffic::routeFactory = nullptr;
 StationFactory* Traffic::stationFactory = nullptr;
 VehicleFactory* Traffic::vehicleFactory = nullptr;
 
-Traffic::Traffic() {
+Traffic::Traffic() :
+	resourcePath() {
 	if (!routeFactory) {
 		routeFactory = new RouteFactory();
 	}
@@ -29,10 +30,10 @@ Traffic::Traffic() {
 }
 
 Traffic::~Traffic() {
-
+	// 保留空实现，工厂由静态指针管理，无需在此释放
 }
 
-void Traffic::SetResourcePath(string path) {
+void Traffic::SetResourcePath(const string& path) {
 	resourcePath = path;
 }
 
@@ -52,17 +53,18 @@ void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
-		RegisterModRoutesFunc registerFunc = (RegisterModRoutesFunc)GetProcAddress(modHandle, "RegisterModRoutes");
+		debugf("Log: Mod dll loaded successfully.\n");
+		RegisterModRoutesFunc registerFunc =
+			(RegisterModRoutesFunc)GetProcAddress(modHandle, "RegisterModRoutes");
 		if (registerFunc) {
 			registerFunc(routeFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod dll.\n");
+		debugf("Warning: Failed to load mod dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -70,15 +72,14 @@ void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& routeId : routeList) {
 		if (routeFactory->CheckRegistered(routeId)) {
 			auto route = routeFactory->CreateRoute(routeId);
-			debugf(("Created route: " + route->GetName() + " (ID: " + routeId + ").\n").data());
-			delete route;
+			debugf("Log: Created test route %s.\n", routeId);
+			routeFactory->DestroyRoute(route);
 		}
 		else {
-			debugf("Route not registered: %s.\n", routeId);
+			debugf("Warning: Route %s not registered.\n", routeId);
 		}
 	}
 #endif // MOD_TEST
-
 }
 
 void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles) {
@@ -97,17 +98,18 @@ void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
-		RegisterModStationsFunc registerFunc = (RegisterModStationsFunc)GetProcAddress(modHandle, "RegisterModStations");
+		debugf("Log: Mod dll loaded successfully.\n");
+		RegisterModStationsFunc registerFunc =
+			(RegisterModStationsFunc)GetProcAddress(modHandle, "RegisterModStations");
 		if (registerFunc) {
 			registerFunc(stationFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod dll.\n");
+		debugf("Warning: Failed to load mod dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -115,15 +117,14 @@ void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& stationId : stationList) {
 		if (stationFactory->CheckRegistered(stationId)) {
 			auto station = stationFactory->CreateStation(stationId);
-			debugf(("Created station: " + station->GetName() + " (ID: " + stationId + ").\n").data());
-			delete station;
+			debugf("Log: Created test station %s.\n", stationId);
+			stationFactory->DestroyStation(station);
 		}
 		else {
-			debugf("Station not registered: %s.\n", stationId);
+			debugf("Warning: Station %s not registered.\n", stationId);
 		}
 	}
 #endif // MOD_TEST
-
 }
 
 void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles) {
@@ -142,17 +143,18 @@ void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
-		RegisterModVehiclesFunc registerFunc = (RegisterModVehiclesFunc)GetProcAddress(modHandle, "RegisterModVehicles");
+		debugf("Log: Mod dll loaded successfully.\n");
+		RegisterModVehiclesFunc registerFunc =
+			(RegisterModVehiclesFunc)GetProcAddress(modHandle, "RegisterModVehicles");
 		if (registerFunc) {
 			registerFunc(vehicleFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod dll.\n");
+		debugf("Warning: Failed to load mod dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -160,33 +162,35 @@ void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& vehicleId : vehicleList) {
 		if (vehicleFactory->CheckRegistered(vehicleId)) {
 			auto vehicle = vehicleFactory->CreateVehicle(vehicleId);
-			debugf(("Created vehicle: " + vehicle->GetName() + " (ID: " + vehicleId + ").\n").data());
-			delete vehicle;
+			debugf("Log: Created test vehicle %s.\n", vehicleId);
+			vehicleFactory->DestroyVehicle(vehicle);
 		}
 		else {
-			debugf("Vehicle not registered: %s.\n", vehicleId);
+			debugf("Warning: Vehicle %s not registered.\n", vehicleId);
 		}
 	}
 #endif // MOD_TEST
-
 }
 
 void Traffic::Init(Map* map) {
+	if (map == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Map is null.\n");
+	}
 
 }
 
-void Traffic::ReadConfigs(string path) const {
-	path = resourcePath + path;
-	if (!filesystem::exists(path)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+void Traffic::ReadConfigs(const string& path) const {
+	string fullPath = resourcePath + path;
+	if (!filesystem::exists(fullPath)) {
+		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
 	}
 
 	JsonReader reader;
 	JsonValue root;
 
-	ifstream fin(path);
+	ifstream fin(fullPath);
 	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
 	}
 	if (reader.Parse(fin, root)) {
 		for (auto route : root["mods"]["route"]) {
@@ -218,24 +222,30 @@ void Traffic::Print() const {
 
 }
 
-void Traffic::Load(string path) {
+void Traffic::Load(const string& path) {
 
 }
 
-void Traffic::Save(string path) const {
+void Traffic::Save(const string& path) const {
 
 }
 
 void Traffic::ApplyChange(Change* change, Story* story,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (change == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
+	}
+	if (story == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Story is null.\n");
+	}
 
 }
 
-RouteFactory* Traffic::GetRouteFactory() {
+RouteFactory* Traffic::GetRouteFactory() const {
 	return routeFactory;
 }
 
-StationFactory* Traffic::GetStationFactory() {
+StationFactory* Traffic::GetStationFactory() const {
 	return stationFactory;
 }
 

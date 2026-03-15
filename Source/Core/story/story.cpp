@@ -15,7 +15,10 @@ using namespace std;
 EventFactory* Story::eventFactory = nullptr;
 ChangeFactory* Story::changeFactory = nullptr;
 
-Story::Story() {
+Story::Story() :
+	resourcePath(),
+	script(nullptr),
+	variables() {
 	if (!eventFactory) {
 		eventFactory = new EventFactory();
 	}
@@ -28,7 +31,7 @@ Story::~Story() {
 	delete script;
 }
 
-void Story::SetResourcePath(string path) {
+void Story::SetResourcePath(const string& path) {
 	resourcePath = path;
 }
 
@@ -43,17 +46,18 @@ void Story::InitEvents(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
-		RegisterModEventsFunc registerFunc = (RegisterModEventsFunc)GetProcAddress(modHandle, "RegisterModEvents");
+		debugf("Log: Mod dll loaded successfully.\n");
+		RegisterModEventsFunc registerFunc =
+			(RegisterModEventsFunc)GetProcAddress(modHandle, "RegisterModEvents");
 		if (registerFunc) {
 			registerFunc(eventFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod dll.\n");
+		debugf("Warning: Failed to load mod dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -61,15 +65,14 @@ void Story::InitEvents(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& eventId : eventList) {
 		if (eventFactory->CheckRegistered(eventId)) {
 			auto event = eventFactory->CreateEvent(eventId);
-			debugf(("Created event: " + event->GetName() + " (ID: " + eventId + ").\n").data());
-			delete event;
+			debugf("Log: Created test event %s.\n", eventId);
+			eventFactory->DestroyEvent(event);
 		}
 		else {
-			debugf("Event not registered: %s.\n", eventId);
+			debugf("Warning: Event %s not registered.\n", eventId);
 		}
 	}
 #endif // MOD_TEST
-
 }
 
 void Story::InitChanges(unordered_map<string, HMODULE>& modHandles) {
@@ -83,17 +86,18 @@ void Story::InitChanges(unordered_map<string, HMODULE>& modHandles) {
 		modHandles[modPath] = modHandle;
 	}
 	if (modHandle) {
-		debugf("Mod dll loaded successfully.\n");
-		RegisterModChangesFunc registerFunc = (RegisterModChangesFunc)GetProcAddress(modHandle, "RegisterModChanges");
+		debugf("Log: Mod dll loaded successfully.\n");
+		RegisterModChangesFunc registerFunc =
+			(RegisterModChangesFunc)GetProcAddress(modHandle, "RegisterModChanges");
 		if (registerFunc) {
 			registerFunc(changeFactory);
 		}
 		else {
-			debugf("Incorrect dll content.\n");
+			debugf("Warning: Incorrect dll content.\n");
 		}
 	}
 	else {
-		debugf("Failed to load mod dll.\n");
+		debugf("Warning: Failed to load mod dll.\n");
 	}
 
 #ifdef MOD_TEST
@@ -101,29 +105,28 @@ void Story::InitChanges(unordered_map<string, HMODULE>& modHandles) {
 	for (const auto& changeId : changeList) {
 		if (changeFactory->CheckRegistered(changeId)) {
 			auto change = changeFactory->CreateChange(changeId);
-			debugf(("Created change: " + change->GetName() + " (ID: " + changeId + ").\n").data());
-			delete change;
+			debugf("Log: Created test change %s.\n", changeId);
+			changeFactory->DestroyChange(change);
 		}
 		else {
-			debugf("Change not registered: %s.\n", changeId);
+			debugf("Warning: Change %s not registered.\n", changeId);
 		}
 	}
 #endif // MOD_TEST
-
 }
 
-void Story::ReadConfigs(string path) const {
-	path = resourcePath + path;
-	if (!filesystem::exists(path)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+void Story::ReadConfigs(const string& path) const {
+	string fullPath = resourcePath + path;
+	if (!filesystem::exists(fullPath)) {
+		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
 	}
 
 	JsonReader reader;
 	JsonValue root;
 
-	ifstream fin(path);
+	ifstream fin(fullPath);
 	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
 	}
 	if (reader.Parse(fin, root)) {
 		for (auto event : root["mods"]["event"]) {
@@ -145,42 +148,53 @@ void Story::Init() {
 }
 
 void Story::Destroy() {
-
+	// 保留空实现
 }
 
 void Story::Tick(int day, int hour, int min, int sec) {
-	// 更新全局变量
+	// 保留空实现
 }
 
 void Story::Print() const {
-
+	// 保留空实现
 }
 
-void Story::Load(string path) {
-
+void Story::Load(const string& path) {
+	// 保留空实现
 }
 
-void Story::Save(string path) const {
-
+void Story::Save(const string& path) const {
+	// 保留空实现
 }
 
 void Story::ApplyChange(Change* change, Story* story,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (change == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
+	}
+
 	auto type = change->GetType();
 
 	if (type == "set_value") {
 		auto obj = dynamic_cast<SetValueChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to SetValueChange.\n");
+		}
 		if (obj->GetVariable().substr(0, 7) == "system.") {
 			return;
 		}
 		Condition condition;
 		condition.ParseCondition(obj->GetValue());
-		variables[obj->GetVariable()] = condition.EvaluateValue([this](string name) -> pair<bool, ValueType> {
-			return this->GetValue(name);
+		variables[obj->GetVariable()] = condition.EvaluateValue(
+			[this](string name) -> pair<bool, ValueType> {
+				return this->GetValue(name);
 			});
 	}
 	else if (type == "remove_value") {
 		auto obj = dynamic_cast<RemoveValueChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to RemoveValueChange.\n");
+		}
 		if (obj->GetVariable().substr(0, 7) == "system.") {
 			return;
 		}
@@ -188,41 +202,50 @@ void Story::ApplyChange(Change* change, Story* story,
 	}
 	else if (type == "deactivate_milestone") {
 		auto obj = dynamic_cast<DeactivateMilestoneChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to DeactivateMilestoneChange.\n");
+		}
 		script->DeactivateMilestone(obj->GetMilestone());
 	}
 }
 
-EventFactory* Story::GetEventFactory() {
+EventFactory* Story::GetEventFactory() const {
 	return eventFactory;
 }
 
-ChangeFactory* Story::GetChangeFactory() {
+ChangeFactory* Story::GetChangeFactory() const {
 	return changeFactory;
 }
 
-vector<string> Story::ReadNames(string name, string path) const {
-	if (!script) {
+vector<string> Story::ReadNames(const string& name, const string& path) const {
+	if (script == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Script not initialized.\n");
 	}
 
-	return script->ReadNames(name, resourcePath + path, eventFactory, changeFactory);
+	return script->ReadNames(name, resourcePath + path,
+		eventFactory, changeFactory);
 }
 
-void Story::ReadStory(string name, string path) {
-	if (!script) {
+void Story::ReadStory(const string& name, const string& path) {
+	if (script == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Script not initialized.\n");
 	}
 
-	script->ReadMilestones(name, resourcePath + path, eventFactory, changeFactory);
+	script->ReadMilestones(name, resourcePath + path,
+		eventFactory, changeFactory);
 }
 
-bool Story::JudgeCondition(Condition& condition) const {
+bool Story::JudgeCondition(const Condition& condition) const {
 	return condition.EvaluateBool([this](string name) -> pair<bool, ValueType> {
 		return this->GetValue(name);
 		});
 }
 
-bool Story::JudgeCondition(Condition& condition, Person* person) const {
+bool Story::JudgeCondition(const Condition& condition,
+	const Person* person) const {
+	if (person == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Person pointer is null.\n");
+	}
 	return condition.EvaluateBool({
 		[this](string name) -> pair<bool, ValueType> {
 			return this->GetValue(name);
@@ -233,22 +256,28 @@ bool Story::JudgeCondition(Condition& condition, Person* person) const {
 		});
 }
 
-bool Story::JudgeCondition(Condition& condition, vector<function<pair<bool, ValueType>(const string&)>> getValues) const {
+bool Story::JudgeCondition(const Condition& condition,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) const {
 	return condition.EvaluateBool(getValues);
 }
 
 pair<vector<Dialog>, vector<Change*>> Story::MatchEvent(Event* event) {
-	if (!script) {
+	if (script == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Script not initialized.\n");
+	}
+	if (event == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Event is null.\n");
 	}
 
 	return script->MatchEvent(event, this);
 }
 
-void Story::InitVariables(Time *t) {
+void Story::InitVariables(Time* t) {
+	if (t == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Time is null.\n");
+	}
 	variables["player.name"] = "玩家";
 	variables["player.health"] = "健康";
-
 	variables["system.time.year"] = t->GetYear();
 }
 
@@ -264,8 +293,10 @@ pair<bool, ValueType> Story::GetValue(const string& name) const {
 	return { false, 0 };
 }
 
-void Story::UpdateVariables(Time *t) {
+void Story::UpdateVariables(Time* t) {
+	if (t == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Time is null.\n");
+	}
 	variables["system.time.year"] = t->GetYear();
 }
-
 

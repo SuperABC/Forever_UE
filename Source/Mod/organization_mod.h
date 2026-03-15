@@ -49,12 +49,12 @@ public:
     virtual void ArrangeRooms() override {
         for (const auto& [component, vacancies] : GetJobs()) {
             if (component == nullptr) {
-                debugf("Organization component is null.\n");
+                debugf("Warning: Organization component is null.\n");
                 continue;
             }
             const auto& rooms = component->GetRooms();
             if (rooms.empty()) {
-                debugf("Organization component has no rooms.\n");
+                debugf("Warning: Organization component has no rooms.\n");
                 continue;
             }
             for (const auto& [job, occupantId] : vacancies) {

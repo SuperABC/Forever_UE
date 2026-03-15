@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 机场站台
+
 string AirportStation::GetId() {
 	return "airpot";
 }

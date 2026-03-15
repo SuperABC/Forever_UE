@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 纯工作调度
+
 WorkOnlyScheduler::WorkOnlyScheduler() {
 
 }

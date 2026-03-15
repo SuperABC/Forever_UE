@@ -9,7 +9,7 @@
 // 子类注册函数
 typedef void (*RegisterModStoragesFunc)(StorageFactory* factory);
 
-// 标准双休日程
+// 默认仓库
 class DefaultStorage : public Storage {
 public:
     static std::string GetId();

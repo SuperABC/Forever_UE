@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 飞机载具
+
 string PlaneVehicle::GetId() {
 	return "plane";
 }

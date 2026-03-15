@@ -9,7 +9,7 @@
 // 子类注册函数
 typedef void (*RegisterModProductsFunc)(ProductFactory* factory);
 
-// 标准双休日程
+// 默认产品
 class DefaultProduct : public Product {
 public:
 	static std::string GetId();

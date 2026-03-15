@@ -17,7 +17,7 @@ public:
 	~Player();
 
 	// 设置资源路径
-	void SetResourcePath(std::string path);
+	void SetResourcePath(const std::string& path);
 
 	// 读取Mods
 	void InitSkills(std::unordered_map<std::string, HMODULE>& modHandles);
@@ -26,7 +26,7 @@ public:
 	void Init();
 
 	// 读取配置文件
-	void ReadConfigs(std::string path) const;
+	void ReadConfigs(const std::string& path) const;
 
 	// 释放空间
 	void Destroy();
@@ -38,12 +38,13 @@ public:
 	void Print() const;
 
 	// 保存/加载交通
-	void Load(std::string path);
-	void Save(std::string path) const;
+	void Load(const std::string& path);
+	void Save(const std::string& path) const;
 
 	// 应用变更
 	void ApplyChange(Change* change, Story* story,
-		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+		std::vector<std::function<std::pair<bool, ValueType>(
+			const std::string&)>>&getValues);
 
 	// 获取时钟
 	Time* GetTime();
@@ -56,7 +57,7 @@ private:
 	static SkillFactory* skillFactory;
 
 	// 时钟
-	Time* time = nullptr;
+	Time* time;
 
 	std::vector<Skill*> skills;
 };

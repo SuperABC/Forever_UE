@@ -99,7 +99,7 @@ bool Block::SetTerrain(int x, int y, const string& terrain, float height) {
 
 float Block::GetHeight(int x, int y) const {
     if (!CheckXY(x, y)) {
-        debugf("Invalid block coordinates (%d, %d) for block (%d, %d).\n", x, y, offsetX, offsetY);
+        debugf("Warning: Invalid block coordinates (%d, %d) for block (%d, %d).\n", x, y, offsetX, offsetY);
         return 0.f;
     }
     return elements[y - offsetY][x - offsetX]->GetHeight();
@@ -206,18 +206,18 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
         modHandles[modPath] = modHandle;
     }
     if (modHandle) {
-        debugf("Mod dll loaded successfully.\n");
+        debugf("Log: Mod dll loaded successfully.\n");
 
         auto registerFunc = (RegisterModTerrainsFunc)GetProcAddress(modHandle, "RegisterModTerrains");
         if (registerFunc) {
             registerFunc(terrainFactory);
         }
         else {
-            debugf("Incorrect dll content.\n");
+            debugf("Warning: Incorrect dll content.\n");
         }
     }
     else {
-        debugf("Failed to load mod.dll.\n");
+        debugf("Warning: Failed to load mod.dll.\n");
     }
 
 #ifdef MOD_TEST
@@ -225,11 +225,11 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
     for (const auto& terrainId : terrainList) {
         if (terrainFactory->CheckRegistered(terrainId)) {
             auto terrain = terrainFactory->CreateTerrain(terrainId);
-            debugf(("Created terrain: " + terrain->GetName() + " (ID: " + terrainId + ").\n").data());
-            delete terrain;
+            debugf("Log: Created test terrain %s.\n", terrainId);
+            terrainFactory->DestroyTerrains({ terrain });
         }
         else {
-            debugf("Terrain not registered: %s.\n", terrainId);
+            debugf("Warning: Terrain %s not registered.\n", terrainId);
         }
     }
 #endif
@@ -250,18 +250,18 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
         modHandles[modPath] = modHandle;
     }
     if (modHandle) {
-        debugf("Mod dll loaded successfully.\n");
+        debugf("Log: Mod dll loaded successfully.\n");
 
         auto registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
         if (registerFunc) {
             registerFunc(roadnetFactory);
         }
         else {
-            debugf("Incorrect dll content.\n");
+            debugf("Warning: Incorrect dll content.\n");
         }
     }
     else {
-        debugf("Failed to load mod.dll.\n");
+        debugf("Warning: Failed to load mod.dll.\n");
     }
 
 #ifdef MOD_TEST
@@ -269,11 +269,11 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
     for (const auto& roadnetId : roadnetList) {
         if (roadnetFactory->CheckRegistered(roadnetId)) {
             auto roadnet = roadnetFactory->CreateRoadnet(roadnetId);
-            debugf("Created roadnet: mod.\n");
-            delete roadnet;
+            debugf("Log: Created test roadnet %s.\n", roadnetId);
+            roadnetFactory->DestroyRoadnet(roadnet);
         }
         else {
-            debugf("Roadnet not registered: %s.\n", roadnetId);
+            debugf("Warning: Roadnet %s not registered.\n", roadnetId);
         }
     }
 #endif
@@ -295,18 +295,18 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
         modHandles[modPath] = modHandle;
     }
     if (modHandle) {
-        debugf("Mod dll loaded successfully.\n");
+        debugf("Log: Mod dll loaded successfully.\n");
 
         auto registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
         if (registerFunc) {
             registerFunc(zoneFactory);
         }
         else {
-            debugf("Incorrect dll content.\n");
+            debugf("Warning: Incorrect dll content.\n");
         }
     }
     else {
-        debugf("Failed to load mod.dll.\n");
+        debugf("Warning: Failed to load mod.dll.\n");
     }
 
 #ifdef MOD_TEST
@@ -314,11 +314,11 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
     for (const auto& zoneId : zoneList) {
         if (zoneFactory->CheckRegistered(zoneId)) {
             auto zone = zoneFactory->CreateZone(zoneId);
-            debugf(("Created zone: " + zone->GetName() + " (ID: " + zoneId + ").\n").data());
-            delete zone;
+            debugf("Log: Created test zone %s.\n", zoneId);
+            zoneFactory->DestroyZone(zone);
         }
         else {
-            debugf("Zone not registered: %s.\n", zoneId);
+            debugf("Warning: Zone %s not registered.\n", zoneId);
         }
     }
 #endif
@@ -344,18 +344,18 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
         modHandles[modPath] = modHandle;
     }
     if (modHandle) {
-        debugf("Mod dll loaded successfully.\n");
+        debugf("Log: Mod dll loaded successfully.\n");
 
         auto registerFunc = (RegisterModBuildingsFunc)GetProcAddress(modHandle, "RegisterModBuildings");
         if (registerFunc) {
             registerFunc(buildingFactory);
         }
         else {
-            debugf("Incorrect dll content.\n");
+            debugf("Warning: Incorrect dll content.\n");
         }
     }
     else {
-        debugf("Failed to load mod.dll.\n");
+        debugf("Warning: Failed to load mod.dll.\n");
     }
 
 #ifdef MOD_TEST
@@ -363,11 +363,11 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
     for (const auto& buildingId : buildingList) {
         if (buildingFactory->CheckRegistered(buildingId)) {
             auto building = buildingFactory->CreateBuilding(buildingId);
-            debugf(("Created building: " + building->GetName() + " (ID: " + buildingId + ").\n").data());
-            delete building;
+            debugf("Log: Created test building %s.\n", buildingId);
+            buildingFactory->DestroyBuilding(building);
         }
         else {
-            debugf("Building not registered: %s.\n", buildingId);
+            debugf("Warning: Building %s not registered.\n", buildingId);
         }
     }
 #endif
@@ -393,17 +393,17 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
         modHandles[modPath] = modHandle;
     }
     if (modHandle) {
-        debugf("Mod dll loaded successfully.\n");
+        debugf("Log: Mod dll loaded successfully.\n");
         auto registerFunc = (RegisterModComponentsFunc)GetProcAddress(modHandle, "RegisterModComponents");
         if (registerFunc) {
             registerFunc(componentFactory);
         }
         else {
-            debugf("Incorrect dll content.\n");
+            debugf("Warning: Incorrect dll content.\n");
         }
     }
     else {
-        debugf("Failed to load mod.dll.\n");
+        debugf("Warning: Failed to load mod.dll.\n");
     }
 
 #ifdef MOD_TEST
@@ -411,11 +411,11 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
     for (const auto& componentId : componentList) {
         if (componentFactory->CheckRegistered(componentId)) {
             auto component = componentFactory->CreateComponent(componentId);
-            debugf(("Created component: " + component->GetName() + " (ID: " + componentId + ").\n").data());
-            delete component;
+            debugf("Log: Created test component %s.\n", componentId);
+            componentFactory->DestroyComponent(component);
         }
         else {
-            debugf("Component not registered: %s.\n", componentId);
+            debugf("Warning: Component %s not registered.\n", componentId);
         }
     }
 #endif
@@ -441,17 +441,17 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
         modHandles[modPath] = modHandle;
     }
     if (modHandle) {
-        debugf("Mod dll loaded successfully.\n");
+        debugf("Log: Mod dll loaded successfully.\n");
         auto registerFunc = (RegisterModRoomsFunc)GetProcAddress(modHandle, "RegisterModRooms");
         if (registerFunc) {
             registerFunc(roomFactory);
         }
         else {
-            debugf("Incorrect dll content.\n");
+            debugf("Warning: Incorrect dll content.\n");
         }
     }
     else {
-        debugf("Failed to load mod.dll.\n");
+        debugf("Warning: Failed to load mod.dll.\n");
     }
 
 #ifdef MOD_TEST
@@ -459,11 +459,11 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
     for (const auto& roomId : roomList) {
         if (roomFactory->CheckRegistered(roomId)) {
             auto room = roomFactory->CreateRoom(roomId);
-            debugf(("Created room: " + room->GetName() + " (ID: " + roomId + ").\n").data());
-            delete room;
+            debugf("Log: Created test room %s.\n", roomId);
+            roomFactory->DestroyRoom(room);
         }
         else {
-            debugf("Room not registered: %s.\n", roomId);
+            debugf("Warning: Room %s not registered.\n", roomId);
         }
     }
 #endif
@@ -519,7 +519,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     playerPos.first = width / 2.f;
     playerPos.second = height / 2.f;
 
-    debugf("Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
+    debugf("Log: Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
     blocks = vector<vector<shared_ptr<Block>>>(blockY,
         vector<shared_ptr<Block>>(blockX, nullptr));
     for (int i = 0; i < blockX; ++i) {
@@ -528,7 +528,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         }
     }
 
-    debugf("Generate terrains.\n");
+    debugf("Log: Generate terrains.\n");
     auto getTerrain = [this](int x, int y) -> string {
         return this->GetTerrain(x, y);
         };
@@ -548,7 +548,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     }
     terrainFactory->DestroyTerrains(terrains);
 
-    debugf("Generate roadnet.\n");
+    debugf("Log: Generate roadnet.\n");
     roadnet = roadnetFactory->GetRoadnet();
     if (!roadnet) {
         THROW_EXCEPTION(RuntimeException, "No enabled roadnet in config.\n");
@@ -556,7 +556,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     roadnet->DistributeRoadnet(width, height, getTerrain, traffic->GetStationFactory(), traffic->GetRouteFactory());
     roadnet->AllocateAddress();
 
-    debugf("Generate zones.\n");
+    debugf("Log: Generate zones.\n");
     auto zoneTypes = zoneFactory->GetTypes();
     for (auto plot : roadnet->GetPlots()) {
         if (!plot) continue;
@@ -592,7 +592,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         }
     }
 
-    debugf("Generate buildings.\n");
+    debugf("Log: Generate buildings.\n");
     auto uniques = buildingFactory->GetNums(roadnet->GetPlots());
     auto powers = buildingFactory->GetPowers();
     vector<vector<pair<string, float>>> cdfs(AREA_GREEN);
@@ -687,7 +687,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
         }
     }
 
-    debugf("Generate components and rooms.\n");
+    debugf("Log: Generate components and rooms.\n");
     int capacity = 0;
     if (layout) delete layout;
     layout = Building::ReadTemplates(resourcePath + "layouts/");
@@ -1001,7 +1001,7 @@ bool Map::SetTerrain(int x, int y, const string& terrain, float height) {
 
 float Map::GetHeight(int x, int y) const {
     if (!CheckXY(x, y)) {
-        debugf("Map::GetHeight: invalid coordinates (%d, %d).\n", x, y);
+        debugf("Warning: Invalid map coordinates (%d, %d).\n", x, y);
         return 0.f;
     }
 
@@ -1009,12 +1009,12 @@ float Map::GetHeight(int x, int y) const {
     int blockY = y / BLOCK_SIZE;
 
     if (blockY >= (int)blocks.size() || blockX >= (int)blocks[0].size()) {
-        debugf("Block index out of range (%d, %d).\n", blockX, blockY);
+        debugf("Warning: Block index out of range (%d, %d).\n", blockX, blockY);
         return 0.f;
     }
     auto block = blocks[blockY][blockX];
     if (!block) {
-        debugf("Block is null at (%d, %d).\n", blockX, blockY);
+        debugf("Warning: Block is null at (%d, %d).\n", blockX, blockY);
         return 0.f;
     }
     return block->GetHeight(x, y);
@@ -1088,11 +1088,11 @@ Building* Map::GetBuilding(const string& name) const {
 
 void Map::SetZone(Zone* zone, const string& name) {
     if (!zone) {
-        THROW_EXCEPTION(NullPointerException, "SetZone: zone is null.\n");
+        THROW_EXCEPTION(NullPointerException, "Zone is null.\n");
     }
     auto plot = zone->GetParent();
     if (!plot) {
-        THROW_EXCEPTION(NullPointerException, "SetZone: zone's parent plot is null.\n");
+        THROW_EXCEPTION(NullPointerException, "Zone's parent plot is null.\n");
     }
 
     // 计算四个顶点（世界坐标）
@@ -1136,11 +1136,11 @@ void Map::SetZone(Zone* zone, const string& name) {
 
 void Map::SetBuilding(Building* building, const string& name) {
     if (!building) {
-        THROW_EXCEPTION(NullPointerException, "SetBuilding: building is null.\n");
+        THROW_EXCEPTION(NullPointerException, "Building is null.\n");
     }
     auto plot = building->GetParentPlot();
     if (!plot) {
-        THROW_EXCEPTION(NullPointerException, "SetBuilding: building's parent plot is null.\n");
+        THROW_EXCEPTION(NullPointerException, "Building's parent plot is null.\n");
     }
 
     auto v1 = plot->GetPosition(building->GetPosX() + building->GetSizeX() / 2.f, building->GetPosY() + building->GetSizeY() / 2.f);
@@ -1183,11 +1183,11 @@ void Map::SetBuilding(Building* building, const string& name) {
 
 void Map::SetBuilding(Building* building, const string& name, pair<float, float> offset) {
     if (!building) {
-        THROW_EXCEPTION(NullPointerException, "SetBuilding: building is null.\n");
+        THROW_EXCEPTION(NullPointerException, "Building is null.\n");
     }
     auto plot = building->GetParentPlot();
     if (!plot) {
-        THROW_EXCEPTION(NullPointerException, "SetBuilding: building's parent plot is null.\n");
+        THROW_EXCEPTION(NullPointerException, "Building's parent plot is null.\n");
     }
 
     auto v1 = plot->GetPosition(offset.first + building->GetPosX() + building->GetSizeX() / 2.f, offset.second + building->GetPosY() + building->GetSizeY() / 2.f);

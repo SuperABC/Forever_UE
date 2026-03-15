@@ -3,6 +3,8 @@
 
 using namespace std;
 
+// 默认仓库
+
 string DefaultStorage::GetId() {
 	return "default";
 }
