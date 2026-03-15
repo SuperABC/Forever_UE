@@ -8,6 +8,7 @@ public class Forever : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
+        bEnableExceptions = true;
         bUseRTTI = true;
 
 		PublicDependencyModuleNames.AddRange(new string[] {

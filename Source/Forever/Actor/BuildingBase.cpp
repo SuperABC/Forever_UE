@@ -159,13 +159,13 @@ void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
 				info.meshes.Add(
 					FMesh(FVector(stair.GetPosX(), stair.GetPosY(), building->GetHeight() * i) + bias,
 						FVector(stair.GetSizeY(), stair.GetSizeX(), building->GetHeight()), GetRotation(stair.GetDirection()),
-						FString("/Game/Assets/Meshes/Stair.Stair")));
+						FString("/Game/Asset/Meshes/Stair.Stair")));
 			}
 			else {
 				info.meshes.Add(
 					FMesh(FVector(stair.GetPosX(), stair.GetPosY(), building->GetHeight() * i) + bias,
 						FVector(stair.GetSizeX(), stair.GetSizeY(), building->GetHeight()), GetRotation(stair.GetDirection()),
-						FString("/Game/Assets/Meshes/Stair.Stair")));
+						FString("/Game/Asset/Meshes/Stair.Stair")));
 			}
 		}
 		auto ceilings = building->GetFloor(i)->GetCeilings();
