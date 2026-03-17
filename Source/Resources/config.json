@@ -1,12 +1,13 @@
 {
 	"dll_paths": [
-		"C:/Workspace/UE5/Projects/Forever_UE/Binaries/Win64"
+		"C:/Workspace/UE5/Projects/Forever_UE/Binaries/Win64",
+		"C:/Workspace/UE5/Projects/Forever_Mods/x64/Release"
 	],
 	
 	"terrain_mods": ["ocean", "mountain", "mod"],
 	"roadnet_mod": "jing",
 	"zone_mods": ["default", "mod"],
-	"building_mods": ["default_residential", "default_working", "mod"],
+	"building_mods": ["default_residential", "default_working", "mod", "yuanshen"],
 	"component_mods": ["default_residential", "default_working", "mod"],
 	"room_mods": ["default_residential", "default_working", "mod"],
 	"asset_mods": ["zone", "building", "room", "mod"],

@@ -298,12 +298,6 @@ protected:
 	Component* CreateComponent(std::string name, ComponentFactory* factory);
 
 private:
-	// 根据转向修改矩形参数
-	static std::vector<float> InverseParams(std::vector<float>& params, int face);
-
-	// 根据转向修改朝向参数
-	static int InverseDirection(int direction, int face);
-
 	// 所在园区
 	Zone* parentZone;
 
@@ -336,6 +330,12 @@ private:
 
 	// 楼内房间
 	std::vector<Room*> rooms;
+
+	// 根据转向修改矩形参数
+	static std::vector<float> InverseParams(std::vector<float>& params, int face);
+
+	// 根据转向修改朝向参数
+	static int InverseDirection(int direction, int face);
 };
 
 class BuildingFactory {
