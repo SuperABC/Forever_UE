@@ -1,0 +1,33 @@
+{
+	"dll_paths": [
+		"C:/Workspace/UE5/Projects/Forever_UE/Binaries/Win64"
+	],
+	
+	"terrain_mods": ["ocean", "mountain", "mod"],
+	"roadnet_mod": "jing",
+	"zone_mods": ["default", "mod"],
+	"building_mods": ["default_residential", "default_working", "mod"],
+	"component_mods": ["default_residential", "default_working", "mod"],
+	"room_mods": ["default_residential", "default_working", "mod"],
+	"asset_mods": ["zone", "building", "room", "mod"],
+	"name_mod": "chinese",
+	"scheduler_mods": ["work_only", "mod"],
+	"job_mods": ["default", "mod"],
+	"calendar_mods": ["standard", "full", "mod"],
+	"organization_mods": ["default", "mod"],
+	"event_mods": ["test", "mod"],
+	"change_mods": ["test", "mod"],
+	"product_mods": ["default", "mod"],
+	"storage_mods": ["default", "mod"],
+	"manufacture_mods": ["default", "mod"],
+	"route_mods": ["air", "mod"],
+	"station_mods": ["plane", "mod"],
+	"vehicle_mods": ["airport", "mod"],
+	"skill_mods": ["default", "mod"],
+	
+	"resource_paths": [
+		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
+		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
+		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
+	]
+}

@@ -1,6 +1,7 @@
 ﻿#include "parser.h"
 #include "utility.h"
 #include "error.h"
+#include "config.h"
 
 #include "map/map.h"
 #include "populace/populace.h"
@@ -364,6 +365,9 @@ bool PrintDialog(Dialog& dialog, vector<function<pair<bool, ValueType>(const str
 }
 
 int main() {
+	Config::ReadConfig("../Resources/config.json");
+
+	auto mods = Config::GetMods();
 	unordered_map<string, HMODULE> modHandles;
 
 	// 读取Map相关类及Mod

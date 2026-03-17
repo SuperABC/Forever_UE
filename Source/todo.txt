@@ -22,6 +22,7 @@
 公交通勤
 
 6. 剧情
+ReadMilestones中name和path保留一个
 trigger添加正则匹配
 milestone指针手动清理
 change移动到dialog之后执行
