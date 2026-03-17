@@ -249,6 +249,13 @@ std::pair<float, float> Room::GetPosition(float x, float y) const {
 	return { 0.f, 0.f };
 }
 
+// 清空注册
+void RoomFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册房间
 void RoomFactory::RegisterRoom(const string& id,
     function<Room* ()> creator, function<void(Room*)> deleter) {

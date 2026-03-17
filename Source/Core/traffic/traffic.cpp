@@ -2,6 +2,7 @@
 #include "utility.h"
 #include "error.h"
 #include "json.h"
+#include "config.h"
 
 #include <fstream>
 #include <filesystem>
@@ -16,8 +17,7 @@ RouteFactory* Traffic::routeFactory = nullptr;
 StationFactory* Traffic::stationFactory = nullptr;
 VehicleFactory* Traffic::vehicleFactory = nullptr;
 
-Traffic::Traffic() :
-	resourcePath() {
+Traffic::Traffic() {
 	if (!routeFactory) {
 		routeFactory = new RouteFactory();
 	}
@@ -33,38 +33,33 @@ Traffic::~Traffic() {
 	// 保留空实现，工厂由静态指针管理，无需在此释放
 }
 
-void Traffic::SetResourcePath(const string& path) {
-	resourcePath = path;
-}
-
-void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles) {
+void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	routeFactory->RegisterRoute(AirRoute::GetId(),
 		[]() { return new AirRoute(); },
 		[](Route* route) { delete route; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModRoutesFunc registerFunc =
-			(RegisterModRoutesFunc)GetProcAddress(modHandle, "RegisterModRoutes");
-		if (registerFunc) {
-			registerFunc(routeFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModRoutesFunc)GetProcAddress(modHandle, "RegisterModRoutes");
+			if (registerFunc) {
+				registerFunc(routeFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -82,34 +77,33 @@ void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles) {
+void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	stationFactory->RegisterStation(AirportStation::GetId(),
 		[]() { return new AirportStation(); },
 		[](Station* station) { delete station; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModStationsFunc registerFunc =
-			(RegisterModStationsFunc)GetProcAddress(modHandle, "RegisterModStations");
-		if (registerFunc) {
-			registerFunc(stationFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModStationsFunc)GetProcAddress(modHandle, "RegisterModStations");
+			if (registerFunc) {
+				registerFunc(stationFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -127,34 +121,33 @@ void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles) {
+void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	vehicleFactory->RegisterVehicle(PlaneVehicle::GetId(),
 		[]() { return new PlaneVehicle(); },
 		[](Vehicle* vehicle) { delete vehicle; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModVehiclesFunc registerFunc =
-			(RegisterModVehiclesFunc)GetProcAddress(modHandle, "RegisterModVehicles");
-		if (registerFunc) {
-			registerFunc(vehicleFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModVehiclesFunc)GetProcAddress(modHandle, "RegisterModVehicles");
+			if (registerFunc) {
+				registerFunc(vehicleFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -172,42 +165,30 @@ void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
+void Traffic::LoadConfigs() const {
+	routeFactory->RemoveAll();
+	stationFactory->RemoveAll();
+	vehicleFactory->RemoveAll();
+
+	auto routes = Config::GetEnables("route");
+	for (auto route : routes) {
+		routeFactory->SetConfig(route, true);
+	}
+	auto stations = Config::GetEnables("station");
+	for (auto station : stations) {
+		stationFactory->SetConfig(station, true);
+	}
+	auto vehicles = Config::GetEnables("vehicle");
+	for (auto vehicle : vehicles) {
+		vehicleFactory->SetConfig(vehicle, true);
+	}
+}
+
 void Traffic::Init(Map* map) {
 	if (map == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Map is null.\n");
 	}
 
-}
-
-void Traffic::ReadConfigs(const string& path) const {
-	string fullPath = resourcePath + path;
-	if (!filesystem::exists(fullPath)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
-	}
-
-	JsonReader reader;
-	JsonValue root;
-
-	ifstream fin(fullPath);
-	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
-	}
-	if (reader.Parse(fin, root)) {
-		for (auto route : root["mods"]["route"]) {
-			routeFactory->SetConfig(route.AsString(), true);
-		}
-		for (auto station : root["mods"]["station"]) {
-			stationFactory->SetConfig(station.AsString(), true);
-		}
-		for (auto vehicle : root["mods"]["vehicle"]) {
-			vehicleFactory->SetConfig(vehicle.AsString(), true);
-		}
-	}
-	else {
-		fin.close();
-		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
-	}
-	fin.close();
 }
 
 void Traffic::Destroy() {

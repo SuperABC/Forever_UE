@@ -431,27 +431,26 @@ string Building::GetAddress() const {
 }
 
 // 读取所有布局模板
-Layout* Building::ReadTemplates(string path) {
-	if (!filesystem::exists(REPLACE_PATH(path))) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
-	}
-
+Layout* Building::ReadTemplates(vector<string> paths) {
 	auto layout = new Layout();
 
-	for (const auto& entry : filesystem::directory_iterator(path)) {
-		if (!entry.is_regular_file()) continue;
+	for (auto path : paths) {
+		if (!filesystem::exists(REPLACE_PATH(path))) {
+			THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+		}
 
-		string filename = entry.path().filename().string();
-		string basename = filename.substr(0, filename.length() - 5);
-		string extension = filename.substr(filename.length() - 4);
-		if (extension != "json") continue;
+		filesystem::path p(path);
+		string filename = p.filename().string();
+		string basename = filename.substr(0, filename.length() - 7);
+		string extension = filename.substr(filename.length() - 6);
+		if (extension != "layout") continue;
 
 		JsonReader reader;
 		JsonValue root;
 
-		ifstream fin(entry.path());
+		ifstream fin(path);
 		if (!fin.is_open()) {
-			THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
+			THROW_EXCEPTION(IOException, "Failed to open file: " + path + "\n");
 		}
 
 		if (reader.Parse(fin, root)) {
@@ -852,6 +851,13 @@ int Building::InverseDirection(int direction, int face) {
 	default:
 		return direction;
 	}
+}
+
+// 清空注册
+void BuildingFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
 }
 
 // 注册建筑

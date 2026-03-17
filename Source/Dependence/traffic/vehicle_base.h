@@ -24,6 +24,9 @@ private:
 
 class VehicleFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册载具
     void RegisterVehicle(const std::string& id,
         std::function<Vehicle*()> creator, std::function<void(Vehicle*)> deleter);

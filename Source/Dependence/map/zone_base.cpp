@@ -317,6 +317,13 @@ string Zone::GetAddress() const {
     return plotAddress + " " + GetName();
 }
 
+// 清空注册
+void ZoneFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册园区
 void ZoneFactory::RegisterZone(const string& id, GeneratorFunc generator,
     function<Zone* ()> creator, function<void(Zone*)> deleter) {

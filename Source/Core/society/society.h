@@ -19,19 +19,19 @@ public:
 	Society();
 	~Society();
 
-	// 设置资源路径
-	void SetResourcePath(const std::string& path);
-
 	// 读取Mods
-	void InitJobs(std::unordered_map<std::string, HMODULE>& modHandles);
-	void InitCalendars(std::unordered_map<std::string, HMODULE>& modHandles);
-	void InitOrganizations(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitJobs(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+	void InitCalendars(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+	void InitOrganizations(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+
+	// 读取配置文件
+	void LoadConfigs() const;
 
 	// 初始化全部组织
 	void Init(Map* map, Populace* populace, Time* time);
-
-	// 读取配置文件
-	void ReadConfigs(const std::string& path) const;
 
 	// 释放空间
 	void Destroy();
@@ -52,9 +52,6 @@ public:
 			const std::string&)>>&getValues);
 
 private:
-	// 资源路径
-	std::string resourcePath;
-
 	// Mod管理
 	static JobFactory* jobFactory;
 	static CalendarFactory* calendarFactory;

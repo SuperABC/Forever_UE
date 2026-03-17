@@ -29,5 +29,7 @@
 		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
 		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
 		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
-	]
+	],
+	
+	"story_path": "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/ys.json"
 }

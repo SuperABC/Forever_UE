@@ -27,6 +27,13 @@ void Change::SetCondition(const Condition& condition) {
     this->condition = condition;
 }
 
+// 清空注册
+void ChangeFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册变更
 void ChangeFactory::RegisterChange(const string& id,
     function<Change*()> creator, function<void(Change*)> deleter) {

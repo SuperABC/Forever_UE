@@ -35,6 +35,13 @@ void Station::AddSlot(const glm::vec3& position, const glm::vec3& direction) {
     slots.push_back({position, direction});
 }
 
+// 清空注册
+void StationFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册车站
 void StationFactory::RegisterStation(const string& id,
     function<Station*()> creator, function<void(Station*)> deleter) {

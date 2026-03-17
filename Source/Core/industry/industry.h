@@ -18,19 +18,19 @@ public:
 	Industry();
 	~Industry();
 
-	// 设置资源路径
-	void SetResourcePath(const std::string& path);
-
 	// 读取Mods
-	void InitProducts(std::unordered_map<std::string, HMODULE>& modHandles);
-	void InitStorages(std::unordered_map<std::string, HMODULE>& modHandles);
-	void InitManufactures(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitProducts(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+	void InitStorages(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+	void InitManufactures(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+
+	// 读取配置文件
+	void LoadConfigs() const;
 
 	// 初始化全部工业
 	void Init(Map* map);
-
-	// 读取配置文件
-	void ReadConfigs(const std::string& path) const;
 
 	// 释放空间
 	void Destroy();
@@ -51,9 +51,6 @@ public:
 			const std::string&)>>&getValues);
 
 private:
-	// 资源路径
-	std::string resourcePath;
-
 	// Mod管理
 	static ProductFactory* productFactory;
 	static StorageFactory* storageFactory;

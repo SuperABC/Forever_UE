@@ -16,17 +16,15 @@ public:
 	Player();
 	~Player();
 
-	// 设置资源路径
-	void SetResourcePath(const std::string& path);
-
 	// 读取Mods
-	void InitSkills(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitSkills(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+
+	// 读取配置文件
+	void LoadConfigs() const;
 
 	// 初始化全部交通
 	void Init();
-
-	// 读取配置文件
-	void ReadConfigs(const std::string& path) const;
 
 	// 释放空间
 	void Destroy();
@@ -50,9 +48,6 @@ public:
 	Time* GetTime();
 
 private:
-	// 资源路径
-	std::string resourcePath;
-
 	// Mod管理
 	static SkillFactory* skillFactory;
 

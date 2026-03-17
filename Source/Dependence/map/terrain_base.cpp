@@ -127,6 +127,13 @@ void Terrain::ShapeFilter(int x, int y, int width, int height,
         set(x, y, GetType(), 0.f);
 }
 
+// 清空注册
+void TerrainFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册地形
 void TerrainFactory::RegisterTerrain(const string& id,
     function<Terrain* ()> creator, function<void(Terrain*)> deleter) {

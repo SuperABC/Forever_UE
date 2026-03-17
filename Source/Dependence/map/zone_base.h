@@ -92,6 +92,9 @@ class ZoneFactory {
 public:
     using GeneratorFunc = std::function<int(Plot*)>;
 
+    // 清空注册
+    void RemoveAll();
+
     // 注册园区
     void RegisterZone(const std::string& id, GeneratorFunc generator,
         std::function<Zone* ()> creator, std::function<void(Zone*)> deleter);

@@ -140,6 +140,13 @@ void Storage::SetVolume(float volume) {
     this->volume = volume;
 }
 
+// 清空注册
+void StorageFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册仓库
 void StorageFactory::RegisterStorage(const string& id,
     function<Storage*()> creator, function<void(Storage*)> deleter) {

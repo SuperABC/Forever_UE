@@ -16,6 +16,13 @@ Vehicle::~Vehicle() {
     
 }
 
+// 清空注册
+void VehicleFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册载具
 void VehicleFactory::RegisterVehicle(const string& id,
     function<Vehicle*()> creator, function<void(Vehicle*)> deleter) {

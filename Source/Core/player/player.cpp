@@ -2,6 +2,7 @@
 #include "utility.h"
 #include "error.h"
 #include "json.h"
+#include "config.h"
 
 #include <fstream>
 #include <filesystem>
@@ -15,7 +16,6 @@ using namespace std;
 SkillFactory* Player::skillFactory = nullptr;
 
 Player::Player() :
-	resourcePath(),
 	time(nullptr),
 	skills() {
 	if (!skillFactory) {
@@ -28,38 +28,33 @@ Player::~Player() {
 	delete time;
 }
 
-void Player::SetResourcePath(const string& path) {
-	resourcePath = path;
-}
-
-void Player::InitSkills(unordered_map<string, HMODULE>& modHandles) {
+void Player::InitSkills(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	skillFactory->RegisterSkill(DefaultSkill::GetId(),
 		[]() { return new DefaultSkill(); },
 		[](Skill* skill) { delete skill; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModSkillsFunc registerFunc =
-			(RegisterModSkillsFunc)GetProcAddress(modHandle, "RegisterModSkills");
-		if (registerFunc) {
-			registerFunc(skillFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModSkillsFunc)GetProcAddress(modHandle, "RegisterModSkills");
+			if (registerFunc) {
+				registerFunc(skillFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -77,33 +72,17 @@ void Player::InitSkills(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Player::Init() {
-	skills = skillFactory->GetSkills();
+void Player::LoadConfigs() const {
+	skillFactory->RemoveAll();
+
+	auto skills = Config::GetEnables("skill");
+	for (auto skill : skills) {
+		skillFactory->SetConfig(skill, true);
+	}
 }
 
-void Player::ReadConfigs(const string& path) const {
-	string fullPath = resourcePath + path;
-	if (!filesystem::exists(fullPath)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
-	}
-
-	JsonReader reader;
-	JsonValue root;
-
-	ifstream fin(fullPath);
-	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
-	}
-	if (reader.Parse(fin, root)) {
-		for (auto skill : root["mods"]["skill"]) {
-			skillFactory->SetConfig(skill.AsString(), true);
-		}
-	}
-	else {
-		fin.close();
-		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
-	}
-	fin.close();
+void Player::Init() {
+	skills = skillFactory->GetSkills();
 }
 
 void Player::Destroy() {

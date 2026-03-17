@@ -26,5 +26,5 @@ string DefaultJob::GetName() const {
 }
 
 vector<string> DefaultJob::GetScripts() const {
-    return { "scripts/jobs/default.json" };
+    return { "default" };
 }

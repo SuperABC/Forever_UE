@@ -192,6 +192,9 @@ private:
 
 class RoomFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册房间
     void RegisterRoom(const std::string& id,
         std::function<Room* ()> creator, std::function<void(Room*)> deleter);

@@ -16,6 +16,13 @@ Skill::~Skill() {
     
 }
 
+// 清空注册
+void SkillFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册技能
 void SkillFactory::RegisterSkill(const string& id,
     function<Skill*()> creator, function<void(Skill*)> deleter) {

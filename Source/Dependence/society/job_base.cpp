@@ -38,6 +38,13 @@ void Job::SetPosition(Room* room) {
     position = room;
 }
 
+// 清空注册
+void JobFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册工作
 void JobFactory::RegisterJob(const string& id,
     function<Job* ()> creator, function<void(Job*)> deleter) {

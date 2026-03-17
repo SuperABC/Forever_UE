@@ -43,6 +43,9 @@ private:
 
 class NameFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册姓名
     void RegisterName(const std::string& id,
         std::function<Name* ()> creator, std::function<void(Name*)> deleter);

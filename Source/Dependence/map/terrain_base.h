@@ -60,6 +60,9 @@ private:
 
 class TerrainFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册地形
     void RegisterTerrain(const std::string& id,
         std::function<Terrain* ()> creator, std::function<void(Terrain*)> deleter);

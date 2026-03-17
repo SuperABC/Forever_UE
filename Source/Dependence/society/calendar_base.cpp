@@ -15,6 +15,13 @@ Calendar::~Calendar() {
 
 }
 
+// 清空注册
+void CalendarFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册日程
 void CalendarFactory::RegisterCalendar(const string& id,
     function<Calendar* ()> creator, function<void(Calendar*)> deleter) {

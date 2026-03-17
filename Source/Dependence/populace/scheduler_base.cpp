@@ -26,6 +26,13 @@ void Scheduler::SetStatus(const string& status) {
 	this->status = status;
 }
 
+// 清空注册
+void SchedulerFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册调度
 void SchedulerFactory::RegisterScheduler(const string& id, float power,
 	function<Scheduler* ()> creator, function<void(Scheduler*)> deleter) {

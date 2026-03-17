@@ -29,15 +29,14 @@ public:
 	Story();
 	~Story();
 
-	// 设置资源路径
-	void SetResourcePath(const std::string& path);
-
 	// 读取Mods
-	void InitEvents(std::unordered_map<std::string, HMODULE>& modHandles);
-	void InitChanges(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitEvents(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+	void InitChanges(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
 
 	// 读取配置文件
-	void ReadConfigs(const std::string& path) const;
+	void LoadConfigs() const;
 
 	// 初始化全部剧情
 	void Init();
@@ -87,17 +86,14 @@ public:
 	void InitVariables(Time* t);
 
 private:
-	// 变量管理
-	void UpdateVariables(Time* t);
-
-	// 资源路径
-	std::string resourcePath;
-
 	// Mod管理
 	static EventFactory* eventFactory;
 	static ChangeFactory* changeFactory;
 
 	Script* script;
 	std::unordered_map<std::string, ValueType> variables;
+
+	// 变量管理
+	void UpdateVariables(Time* t);
 };
 

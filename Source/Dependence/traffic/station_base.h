@@ -37,6 +37,9 @@ private:
 
 class StationFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册车站
     void RegisterStation(const std::string& id,
         std::function<Station*()> creator, std::function<void(Station*)> deleter);

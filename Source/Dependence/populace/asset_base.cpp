@@ -27,6 +27,13 @@ void Asset::SetAsset(const string& asset) {
 	this->asset = asset;
 }
 
+// 清空注册
+void AssetFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册资产
 void AssetFactory::RegisterAsset(const string& id,
     function<Asset* ()> creator, function<void(Asset*)> deleter) {

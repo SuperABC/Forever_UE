@@ -33,6 +33,9 @@ private:
 
 class CalendarFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册日程
     void RegisterCalendar(const std::string& id,
         std::function<Calendar* ()> creator, std::function<void(Calendar*)> deleter);

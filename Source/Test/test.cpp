@@ -371,46 +371,46 @@ int main() {
 	unordered_map<string, HMODULE> modHandles;
 
 	// 读取Map相关类及Mod
-	::map->SetResourcePath(REPLACE_PATH("../Resources/"));
-	::map->ReadConfigs("configs/config_map.json");
-	::map->InitTerrains(modHandles);
-	::map->InitRoadnets(modHandles);
-	::map->InitZones(modHandles);
-	::map->InitBuildings(modHandles);
-	::map->InitComponents(modHandles);
-	::map->InitRooms(modHandles);
+	::map->LoadConfigs();
+	::map->InitTerrains(modHandles, mods);
+	::map->InitRoadnets(modHandles, mods);
+	::map->InitZones(modHandles, mods);
+	::map->InitBuildings(modHandles, mods);
+	::map->InitComponents(modHandles, mods);
+	::map->InitRooms(modHandles, mods);
 
 	// 读取Populace相关类及Mod
-	populace->SetResourcePath(REPLACE_PATH("../Resources/"));
-	populace->ReadConfigs("configs/config_populace.json");
-	populace->InitAssets(modHandles);
-	populace->InitNames(modHandles);
-	populace->InitSchedulers(modHandles);
+	populace->LoadConfigs();
+	populace->InitAssets(modHandles, mods);
+	populace->InitNames(modHandles, mods);
+	populace->InitSchedulers(modHandles, mods);
 
 	// 读取Society相关类及Mod
-	society->SetResourcePath(REPLACE_PATH("../Resources/"));
-	society->ReadConfigs("configs/config_society.json");
-	society->InitJobs(modHandles);
-	society->InitCalendars(modHandles);
-	society->InitOrganizations(modHandles);
+	society->LoadConfigs();
+	society->InitJobs(modHandles, mods);
+	society->InitCalendars(modHandles, mods);
+	society->InitOrganizations(modHandles, mods);
 
 	// 读取Story相关类及Mod
-	story->SetResourcePath(REPLACE_PATH("../Resources/"));
-	story->ReadConfigs("configs/config_story.json");
-	story->InitEvents(modHandles);
-	story->InitChanges(modHandles);
+	story->LoadConfigs();
+	story->InitEvents(modHandles, mods);
+	story->InitChanges(modHandles, mods);
 
 	// 读取Industry相关类及Mod
-	industry->SetResourcePath(REPLACE_PATH("../Resources/"));
-	industry->ReadConfigs("configs/config_industry.json");
+	industry->LoadConfigs();
+	industry->InitManufactures(modHandles, mods);
+	industry->InitStorages(modHandles, mods);
+	industry->InitProducts(modHandles, mods);
 
 	// 读取Traffic相关类及Mod
-	traffic->SetResourcePath(REPLACE_PATH("../Resources/"));
-	traffic->ReadConfigs("configs/config_traffic.json");
+	traffic->LoadConfigs();
+	traffic->InitRoutes(modHandles, mods);
+	traffic->InitStations(modHandles, mods);
+	traffic->InitVehicles(modHandles, mods);
 
 	// 读取Player相关类及Mod
-	traffic->SetResourcePath(REPLACE_PATH("../Resources/"));
-	traffic->ReadConfigs("configs/config_player.json");
+	player->LoadConfigs();
+	player->InitSkills(modHandles, mods);
 
 	// 读取命令行
 	string cmd;
@@ -438,18 +438,17 @@ int main() {
 				parser.ParseCmd(cmd);
 
 				int size = atoi(parser.GetOption("--block").data());
-				string path = parser.GetOption("--story");
 
 				story->Init();
 				int accomodation = ::map->Init(size, size, traffic);
-				populace->Init(accomodation, story->ReadNames("ys", path), player->GetTime());
+				populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
 				::map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 				society->Init(::map, populace, player->GetTime());
 				story->InitVariables(player->GetTime());
-				story->ReadStory("ys", path);
+				story->ReadStory("ys", Config::GetScript());
 				populace->Schedule();
 				populace->Workload(story);
-				populace->Characterize(REPLACE_PATH("../Resources/scripts/characters/"), story);
+				populace->Characterize(story);
 				industry->Init(::map);
 				traffic->Init(::map);
 				player->Init();
@@ -650,6 +649,10 @@ int main() {
 		}
 
 	} while (type != CMD_EXIT);
+
+	for (auto modHandle : modHandles) {
+		FreeLibrary(modHandle.second);
+	}
 
 	return 0;
 }

@@ -60,6 +60,9 @@ private:
 
 class ProductFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册产品
     void RegisterProduct(const std::string& id,
         std::function<Product*()> creator, std::function<void(Product*)> deleter);

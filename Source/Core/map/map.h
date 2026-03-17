@@ -74,19 +74,22 @@ public:
     Map();
     ~Map();
 
-    // 设置资源路径
-    void SetResourcePath(const std::string& path);
-
     // 读取 Mods
-    void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles);
-    void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles);
-    void InitZones(std::unordered_map<std::string, HMODULE>& modHandles);
-    void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles);
-    void InitComponents(std::unordered_map<std::string, HMODULE>& modHandles);
-    void InitRooms(std::unordered_map<std::string, HMODULE>& modHandles);
+    void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles,
+        std::vector<std::string>& dlls);
+    void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles,
+        std::vector<std::string>& dlls);
+    void InitZones(std::unordered_map<std::string, HMODULE>& modHandles,
+        std::vector<std::string>& dlls);
+    void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles,
+        std::vector<std::string>& dlls);
+    void InitComponents(std::unordered_map<std::string, HMODULE>& modHandles,
+        std::vector<std::string>& dlls);
+    void InitRooms(std::unordered_map<std::string, HMODULE>& modHandles,
+        std::vector<std::string>& dlls);
 
     // 读取配置文件
-    void ReadConfigs(const std::string& path) const;
+    void LoadConfigs() const;
 
     // 初始化全部地图
     int Init(int blockX, int blockY, Traffic* traffic);
@@ -156,10 +159,6 @@ public:
     Room* LocateRoom(const std::string& address) const;
 
 private:
-    void ArrangePlots();
-
-    std::string resourcePath;
-
     static TerrainFactory* terrainFactory;
     static RoadnetFactory* roadnetFactory;
     static ZoneFactory* zoneFactory;
@@ -176,4 +175,6 @@ private:
     std::unordered_map<std::string, Zone*> zones;
     std::unordered_map<std::string, Building*> buildings;
     Layout* layout;
+
+    void ArrangePlots();
 };

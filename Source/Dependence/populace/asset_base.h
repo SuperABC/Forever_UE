@@ -32,6 +32,9 @@ private:
 
 class AssetFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册资产
     void RegisterAsset(const std::string& id,
         std::function<Asset* ()> creator, std::function<void(Asset*)> deleter);

@@ -60,6 +60,13 @@ void Organization::AddVacancy(Component* component, const vector<Job*>& vacancie
     jobs.emplace_back(component, positions);
 }
 
+// 清空注册
+void OrganizationFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册组织
 void OrganizationFactory::RegisterOrganization(const string& id, float power,
     function<Organization* ()> creator, function<void(Organization*)> deleter) {

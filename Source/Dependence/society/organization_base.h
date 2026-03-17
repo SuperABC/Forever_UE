@@ -62,6 +62,9 @@ private:
 
 class OrganizationFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册组织
     void RegisterOrganization(const std::string& id, float power,
         std::function<Organization* ()> creator, std::function<void(Organization*)> deleter);

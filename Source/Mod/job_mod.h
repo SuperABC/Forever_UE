@@ -20,6 +20,6 @@ public:
     std::string GetName() const override { return "模组职业"; }
 
     std::vector<std::string> GetScripts() const override {
-        return { "scripts/jobs/mod.json" };
+        return { "mod" };
     }
 };

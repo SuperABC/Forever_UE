@@ -2,6 +2,7 @@
 #include "utility.h"
 #include "error.h"
 #include "json.h"
+#include "config.h"
 
 #include <fstream>
 #include <filesystem>
@@ -17,7 +18,6 @@ StorageFactory* Industry::storageFactory = nullptr;
 ManufactureFactory* Industry::manufactureFactory = nullptr;
 
 Industry::Industry() :
-	resourcePath(),
 	storages(),
 	manufactures() {
 	if (!productFactory) {
@@ -44,38 +44,33 @@ Industry::~Industry() {
 	}
 }
 
-void Industry::SetResourcePath(const string& path) {
-	resourcePath = path;
-}
-
-void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles) {
+void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	productFactory->RegisterProduct(DefaultProduct::GetId(),
 		[]() { return new DefaultProduct(); },
 		[](Product* product) { delete product; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModProductsFunc registerFunc =
-			(RegisterModProductsFunc)GetProcAddress(modHandle, "RegisterModProducts");
-		if (registerFunc) {
-			registerFunc(productFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModProductsFunc)GetProcAddress(modHandle, "RegisterModProducts");
+			if (registerFunc) {
+				registerFunc(productFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -93,34 +88,33 @@ void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles) {
+void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	storageFactory->RegisterStorage(DefaultStorage::GetId(),
 		[]() { return new DefaultStorage(); },
 		[](Storage* storage) { delete storage; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModStoragesFunc registerFunc =
-			(RegisterModStoragesFunc)GetProcAddress(modHandle, "RegisterModStorages");
-		if (registerFunc) {
-			registerFunc(storageFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModStoragesFunc)GetProcAddress(modHandle, "RegisterModStorages");
+			if (registerFunc) {
+				registerFunc(storageFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -138,34 +132,33 @@ void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles) {
+void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	manufactureFactory->RegisterManufacture(DefaultManufacture::GetId(),
 		[]() { return new DefaultManufacture(); },
 		[](Manufacture* manufacture) { delete manufacture; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModManufacturesFunc registerFunc =
-			(RegisterModManufacturesFunc)GetProcAddress(modHandle, "RegisterModManufactures");
-		if (registerFunc) {
-			registerFunc(manufactureFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModManufacturesFunc)GetProcAddress(modHandle, "RegisterModManufactures");
+			if (registerFunc) {
+				registerFunc(manufactureFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -181,6 +174,25 @@ void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles) {
 		}
 	}
 #endif // MOD_TEST
+}
+
+void Industry::LoadConfigs() const {
+	productFactory->RemoveAll();
+	storageFactory->RemoveAll();
+	manufactureFactory->RemoveAll();
+
+	auto products = Config::GetEnables("product");
+	for (auto product : products) {
+		productFactory->SetConfig(product, true);
+	}
+	auto storages = Config::GetEnables("storage");
+	for (auto storage : storages) {
+		storageFactory->SetConfig(storage, true);
+	}
+	auto manufactures = Config::GetEnables("manufacture");
+	for (auto manufacture : manufactures) {
+		manufactureFactory->SetConfig(manufacture, true);
+	}
 }
 
 void Industry::Init(Map* map) {
@@ -280,37 +292,6 @@ void Industry::Init(Map* map) {
 			manufacture->SetOutput(product, buyers[r], productFactory);
 		}
 	}
-}
-
-void Industry::ReadConfigs(const string& path) const {
-	string fullPath = resourcePath + path;
-	if (!filesystem::exists(fullPath)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
-	}
-
-	JsonReader reader;
-	JsonValue root;
-
-	ifstream fin(fullPath);
-	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
-	}
-	if (reader.Parse(fin, root)) {
-		for (auto product : root["mods"]["product"]) {
-			productFactory->SetConfig(product.AsString(), true);
-		}
-		for (auto storage : root["mods"]["storage"]) {
-			storageFactory->SetConfig(storage.AsString(), true);
-		}
-		for (auto manufacture : root["mods"]["manufacture"]) {
-			manufactureFactory->SetConfig(manufacture.AsString(), true);
-		}
-	}
-	else {
-		fin.close();
-		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
-	}
-	fin.close();
 }
 
 void Industry::Destroy() {

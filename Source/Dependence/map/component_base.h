@@ -48,6 +48,9 @@ private:
 
 class ComponentFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册组合
     void RegisterComponent(const std::string& id,
         std::function<Component* ()> creator, std::function<void(Component*)> deleter);

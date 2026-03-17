@@ -39,6 +39,9 @@ private:
 
 class EventFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册事件
     void RegisterEvent(const std::string& id,
         std::function<Event*()> creator, std::function<void(Event*)> deleter);

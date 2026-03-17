@@ -1,7 +1,0 @@
-{
-	"mods":{
-		"route": ["air", "mod"],
-		"vehicle": ["plane", "mod"],
-		"station": ["airport", "mod"]
-	}
-}

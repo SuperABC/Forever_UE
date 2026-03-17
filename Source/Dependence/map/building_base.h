@@ -268,7 +268,7 @@ public:
 	std::string GetAddress() const;
 
 	// 读取所有布局模板
-	static Layout* ReadTemplates(std::string path);
+	static Layout* ReadTemplates(std::vector<std::string> paths);
 
 protected:
 	// 独立创建数量（记录临时变量，否则析构崩溃）
@@ -340,6 +340,9 @@ private:
 
 class BuildingFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册建筑
     void RegisterBuilding(const std::string& id, const std::vector<float>& powers,
         std::function<Building* ()> creator, std::function<void(Building*)> deleter);

@@ -2,6 +2,7 @@
 #include "utility.h"
 #include "error.h"
 #include "json.h"
+#include "config.h"
 
 #include <fstream>
 #include <filesystem>
@@ -17,7 +18,6 @@ CalendarFactory* Society::calendarFactory = nullptr;
 OrganizationFactory* Society::organizationFactory = nullptr;
 
 Society::Society() :
-	resourcePath(),
 	organizations() {
 	if (!jobFactory) {
 		jobFactory = new JobFactory();
@@ -46,38 +46,33 @@ Society::~Society() {
 	}
 }
 
-void Society::SetResourcePath(const string& path) {
-	resourcePath = path;
-}
-
-void Society::InitJobs(unordered_map<string, HMODULE>& modHandles) {
+void Society::InitJobs(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	jobFactory->RegisterJob(DefaultJob::GetId(),
 		[]() { return new DefaultJob(); },
 		[](Job* job) { delete job; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModJobsFunc registerFunc =
-			(RegisterModJobsFunc)GetProcAddress(modHandle, "RegisterModJobs");
-		if (registerFunc) {
-			registerFunc(jobFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod.dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModJobsFunc)GetProcAddress(modHandle, "RegisterModJobs");
+			if (registerFunc) {
+				registerFunc(jobFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -95,7 +90,8 @@ void Society::InitJobs(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles) {
+void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	calendarFactory->RegisterCalendar(StandardCalendar::GetId(),
 		[]() { return new StandardCalendar(); },
 		[](Calendar* calendar) { delete calendar; }
@@ -105,28 +101,26 @@ void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles) {
 		[](Calendar* calendar) { delete calendar; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModCalendarsFunc registerFunc =
-			(RegisterModCalendarsFunc)GetProcAddress(modHandle, "RegisterModCalendars");
-		if (registerFunc) {
-			registerFunc(calendarFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod.dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModCalendarsFunc)GetProcAddress(modHandle, "RegisterModCalendars");
+			if (registerFunc) {
+				registerFunc(calendarFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -144,36 +138,34 @@ void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Society::InitOrganizations(unordered_map<string, HMODULE>& modHandles) {
+void Society::InitOrganizations(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	organizationFactory->RegisterOrganization(DefaultOrganization::GetId(),
 		DefaultOrganization::GetPower(),
 		[]() { return new DefaultOrganization(); },
 		[](Organization* organization) { delete organization; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModOrganizationsFunc registerFunc =
-			(RegisterModOrganizationsFunc)GetProcAddress(modHandle,
-				"RegisterModOrganizations");
-		if (registerFunc) {
-			registerFunc(organizationFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod.dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModOrganizationsFunc)GetProcAddress(modHandle, "RegisterModOrganizations");
+			if (registerFunc) {
+				registerFunc(organizationFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -191,35 +183,23 @@ void Society::InitOrganizations(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Society::ReadConfigs(const string& path) const {
-	string fullPath = resourcePath + path;
-	if (!filesystem::exists(fullPath)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
-	}
+void Society::LoadConfigs() const {
+	jobFactory->RemoveAll();
+	calendarFactory->RemoveAll();
+	organizationFactory->RemoveAll();
 
-	JsonReader reader;
-	JsonValue root;
-
-	ifstream fin(fullPath);
-	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
+	auto jobs = Config::GetEnables("job");
+	for (auto job : jobs) {
+		jobFactory->SetConfig(job, true);
 	}
-	if (reader.Parse(fin, root)) {
-		for (auto job : root["mods"]["job"]) {
-			jobFactory->SetConfig(job.AsString(), true);
-		}
-		for (auto calendar : root["mods"]["calendar"]) {
-			calendarFactory->SetConfig(calendar.AsString(), true);
-		}
-		for (auto organization : root["mods"]["organization"]) {
-			organizationFactory->SetConfig(organization.AsString(), true);
-		}
+	auto calendars = Config::GetEnables("calendar");
+	for (auto calendar : calendars) {
+		calendarFactory->SetConfig(calendar, true);
 	}
-	else {
-		fin.close();
-		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+	auto organizations = Config::GetEnables("organization");
+	for (auto organization : organizations) {
+		organizationFactory->SetConfig(organization, true);
 	}
-	fin.close();
 }
 
 void Society::Init(Map* map, Populace* populace, Time* time) {

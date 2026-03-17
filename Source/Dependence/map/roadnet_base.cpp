@@ -316,6 +316,13 @@ const vector<Connection> Roadnet::AutoNavigate(
 	return AutoNavigate(startRoads, endRoads);
 }
 
+// 清空注册
+void RoadnetFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册路网
 void RoadnetFactory::RegisterRoadnet(const string& id,
     function<Roadnet* ()> creator, function<void(Roadnet*)> deleter) {

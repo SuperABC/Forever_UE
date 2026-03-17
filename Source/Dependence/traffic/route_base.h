@@ -57,6 +57,9 @@ private:
 
 class RouteFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册路线
     void RegisterRoute(const std::string& id,
         std::function<Route*()> creator, std::function<void(Route*)> deleter);

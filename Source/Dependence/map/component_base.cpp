@@ -40,6 +40,13 @@ void Component::AddRoom(Room* room) {
 	rooms.push_back(room);
 }
 
+// 清空注册
+void ComponentFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册组合
 void ComponentFactory::RegisterComponent(const string& id,
     function<Component* ()> creator, function<void(Component*)> deleter) {

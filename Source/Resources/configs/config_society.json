@@ -1,7 +1,0 @@
-{
-	"mods":{
-		"job": ["default", "mod"],
-		"organization": ["default", "mod"],
-		"calendar": ["standard", "full", "mod"]
-	}
-}

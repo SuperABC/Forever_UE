@@ -2,6 +2,7 @@
 #include "utility.h"
 #include "error.h"
 #include "json.h"
+#include "config.h"
 
 #include <fstream>
 #include <filesystem>
@@ -17,7 +18,6 @@ NameFactory* Populace::nameFactory = nullptr;
 SchedulerFactory* Populace::schedulerFactory = nullptr;
 
 Populace::Populace() :
-	resourcePath(),
 	names(nullptr),
 	citizens(),
 	ids() {
@@ -47,11 +47,8 @@ Populace::~Populace() {
 	}
 }
 
-void Populace::SetResourcePath(const string& path) {
-	resourcePath = path;
-}
-
-void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
+void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	assetFactory->RegisterAsset(ZoneAsset::GetId(),
 		[]() { return new ZoneAsset(); },
 		[](Asset* asset) { delete asset; }
@@ -65,29 +62,26 @@ void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
 		[](Asset* asset) { delete asset; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-
-		RegisterModAssetsFunc registerFunc =
-			(RegisterModAssetsFunc)GetProcAddress(modHandle, "RegisterModAssets");
-		if (registerFunc) {
-			registerFunc(assetFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod.dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModAssetsFunc)GetProcAddress(modHandle, "RegisterModAssets");
+			if (registerFunc) {
+				registerFunc(assetFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -105,35 +99,33 @@ void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
+void Populace::InitNames(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	nameFactory->RegisterName(ChineseName::GetId(),
 		[]() { return new ChineseName(); },
 		[](Name* name) { delete name; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-
-		RegisterModNamesFunc registerFunc =
-			(RegisterModNamesFunc)GetProcAddress(modHandle, "RegisterModNames");
-		if (registerFunc) {
-			registerFunc(nameFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod.dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModNamesFunc)GetProcAddress(modHandle, "RegisterModNames");
+			if (registerFunc) {
+				registerFunc(nameFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -151,35 +143,34 @@ void Populace::InitNames(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles) {
+void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 	schedulerFactory->RegisterScheduler(WorkOnlyScheduler::GetId(),
 		WorkOnlyScheduler::GetPower(),
 		[]() { return new WorkOnlyScheduler(); },
 		[](Scheduler* scheduler) { delete scheduler; }
 	);
 
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModSchedulersFunc registerFunc =
-			(RegisterModSchedulersFunc)GetProcAddress(modHandle, "RegisterModSchedulers");
-		if (registerFunc) {
-			registerFunc(schedulerFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod.dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModSchedulersFunc)GetProcAddress(modHandle, "RegisterModSchedulers");
+			if (registerFunc) {
+				registerFunc(schedulerFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -197,34 +188,24 @@ void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Populace::ReadConfigs(const string& path) const {
-	string fullPath = resourcePath + path;
-	if (!filesystem::exists(fullPath)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
-	}
+void Populace::LoadConfigs() const {
+	assetFactory->RemoveAll();
+	nameFactory->RemoveAll();
+	schedulerFactory->RemoveAll();
 
-	JsonReader reader;
-	JsonValue root;
-
-	ifstream fin(fullPath);
-	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
+	auto assets = Config::GetEnables("asset");
+	for (auto asset : assets) {
+		assetFactory->SetConfig(asset, true);
 	}
-	if (reader.Parse(fin, root)) {
-		for (auto asset : root["mods"]["asset"]) {
-			assetFactory->SetConfig(asset.AsString(), true);
-		}
-		nameFactory->SetConfig(root["mods"]["name"].AsString(), true);
-		for (auto scheduler : root["mods"]["scheduler"]) {
-			schedulerFactory->SetConfig(scheduler.AsString(), true);
-		}
+	auto names = Config::GetEnables("name");
+	if (names.size() != 1) {
+		THROW_EXCEPTION(RuntimeException, "There should be one and only one enabled name.\n");
 	}
-	else {
-		fin.close();
-		THROW_EXCEPTION(JsonFormatException,
-			"Json syntax error: " + reader.GetErrorMessages() + ".\n");
+	nameFactory->SetConfig(names[0], true);
+	auto schedulers = Config::GetEnables("scheduler");
+	for (auto scheduler : schedulers) {
+		schedulerFactory->SetConfig(scheduler, true);
 	}
-	fin.close();
 }
 
 void Populace::Init(int accomodation, const vector<string>& nameholders, Time* time) {
@@ -418,15 +399,19 @@ void Populace::Workload(Story* story) const {
 	if (!story) {
 		THROW_EXCEPTION(NullPointerException, "Story is null.\n");
 	}
+
+	auto jobs = Config::GetJobs();
+
 	// 添加职业剧本
 	unordered_map<string, Script*> jobScripts;
 	for (auto citizen : citizens) {
 		if (!citizen) continue;
 		for (auto job : citizen->GetJobs()) {
 			if (!job) continue;
-			for (const auto& scriptPath : job->GetScripts()) {
+			for (const auto& name : job->GetScripts()) {
+				auto path = jobs[name];
 				auto script = new Script();
-				script->ReadMilestones(scriptPath, resourcePath + scriptPath,
+				script->ReadMilestones(name, path,
 					story->GetEventFactory(), story->GetChangeFactory());
 				citizen->AddScript(script);
 			}
@@ -435,23 +420,16 @@ void Populace::Workload(Story* story) const {
 	debugf("Log: Generate workloads.\n");
 }
 
-void Populace::Characterize(const string& path, Story* story) const {
+void Populace::Characterize(Story* story) const {
 	if (!story) {
 		THROW_EXCEPTION(NullPointerException, "Story is null.\n");
 	}
-	// 汇总个性剧本
-	vector<string> characters;
-	for (const auto& entry : filesystem::directory_iterator(resourcePath + path)) {
-		if (entry.is_regular_file() && entry.path().extension() == ".json") {
-			characters.push_back(entry.path().string());
-		}
-	}
+	auto characters = Config::GetCharacters();
 	if (characters.empty()) {
 		debugf("Warning: No character scripts found.\n");
 		return;
 	}
 
-	// 随机选择个性剧本
 	for (auto citizen : citizens) {
 		if (!citizen) continue;
 		int r = GetRandom(static_cast<int>(characters.size()));

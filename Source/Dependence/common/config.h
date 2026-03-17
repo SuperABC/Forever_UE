@@ -27,11 +27,14 @@ public:
 	// 设置mod是否启用并写入配置文件
 	static void CheckMod(const std::string& type, const std::string& mod, bool enabled);
 
+	// 获取一类所有启用mod
+	static std::vector<std::string> GetEnables(const std::string& type);
+
 	// 获取所有layout路径
 	static std::vector<std::string> GetLayouts();
 
 	// 获取所有job路径
-	static std::vector<std::string> GetJobs();
+	static std::unordered_map<std::string, std::string> GetJobs();
 
 	// 获取所有character路径
 	static std::vector<std::string> GetCharacters();
@@ -64,8 +67,8 @@ private:
 	// resource path -> [ layout path ]
 	static std::unordered_map<std::string, std::vector<std::string>> layoutPaths;
 
-	// resource path -> [ job path ]
-	static std::unordered_map<std::string, std::vector<std::string>> jobPaths;
+	// resource path -> [ job name -> job path ]
+	static std::unordered_map<std::string, std::unordered_map<std::string, std::string>> jobPaths;
 
 	// resource path -> [ character path ]
 	static std::unordered_map<std::string, std::vector<std::string>> characterPaths;

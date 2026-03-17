@@ -24,6 +24,9 @@ private:
 
 class SkillFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册技能
     void RegisterSkill(const std::string& id,
         std::function<Skill*()> creator, std::function<void(Skill*)> deleter);

@@ -16,7 +16,7 @@ std::unordered_map<std::string, std::vector<std::string>> Config::dllPaths = {};
 std::unordered_map<std::string, std::unordered_map<std::string, bool>> Config::modEnables = {};
 std::unordered_set<std::string> Config::resourcePaths = {};
 std::unordered_map<std::string, std::vector<std::string>> Config::layoutPaths = {};
-std::unordered_map<std::string, std::vector<std::string>> Config::jobPaths = {};
+std::unordered_map<std::string, std::unordered_map<std::string, std::string>> Config::jobPaths = {};
 std::unordered_map<std::string, std::vector<std::string>> Config::characterPaths = {};
 std::unordered_map<std::string, std::vector<std::string>> Config::actionPaths = {};
 std::string Config::scriptPath = "";
@@ -32,6 +32,15 @@ bool CheckFileFormat(const filesystem::path& filePath, const string& format) {
 }
 
 void Config::ReadConfig(const string& path) {
+	dllPaths.clear();
+	modEnables.clear();
+	resourcePaths.clear();
+	layoutPaths.clear();
+	jobPaths.clear();
+	characterPaths.clear();
+	actionPaths.clear();
+	scriptPath = "";
+
 	JsonReader reader;
 	JsonValue root;
 
@@ -545,6 +554,16 @@ void Config::CheckMod(const string& type, const string& mod, bool enabled) {
 	modEnables[type][mod] = enabled;
 }
 
+vector<string> Config::GetEnables(const std::string& type) {
+	vector<string> enables;
+	for (auto modEnable : modEnables[type]) {
+		if (modEnable.second) {
+			enables.push_back(modEnable.first);
+		}
+	}
+	return enables;
+}
+
 vector<string> Config::GetLayouts() {
 	vector<string> layouts;
 
@@ -555,11 +574,11 @@ vector<string> Config::GetLayouts() {
 	return layouts;
 }
 
-vector<string> Config::GetJobs() {
-	vector<string> jobs;
+unordered_map<string, string> Config::GetJobs() {
+	unordered_map<string, string> jobs;
 
 	for (auto& jobPath : jobPaths) {
-		jobs.insert(jobs.end(), jobPath.second.begin(), jobPath.second.end());
+		jobs.insert(jobPath.second.begin(), jobPath.second.end());
 	}
 
 	return jobs;
@@ -611,7 +630,10 @@ void Config::AddResourcePath(const std::string& path) {
 				layoutPaths[path].push_back(fullPath);
 			}
 			else if (ext == ".job") {
-				jobPaths[path].push_back(fullPath);
+				filesystem::path p(fullPath);
+				string filename = p.filename().string();
+				string basename = filename.substr(0, filename.length() - 4);
+				jobPaths[path][basename] = fullPath;
 			}
 			else if (ext == ".character") {
 				characterPaths[path].push_back(fullPath);

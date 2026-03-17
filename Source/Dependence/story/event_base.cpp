@@ -27,6 +27,13 @@ void Event::SetCondition(const Condition& condition) {
     this->condition = condition;
 }
 
+// 清空注册
+void EventFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册事件
 void EventFactory::RegisterEvent(const string& id,
     function<Event*()> creator, function<void(Event*)> deleter) {

@@ -1,7 +1,0 @@
-{
-	"mods":{
-		"asset": ["zone", "building", "room", "mod"],
-		"name": "chinese",
-		"scheduler": ["work_only", "mod"]
-	}
-}

@@ -1,6 +1,0 @@
-{
-	"mods":{
-		"event": ["test", "mod"],
-		"change": ["test", "mod"]
-	}
-}

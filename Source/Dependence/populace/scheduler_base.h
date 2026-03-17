@@ -35,6 +35,9 @@ private:
 
 class SchedulerFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册调度
     void RegisterScheduler(const std::string& id, float power,
         std::function<Scheduler* ()> creator, std::function<void(Scheduler*)> deleter);

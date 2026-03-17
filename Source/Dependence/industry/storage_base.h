@@ -89,6 +89,9 @@ private:
 
 class StorageFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册存储
     void RegisterStorage(const std::string& id,
         std::function<Storage*()> creator, std::function<void(Storage*)> deleter);

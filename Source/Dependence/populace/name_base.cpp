@@ -36,6 +36,13 @@ bool Name::RegisterName(const string& name) {
 	return false;
 }
 
+// 清空注册
+void NameFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册姓名
 void NameFactory::RegisterName(const string& id,
     function<Name* ()> creator, function<void(Name*)> deleter) {

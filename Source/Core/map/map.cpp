@@ -2,6 +2,7 @@
 #include "utility.h"
 #include "error.h"
 #include "json.h"
+#include "config.h"
 
 #include <fstream>
 #include <filesystem>
@@ -182,11 +183,8 @@ Map::~Map() {
     }
 }
 
-void Map::SetResourcePath(const string& path) {
-    resourcePath = path;
-}
-
-void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
+void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
+    vector<string>& dlls) {
     terrainFactory->RegisterTerrain(OceanTerrain::GetId(),
         []() { return new OceanTerrain(); },
         [](Terrain* terrain) { delete terrain; }
@@ -196,28 +194,26 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
         [](Terrain* terrain) { delete terrain; }
     );
 
-    string modPath = "Mod.dll";
-    HMODULE modHandle;
-    if (modHandles.find(modPath) != modHandles.end()) {
-        modHandle = modHandles[modPath];
-    }
-    else {
-        modHandle = LoadLibraryA(modPath.data());
-        modHandles[modPath] = modHandle;
-    }
-    if (modHandle) {
-        debugf("Log: Mod dll loaded successfully.\n");
-
-        auto registerFunc = (RegisterModTerrainsFunc)GetProcAddress(modHandle, "RegisterModTerrains");
-        if (registerFunc) {
-            registerFunc(terrainFactory);
+    for (auto dll : dlls) {
+        HMODULE modHandle;
+        if (modHandles.find(dll) != modHandles.end()) {
+            modHandle = modHandles[dll];
         }
         else {
-            debugf("Warning: Incorrect dll content.\n");
+            modHandle = LoadLibraryA(dll.data());
+            modHandles[dll] = modHandle;
         }
-    }
-    else {
-        debugf("Warning: Failed to load mod.dll.\n");
+        if (modHandle) {
+            debugf("Log: %s loaded successfully.\n", dll.data());
+
+            auto registerFunc = (RegisterModTerrainsFunc)GetProcAddress(modHandle, "RegisterModTerrains");
+            if (registerFunc) {
+                registerFunc(terrainFactory);
+            }
+        }
+        else {
+            debugf("Warning: Failed to load %s.\n", dll.data());
+        }
     }
 
 #ifdef MOD_TEST
@@ -235,33 +231,32 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles) {
 #endif
 }
 
-void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
+void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
+    vector<string>& dlls) {
     roadnetFactory->RegisterRoadnet(JingRoadnet::GetId(),
         []() { return new JingRoadnet(); },
         [](Roadnet* roadnet) { delete roadnet; });
 
-    string modPath = "Mod.dll";
-    HMODULE modHandle;
-    if (modHandles.find(modPath) != modHandles.end()) {
-        modHandle = modHandles[modPath];
-    }
-    else {
-        modHandle = LoadLibraryA(modPath.data());
-        modHandles[modPath] = modHandle;
-    }
-    if (modHandle) {
-        debugf("Log: Mod dll loaded successfully.\n");
-
-        auto registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
-        if (registerFunc) {
-            registerFunc(roadnetFactory);
+    for (auto dll : dlls) {
+        HMODULE modHandle;
+        if (modHandles.find(dll) != modHandles.end()) {
+            modHandle = modHandles[dll];
         }
         else {
-            debugf("Warning: Incorrect dll content.\n");
+            modHandle = LoadLibraryA(dll.data());
+            modHandles[dll] = modHandle;
         }
-    }
-    else {
-        debugf("Warning: Failed to load mod.dll.\n");
+        if (modHandle) {
+            debugf("Log: %s loaded successfully.\n", dll.data());
+
+            auto registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
+            if (registerFunc) {
+                registerFunc(roadnetFactory);
+            }
+        }
+        else {
+            debugf("Warning: Failed to load %s.\n", dll.data());
+        }
     }
 
 #ifdef MOD_TEST
@@ -279,34 +274,33 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles) {
 #endif
 }
 
-void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
+void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
+    vector<string>& dlls) {
     zoneFactory->RegisterZone(DefaultZone::GetId(), DefaultZone::ZoneGenerator,
         []() { return new DefaultZone(); },
         [](Zone* zone) { delete zone; }
     );
 
-    string modPath = "Mod.dll";
-    HMODULE modHandle;
-    if (modHandles.find(modPath) != modHandles.end()) {
-        modHandle = modHandles[modPath];
-    }
-    else {
-        modHandle = LoadLibraryA(modPath.data());
-        modHandles[modPath] = modHandle;
-    }
-    if (modHandle) {
-        debugf("Log: Mod dll loaded successfully.\n");
-
-        auto registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
-        if (registerFunc) {
-            registerFunc(zoneFactory);
+    for (auto dll : dlls) {
+        HMODULE modHandle;
+        if (modHandles.find(dll) != modHandles.end()) {
+            modHandle = modHandles[dll];
         }
         else {
-            debugf("Warning: Incorrect dll content.\n");
+            modHandle = LoadLibraryA(dll.data());
+            modHandles[dll] = modHandle;
         }
-    }
-    else {
-        debugf("Warning: Failed to load mod.dll.\n");
+        if (modHandle) {
+            debugf("Log: %s loaded successfully.\n", dll.data());
+
+            auto registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
+            if (registerFunc) {
+                registerFunc(zoneFactory);
+            }
+        }
+        else {
+            debugf("Warning: Failed to load %s.\n", dll.data());
+        }
     }
 
 #ifdef MOD_TEST
@@ -324,7 +318,8 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles) {
 #endif
 }
 
-void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
+void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
+    vector<string>& dlls) {
     buildingFactory->RegisterBuilding(DefaultResidentialBuilding::GetId(), DefaultResidentialBuilding::GetPower(),
         []() { return new DefaultResidentialBuilding(); },
         [](Building* building) { delete building; }
@@ -334,28 +329,26 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
         [](Building* building) { delete building; }
     );
 
-    string modPath = "Mod.dll";
-    HMODULE modHandle;
-    if (modHandles.find(modPath) != modHandles.end()) {
-        modHandle = modHandles[modPath];
-    }
-    else {
-        modHandle = LoadLibraryA(modPath.data());
-        modHandles[modPath] = modHandle;
-    }
-    if (modHandle) {
-        debugf("Log: Mod dll loaded successfully.\n");
-
-        auto registerFunc = (RegisterModBuildingsFunc)GetProcAddress(modHandle, "RegisterModBuildings");
-        if (registerFunc) {
-            registerFunc(buildingFactory);
+    for (auto dll : dlls) {
+        HMODULE modHandle;
+        if (modHandles.find(dll) != modHandles.end()) {
+            modHandle = modHandles[dll];
         }
         else {
-            debugf("Warning: Incorrect dll content.\n");
+            modHandle = LoadLibraryA(dll.data());
+            modHandles[dll] = modHandle;
         }
-    }
-    else {
-        debugf("Warning: Failed to load mod.dll.\n");
+        if (modHandle) {
+            debugf("Log: %s loaded successfully.\n", dll.data());
+
+            auto registerFunc = (RegisterModBuildingsFunc)GetProcAddress(modHandle, "RegisterModBuildings");
+            if (registerFunc) {
+                registerFunc(buildingFactory);
+            }
+        }
+        else {
+            debugf("Warning: Failed to load %s.\n", dll.data());
+        }
     }
 
 #ifdef MOD_TEST
@@ -373,7 +366,8 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles) {
 #endif
 }
 
-void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
+void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
+    vector<string>& dlls) {
     componentFactory->RegisterComponent(DefaultResidentialComponent::GetId(),
         []() { return new DefaultResidentialComponent(); },
         [](Component* component) { delete component; }
@@ -383,27 +377,26 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
         [](Component* component) { delete component; }
     );
 
-    string modPath = "Mod.dll";
-    HMODULE modHandle;
-    if (modHandles.find(modPath) != modHandles.end()) {
-        modHandle = modHandles[modPath];
-    }
-    else {
-        modHandle = LoadLibraryA(modPath.data());
-        modHandles[modPath] = modHandle;
-    }
-    if (modHandle) {
-        debugf("Log: Mod dll loaded successfully.\n");
-        auto registerFunc = (RegisterModComponentsFunc)GetProcAddress(modHandle, "RegisterModComponents");
-        if (registerFunc) {
-            registerFunc(componentFactory);
+    for (auto dll : dlls) {
+        HMODULE modHandle;
+        if (modHandles.find(dll) != modHandles.end()) {
+            modHandle = modHandles[dll];
         }
         else {
-            debugf("Warning: Incorrect dll content.\n");
+            modHandle = LoadLibraryA(dll.data());
+            modHandles[dll] = modHandle;
         }
-    }
-    else {
-        debugf("Warning: Failed to load mod.dll.\n");
+        if (modHandle) {
+            debugf("Log: %s loaded successfully.\n", dll.data());
+
+            auto registerFunc = (RegisterModComponentsFunc)GetProcAddress(modHandle, "RegisterModComponents");
+            if (registerFunc) {
+                registerFunc(componentFactory);
+            }
+        }
+        else {
+            debugf("Warning: Failed to load %s.\n", dll.data());
+        }
     }
 
 #ifdef MOD_TEST
@@ -421,7 +414,8 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles) {
 #endif
 }
 
-void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
+void Map::InitRooms(unordered_map<string, HMODULE>& modHandles,
+    vector<string>& dlls) {
     roomFactory->RegisterRoom(DefaultResidentialRoom::GetId(),
         []() { return new DefaultResidentialRoom(); },
         [](Room* room) { delete room; }
@@ -431,27 +425,26 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
         [](Room* room) { delete room; }
     );
 
-    string modPath = "Mod.dll";
-    HMODULE modHandle;
-    if (modHandles.find(modPath) != modHandles.end()) {
-        modHandle = modHandles[modPath];
-    }
-    else {
-        modHandle = LoadLibraryA(modPath.data());
-        modHandles[modPath] = modHandle;
-    }
-    if (modHandle) {
-        debugf("Log: Mod dll loaded successfully.\n");
-        auto registerFunc = (RegisterModRoomsFunc)GetProcAddress(modHandle, "RegisterModRooms");
-        if (registerFunc) {
-            registerFunc(roomFactory);
+    for (auto dll : dlls) {
+        HMODULE modHandle;
+        if (modHandles.find(dll) != modHandles.end()) {
+            modHandle = modHandles[dll];
         }
         else {
-            debugf("Warning: Incorrect dll content.\n");
+            modHandle = LoadLibraryA(dll.data());
+            modHandles[dll] = modHandle;
         }
-    }
-    else {
-        debugf("Warning: Failed to load mod.dll.\n");
+        if (modHandle) {
+            debugf("Log: %s loaded successfully.\n", dll.data());
+
+            auto registerFunc = (RegisterModRoomsFunc)GetProcAddress(modHandle, "RegisterModRooms");
+            if (registerFunc) {
+                registerFunc(roomFactory);
+            }
+        }
+        else {
+            debugf("Warning: Failed to load %s.\n", dll.data());
+        }
     }
 
 #ifdef MOD_TEST
@@ -469,42 +462,39 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles) {
 #endif
 }
 
-void Map::ReadConfigs(const string& path) const {
-    string fullPath = resourcePath + path;
-    if (!filesystem::exists(fullPath)) {
-        THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
-    }
+void Map::LoadConfigs() const {
+    terrainFactory->RemoveAll();
+    roadnetFactory->RemoveAll();
+    zoneFactory->RemoveAll();
+    buildingFactory->RemoveAll();
+    componentFactory->RemoveAll();
+    roomFactory->RemoveAll();
 
-    JsonReader reader;
-    JsonValue root;
-
-    ifstream fin(fullPath);
-    if (!fin.is_open()) {
-        THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
+    auto terrains = Config::GetEnables("terrain");
+    for (auto terrain : terrains) {
+        terrainFactory->SetConfig(terrain, true);
     }
-    if (reader.Parse(fin, root)) {
-        for (auto terrain : root["mods"]["terrain"]) {
-            terrainFactory->SetConfig(terrain.AsString(), true);
-        }
-        roadnetFactory->SetConfig(root["mods"]["roadnet"].AsString(), true);
-        for (auto zone : root["mods"]["zone"]) {
-            zoneFactory->SetConfig(zone.AsString(), true);
-        }
-        for (auto building : root["mods"]["building"]) {
-            buildingFactory->SetConfig(building.AsString(), true);
-        }
-        for (auto component : root["mods"]["component"]) {
-            componentFactory->SetConfig(component.AsString(), true);
-        }
-        for (auto room : root["mods"]["room"]) {
-            roomFactory->SetConfig(room.AsString(), true);
-        }
+    auto roadnets = Config::GetEnables("roadnet");
+    if (roadnets.size() != 1) {
+        THROW_EXCEPTION(RuntimeException, "There should be one and only one enabled roadnet.\n");
     }
-    else {
-        fin.close();
-        THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
+    roadnetFactory->SetConfig(roadnets[0], true);
+    auto zones = Config::GetEnables("zone");
+    for (auto zone : zones) {
+        zoneFactory->SetConfig(zone, true);
     }
-    fin.close();
+    auto buildings = Config::GetEnables("building");
+    for (auto building : buildings) {
+        buildingFactory->SetConfig(building, true);
+    }
+    auto components = Config::GetEnables("component");
+    for (auto component : components) {
+        componentFactory->SetConfig(component, true);
+    }
+    auto rooms = Config::GetEnables("room");
+    for (auto room : rooms) {
+        roomFactory->SetConfig(room, true);
+    }
 }
 
 int Map::Init(int blockX, int blockY, Traffic* traffic) {
@@ -690,7 +680,7 @@ int Map::Init(int blockX, int blockY, Traffic* traffic) {
     debugf("Log: Generate components and rooms.\n");
     int capacity = 0;
     if (layout) delete layout;
-    layout = Building::ReadTemplates(resourcePath + "layouts/");
+    layout = Building::ReadTemplates(Config::GetLayouts());
     for (auto& [name, building] : buildings) {
         if (!building) continue;
         building->FinishInit();

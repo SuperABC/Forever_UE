@@ -2,6 +2,7 @@
 #include "utility.h"
 #include "error.h"
 #include "json.h"
+#include "config.h"
 
 #include <fstream>
 #include <filesystem>
@@ -16,7 +17,6 @@ EventFactory* Story::eventFactory = nullptr;
 ChangeFactory* Story::changeFactory = nullptr;
 
 Story::Story() :
-	resourcePath(),
 	script(nullptr),
 	variables() {
 	if (!eventFactory) {
@@ -31,33 +31,29 @@ Story::~Story() {
 	delete script;
 }
 
-void Story::SetResourcePath(const string& path) {
-	resourcePath = path;
-}
+void Story::InitEvents(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
 
-void Story::InitEvents(unordered_map<string, HMODULE>& modHandles) {
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModEventsFunc registerFunc =
-			(RegisterModEventsFunc)GetProcAddress(modHandle, "RegisterModEvents");
-		if (registerFunc) {
-			registerFunc(eventFactory);
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModEventsFunc)GetProcAddress(modHandle, "RegisterModEvents");
+			if (registerFunc) {
+				registerFunc(eventFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -75,29 +71,29 @@ void Story::InitEvents(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Story::InitChanges(unordered_map<string, HMODULE>& modHandles) {
-	string modPath = "Mod.dll";
-	HMODULE modHandle;
-	if (modHandles.find(modPath) != modHandles.end()) {
-		modHandle = modHandles[modPath];
-	}
-	else {
-		modHandle = LoadLibraryA(modPath.data());
-		modHandles[modPath] = modHandle;
-	}
-	if (modHandle) {
-		debugf("Log: Mod dll loaded successfully.\n");
-		RegisterModChangesFunc registerFunc =
-			(RegisterModChangesFunc)GetProcAddress(modHandle, "RegisterModChanges");
-		if (registerFunc) {
-			registerFunc(changeFactory);
+void Story::InitChanges(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
+
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
 		}
 		else {
-			debugf("Warning: Incorrect dll content.\n");
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
 		}
-	}
-	else {
-		debugf("Warning: Failed to load mod dll.\n");
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModChangesFunc)GetProcAddress(modHandle, "RegisterModChanges");
+			if (registerFunc) {
+				registerFunc(changeFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 
 #ifdef MOD_TEST
@@ -115,32 +111,18 @@ void Story::InitChanges(unordered_map<string, HMODULE>& modHandles) {
 #endif // MOD_TEST
 }
 
-void Story::ReadConfigs(const string& path) const {
-	string fullPath = resourcePath + path;
-	if (!filesystem::exists(fullPath)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + fullPath + ".\n");
-	}
+void Story::LoadConfigs() const {
+	eventFactory->RemoveAll();
+	changeFactory->RemoveAll();
 
-	JsonReader reader;
-	JsonValue root;
-
-	ifstream fin(fullPath);
-	if (!fin.is_open()) {
-		THROW_EXCEPTION(IOException, "Failed to open file: " + fullPath + ".\n");
+	auto events = Config::GetEnables("event");
+	for (auto event : events) {
+		eventFactory->SetConfig(event, true);
 	}
-	if (reader.Parse(fin, root)) {
-		for (auto event : root["mods"]["event"]) {
-			eventFactory->SetConfig(event.AsString(), true);
-		}
-		for (auto change : root["mods"]["change"]) {
-			changeFactory->SetConfig(change.AsString(), true);
-		}
+	auto changes = Config::GetEnables("change");
+	for (auto change : changes) {
+		changeFactory->SetConfig(change, true);
 	}
-	else {
-		fin.close();
-		THROW_EXCEPTION(JsonFormatException, "Json syntax error: " + reader.GetErrorMessages() + ".\n");
-	}
-	fin.close();
 }
 
 void Story::Init() {
@@ -222,8 +204,7 @@ vector<string> Story::ReadNames(const string& name, const string& path) const {
 		THROW_EXCEPTION(NullPointerException, "Script not initialized.\n");
 	}
 
-	return script->ReadNames(name, resourcePath + path,
-		eventFactory, changeFactory);
+	return script->ReadNames(name, path, eventFactory, changeFactory);
 }
 
 void Story::ReadStory(const string& name, const string& path) {
@@ -231,8 +212,7 @@ void Story::ReadStory(const string& name, const string& path) {
 		THROW_EXCEPTION(NullPointerException, "Script not initialized.\n");
 	}
 
-	script->ReadMilestones(name, resourcePath + path,
-		eventFactory, changeFactory);
+	script->ReadMilestones(name, path, eventFactory, changeFactory);
 }
 
 bool Story::JudgeCondition(const Condition& condition) const {

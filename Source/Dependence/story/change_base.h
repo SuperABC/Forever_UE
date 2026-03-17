@@ -37,6 +37,9 @@ private:
 
 class ChangeFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册变更
     void RegisterChange(const std::string& id,
         std::function<Change*()> creator, std::function<void(Change*)> deleter);

@@ -67,6 +67,9 @@ private:
 
 class ManufactureFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册制造
     void RegisterManufacture(const std::string& id,
         std::function<Manufacture*()> creator, std::function<void(Manufacture*)> deleter);

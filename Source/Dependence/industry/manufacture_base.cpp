@@ -188,6 +188,13 @@ unordered_map<string, float> Manufacture::GetByproducts() const {
     return byproducts;
 }
 
+// 清空注册
+void ManufactureFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册工坊
 void ManufactureFactory::RegisterManufacture(const string& id,
     function<Manufacture*()> creator, function<void(Manufacture*)> deleter) {

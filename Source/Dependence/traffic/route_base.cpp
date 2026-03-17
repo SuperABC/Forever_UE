@@ -72,6 +72,13 @@ bool Route::AddConnection(string connect1, int slot1, string connect2, int slot2
     return true;
 }
 
+// 清空注册
+void RouteFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册线路
 void RouteFactory::RegisterRoute(const string& id,
     function<Route*()> creator, function<void(Route*)> deleter) {

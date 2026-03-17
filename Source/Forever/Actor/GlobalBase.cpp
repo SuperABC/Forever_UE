@@ -1,6 +1,7 @@
 ﻿#include "GlobalBase.h"
 
 #include "utility.h"
+#include "config.h"
 
 
 using namespace std;
@@ -54,61 +55,63 @@ void AGlobalBase::BeginPlay() {
 		traffic = new Traffic();
 		player = new Player();
 
+		Config::ReadConfig(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/config.json");
+		auto mods = Config::GetMods();
+
 		// 读取Map相关类及Mod
-		map->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
-		map->ReadConfigs("configs/config_map.json");
-		map->InitTerrains(modHandles);
-		map->InitRoadnets(modHandles);
-		map->InitZones(modHandles);
-		map->InitBuildings(modHandles);
-		map->InitComponents(modHandles);
-		map->InitRooms(modHandles);
+		map->LoadConfigs();
+		map->InitTerrains(modHandles, mods);
+		map->InitRoadnets(modHandles, mods);
+		map->InitZones(modHandles, mods);
+		map->InitBuildings(modHandles, mods);
+		map->InitComponents(modHandles, mods);
+		map->InitRooms(modHandles, mods);
 
 		// 读取Populace相关类及Mod
-		populace->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
-		populace->ReadConfigs("configs/config_populace.json");
-		populace->InitAssets(modHandles);
-		populace->InitNames(modHandles);
-		populace->InitSchedulers(modHandles);
+		populace->LoadConfigs();
+		populace->InitAssets(modHandles, mods);
+		populace->InitNames(modHandles, mods);
+		populace->InitSchedulers(modHandles, mods);
 
 		// 读取Society相关类及Mod
-		society->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
-		society->ReadConfigs("configs/config_society.json");
-		society->InitJobs(modHandles);
-		society->InitCalendars(modHandles);
-		society->InitOrganizations(modHandles);
+		society->LoadConfigs();
+		society->InitJobs(modHandles, mods);
+		society->InitCalendars(modHandles, mods);
+		society->InitOrganizations(modHandles, mods);
 
 		// 读取Story相关类及Mod
-		story->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
-		story->ReadConfigs("configs/config_story.json");
-		story->InitEvents(modHandles);
-		story->InitChanges(modHandles);
+		story->LoadConfigs();
+		story->InitEvents(modHandles, mods);
+		story->InitChanges(modHandles, mods);
 
 		// 读取Industry相关类及Mod
-		industry->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
-		industry->ReadConfigs("configs/config_industry.json");
+		industry->LoadConfigs();
+		industry->InitManufactures(modHandles, mods);
+		industry->InitStorages(modHandles, mods);
+		industry->InitProducts(modHandles, mods);
 
 		// 读取Traffic相关类及Mod
-		traffic->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
-		traffic->ReadConfigs("configs/config_traffic.json");
+		traffic->LoadConfigs();
+		traffic->InitRoutes(modHandles, mods);
+		traffic->InitStations(modHandles, mods);
+		traffic->InitVehicles(modHandles, mods);
 
 		// 读取Player相关类及Mod
-		player->SetResourcePath(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/");
-		player->ReadConfigs("configs/config_player.json");
+		player->LoadConfigs();
+		player->InitSkills(modHandles, mods);
 
 		int size = 4;
-		string path = "scripts/ys.json";
 
 		story->Init();
 		int accomodation = map->Init(size, size, traffic);
-		populace->Init(accomodation, story->ReadNames("ys", path), player->GetTime());
+		populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
 		map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 		society->Init(map, populace, player->GetTime());
 		story->InitVariables(player->GetTime());
-		story->ReadStory("ys", path);
+		story->ReadStory("ys", Config::GetScript());
 		populace->Schedule();
 		populace->Workload(story);
-		populace->Characterize("scripts/characters/", story);
+		populace->Characterize(story);
 		industry->Init(map);
 		traffic->Init(map);
 		player->Init();

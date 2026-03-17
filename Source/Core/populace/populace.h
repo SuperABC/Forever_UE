@@ -24,16 +24,16 @@ public:
 	Populace();
 	~Populace();
 
-	// 设置资源路径
-	void SetResourcePath(const std::string& path);
-
 	// 读取Mods
-	void InitAssets(std::unordered_map<std::string, HMODULE>& modHandles);
-	void InitNames(std::unordered_map<std::string, HMODULE>& modHandles);
-	void InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles);
+	void InitAssets(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+	void InitNames(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+	void InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
 
 	// 读取配置文件
-	void ReadConfigs(const std::string& path) const;
+	void LoadConfigs() const;
 
 	// 初始化全部人口
 	void Init(int accomodation, const std::vector<std::string>& nameholders, Time* time);
@@ -60,7 +60,7 @@ public:
 
 	// 分配剧情
 	void Workload(Story* story) const;
-	void Characterize(const std::string& path, Story* story) const;
+	void Characterize(Story* story) const;
 
 	// 获取市民
 	std::vector<Person*>& GetCitizens();
@@ -76,9 +76,6 @@ public:
 		int id, Event* event, Story* story) const;
 
 private:
-	// 资源路径
-	std::string resourcePath;
-
 	// Mod管理
 	static AssetFactory* assetFactory;
 	static NameFactory* nameFactory;

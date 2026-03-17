@@ -48,6 +48,13 @@ void Product::SetPrice(float price) {
     this->price = price;
 }
 
+// 清空注册
+void ProductFactory::RemoveAll() {
+    for(auto &config : configs) {
+        config.second = false;
+    }
+}
+
 // 注册产品
 void ProductFactory::RegisterProduct(const string& id,
     function<Product*()> creator, function<void(Product*)> deleter) {

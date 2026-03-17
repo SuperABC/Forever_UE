@@ -73,6 +73,9 @@ private:
 
 class RoadnetFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册路网
     void RegisterRoadnet(const std::string& id,
         std::function<Roadnet* ()> creator, std::function<void(Roadnet*)> deleter);

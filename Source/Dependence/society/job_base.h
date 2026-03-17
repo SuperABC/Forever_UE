@@ -48,6 +48,9 @@ private:
 
 class JobFactory {
 public:
+    // 清空注册
+    void RemoveAll();
+
     // 注册工作
     void RegisterJob(const std::string& id,
         std::function<Job* ()> creator, std::function<void(Job*)> deleter);
