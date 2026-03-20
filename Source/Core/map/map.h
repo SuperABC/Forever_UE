@@ -1,26 +1,9 @@
 ﻿#pragma once
 
-#include "../populace/person.h"
-#include "../story/story.h"
-#include "../traffic/traffic.h"
-
 #include "terrain.h"
-#include "roadnet.h"
-#include "zone.h"
-#include "building.h"
-#include "component.h"
-#include "room.h"
-
-#include <windows.h>
-#include <vector>
-#include <string>
-#include <unordered_map>
 
 #define BLOCK_SIZE 256
 
-
-class Person;
-class Traffic;
 
 class Element {
 public:
@@ -74,45 +57,18 @@ public:
     Map();
     ~Map();
 
+    // 读取配置文件
+    void LoadConfigs() const;
+    
     // 读取 Mods
     void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles,
         std::vector<std::string>& dlls);
-    void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles,
-        std::vector<std::string>& dlls);
-    void InitZones(std::unordered_map<std::string, HMODULE>& modHandles,
-        std::vector<std::string>& dlls);
-    void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles,
-        std::vector<std::string>& dlls);
-    void InitComponents(std::unordered_map<std::string, HMODULE>& modHandles,
-        std::vector<std::string>& dlls);
-    void InitRooms(std::unordered_map<std::string, HMODULE>& modHandles,
-        std::vector<std::string>& dlls);
 
-    // 读取配置文件
-    void LoadConfigs() const;
-
-    // 初始化全部地图
-    int Init(int blockX, int blockY, Traffic* traffic);
-
-    // 市民入驻
-    void Checkin(std::vector<Person*> citizens, Time* time, AssetFactory* factory) const;
+    // 初始化地图
+    int Init(int blockX, int blockY);
 
     // 释放空间
     void Destroy();
-
-    // 时钟前进
-    void Tick(int day, int hour, int min, int sec);
-
-    // 输出当前地图
-    void Print() const;
-
-    // 保存/加载地图
-    void Load(const std::string& path);
-    void Save(const std::string& path) const;
-
-    // 应用变更
-    void ApplyChange(Change* change, Story* story,
-        std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
     // 获取地图尺寸
     std::pair<int, int> GetSize() const;
@@ -134,47 +90,15 @@ public:
     bool SetTerrain(int x, int y, const std::string& terrain, float height);
     float GetHeight(int x, int y) const;
 
-    // 获取路网
-    Roadnet* GetRoadnet() const;
-
-    // 获取园区/建筑
-    std::unordered_map<std::string, Zone*>& GetZones();
-    std::unordered_map<std::string, Building*>& GetBuildings();
-
-    // 获取组合/房间
-    std::vector<Component*> GetComponents() const;
-    std::vector<Room*> GetRooms() const;
-
-    // 获取/设置元素所属园区/建筑
-    Zone* GetZone(const std::string& name) const;
-    Building* GetBuilding(const std::string& name) const;
-    void SetZone(Zone* zone, const std::string& name);
-    void SetBuilding(Building* building, const std::string& name);
-    void SetBuilding(Building* building, const std::string& name, std::pair<float, float> offset);
-
-    // 寻址
-    Plot* LocatePlot(const std::string& address) const;
-    Zone* LocateZone(const std::string& address) const;
-    Building* LocateBuilding(const std::string& address) const;
-    Room* LocateRoom(const std::string& address) const;
-
 private:
+    // 统一工厂
     static TerrainFactory* terrainFactory;
-    static RoadnetFactory* roadnetFactory;
-    static ZoneFactory* zoneFactory;
-    static BuildingFactory* buildingFactory;
-    static ComponentFactory* componentFactory;
-    static RoomFactory* roomFactory;
 
+    // 地图信息
     int width;
     int height;
     std::vector<std::vector<std::shared_ptr<Block>>> blocks;
+
+    // 玩家信息
     std::pair<float, float> playerPos;
-
-    Roadnet* roadnet;
-    std::unordered_map<std::string, Zone*> zones;
-    std::unordered_map<std::string, Building*> buildings;
-    Layout* layout;
-
-    void ArrangePlots();
 };

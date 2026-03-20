@@ -37,6 +37,7 @@ public class Forever : ModuleRules
             "Dependence/industry",
             "Dependence/traffic",
             "Dependence/player",
+            "Core/common",
             "Core"
 		});
 

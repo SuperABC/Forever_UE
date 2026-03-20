@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
 
+#define NOMINMAX
+
 #include "TerrainBase.h"
 #include "RoadnetBase.h"
 #include "ZoneBase.h"
@@ -20,6 +22,10 @@
 #include "industry/industry.h"
 #include "traffic/traffic.h"
 #include "player/player.h"
+
+#include <string>
+#include <unordered_map>
+#include <windows.h>
 
 #include "GlobalBase.generated.h"
 

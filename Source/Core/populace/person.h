@@ -1,174 +1,173 @@
-﻿#pragma once
-
-#include "../map/room.h"
-#include "../society/job.h"
-#include "../story/script.h"
-
-#include "asset.h"
-#include "scheduler.h"
-#include "experience.h"
-#include "utility.h"
-#include "commute.h"
-
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-
-#undef GetJob
-#undef AddJob
+﻿
 
 
-class Script;
-class Story;
-class Event;
-class EducationExperience;
-class EmotionExperience;
-class JobExperience;
 
-enum GENDER_TYPE : int {
-	GENDER_FEMALE, // 女性
-	GENDER_MALE // 男性
-};
 
-enum RELATIVE_TYPE : int {
-	RELATIVE_FATHER, // 父亲
-	RELATIVE_MOTHER, // 母亲
-	RELATIVE_WIFE, // 妻子
-	RELATIVE_HUSBAND, // 丈夫
-	RELATIVE_SON, // 儿子
-	RELATIVE_DAUGHTER // 女儿
-};
 
-class Person {
-public:
-	Person();
-	~Person();
 
-	// 获取/设置基础信息
-	int GetId() const;
-	void SetId(int id);
-	const std::string& GetName() const;
-	void SetName(const std::string& name);
-	GENDER_TYPE GetGender() const;
-	void SetGender(GENDER_TYPE gender);
-	float GetHeight() const;
-	void SetHeight(float height);
-	float GetWeight() const;
-	void SetWeight(float weight);
-	const Time& GetBirthday() const;
-	void SetBirthday(const Time& birthday);
-	int GetAge(const Time* currentTime) const;
-	const Time& GetMarryday() const;
-	void SetMarryday(const Time& marryday);
-	const std::string& GetNick() const;
-	void SetNick(const std::string& nick);
-	int GetDeposit() const;
-	void SetDeposit(int deposit);
-	int GetPhone() const;
-	void SetPhone(int phone);
 
-	// 实时模拟
-	int GetSimulate() const;
-	void SetSimulate(int simulate);
 
-	// 管理亲属
-	void AddRelative(RELATIVE_TYPE type, Person* person);
-	Person* GetFather() const;
-	Person* GetMother() const;
-	Person* GetSpouse() const;
-	std::vector<Person*> GetChilds() const;
 
-	// 管理资产
-	void AddAsset(Asset* asset);
-	std::vector<Asset*>& GetAssets();
-	std::vector<Asset*> GetAssets(const std::string& type) const;
-	Asset* GetAsset(const std::string& name) const;
 
-	// 管理职业
-	std::vector<Job*> GetJobs() const;
-	void AddJob(Job* job);
-	void RemoveJob(Job* job);
-	void SetWork(int job);
-	Job* GetWork() const;
 
-	// 管理住址
-	Room* GetHome() const;
-	void SetHome(Room* room);
-	void RemoveHome();
 
-	// 管理调度
-	Scheduler* GetScheduler() const;
-	void SetScheduler(Scheduler* scheduler);
 
-	// 管理经历
-	void AddEducationExperience(EducationExperience exp);
-	void AddEmotionExperience(EmotionExperience exp);
-	void AddJobExperience(JobExperience exp);
-	std::vector<EducationExperience>& GetEducationExperiences();
-	std::vector<EmotionExperience>& GetEmotionExperiences();
-	std::vector<JobExperience>& GetJobExperiences();
-	void ExperienceComposition();
 
-	// 管理剧本
-	void AddScript(Script* script);
-	std::pair<std::vector<Dialog>, std::vector<Change*>> MatchEvent(
-		Event* event, Story* story, Person* person);
-	void SetValue(const std::string& name, ValueType value);
-	std::pair<bool, ValueType> GetValue(const std::string& name) const;
-	void UpdateValues(Time* t);
-	bool AddOption(const std::string& option);
-	bool RemoveOption(const std::string& option);
-	std::unordered_set<std::string> GetOptions() const;
 
-	// 实时状态
-	void SetStatus(Zone* zone);
-	void SetStatus(Building* building);
-	void SetStatus(Room* room);
-	void SetStatus(Room* target, std::vector<Connection> paths, Time time);
-	Plot* GetCurrentPlot() const;
-	Zone* GetCurrentZone() const;
-	Building* GetCurrentBuilding() const;
-	Room* GetCurrentRoom() const;
-	Commute GetCurrentCommute() const;
 
-private:
-	int id;
-	std::string name;
-	GENDER_TYPE gender;
-	Time birthday;
-	Time marryday;
-	float height;
-	float weight;
-	std::string nick;
-	int deposit;
-	int phone;
 
-	bool simulate;
 
-	std::vector<std::pair<RELATIVE_TYPE, Person*>> relatives;
-	std::vector<std::pair<std::string, Person*>> acquaintances;
 
-	std::vector<Asset*> assets;
-	std::vector<Job*> jobs;
-	int working;
 
-	Room* home;
-	Scheduler* scheduler;
 
-	std::vector<EducationExperience> educationExperiences;
-	std::vector<EmotionExperience> emotionExperiences;
-	std::vector<JobExperience> jobExperiences;
 
-	std::vector<Script*> scripts;
-	std::unordered_map<std::string, ValueType> variables;
-	std::unordered_set<std::string> options;
 
-	Plot* currentPlot;
-	Zone* currentZone;
-	Building* currentBuilding;
-	Room* currentRoom;
-	Commute commute;
-};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

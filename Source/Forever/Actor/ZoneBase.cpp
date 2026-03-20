@@ -22,45 +22,45 @@ void AZoneBase::BeginPlay() {
 void AZoneBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	FVector location = FVector(0.f, 0.f, 0.f);
-	((AGlobalBase*)global)->GetLocation(location);
-	location /= 1000.f;
+	//FVector location = FVector(0.f, 0.f, 0.f);
+	//((AGlobalBase*)global)->GetLocation(location);
+	//location /= 1000.f;
 
-	TArray<FZone> zones;
-	auto plots = ((AGlobalBase*)global)->GetMap()->GetRoadnet()->GetPlots();
-	for(auto plot : plots) {
-		FVector plotLocation = FVector(plot->GetPosX(), plot->GetPosY(), 0.f);
-		if((location - plotLocation).Size() > 64.f) {
-			continue;
-		}
-		auto plotZones = plot->GetZones();
-		for (auto plotZone : plotZones) {
-			if(zoneInstances.find(plotZone.first) != zoneInstances.end()) {
-				continue;
-			}
-			auto zone = plotZone.second;
-			FZone zoneInfo;
-			zoneInfo.name = UTF8_TO_TCHAR(plotZone.first.data());
-			auto center = zone->GetPosition();
-			zoneInfo.center = FVector(center.first, center.second, 0.f);
-			zoneInfo.size = FVector(zone->GetSizeX(), zone->GetSizeY(), 100.f);
-			zoneInfo.rotation = plot->GetRotation();
-			zoneInfo.fences.Add(
-				FFence(FVector(zone->GetSizeX() / 2.f - 0.2f, 0.f, 0.f),
-					FVector(0.1f, zone->GetSizeY() - 0.4f, 0.1f)));
-			zoneInfo.fences.Add(
-				FFence(FVector(-zone->GetSizeX() / 2.f + 0.2f, 0.f, 0.f),
-					FVector(0.1f, zone->GetSizeY() - 0.4f, 0.1f)));
-			zoneInfo.fences.Add(
-				FFence(FVector(0.f, zone->GetSizeY() / 2.f - 0.2f, 0.f),
-					FVector(zone->GetSizeX() - 0.4f, 0.1f, 0.1f)));
-			zoneInfo.fences.Add(
-				FFence(FVector(0.f, -zone->GetSizeY() / 2.f + 0.2f, 0.f),
-					FVector(zone->GetSizeX() - 0.4f, 0.1f, 0.1f)));
-			zones.Add(zoneInfo);
-		}
-	}
-	UpdateZone(zones);
+	//TArray<FZone> zones;
+	//auto plots = ((AGlobalBase*)global)->GetMap()->GetRoadnet()->GetPlots();
+	//for(auto plot : plots) {
+	//	FVector plotLocation = FVector(plot->GetPosX(), plot->GetPosY(), 0.f);
+	//	if((location - plotLocation).Size() > 64.f) {
+	//		continue;
+	//	}
+	//	auto plotZones = plot->GetZones();
+	//	for (auto plotZone : plotZones) {
+	//		if(zoneInstances.find(plotZone.first) != zoneInstances.end()) {
+	//			continue;
+	//		}
+	//		auto zone = plotZone.second;
+	//		FZone zoneInfo;
+	//		zoneInfo.name = UTF8_TO_TCHAR(plotZone.first.data());
+	//		auto center = zone->GetPosition();
+	//		zoneInfo.center = FVector(center.first, center.second, 0.f);
+	//		zoneInfo.size = FVector(zone->GetSizeX(), zone->GetSizeY(), 100.f);
+	//		zoneInfo.rotation = plot->GetRotation();
+	//		zoneInfo.fences.Add(
+	//			FFence(FVector(zone->GetSizeX() / 2.f - 0.2f, 0.f, 0.f),
+	//				FVector(0.1f, zone->GetSizeY() - 0.4f, 0.1f)));
+	//		zoneInfo.fences.Add(
+	//			FFence(FVector(-zone->GetSizeX() / 2.f + 0.2f, 0.f, 0.f),
+	//				FVector(0.1f, zone->GetSizeY() - 0.4f, 0.1f)));
+	//		zoneInfo.fences.Add(
+	//			FFence(FVector(0.f, zone->GetSizeY() / 2.f - 0.2f, 0.f),
+	//				FVector(zone->GetSizeX() - 0.4f, 0.1f, 0.1f)));
+	//		zoneInfo.fences.Add(
+	//			FFence(FVector(0.f, -zone->GetSizeY() / 2.f + 0.2f, 0.f),
+	//				FVector(zone->GetSizeX() - 0.4f, 0.1f, 0.1f)));
+	//		zones.Add(zoneInfo);
+	//	}
+	//}
+	//UpdateZone(zones);
 }
 
 void AZoneBase::SetGlobal(AActor* g) {
@@ -68,24 +68,24 @@ void AZoneBase::SetGlobal(AActor* g) {
 }
 
 void AZoneBase::SetInstance(FString name, AActor* actor) {
-	if (zoneInstances.find(TCHAR_TO_UTF8(*name)) == zoneInstances.end()) {
-		zoneInstances[TCHAR_TO_UTF8(*name)] = actor;
-	}
-	else {
-		THROW_EXCEPTION(RuntimeException, string("Duplicate zone name: ") + TCHAR_TO_UTF8(*name) + ".\n");
-	}
+	//if (zoneInstances.find(TCHAR_TO_UTF8(*name)) == zoneInstances.end()) {
+	//	zoneInstances[TCHAR_TO_UTF8(*name)] = actor;
+	//}
+	//else {
+	//	THROW_EXCEPTION(RuntimeException, string("Duplicate zone name: ") + TCHAR_TO_UTF8(*name) + ".\n");
+	//}
 }
 
 void AZoneBase::EnterZone(FString zone) {
-	auto story = ((AGlobalBase*)global)->GetStoryActor();
-	story->EnterZone(zone);
+	//auto story = ((AGlobalBase*)global)->GetStoryActor();
+	//story->EnterZone(zone);
 
-	((AGlobalBase*)global)->GetStory()->SetValue("player.zone", TCHAR_TO_UTF8(*zone));
+	//((AGlobalBase*)global)->GetStory()->SetValue("player.zone", TCHAR_TO_UTF8(*zone));
 }
 
 void AZoneBase::LeaveZone(FString zone) {
-	((AGlobalBase*)global)->GetStory()->SetValue("player.zone", "");
+	//((AGlobalBase*)global)->GetStory()->SetValue("player.zone", "");
 
-	auto story = ((AGlobalBase*)global)->GetStoryActor();
-	story->LeaveZone(zone);
+	//auto story = ((AGlobalBase*)global)->GetStoryActor();
+	//story->LeaveZone(zone);
 }

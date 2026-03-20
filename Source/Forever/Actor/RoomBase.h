@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#define NOMINMAX
+
 #include "map/map.h"
 
 #include "RoomBase.generated.h"
@@ -34,8 +36,8 @@ public:
 
 	void SetGlobal(AActor* g);
 
-	void AddBuilding(std::string name, Building* building);
-	void RemoveBuilding(std::string name);
+	//void AddBuilding(std::string name, Building* building);
+	//void RemoveBuilding(std::string name);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdateRoom(const FString& name, const TArray<FRoom>& adds, const TArray<AActor*>& removes);
@@ -56,5 +58,5 @@ protected:
 	AActor* global;
 
 private:
-	std::unordered_map<std::string, TArray<AActor*>> roomInstances;
+	//std::unordered_map<std::string, TArray<AActor*>> roomInstances;
 };

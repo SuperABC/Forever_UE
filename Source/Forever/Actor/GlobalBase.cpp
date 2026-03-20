@@ -1,6 +1,7 @@
 ﻿#include "GlobalBase.h"
 
 #include "utility.h"
+#include "error.h"
 #include "config.h"
 
 
@@ -61,66 +62,66 @@ void AGlobalBase::BeginPlay() {
 		// 读取Map相关类及Mod
 		map->LoadConfigs();
 		map->InitTerrains(modHandles, mods);
-		map->InitRoadnets(modHandles, mods);
-		map->InitZones(modHandles, mods);
-		map->InitBuildings(modHandles, mods);
-		map->InitComponents(modHandles, mods);
-		map->InitRooms(modHandles, mods);
+		//map->InitRoadnets(modHandles, mods);
+		//map->InitZones(modHandles, mods);
+		//map->InitBuildings(modHandles, mods);
+		//map->InitComponents(modHandles, mods);
+		//map->InitRooms(modHandles, mods);
 
 		// 读取Populace相关类及Mod
 		populace->LoadConfigs();
-		populace->InitAssets(modHandles, mods);
-		populace->InitNames(modHandles, mods);
-		populace->InitSchedulers(modHandles, mods);
+		//populace->InitAssets(modHandles, mods);
+		//populace->InitNames(modHandles, mods);
+		//populace->InitSchedulers(modHandles, mods);
 
 		// 读取Society相关类及Mod
 		society->LoadConfigs();
-		society->InitJobs(modHandles, mods);
-		society->InitCalendars(modHandles, mods);
-		society->InitOrganizations(modHandles, mods);
+		//society->InitJobs(modHandles, mods);
+		//society->InitCalendars(modHandles, mods);
+		//society->InitOrganizations(modHandles, mods);
 
 		// 读取Story相关类及Mod
 		story->LoadConfigs();
-		story->InitEvents(modHandles, mods);
-		story->InitChanges(modHandles, mods);
+		//story->InitEvents(modHandles, mods);
+		//story->InitChanges(modHandles, mods);
 
 		// 读取Industry相关类及Mod
 		industry->LoadConfigs();
-		industry->InitManufactures(modHandles, mods);
-		industry->InitStorages(modHandles, mods);
-		industry->InitProducts(modHandles, mods);
+		//industry->InitManufactures(modHandles, mods);
+		//industry->InitStorages(modHandles, mods);
+		//industry->InitProducts(modHandles, mods);
 
 		// 读取Traffic相关类及Mod
 		traffic->LoadConfigs();
-		traffic->InitRoutes(modHandles, mods);
-		traffic->InitStations(modHandles, mods);
-		traffic->InitVehicles(modHandles, mods);
+		//traffic->InitRoutes(modHandles, mods);
+		//traffic->InitStations(modHandles, mods);
+		//traffic->InitVehicles(modHandles, mods);
 
 		// 读取Player相关类及Mod
 		player->LoadConfigs();
-		player->InitSkills(modHandles, mods);
+		//player->InitSkills(modHandles, mods);
 
 		int size = 4;
 
-		story->Init();
-		int accomodation = map->Init(size, size, traffic);
-		populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
-		map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
-		society->Init(map, populace, player->GetTime());
-		story->InitVariables(player->GetTime());
-		story->ReadStory("ys", Config::GetScript());
-		populace->Schedule();
-		populace->Workload(story);
-		populace->Characterize(story);
-		industry->Init(map);
-		traffic->Init(map);
-		player->Init();
+		//story->Init();
+		int accomodation = map->Init(size, size);
+		//populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
+		//map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
+		//society->Init(map, populace, player->GetTime());
+		//story->InitVariables(player->GetTime());
+		//story->ReadStory("ys", Config::GetScript());
+		//populace->Schedule();
+		//populace->Workload(story);
+		//populace->Characterize(story);
+		//industry->Init(map);
+		//traffic->Init(map);
+		//player->Init();
 
 		FVector Location(0.0f, 0.0f, 0.0f);
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
 		terrainActor = GetWorld()->SpawnActor<ATerrainBase>(TerrainClass, Location, Rotation);
 		terrainActor->SetGlobal(this);
-		terrainActor->InitInstances(size * BLOCK_SIZE, size * BLOCK_SIZE);
+		//terrainActor->InitInstances(size * BLOCK_SIZE, size * BLOCK_SIZE);
 		roadnetActor = GetWorld()->SpawnActor<ARoadnetBase>(RoadnetClass, Location, Rotation);
 		roadnetActor->SetGlobal(this);
 		zoneActor = GetWorld()->SpawnActor<AZoneBase>(ZoneClass, Location, Rotation);
@@ -136,8 +137,8 @@ void AGlobalBase::BeginPlay() {
 		storyActor = GetWorld()->SpawnActor<AStoryBase>(StoryClass, Location, Rotation);
 		storyActor->SetGlobal(this);
 
-		auto pos = map->GetPlayerPos();
-		SetLocation(FVector(pos.first, pos.second, 0.f));
+		//auto pos = map->GetPlayerPos();
+		//SetLocation(FVector(pos.first, pos.second, 0.f));
 	}
 	catch (ExceptionBase& e) {
 		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));

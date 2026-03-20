@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#define NOMINMAX
+
 #include "map/map.h"
 
 #include "ZoneBase.generated.h"
@@ -63,5 +65,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	std::unordered_map<std::string, AActor*> zoneInstances;
+	//std::unordered_map<std::string, AActor*> zoneInstances;
 };

@@ -22,6 +22,9 @@
     <Filter Include="populace">
       <UniqueIdentifier>{bee7c550-c0fc-4c2b-b80b-22146ffa52d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{8d7d65df-2344-4907-be23-1449de381190}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="industry\industry.cpp">
@@ -123,6 +126,24 @@
     <ClCompile Include="society\job.cpp">
       <Filter>society</Filter>
     </ClCompile>
+    <ClCompile Include="map\plot.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\quad.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\commute.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="story\condition.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="common\config.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\json.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -223,6 +244,24 @@
     </ClInclude>
     <ClInclude Include="society\job.h">
       <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="map\plot.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\quad.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\commute.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="story\condition.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="common\config.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\json.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#define NOMINMAX
+
 #include "populace/populace.h"
 
 #include "PopulaceBase.generated.h"
@@ -31,8 +33,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
-	void TriggerEvent(Event* event);
-	void SpawnNpc(const FString& name, const FString& avatar, const FVector& position);
+
+	//void TriggerEvent(Event* event);
+	//void SpawnNpc(const FString& name, const FString& avatar, const FVector& position);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdatePopulace(const TArray<FPerson>& adds, const TArray<FString>& removes);
@@ -51,5 +54,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	std::unordered_map<std::string, AActor*> personInstances;
+	//std::unordered_map<std::string, AActor*> personInstances;
 };

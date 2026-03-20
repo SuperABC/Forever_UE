@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#define NOMINMAX
+
 #include "map/map.h"
 
 #include "TerrainBase.generated.h"
@@ -28,8 +30,9 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void InitInstances(int width, int height);
 	void SetGlobal(AActor* g);
+
+	//void InitInstances(int width, int height);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdateTerrain(const TArray<FCoordinate> &adds, const TArray<FCoordinate>& removes);
@@ -46,6 +49,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	std::vector<std::vector<TArray<int>>> terrainInstances;
-	std::vector<std::pair<int, int>> idList;
+	//std::vector<std::vector<TArray<int>>> terrainInstances;
+	//std::vector<std::pair<int, int>> idList;
 };

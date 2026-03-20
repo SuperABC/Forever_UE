@@ -1,16 +1,14 @@
-﻿#pragma once
-
-#include "terrain_base.h"
+﻿#include "terrain_mod.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModTerrainsFunc)(TerrainFactory* factory);
 
-// 海洋地形
-class OceanTerrain : public Terrain {
+// 空地形
+class EmptyTerrain : public TerrainMod {
 public:
-    OceanTerrain();
-    virtual ~OceanTerrain();
+    EmptyTerrain();
+    virtual ~EmptyTerrain();
 
     static std::string GetId();
     virtual std::string GetType() const override;
@@ -18,28 +16,28 @@ public:
 
     virtual float GetPriority() const override;
 
-    virtual void DistributeTerrain(
-        int width, int height,
-        std::function<bool(int, int, const std::string&, float)> setElement,
-        std::function<std::string(int, int)> getTerrain,
-        std::function<float(int, int)> getHeight) const override;
+    virtual void DistributeTerrain(int width, int height,
+        std::function<bool(int, int, std::string, float)> setElement,
+        std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const override;
 };
 
-// 山区地形
-class MountainTerrain : public Terrain {
+// 地形实体
+class Terrain {
 public:
-    MountainTerrain();
-    virtual ~MountainTerrain();
+    Terrain() = delete;
+    Terrain(TerrainFactory* factory, std::string terrain);
+    ~Terrain();
 
-    static std::string GetId();
-    virtual std::string GetType() const override;
-    virtual std::string GetName() const override;
+    float GetPriority() const;
 
-    virtual float GetPriority() const override;
+    void DistributeTerrain(int width, int height,
+        std::function<bool(int, int, std::string, float)> setElement,
+        std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const;
+private:
+    TerrainMod* mod;
+    TerrainFactory* factory;
 
-    virtual void DistributeTerrain(
-        int width, int height,
-        std::function<bool(int, int, const std::string&, float)> setElement,
-        std::function<std::string(int, int)> getTerrain,
-        std::function<float(int, int)> getHeight) const override;
+    std::string type;
+    std::string name;
 };
+

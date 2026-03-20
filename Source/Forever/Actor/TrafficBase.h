@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#define NOMINMAX
+
 #include "traffic/traffic.h"
 
 #include "TrafficBase.generated.h"
@@ -19,7 +21,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
-	void MarkDirty();
+
+	//void MarkDirty();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdateTraffic();
@@ -30,5 +33,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	bool dirty = true;
+	//bool dirty = true;
 };

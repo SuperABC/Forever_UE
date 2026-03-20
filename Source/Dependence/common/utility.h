@@ -13,6 +13,9 @@
 
 #define REPLACE_PATH(path) (path)
 
+#define STATIC_INIT
+#define DYNAMIC_TICK
+
 #ifdef _DEBUG
 #define MOD_TEST
 #endif // DEBUG

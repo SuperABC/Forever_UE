@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
+#define NOMINMAX
+
 #include "story/story.h"
 
 #include <deque>
@@ -21,11 +23,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetGlobal(AActor* g);
-	void AddFront(Dialog* dialog);
-	void AddBack(Dialog* dialog);
 
-	void ApplyChange(Change* change,
-		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+	//void AddFront(Dialog* dialog);
+	//void AddBack(Dialog* dialog);
+
+	//void ApplyChange(Change* change,
+	//	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void UpdateDialog(const FString& speaker, const FString& content);
@@ -61,6 +64,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	std::deque<Section> dialogQueue;
-	bool interacting = false;
+	//std::deque<Section> dialogQueue;
+	//bool interacting = false;
 };
