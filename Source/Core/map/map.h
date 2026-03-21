@@ -2,6 +2,7 @@
 
 #include "terrain.h"
 #include "roadnet.h"
+#include "zone.h"
 
 #define BLOCK_SIZE 256
 
@@ -66,6 +67,8 @@ public:
         std::vector<std::string>& dlls);
     void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles,
         std::vector<std::string>& dlls);
+    void InitZones(std::unordered_map<std::string, HMODULE>& modHandles,
+        std::vector<std::string>& dlls);
 
     // 初始化地图
     int Init(int blockX, int blockY);
@@ -96,10 +99,32 @@ public:
     // 获取路网
     Roadnet* GetRoadnet() const;
 
+    // 获取园区/建筑
+    //std::unordered_map<std::string, Zone*>& GetZones();
+    //std::unordered_map<std::string, Building*>& GetBuildings();
+
+    // 获取组合/房间
+    //std::vector<Component*> GetComponents() const;
+    //std::vector<Room*> GetRooms() const;
+
+    // 获取/设置元素所属园区/建筑
+    //Zone* GetZone(const std::string& name) const;
+    //Building* GetBuilding(const std::string& name) const;
+    //void SetZone(Zone* zone, const std::string& name);
+    //void SetBuilding(Building* building, const std::string& name);
+    //void SetBuilding(Building* building, const std::string& name, std::pair<float, float> offset);
+
+    // 寻址
+    //Plot* LocatePlot(const std::string& address) const;
+    //Zone* LocateZone(const std::string& address) const;
+    //Building* LocateBuilding(const std::string& address) const;
+    //Room* LocateRoom(const std::string& address) const;
+
 private:
     // 统一工厂
     static TerrainFactory* terrainFactory;
     static RoadnetFactory* roadnetFactory;
+    static ZoneFactory* zoneFactory;
 
     // 地图信息
     int width;
@@ -111,4 +136,10 @@ private:
 
     // 路网
     Roadnet* roadnet;
+
+    // 园区
+    std::unordered_map<std::string, Zone*> zones;
+
+    // 建筑
+    //std::unordered_map<std::string, Building*> buildings;
 };

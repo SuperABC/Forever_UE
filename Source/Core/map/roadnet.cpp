@@ -32,7 +32,12 @@ Roadnet::Roadnet(RoadnetFactory* factory, string roadnet) :
 	mod(factory->CreateRoadnet(roadnet)),
 	factory(factory),
 	type(mod->GetType()),
-	name(mod->GetName()) {
+	name(mod->GetName()),
+	nodes(),
+	connections(),
+	plots(),
+	//routes(),
+	addresses() {
 
 }
 
@@ -47,6 +52,14 @@ Roadnet::~Roadnet() {
 	for (auto plot : plots) {
 		delete plot;
 	}
+}
+
+string Roadnet::GetType() const {
+	return type;
+}
+
+string Roadnet::GetName() const {
+	return name;
 }
 
 void Roadnet::DistributeRoadnet(int width, int height,

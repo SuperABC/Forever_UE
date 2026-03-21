@@ -58,3 +58,17 @@ extern "C" __declspec(dllexport) void RegisterModRoadnets(RoadnetFactory* factor
 			delete terrain;
 		});
 }
+
+extern "C" __declspec(dllexport) void* GetModZones() {
+	static vector<string> mods = { "residential" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModZones(ZoneFactory* factory) {
+	factory->RegisterZone(ResidentialZone::GetId(), ResidentialZone::ZoneAssigner,
+		[]() {
+			return new ResidentialZone();
+		}, [](ZoneMod* zone) {
+			delete zone;
+		});
+}

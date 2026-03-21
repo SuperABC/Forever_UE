@@ -10,6 +10,7 @@ using namespace std;
 
 TerrainFactory* Map::terrainFactory = nullptr;
 RoadnetFactory* Map::roadnetFactory = nullptr;
+ZoneFactory* Map::zoneFactory = nullptr;
 
 Element::Element() :
     terrain("plain"),
@@ -120,9 +121,9 @@ Map::Map() :
     if (!roadnetFactory) {
         roadnetFactory = new RoadnetFactory();
     }
-    //if (!zoneFactory) {
-    //    zoneFactory = new ZoneFactory();
-    //}
+    if (!zoneFactory) {
+        zoneFactory = new ZoneFactory();
+    }
     //if (!buildingFactory) {
     //    buildingFactory = new BuildingFactory();
     //}
@@ -141,7 +142,7 @@ Map::~Map() {
 void Map::LoadConfigs() const {
     terrainFactory->RemoveAll();
     roadnetFactory->RemoveAll();
-    //zoneFactory->RemoveAll();
+    zoneFactory->RemoveAll();
     //buildingFactory->RemoveAll();
     //componentFactory->RemoveAll();
     //roomFactory->RemoveAll();
@@ -155,10 +156,10 @@ void Map::LoadConfigs() const {
         THROW_EXCEPTION(RuntimeException, "There should be one and only one enabled roadnet.\n");
     }
     roadnetFactory->SetConfig(roadnets[0], true);
-    //auto zones = Config::GetEnables("zone");
-    //for (auto zone : zones) {
-    //    zoneFactory->SetConfig(zone, true);
-    //}
+    auto zones = Config::GetEnables("zone");
+    for (auto zone : zones) {
+        zoneFactory->SetConfig(zone, true);
+    }
     //auto buildings = Config::GetEnables("building");
     //for (auto building : buildings) {
     //    buildingFactory->SetConfig(building, true);
@@ -260,6 +261,50 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
 #endif
 }
 
+void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
+    vector<string>& dlls) {
+    zoneFactory->RegisterZone(EmptyZone::GetId(), EmptyZone::ZoneAssigner,
+        []() { return new EmptyZone(); },
+        [](ZoneMod* zone) { delete zone; }
+    );
+
+    for (auto dll : dlls) {
+        HMODULE modHandle;
+        if (modHandles.find(dll) != modHandles.end()) {
+            modHandle = modHandles[dll];
+        }
+        else {
+            modHandle = LoadLibraryA(dll.data());
+            modHandles[dll] = modHandle;
+        }
+        if (modHandle) {
+            debugf("Log: %s loaded successfully.\n", dll.data());
+
+            auto registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
+            if (registerFunc) {
+                registerFunc(zoneFactory);
+            }
+        }
+        else {
+            debugf("Warning: Failed to load %s.\n", dll.data());
+        }
+    }
+
+#ifdef MOD_TEST
+    auto zoneList = { "mod" };
+    for (const auto& zoneId : zoneList) {
+        if (zoneFactory->CheckRegistered(zoneId)) {
+            auto zone = zoneFactory->CreateZone(zoneId);
+            debugf("Log: Created test zone %s.\n", zoneId);
+            zoneFactory->DestroyZone(zone);
+        }
+        else {
+            debugf("Warning: Zone %s not registered.\n", zoneId);
+        }
+    }
+#endif
+}
+
 int Map::Init(int blockX, int blockY) {
     Destroy();
 
@@ -314,6 +359,37 @@ int Map::Init(int blockX, int blockY) {
     }
     roadnet->DistributeRoadnet(width, height, getTerrain);
     roadnet->AllocateAddress();
+
+    debugf("Log: Generate zones.\n");
+    auto zoneTypes = zoneFactory->GetTypes();
+    for (auto plot : roadnet->GetPlots()) {
+        if (!plot) continue;
+        vector<Zone*> zones;
+        for (auto type : zoneTypes) {
+            for (auto zone : zoneFactory->CreateZones(type, plot)) {
+                zones.push_back(new Zone(zoneFactory, type));
+            }
+        }
+        for (auto zone : zones) {
+            zone->AssignZone(plot);
+            string name = zone->GetName();
+            plot->AddZone(name, zone);
+        }
+        for (auto& zone : zones) {
+            if (!zone) continue;
+            zone->SetParent(plot);
+            //for (auto& b : zone->GetBuildings()) {
+            //    Building* building = b.second;
+            //    if (!building) continue;
+            //    building->SetParent(zone);
+            //    building->SetParent(plot);
+            //}
+            if (this->zones.find(zone->GetName()) != this->zones.end()) {
+                THROW_EXCEPTION(RuntimeException, "Duplicate zone name: " + zone->GetName() + ".\n");
+            }
+            this->zones[zone->GetName()] = zone;
+        }
+    }
 
     return 0;
 }

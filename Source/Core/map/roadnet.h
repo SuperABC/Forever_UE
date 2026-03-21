@@ -29,6 +29,12 @@ public:
     Roadnet(RoadnetFactory* factory, std::string roadnet);
     ~Roadnet();
 
+    // 获取类型
+    std::string GetType() const;
+
+    // 获取名称
+    std::string GetName() const;
+
     // 构建路网
     void DistributeRoadnet(int width, int height,
         std::function<std::string(int, int)> get);

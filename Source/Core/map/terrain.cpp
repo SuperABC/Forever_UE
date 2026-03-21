@@ -45,6 +45,14 @@ Terrain::~Terrain() {
 	factory->DestroyTerrain(mod);
 }
 
+string Terrain::GetType() const {
+	return type;
+}
+
+string Terrain::GetName() const {
+	return name;
+}
+
 float Terrain::GetPriority() const {
 	return mod->GetPriority();
 }

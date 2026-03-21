@@ -44,7 +44,7 @@ public:
     void RegisterRoadnet(const std::string& id,
         std::function<RoadnetMod* ()> creator, std::function<void(RoadnetMod*)> deleter);
 
-    // 创建路网（包含new操作）
+    // 创建路网
     RoadnetMod* CreateRoadnet(const std::string& id) const;
 
     // 检查是否注册
@@ -56,7 +56,7 @@ public:
     // 获取启用路网
     std::string GetRoadnet() const;
 
-    // 析构路网（包含delete操作）
+    // 析构路网
     void DestroyRoadnet(RoadnetMod* roadnet) const;
 
 private:

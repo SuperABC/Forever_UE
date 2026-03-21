@@ -1,4 +1,6 @@
-﻿#include "terrain_mod.h"
+﻿#pragma once
+
+#include "terrain_mod.h"
 
 
 // 海洋地形

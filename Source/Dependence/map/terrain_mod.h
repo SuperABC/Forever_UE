@@ -38,7 +38,7 @@ public:
     // 清空注册
     void RemoveAll();
 
-    // 创建地形（包含new操作）
+    // 创建地形
     TerrainMod* CreateTerrain(const std::string& id) const;
 
     // 检查是否注册
@@ -50,7 +50,7 @@ public:
     // 获取所有启用地形名
     std::vector<std::string> GetTerrains() const;
 
-    // 析构地形（包含delete操作）
+    // 析构地形
     void DestroyTerrain(TerrainMod* terrain) const;
 
 private:

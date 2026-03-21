@@ -1,4 +1,6 @@
-﻿#include "terrain_mod.h"
+﻿#pragma once
+
+#include "terrain_mod.h"
 
 
 // 子类注册函数
@@ -27,6 +29,12 @@ public:
     Terrain() = delete;
     Terrain(TerrainFactory* factory, std::string terrain);
     ~Terrain();
+
+    // 获取类型
+    std::string GetType() const;
+
+    // 获取名称
+    std::string GetName() const;
 
     // 构建优先级
     float GetPriority() const;
