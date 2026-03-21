@@ -32,7 +32,7 @@ public:
 
 	void SetGlobal(AActor* g);
 
-	//void InitInstances(int width, int height);
+	void InitInstances(int width, int height);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdateTerrain(const TArray<FCoordinate> &adds, const TArray<FCoordinate>& removes);
@@ -49,6 +49,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	//std::vector<std::vector<TArray<int>>> terrainInstances;
-	//std::vector<std::pair<int, int>> idList;
+	std::vector<std::vector<TArray<int>>> terrainInstances;
+	std::vector<std::pair<int, int>> idList;
 };

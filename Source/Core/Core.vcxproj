@@ -146,7 +146,6 @@
     <ClCompile Include="map\component.cpp" />
     <ClCompile Include="map\map.cpp" />
     <ClCompile Include="map\plot.cpp" />
-    <ClCompile Include="map\quad.cpp" />
     <ClCompile Include="map\roadnet.cpp" />
     <ClCompile Include="map\room.cpp" />
     <ClCompile Include="map\terrain.cpp" />
@@ -187,7 +186,6 @@
     <ClInclude Include="map\component.h" />
     <ClInclude Include="map\map.h" />
     <ClInclude Include="map\plot.h" />
-    <ClInclude Include="map\quad.h" />
     <ClInclude Include="map\roadnet.h" />
     <ClInclude Include="map\room.h" />
     <ClInclude Include="map\terrain.h" />

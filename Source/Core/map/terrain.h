@@ -28,8 +28,10 @@ public:
     Terrain(TerrainFactory* factory, std::string terrain);
     ~Terrain();
 
+    // 构建优先级
     float GetPriority() const;
 
+    // 构建地形
     void DistributeTerrain(int width, int height,
         std::function<bool(int, int, std::string, float)> setElement,
         std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const;

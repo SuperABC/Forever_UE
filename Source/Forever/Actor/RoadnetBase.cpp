@@ -19,31 +19,33 @@ void ARoadnetBase::BeginPlay() {
 void ARoadnetBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	//if (dirty) {
-	//	dirty = false;
-	//	UpdateRoadnet();
-	//}
+	if (dirty) {
+		dirty = false;
+		UpdateRoadnet();
+	}
 }
 
 void ARoadnetBase::SetGlobal(AActor* g) {
 	this->global = g;
 }
 
-//void ARoadnetBase::MarkDirty() {
-//	dirty = true;
-//}
+void ARoadnetBase::MarkDirty() {
+	dirty = true;
+}
 
 TArray<FConnection> ARoadnetBase::GetRoadnet() {
-	//Map* map = ((AGlobalBase*)global)->GetMap();
-	//if (!map)return {};
+	Map* map = ((AGlobalBase*)global)->GetMap();
+	if (!map)return {};
 
 	TArray<FConnection> connections;
-	//for (auto connection : map->GetRoadnet()->GetConnections()) {
-	//	Node n1 = connection.GetRoadnet()->GetNodes()[connection.GetV1()];
-	//	Node n2 = connection.GetRoadnet()->GetNodes()[connection.GetV2()];
-	//	connections.Add(FConnection(
-	//		FVector(n1.GetX(), n1.GetY(), 0.f), FVector(n2.GetX(), n2.GetY(), 0.f), connection.GetWidth()));
-	//}
+	for (auto connection : map->GetRoadnet()->GetConnections()) {
+		Node n1 = connection->GetPoint(0.f);
+		Node n2 = connection->GetPoint(1.f);
+		connections.Add(FConnection(
+			FVector(n1.GetX(), n1.GetY(), n1.GetZ()),
+			FVector(n2.GetX(), n2.GetY(), n2.GetZ()),
+			connection->GetRadius()));
+	}
 
 	return connections;
 }

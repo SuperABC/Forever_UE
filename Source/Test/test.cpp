@@ -373,7 +373,7 @@ int main() {
 	// 读取Map相关类及Mod
 	::map->LoadConfigs();
 	::map->InitTerrains(modHandles, mods);
-	//::map->InitRoadnets(modHandles, mods);
+	::map->InitRoadnets(modHandles, mods);
 	//::map->InitZones(modHandles, mods);
 	//::map->InitBuildings(modHandles, mods);
 	//::map->InitComponents(modHandles, mods);

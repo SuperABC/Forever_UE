@@ -129,9 +129,6 @@
     <ClCompile Include="map\plot.cpp">
       <Filter>map</Filter>
     </ClCompile>
-    <ClCompile Include="map\quad.cpp">
-      <Filter>map</Filter>
-    </ClCompile>
     <ClCompile Include="populace\commute.cpp">
       <Filter>populace</Filter>
     </ClCompile>
@@ -246,9 +243,6 @@
       <Filter>society</Filter>
     </ClInclude>
     <ClInclude Include="map\plot.h">
-      <Filter>map</Filter>
-    </ClInclude>
-    <ClInclude Include="map\quad.h">
       <Filter>map</Filter>
     </ClInclude>
     <ClInclude Include="populace\commute.h">

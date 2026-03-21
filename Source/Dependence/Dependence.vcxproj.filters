@@ -96,6 +96,9 @@
     <ClCompile Include="society\job_mod.cpp">
       <Filter>society</Filter>
     </ClCompile>
+    <ClCompile Include="common\geometry.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_mod.h">
@@ -166,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="society\job_mod.h">
       <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="common\geometry.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

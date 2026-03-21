@@ -4,7 +4,7 @@
    "calendar_mods" : [ "empty" ],
    "change_mods" : [ "empty" ],
    "component_mods" : [ "empty" ],
-   "dll_paths" : [],
+   "dll_paths" : [ "C:/Workspace/UE5/Projects/Forever_UE/x64" ],
    "event_mods" : [ "empty" ],
    "job_mods" : [ "empty" ],
    "manufacture_mods" : [ "empty" ],
@@ -16,7 +16,7 @@
       "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
       "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
    ],
-   "roadnet_mod" : "empty",
+   "roadnet_mod" : "jing",
    "room_mods" : [ "empty" ],
    "route_mods" : [ "empty" ],
    "scheduler_mods" : [ "empty" ],
@@ -24,7 +24,7 @@
    "station_mods" : [ "empty" ],
    "storage_mods" : [ "empty" ],
    "story_path" : "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/ys.json",
-   "terrain_mods" : [ "empty" ],
+   "terrain_mods" : [ "ocean", "mountain" ],
    "vehicle_mods" : [ "empty" ],
    "zone_mods" : [ "empty" ]
 }

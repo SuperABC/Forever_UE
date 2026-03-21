@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common\error.cpp" />
+    <ClCompile Include="common\geometry.cpp" />
     <ClCompile Include="common\utility.cpp" />
     <ClCompile Include="industry\manufacture_mod.cpp" />
     <ClCompile Include="industry\product_mod.cpp" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\error.h" />
+    <ClInclude Include="common\geometry.h" />
     <ClInclude Include="common\utility.h" />
     <ClInclude Include="industry\manufacture_mod.h" />
     <ClInclude Include="industry\product_mod.h" />

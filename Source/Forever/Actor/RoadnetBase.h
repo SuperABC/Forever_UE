@@ -34,7 +34,7 @@ public:
 
 	void SetGlobal(AActor* g);
 
-	//void MarkDirty();
+	void MarkDirty();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdateRoadnet();
@@ -47,5 +47,5 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	//bool dirty = true;
+	bool dirty = true;
 };

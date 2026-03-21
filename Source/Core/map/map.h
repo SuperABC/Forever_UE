@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "terrain.h"
+#include "roadnet.h"
 
 #define BLOCK_SIZE 256
 
@@ -63,6 +64,8 @@ public:
     // 读取 Mods
     void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles,
         std::vector<std::string>& dlls);
+    void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles,
+        std::vector<std::string>& dlls);
 
     // 初始化地图
     int Init(int blockX, int blockY);
@@ -90,9 +93,13 @@ public:
     bool SetTerrain(int x, int y, const std::string& terrain, float height);
     float GetHeight(int x, int y) const;
 
+    // 获取路网
+    Roadnet* GetRoadnet() const;
+
 private:
     // 统一工厂
     static TerrainFactory* terrainFactory;
+    static RoadnetFactory* roadnetFactory;
 
     // 地图信息
     int width;
@@ -101,4 +108,7 @@ private:
 
     // 玩家信息
     std::pair<float, float> playerPos;
+
+    // 路网
+    Roadnet* roadnet;
 };

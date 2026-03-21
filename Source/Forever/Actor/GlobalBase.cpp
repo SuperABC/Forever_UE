@@ -61,7 +61,7 @@ void AGlobalBase::BeginPlay() {
 		// 读取Map相关类及Mod
 		map->LoadConfigs();
 		map->InitTerrains(modHandles, mods);
-		//map->InitRoadnets(modHandles, mods);
+		map->InitRoadnets(modHandles, mods);
 		//map->InitZones(modHandles, mods);
 		//map->InitBuildings(modHandles, mods);
 		//map->InitComponents(modHandles, mods);
@@ -120,7 +120,7 @@ void AGlobalBase::BeginPlay() {
 		FRotator Rotation(0.0f, 0.0f, 0.0f);
 		terrainActor = GetWorld()->SpawnActor<ATerrainBase>(TerrainClass, Location, Rotation);
 		terrainActor->SetGlobal(this);
-		//terrainActor->InitInstances(size * BLOCK_SIZE, size * BLOCK_SIZE);
+		terrainActor->InitInstances(size * BLOCK_SIZE, size * BLOCK_SIZE);
 		roadnetActor = GetWorld()->SpawnActor<ARoadnetBase>(RoadnetClass, Location, Rotation);
 		roadnetActor->SetGlobal(this);
 		zoneActor = GetWorld()->SpawnActor<AZoneBase>(ZoneClass, Location, Rotation);
@@ -136,8 +136,8 @@ void AGlobalBase::BeginPlay() {
 		storyActor = GetWorld()->SpawnActor<AStoryBase>(StoryClass, Location, Rotation);
 		storyActor->SetGlobal(this);
 
-		//auto pos = map->GetPlayerPos();
-		//SetLocation(FVector(pos.first, pos.second, 0.f));
+		auto pos = map->GetPlayerPos();
+		SetLocation(FVector(pos.first, pos.second, 0.f));
 	}
 	catch (ExceptionBase& e) {
 		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));

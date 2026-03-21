@@ -16,6 +16,8 @@
 #define STATIC_INIT
 #define DYNAMIC_TICK
 
+#define VARIABLE_HOLDER
+
 #ifdef _DEBUG
 #define MOD_TEST
 #endif // DEBUG

@@ -9,6 +9,7 @@
 using namespace std;
 
 TerrainFactory* Map::terrainFactory = nullptr;
+RoadnetFactory* Map::roadnetFactory = nullptr;
 
 Element::Element() :
     terrain("plain"),
@@ -116,9 +117,9 @@ Map::Map() :
     if (!terrainFactory) {
         terrainFactory = new TerrainFactory();
     }
-    //if (!roadnetFactory) {
-    //    roadnetFactory = new RoadnetFactory();
-    //}
+    if (!roadnetFactory) {
+        roadnetFactory = new RoadnetFactory();
+    }
     //if (!zoneFactory) {
     //    zoneFactory = new ZoneFactory();
     //}
@@ -134,12 +135,12 @@ Map::Map() :
 }
 
 Map::~Map() {
-
+    delete roadnet;
 }
 
 void Map::LoadConfigs() const {
     terrainFactory->RemoveAll();
-    //roadnetFactory->RemoveAll();
+    roadnetFactory->RemoveAll();
     //zoneFactory->RemoveAll();
     //buildingFactory->RemoveAll();
     //componentFactory->RemoveAll();
@@ -149,11 +150,11 @@ void Map::LoadConfigs() const {
     for (auto terrain : terrains) {
         terrainFactory->SetConfig(terrain, true);
     }
-    //auto roadnets = Config::GetEnables("roadnet");
-    //if (roadnets.size() != 1) {
-    //    THROW_EXCEPTION(RuntimeException, "There should be one and only one enabled roadnet.\n");
-    //}
-    //roadnetFactory->SetConfig(roadnets[0], true);
+    auto roadnets = Config::GetEnables("roadnet");
+    if (roadnets.size() != 1) {
+        THROW_EXCEPTION(RuntimeException, "There should be one and only one enabled roadnet.\n");
+    }
+    roadnetFactory->SetConfig(roadnets[0], true);
     //auto zones = Config::GetEnables("zone");
     //for (auto zone : zones) {
     //    zoneFactory->SetConfig(zone, true);
@@ -216,6 +217,49 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
 #endif
 }
 
+void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
+    vector<string>& dlls) {
+    roadnetFactory->RegisterRoadnet(EmptyRoadnet::GetId(),
+        []() { return new EmptyRoadnet(); },
+        [](RoadnetMod* roadnet) { delete roadnet; });
+
+    for (auto dll : dlls) {
+        HMODULE modHandle;
+        if (modHandles.find(dll) != modHandles.end()) {
+            modHandle = modHandles[dll];
+        }
+        else {
+            modHandle = LoadLibraryA(dll.data());
+            modHandles[dll] = modHandle;
+        }
+        if (modHandle) {
+            debugf("Log: %s loaded successfully.\n", dll.data());
+
+            auto registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
+            if (registerFunc) {
+                registerFunc(roadnetFactory);
+            }
+        }
+        else {
+            debugf("Warning: Failed to load %s.\n", dll.data());
+        }
+    }
+
+#ifdef MOD_TEST
+    auto roadnetList = { "mod" };
+    for (const auto& roadnetId : roadnetList) {
+        if (roadnetFactory->CheckRegistered(roadnetId)) {
+            auto roadnet = roadnetFactory->CreateRoadnet(roadnetId);
+            debugf("Log: Created test roadnet %s.\n", roadnetId);
+            roadnetFactory->DestroyRoadnet(roadnet);
+        }
+        else {
+            debugf("Warning: Roadnet %s not registered.\n", roadnetId);
+        }
+    }
+#endif
+}
+
 int Map::Init(int blockX, int blockY) {
     Destroy();
 
@@ -227,6 +271,15 @@ int Map::Init(int blockX, int blockY) {
     height = blockY * BLOCK_SIZE;
     playerPos.first = width / 2.f;
     playerPos.second = height / 2.f;
+
+    debugf("Log: Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
+    blocks = vector<vector<shared_ptr<Block>>>(blockY,
+        vector<shared_ptr<Block>>(blockX, nullptr));
+    for (int i = 0; i < blockX; ++i) {
+        for (int j = 0; j < blockY; ++j) {
+            blocks[j][i] = make_shared<Block>(i * BLOCK_SIZE, j * BLOCK_SIZE);
+        }
+    }
 
     debugf("Log: Generate terrains.\n");
     auto getTerrain = [this](int x, int y) -> string {
@@ -253,6 +306,14 @@ int Map::Init(int blockX, int blockY) {
     for (auto terrain : terrains) {
         delete terrain;
     }
+
+    debugf("Log: Generate roadnet.\n");
+    roadnet = new Roadnet(roadnetFactory, roadnetFactory->GetRoadnet()) ;
+    if (!roadnet) {
+        THROW_EXCEPTION(RuntimeException, "No enabled roadnet in config.\n");
+    }
+    roadnet->DistributeRoadnet(width, height, getTerrain);
+    roadnet->AllocateAddress();
 
     return 0;
 }
@@ -359,5 +420,9 @@ float Map::GetHeight(int x, int y) const {
         return 0.f;
     }
     return block->GetHeight(x, y);
+}
+
+Roadnet* Map::GetRoadnet() const {
+    return roadnet;
 }
 

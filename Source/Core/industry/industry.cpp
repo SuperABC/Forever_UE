@@ -1,4 +1,6 @@
 ﻿#include "industry.h"
+#include "utility.h"
+#include "error.h"
 
 
 using namespace std;

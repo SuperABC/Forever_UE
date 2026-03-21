@@ -1,4 +1,6 @@
 ﻿#include "society.h"
+#include "utility.h"
+#include "error.h"
 
 
 using namespace std;

@@ -20,8 +20,10 @@ public:
     virtual std::string GetType() const = 0;
     virtual std::string GetName() const = 0;
 
+    // 构建优先级
     STATIC_INIT virtual float GetPriority() const = 0;
 
+    // 构建地形
     STATIC_INIT virtual void DistributeTerrain(int width, int height,
         std::function<bool(int, int, std::string, float)> setElement,
         std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const = 0;
