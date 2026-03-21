@@ -4,7 +4,7 @@
 #include "roadnet.h"
 #include "zone.h"
 
-#define BLOCK_SIZE 256
+#define CHUNK_SIZE 256
 
 
 class Element {
@@ -33,10 +33,10 @@ private:
     std::string building;
 };
 
-class Block {
+class Chunk {
 public:
-    Block(int x, int y);
-    ~Block();
+    Chunk(int x, int y);
+    ~Chunk();
 
     // 获取/设置地形
     std::string GetTerrain(int x, int y) const;
@@ -71,7 +71,7 @@ public:
         std::vector<std::string>& dlls);
 
     // 初始化地图
-    int Init(int blockX, int blockY);
+    int Init(int chunkX, int chunkY);
 
     // 释放空间
     void Destroy();
@@ -86,7 +86,7 @@ public:
     bool CheckXY(int x, int y) const;
 
     // 获取地块
-    std::shared_ptr<Block> GetBlock(int x, int y) const;
+    std::shared_ptr<Chunk> GetChunk(int x, int y) const;
 
     // 获取元素
     std::shared_ptr<Element> GetElement(int x, int y) const;
@@ -129,7 +129,7 @@ private:
     // 地图信息
     int width;
     int height;
-    std::vector<std::vector<std::shared_ptr<Block>>> blocks;
+    std::vector<std::vector<std::shared_ptr<Chunk>>> chunks;
 
     // 玩家信息
     std::pair<float, float> playerPos;

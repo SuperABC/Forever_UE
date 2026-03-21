@@ -61,51 +61,51 @@ bool Element::SetBuilding(const string& building) {
     return true;
 }
 
-Block::Block(int x, int y) : offsetX(x), offsetY(y) {
-    elements = vector<vector<shared_ptr<Element>>>(BLOCK_SIZE,
-        vector<shared_ptr<Element>>(BLOCK_SIZE, nullptr));
-    for (int i = 0; i < BLOCK_SIZE; ++i) {
-        for (int j = 0; j < BLOCK_SIZE; ++j) {
+Chunk::Chunk(int x, int y) : offsetX(x), offsetY(y) {
+    elements = vector<vector<shared_ptr<Element>>>(CHUNK_SIZE,
+        vector<shared_ptr<Element>>(CHUNK_SIZE, nullptr));
+    for (int i = 0; i < CHUNK_SIZE; ++i) {
+        for (int j = 0; j < CHUNK_SIZE; ++j) {
             elements[j][i] = make_shared<Element>();
         }
     }
 }
 
-Block::~Block() {
+Chunk::~Chunk() {
 
 }
 
-string Block::GetTerrain(int x, int y) const {
+string Chunk::GetTerrain(int x, int y) const {
     if (!CheckXY(x, y)) {
         return "";
     }
     return elements[y - offsetY][x - offsetX]->GetTerrain();
 }
 
-bool Block::SetTerrain(int x, int y, const string& terrain, float height) {
+bool Chunk::SetTerrain(int x, int y, const string& terrain, float height) {
     if (!CheckXY(x, y)) {
         return false;
     }
     return elements[y - offsetY][x - offsetX]->SetTerrain(terrain, height);
 }
 
-float Block::GetHeight(int x, int y) const {
+float Chunk::GetHeight(int x, int y) const {
     if (!CheckXY(x, y)) {
-        debugf("Warning: Invalid block coordinates (%d, %d) for block (%d, %d).\n", x, y, offsetX, offsetY);
+        debugf("Warning: Invalid chunk coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
         return 0.f;
     }
     return elements[y - offsetY][x - offsetX]->GetHeight();
 }
 
-bool Block::CheckXY(int x, int y) const {
+bool Chunk::CheckXY(int x, int y) const {
     if (x < offsetX) return false;
     if (y < offsetY) return false;
-    if (x >= offsetX + BLOCK_SIZE) return false;
-    if (y >= offsetY + BLOCK_SIZE) return false;
+    if (x >= offsetX + CHUNK_SIZE) return false;
+    if (y >= offsetY + CHUNK_SIZE) return false;
     return true;
 }
 
-shared_ptr<Element> Block::GetElement(int x, int y) const {
+shared_ptr<Element> Chunk::GetElement(int x, int y) const {
     if (!CheckXY(x, y)) {
         return nullptr;
     }
@@ -305,24 +305,24 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
 #endif
 }
 
-int Map::Init(int blockX, int blockY) {
+int Map::Init(int chunkX, int chunkY) {
     Destroy();
 
-    if (blockX < 1 || blockY < 1) {
+    if (chunkX < 1 || chunkY < 1) {
         THROW_EXCEPTION(InvalidArgumentException, "Invalid map size.\n");
     }
 
-    width = blockX * BLOCK_SIZE;
-    height = blockY * BLOCK_SIZE;
+    width = chunkX * CHUNK_SIZE;
+    height = chunkY * CHUNK_SIZE;
     playerPos.first = width / 2.f;
     playerPos.second = height / 2.f;
 
-    debugf("Log: Initializing map with size %d x %d (block size: %d x %d).\n", width, height, blockX, blockY);
-    blocks = vector<vector<shared_ptr<Block>>>(blockY,
-        vector<shared_ptr<Block>>(blockX, nullptr));
-    for (int i = 0; i < blockX; ++i) {
-        for (int j = 0; j < blockY; ++j) {
-            blocks[j][i] = make_shared<Block>(i * BLOCK_SIZE, j * BLOCK_SIZE);
+    debugf("Log: Initializing map with size %d x %d (chunk size: %d x %d).\n", width, height, chunkX, chunkY);
+    chunks = vector<vector<shared_ptr<Chunk>>>(chunkY,
+        vector<shared_ptr<Chunk>>(chunkX, nullptr));
+    for (int i = 0; i < chunkX; ++i) {
+        for (int j = 0; j < chunkY; ++j) {
+            chunks[j][i] = make_shared<Chunk>(i * CHUNK_SIZE, j * CHUNK_SIZE);
         }
     }
 
@@ -395,7 +395,7 @@ int Map::Init(int blockX, int blockY) {
 }
 
 void Map::Destroy() {
-    blocks.clear();
+    chunks.clear();
 }
 
 pair<int, int> Map::GetSize() const {
@@ -413,18 +413,18 @@ bool Map::CheckXY(int x, int y) const {
     return true;
 }
 
-shared_ptr<Block> Map::GetBlock(int x, int y) const {
+shared_ptr<Chunk> Map::GetChunk(int x, int y) const {
     if (!CheckXY(x, y)) {
-        THROW_EXCEPTION(InvalidArgumentException, "Invalid block query position.\n");
+        THROW_EXCEPTION(InvalidArgumentException, "Invalid chunk query position.\n");
     }
 
-    int blockX = x / BLOCK_SIZE;
-    int blockY = y / BLOCK_SIZE;
+    int chunkX = x / CHUNK_SIZE;
+    int chunkY = y / CHUNK_SIZE;
 
-    if (blockY < 0 || blockY >= (int)blocks.size() || blockX < 0 || blockX >= (int)blocks[0].size()) {
-        THROW_EXCEPTION(OutOfRangeException, "Block index out of range.\n");
+    if (chunkY < 0 || chunkY >= (int)chunks.size() || chunkX < 0 || chunkX >= (int)chunks[0].size()) {
+        THROW_EXCEPTION(OutOfRangeException, "Chunk index out of range.\n");
     }
-    return blocks[blockY][blockX];
+    return chunks[chunkY][chunkX];
 }
 
 shared_ptr<Element> Map::GetElement(int x, int y) const {
@@ -432,17 +432,17 @@ shared_ptr<Element> Map::GetElement(int x, int y) const {
         THROW_EXCEPTION(InvalidArgumentException, "Invalid element query position.\n");
     }
 
-    int blockX = x / BLOCK_SIZE;
-    int blockY = y / BLOCK_SIZE;
+    int chunkX = x / CHUNK_SIZE;
+    int chunkY = y / CHUNK_SIZE;
 
-    if (blockY < 0 || blockY >= (int)blocks.size() || blockX < 0 || blockX >= (int)blocks[0].size()) {
-        THROW_EXCEPTION(OutOfRangeException, "Block index out of range.\n");
+    if (chunkY < 0 || chunkY >= (int)chunks.size() || chunkX < 0 || chunkX >= (int)chunks[0].size()) {
+        THROW_EXCEPTION(OutOfRangeException, "Chunk index out of range.\n");
     }
-    auto block = blocks[blockY][blockX];
-    if (!block) {
-        THROW_EXCEPTION(NullPointerException, "Block is null.\n");
+    auto chunk = chunks[chunkY][chunkX];
+    if (!chunk) {
+        THROW_EXCEPTION(NullPointerException, "Chunk is null.\n");
     }
-    return block->GetElement(x, y);
+    return chunk->GetElement(x, y);
 }
 
 string Map::GetTerrain(int x, int y) const {
@@ -450,15 +450,15 @@ string Map::GetTerrain(int x, int y) const {
         return "";
     }
 
-    int blockX = x / BLOCK_SIZE;
-    int blockY = y / BLOCK_SIZE;
+    int chunkX = x / CHUNK_SIZE;
+    int chunkY = y / CHUNK_SIZE;
 
-    if (blockY >= (int)blocks.size() || blockX >= (int)blocks[0].size()) {
+    if (chunkY >= (int)chunks.size() || chunkX >= (int)chunks[0].size()) {
         return "";
     }
-    auto block = blocks[blockY][blockX];
-    if (!block) return "";
-    return block->GetTerrain(x, y);
+    auto chunk = chunks[chunkY][chunkX];
+    if (!chunk) return "";
+    return chunk->GetTerrain(x, y);
 }
 
 bool Map::SetTerrain(int x, int y, const string& terrain, float height) {
@@ -466,15 +466,15 @@ bool Map::SetTerrain(int x, int y, const string& terrain, float height) {
         return false;
     }
 
-    int blockX = x / BLOCK_SIZE;
-    int blockY = y / BLOCK_SIZE;
+    int chunkX = x / CHUNK_SIZE;
+    int chunkY = y / CHUNK_SIZE;
 
-    if (blockY >= (int)blocks.size() || blockX >= (int)blocks[0].size()) {
+    if (chunkY >= (int)chunks.size() || chunkX >= (int)chunks[0].size()) {
         return false;
     }
-    auto block = blocks[blockY][blockX];
-    if (!block) return false;
-    return block->SetTerrain(x, y, terrain, height);
+    auto chunk = chunks[chunkY][chunkX];
+    if (!chunk) return false;
+    return chunk->SetTerrain(x, y, terrain, height);
 }
 
 float Map::GetHeight(int x, int y) const {
@@ -483,19 +483,19 @@ float Map::GetHeight(int x, int y) const {
         return 0.f;
     }
 
-    int blockX = x / BLOCK_SIZE;
-    int blockY = y / BLOCK_SIZE;
+    int chunkX = x / CHUNK_SIZE;
+    int chunkY = y / CHUNK_SIZE;
 
-    if (blockY >= (int)blocks.size() || blockX >= (int)blocks[0].size()) {
-        debugf("Warning: Block index out of range (%d, %d).\n", blockX, blockY);
+    if (chunkY >= (int)chunks.size() || chunkX >= (int)chunks[0].size()) {
+        debugf("Warning: Chunk index out of range (%d, %d).\n", chunkX, chunkY);
         return 0.f;
     }
-    auto block = blocks[blockY][blockX];
-    if (!block) {
-        debugf("Warning: Block is null at (%d, %d).\n", blockX, blockY);
+    auto chunk = chunks[chunkY][chunkX];
+    if (!chunk) {
+        debugf("Warning: Chunk is null at (%d, %d).\n", chunkX, chunkY);
         return 0.f;
     }
-    return block->GetHeight(x, y);
+    return chunk->GetHeight(x, y);
 }
 
 Roadnet* Map::GetRoadnet() const {

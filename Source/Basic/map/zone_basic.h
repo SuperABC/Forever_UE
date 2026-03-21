@@ -15,7 +15,7 @@ public:
 
     static std::function<int(Lot*)> ZoneAssigner;
 
-    virtual void AssignZone(Lot* plot);
+    virtual void AssignZone(Lot* lot);
 
 private:
     static int count;
