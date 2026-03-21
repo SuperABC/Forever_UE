@@ -22,7 +22,7 @@ public class Forever : ModuleRules
 			"GameplayStateTreeModule",
 			"UMG",
 			"Slate",
-            "Landscape"
+			"SlateCore"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

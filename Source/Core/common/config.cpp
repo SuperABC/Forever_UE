@@ -53,62 +53,83 @@ void Config::ReadConfig(const string& path) {
 			AddDllPath(dllPath.AsString());
 		}
 
+		CheckMod("terrain", "empty", false);
 		for (auto terrainMod : root["terrain_mods"]) {
 			CheckMod("terrain", terrainMod.AsString(), true);
 		}
+		CheckMod("roadnet", "empty", false);
 		CheckMod("roadnet", root["roadnet_mod"].AsString(), true);
+		CheckMod("zone", "empty", false);
 		for (auto zoneMod : root["zone_mods"]) {
 			CheckMod("zone", zoneMod.AsString(), true);
 		}
+		CheckMod("building", "empty", false);
 		for (auto buildingMod : root["building_mods"]) {
 			CheckMod("building", buildingMod.AsString(), true);
 		}
+		CheckMod("component", "empty", false);
 		for (auto componentMod : root["component_mods"]) {
 			CheckMod("component", componentMod.AsString(), true);
 		}
+		CheckMod("room", "empty", false);
 		for (auto roomMod : root["room_mods"]) {
 			CheckMod("room", roomMod.AsString(), true);
 		}
+		CheckMod("asset", "empty", false);
 		for (auto assetMod : root["asset_mods"]) {
 			CheckMod("asset", assetMod.AsString(), true);
 		}
+		CheckMod("name", "empty", false);
 		CheckMod("name", root["name_mod"].AsString(), true);
+		CheckMod("scheduler", "empty", false);
 		for (auto schedulerMod : root["scheduler_mods"]) {
 			CheckMod("scheduler", schedulerMod.AsString(), true);
 		}
+		CheckMod("job", "empty", false);
 		for (auto jobMod : root["job_mods"]) {
 			CheckMod("job", jobMod.AsString(), true);
 		}
+		CheckMod("calendar", "empty", false);
 		for (auto calendarMod : root["calendar_mods"]) {
 			CheckMod("calendar", calendarMod.AsString(), true);
 		}
+		CheckMod("organization", "empty", false);
 		for (auto organizationMod : root["organization_mods"]) {
 			CheckMod("organization", organizationMod.AsString(), true);
 		}
+		CheckMod("event", "empty", false);
 		for (auto eventMod : root["event_mods"]) {
 			CheckMod("event", eventMod.AsString(), true);
 		}
+		CheckMod("change", "empty", false);
 		for (auto changeMod : root["change_mods"]) {
 			CheckMod("change", changeMod.AsString(), true);
 		}
+		CheckMod("product", "empty", false);
 		for (auto productMod : root["product_mods"]) {
 			CheckMod("product", productMod.AsString(), true);
 		}
+		CheckMod("storage", "empty", false);
 		for (auto storageMod : root["storage_mods"]) {
 			CheckMod("storage", storageMod.AsString(), true);
 		}
+		CheckMod("manufacture", "empty", false);
 		for (auto manufactureMod : root["manufacture_mods"]) {
 			CheckMod("manufacture", manufactureMod.AsString(), true);
 		}
+		CheckMod("route", "empty", false);
 		for (auto routeMod : root["route_mods"]) {
 			CheckMod("route", routeMod.AsString(), true);
 		}
+		CheckMod("station", "empty", false);
 		for (auto stationMod : root["station_mods"]) {
 			CheckMod("station", stationMod.AsString(), true);
 		}
+		CheckMod("vehicle", "empty", false);
 		for (auto vehicleMod : root["vehicle_mods"]) {
 			CheckMod("vehicle", vehicleMod.AsString(), true);
 		}
+		CheckMod("skill", "empty", false);
 		for (auto skillMod : root["skill_mods"]) {
 			CheckMod("skill", skillMod.AsString(), true);
 		}
@@ -153,7 +174,10 @@ void Config::WriteConfig(const string& path) {
 			roadnets.append(roadnet);
 		}
 	}
-	root["roadnet_mods"] = roadnets;
+	if (roadnets.size() > 1) {
+		debugf("Warning: Selected more than one roadnet mods.\n");
+	}
+	root["roadnet_mod"] = roadnets[0];
 
 	JsonValue zones = JsonValue(DATA_ARRAY);
 	for (auto modEnable : modEnables["zone"]) {
@@ -207,7 +231,10 @@ void Config::WriteConfig(const string& path) {
 			names.append(name);
 		}
 	}
-	root["name_mods"] = names;
+	if (names.size() > 1) {
+		debugf("Warning: Selected more than one name mods.\n");
+	}
+	root["name_mods"] = names[0];
 
 	JsonValue schedulers = JsonValue(DATA_ARRAY);
 	for (auto modEnable : modEnables["scheduler"]) {
@@ -331,7 +358,7 @@ void Config::WriteConfig(const string& path) {
 		JsonValue resource = JsonValue(resourcePath);
 		resources.append(resource);
 	}
-	root["dll_paths"] = resources;
+	root["resource_paths"] = resources;
 
 	JsonValue story = JsonValue(scriptPath);
 	root["story_path"] = story;
@@ -350,13 +377,18 @@ vector<string> Config::GetDllPaths() {
 	for (auto dllPath : dllPaths) {
 		paths.push_back(dllPath.first);
 	}
+	return paths;
 }
 
 vector<string> Config::GetMods() {
 	vector<string> mods;
+	unordered_set<string> ids;
 	for (auto dllPath : dllPaths) {
 		for (auto mod : dllPath.second) {
-			mods.push_back(mod);
+			if (ids.find(mod) == ids.end()) {
+				mods.push_back(mod);
+				ids.insert(mod);
+			}
 		}
 	}
 	return mods;
@@ -369,7 +401,7 @@ void Config::AddDllPath(const string& path) {
 		return;
 	}
 
-	dllPaths[path].clear();
+	RemoveDllPath(path);
 
 	for (const auto& entry : filesystem::recursive_directory_iterator(dir)) {
 		if (CheckFileFormat(entry.path(), ".dll")) {
@@ -578,6 +610,208 @@ void Config::AddDllPath(const string& path) {
 }
 
 void Config::RemoveDllPath(const string& path) {
+	for (auto mod : dllPaths[path]) {
+		bool duplicated = false;
+		for (auto dllPath : dllPaths) {
+			if (dllPath.first == path)continue;
+			for (auto dll : dllPath.second) {
+				if (mod == dll) {
+					duplicated = true;
+					break;
+				}
+			}
+			if (duplicated)break;
+		}
+		if (!duplicated) {
+			filesystem::path dir(path);
+
+			if (!filesystem::exists(dir) || !filesystem::is_directory(dir)) {
+				debugf("Warning: Mod path does not exist when deleting.\n");
+				continue;
+			}
+
+			for (const auto& entry : filesystem::recursive_directory_iterator(dir)) {
+				if (CheckFileFormat(entry.path(), ".dll")) {
+					string full = filesystem::absolute(entry.path()).string();
+
+					auto modHandle = LoadLibraryA(full.data());
+					if (modHandle) {
+						auto getTerrainFunc = (GetModFunc)GetProcAddress(modHandle, "GetModTerrains");
+						if (getTerrainFunc) {
+							auto terrains = *(vector<string>*)getTerrainFunc();
+							for (auto terrain : terrains) {
+								modEnables["terrain"].erase(terrain);
+							}
+						}
+
+						auto getRoadnetFunc = (GetModFunc)GetProcAddress(modHandle, "GetModRoadnets");
+						if (getRoadnetFunc) {
+							auto roadnets = *(vector<string>*)getRoadnetFunc();
+							for (auto roadnet : roadnets) {
+								modEnables["roadnet"].erase(roadnet);
+							}
+						}
+
+						auto getZoneFunc = (GetModFunc)GetProcAddress(modHandle, "GetModZones");
+						if (getZoneFunc) {
+							auto zones = *(vector<string>*)getZoneFunc();
+							for (auto zone : zones) {
+								modEnables["zone"].erase(zone);
+							}
+						}
+
+						auto getBuildingFunc = (GetModFunc)GetProcAddress(modHandle, "GetModBuildings");
+						if (getBuildingFunc) {
+							auto buildings = *(vector<string>*)getBuildingFunc();
+							for (auto building : buildings) {
+								modEnables["building"].erase(building);
+							}
+						}
+
+						auto getComponentFunc = (GetModFunc)GetProcAddress(modHandle, "GetModComponents");
+						if (getComponentFunc) {
+							auto components = *(vector<string>*)getComponentFunc();
+							for (auto component : components) {
+								modEnables["component"].erase(component);
+							}
+						}
+
+						auto getRoomFunc = (GetModFunc)GetProcAddress(modHandle, "GetModRooms");
+						if (getRoomFunc) {
+							auto rooms = *(vector<string>*)getRoomFunc();
+							for (auto room : rooms) {
+								modEnables["room"].erase(room);
+							}
+						}
+
+						auto getAssetFunc = (GetModFunc)GetProcAddress(modHandle, "GetModAssets");
+						if (getAssetFunc) {
+							auto assets = *(vector<string>*)getAssetFunc();
+							for (auto asset : assets) {
+								modEnables["asset"].erase(asset);
+							}
+						}
+
+						auto getNameFunc = (GetModFunc)GetProcAddress(modHandle, "GetModNames");
+						if (getNameFunc) {
+							auto names = *(vector<string>*)getNameFunc();
+							for (auto name : names) {
+								modEnables["name"].erase(name);
+							}
+						}
+
+						auto getSchedulerFunc = (GetModFunc)GetProcAddress(modHandle, "GetModSchedulers");
+						if (getSchedulerFunc) {
+							auto schedulers = *(vector<string>*)getSchedulerFunc();
+							for (auto scheduler : schedulers) {
+								modEnables["scheduler"].erase(scheduler);
+							}
+						}
+
+						auto getJobFunc = (GetModFunc)GetProcAddress(modHandle, "GetModJobs");
+						if (getJobFunc) {
+							auto jobs = *(vector<string>*)getJobFunc();
+							for (auto job : jobs) {
+								modEnables["job"].erase(job);
+							}
+						}
+
+						auto getCalendarFunc = (GetModFunc)GetProcAddress(modHandle, "GetModCalendars");
+						if (getCalendarFunc) {
+							auto calendars = *(vector<string>*)getCalendarFunc();
+							for (auto calendar : calendars) {
+								modEnables["calendar"].erase(calendar);
+							}
+						}
+
+						auto getOrganizationFunc = (GetModFunc)GetProcAddress(modHandle, "GetModOrganizations");
+						if (getOrganizationFunc) {
+							auto organizations = *(vector<string>*)getOrganizationFunc();
+							for (auto organization : organizations) {
+								modEnables["organization"].erase(organization);
+							}
+						}
+
+						auto getEventFunc = (GetModFunc)GetProcAddress(modHandle, "GetModEvents");
+						if (getEventFunc) {
+							auto events = *(vector<string>*)getEventFunc();
+							for (auto event : events) {
+								modEnables["event"].erase(event);
+							}
+						}
+
+						auto getChangeFunc = (GetModFunc)GetProcAddress(modHandle, "GetModChanges");
+						if (getChangeFunc) {
+							auto changes = *(vector<string>*)getChangeFunc();
+							for (auto change : changes) {
+								modEnables["change"].erase(change);
+							}
+						}
+
+						auto getProductFunc = (GetModFunc)GetProcAddress(modHandle, "GetModProducts");
+						if (getProductFunc) {
+							auto products = *(vector<string>*)getProductFunc();
+							for (auto product : products) {
+								modEnables["product"].erase(product);
+							}
+						}
+
+						auto getStorageFunc = (GetModFunc)GetProcAddress(modHandle, "GetModStorages");
+						if (getStorageFunc) {
+							auto storages = *(vector<string>*)getStorageFunc();
+							for (auto storage : storages) {
+								modEnables["storage"].erase(storage);
+							}
+						}
+
+						auto getManufactureFunc = (GetModFunc)GetProcAddress(modHandle, "GetModManufactures");
+						if (getManufactureFunc) {
+							auto manufactures = *(vector<string>*)getManufactureFunc();
+							for (auto manufacture : manufactures) {
+								modEnables["manufacture"].erase(manufacture);
+							}
+						}
+
+						auto getRouteFunc = (GetModFunc)GetProcAddress(modHandle, "GetModRoutes");
+						if (getRouteFunc) {
+							auto routes = *(vector<string>*)getRouteFunc();
+							for (auto route : routes) {
+								modEnables["route"].erase(route);
+							}
+						}
+
+						auto getStationFunc = (GetModFunc)GetProcAddress(modHandle, "GetModStations");
+						if (getStationFunc) {
+							auto stations = *(vector<string>*)getStationFunc();
+							for (auto station : stations) {
+								modEnables["station"].erase(station);
+							}
+						}
+
+						auto getVehicleFunc = (GetModFunc)GetProcAddress(modHandle, "GetModVehicles");
+						if (getVehicleFunc) {
+							auto vehicles = *(vector<string>*)getVehicleFunc();
+							for (auto vehicle : vehicles) {
+								modEnables["vehicle"].erase(vehicle);
+							}
+						}
+
+						auto getSkillFunc = (GetModFunc)GetProcAddress(modHandle, "GetModSkills");
+						if (getSkillFunc) {
+							auto skills = *(vector<string>*)getSkillFunc();
+							for (auto skill : skills) {
+								modEnables["skill"].erase(skill);
+							}
+						}
+
+						FreeLibrary(modHandle);
+					}
+				}
+			}
+		}
+	}
+
+
 	dllPaths.erase(path);
 }
 
@@ -650,7 +884,14 @@ void Config::AddResourcePath(const string& path) {
 		return;
 	}
 
-	resourcePaths.push_back(path);
+	bool duplicated = false;
+	for (auto resourcePath : resourcePaths) {
+		if (resourcePath == path) {
+			duplicated = true;
+			break;
+		}
+	}
+	if(!duplicated)resourcePaths.push_back(path);
 	layoutPaths[path].clear();
 	jobPaths[path].clear();
 	characterPaths[path].clear();
@@ -685,6 +926,14 @@ void Config::AddResourcePath(const string& path) {
 }
 
 void Config::RemoveResourcePath(const string& path) {
+	for (auto it = resourcePaths.begin(); it != resourcePaths.end(); ) {
+		if (*it == path) {
+			it = resourcePaths.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 	layoutPaths.erase(path);
 	jobPaths.erase(path);
 	characterPaths.erase(path);

@@ -1,4 +1,5 @@
 #include "Actor/StartBase.h"
+#include "DesktopPlatformModule.h"
 
 
 using namespace std;
@@ -13,10 +14,22 @@ AStartBase::~AStartBase() {
 
 void AStartBase::BeginPlay() {
 	Super::BeginPlay();
+
+	Config::ReadConfig(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/config.json");
 }
 
 void AStartBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+}
+
+FString AStartBase::SelectFolder() {
+	FString SelectedPath;
+	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+	if (DesktopPlatform) {
+		void* ParentWindowHandle = FSlateApplication::Get().GetActiveTopLevelWindow()->GetNativeWindow()->GetOSWindowHandle();
+		DesktopPlatform->OpenDirectoryDialog(ParentWindowHandle, TEXT("Select Folder"), FPaths::ProjectDir(), SelectedPath);
+	}
+	return SelectedPath;
 }
 
 TArray<FString> AStartBase::GetDllPaths() {
@@ -51,18 +64,19 @@ void AStartBase::RemoveDllPath(FString path) {
 
 void AStartBase::GetChecks(FString type, TArray<FString>& mods, TArray<bool>& enables) {
 	auto checks = Config::GetChecks(string(TCHAR_TO_UTF8(*type)));
-	mods.Reserve(checks.size());
+	mods.Empty();
+	enables.Empty();
 	int i = 0;
 	for (auto check : checks) {
-		mods[i] = FString(UTF8_TO_TCHAR(check.first.data()));
-		enables[i] = check.second;
+		mods.Add(FString(UTF8_TO_TCHAR(check.first.data())));
+		enables.Add(check.second);
 		i++;
 	}
 }
 
 void AStartBase::CheckMod(FString type, FString mod, bool enabled) {
 	Config::CheckMod(string(TCHAR_TO_UTF8(*type)),
-		string(TCHAR_TO_UTF8(*type)), enabled);
+		string(TCHAR_TO_UTF8(*mod)), enabled);
 }
 
 TArray<FString> AStartBase::GetResourcePaths() {
@@ -111,4 +125,8 @@ FString AStartBase::GetScriptPath() {
 
 void AStartBase::SetScriptPath(FString path) {
 	Config::SetScript(string(TCHAR_TO_UTF8(*path)));
+}
+
+void AStartBase::SaveConfig() {
+	Config::WriteConfig(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/config.json");
 }

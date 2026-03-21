@@ -20,6 +20,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Folder Picker")
+	static FString SelectFolder();
 	UFUNCTION(BlueprintCallable, Category = "Config")
 	TArray<FString> GetDllPaths();
 	UFUNCTION(BlueprintCallable, Category = "Config")
@@ -44,6 +46,8 @@ public:
 	FString GetScriptPath();
 	UFUNCTION(BlueprintCallable, Category = "Config")
 	void SetScriptPath(FString path);
+	UFUNCTION(BlueprintCallable, Category = "Config")
+	void SaveConfig();
 
 protected:
 	virtual void BeginPlay() override;

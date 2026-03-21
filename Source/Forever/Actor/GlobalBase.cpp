@@ -56,7 +56,6 @@ void AGlobalBase::BeginPlay() {
 		traffic = new Traffic();
 		player = new Player();
 
-		Config::ReadConfig(string(TCHAR_TO_UTF8(*FPaths::ProjectDir())) + "Source/Resources/config.json");
 		auto mods = Config::GetMods();
 
 		// 读取Map相关类及Mod
