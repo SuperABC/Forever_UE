@@ -25,7 +25,7 @@ string EmptyZone::GetName() const {
 	return "空园区" + to_string(id);
 }
 
-void EmptyZone::AssignZone(Lot* lot) {
+void EmptyZone::LayoutZone(Lot* lot) {
 
 }
 
@@ -38,7 +38,7 @@ Zone::Zone(ZoneFactory* factory, string zone) :
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),
-	parentPlot(nullptr),
+	parentBlock(nullptr),
 	fullAddress(""), 
 	stated(false) {
 
@@ -56,18 +56,18 @@ string Zone::GetName() const {
 	return name;
 }
 
-void Zone::AssignZone(Lot* plot) {
-	mod->AssignZone(plot);
+void Zone::LayoutZone(Lot* block) {
+	mod->LayoutZone(block);
 }
 
 // 获取所在地块
-Plot* Zone::GetParent() const {
-    return parentPlot;
+Block* Zone::GetParent() const {
+    return parentBlock;
 }
 
 // 设置所在地块
-void Zone::SetParent(Plot* plot) {
-    parentPlot = plot;
+void Zone::SetParent(Block* block) {
+    parentBlock = block;
 }
 
 // 获取私人房东ID
@@ -190,7 +190,7 @@ void Zone::SetStated(bool stated) {
 //    vector<Quad*> elements;
 //    Quad* emptyRect = nullptr;
 //    if (acreageRemain > 0 && !acreageAllocate) {
-//        emptyRect = new Plot();
+//        emptyRect = new Block();
 //        emptyRect->SetAcreage(acreageRemain);
 //        elements.push_back(emptyRect);
 //    }
@@ -340,9 +340,9 @@ void Zone::SetStated(bool stated) {
 
 // 获取园区中心世界位置
 void Zone::GetPosition(float& x, float& y) const {
-    auto plot = GetParent();
-    if (plot) {
-        auto center = plot->GetPosition(mod->GetPosX(), mod->GetPosY());
+    auto block = GetParent();
+    if (block) {
+        auto center = block->GetPosition(mod->GetPosX(), mod->GetPosY());
         x = center.first;
         y = center.second;
     }
@@ -354,7 +354,7 @@ const char* Zone::GetAddress() {
         return fullAddress.data();
     }
 
-    auto plotAddress = GetParent()->GetAddress();
-    fullAddress = plotAddress + " " + GetName();
+    auto blockAddress = GetParent()->GetAddress();
+    fullAddress = blockAddress + " " + GetName();
     return fullAddress.data();
 }

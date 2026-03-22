@@ -2,7 +2,7 @@
 
 #include "roadnet_mod.h"
 
-#include "plot.h"
+#include "block.h"
 
 
 // 子类注册函数
@@ -46,23 +46,23 @@ public:
     const std::vector<Connection*>& GetConnections() const;
 
     // 获取所有地块
-    const std::vector<Plot*>& GetPlots() const;
+    const std::vector<Block*>& GetBlocks() const;
 
     // 分配地块地址
     void AllocateAddress();
 
     // 按地址查找
-    Plot* LocatePlot(std::string road, int id) const;
+    Block* LocateBlock(std::string road, int id) const;
 
     // 自动寻路
     //const std::vector<Connection> AutoNavigate(
     //    const std::vector<std::pair<Connection, float>>& startRoads, const std::vector<std::pair<Connection, float>>& endRoads) const;
     //const std::vector<Connection> AutoNavigate(
-    //    const Plot* startPlot, const Plot* endPlot) const;
+    //    const Block* startBlock, const Block* endBlock) const;
     //const std::vector<Connection> AutoNavigate(
-    //    const std::vector<std::pair<Connection, float>>& startRoads, const Plot* endPlot) const;
+    //    const std::vector<std::pair<Connection, float>>& startRoads, const Block* endBlock) const;
     //const std::vector<Connection> AutoNavigate(
-    //    const Plot* startPlot, const std::vector<std::pair<Connection, float>>& endRoads) const;
+    //    const Block* startBlock, const std::vector<std::pair<Connection, float>>& endRoads) const;
 
 private:
     RoadnetMod* mod;
@@ -73,8 +73,8 @@ private:
 
     VARIABLE_HOLDER std::vector<Node*> nodes;
     VARIABLE_HOLDER std::vector<Connection*> connections;
-    VARIABLE_HOLDER std::vector<Plot*> plots;
+    VARIABLE_HOLDER std::vector<Block*> blocks;
     //VARIABLE_HOLDER std::vector<Route*> routes;
-    std::unordered_map<std::string, std::vector<Plot*>> addresses;
+    std::unordered_map<std::string, std::vector<Block*>> addresses;
 };
 

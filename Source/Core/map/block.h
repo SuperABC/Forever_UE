@@ -10,16 +10,16 @@
 
 class Zone;
 //class Building;
-class Plot : public Lot {
+class Block : public Lot {
 public:
 	// 构造空街区
-	Plot();
+	Block();
 
 	// 根据地块构造街区
-	Plot(Lot lot);
+	Block(Lot lot);
 
 	// 析构园区与建筑
-	virtual ~Plot();
+	virtual ~Block();
 
 	// 获取街区相连路线及连接点位置
 	const std::vector<std::pair<Connection*, float>>& GetRoads() const;

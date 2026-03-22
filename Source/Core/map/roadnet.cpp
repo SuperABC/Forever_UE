@@ -35,7 +35,7 @@ Roadnet::Roadnet(RoadnetFactory* factory, string roadnet) :
 	name(mod->GetName()),
 	nodes(),
 	connections(),
-	plots(),
+	blocks(),
 	//routes(),
 	addresses() {
 
@@ -49,8 +49,8 @@ Roadnet::~Roadnet() {
 	for (auto connection : connections) {
 		delete connection;
 	}
-	for (auto plot : plots) {
-		delete plot;
+	for (auto block : blocks) {
+		delete block;
 	}
 }
 
@@ -73,13 +73,13 @@ void Roadnet::DistributeRoadnet(int width, int height,
 		connections.push_back(new Connection(connection));
 	}
 	for (auto [lot, connections] : mod->quads) {
-		auto plot = new Plot(lot);
+		auto block = new Block(lot);
 		vector<pair<Connection*, float>> roads;
 		for (auto connection : connections) {
 			roads.emplace_back(new Connection(connection.first), connection.second);
 		}
-		plot->SetRoads(roads);
-		plots.push_back(plot);
+		block->SetRoads(roads);
+		blocks.push_back(block);
 	}
 }
 
@@ -91,31 +91,31 @@ const vector<Connection*>& Roadnet::GetConnections() const {
 	return connections;
 }
 
-const vector<Plot*>& Roadnet::GetPlots() const {
-	return plots;
+const vector<Block*>& Roadnet::GetBlocks() const {
+	return blocks;
 }
 
 void Roadnet::AllocateAddress() {
 	addresses.clear();
 
-	for (auto& plot : plots) {
-		auto roads = plot->GetRoads();
+	for (auto& block : blocks) {
+		auto roads = block->GetRoads();
 		for (const auto& road : roads) {
-			addresses[road.first->GetName()].push_back(plot);
-			plot->SetAddress(road.first->GetName(), (int)addresses[road.first->GetName()].size());
+			addresses[road.first->GetName()].push_back(block);
+			block->SetAddress(road.first->GetName(), (int)addresses[road.first->GetName()].size());
 		}
 	}
 }
 
 // 寻址地块
-Plot* Roadnet::LocatePlot(string road, int id) const {
+Block* Roadnet::LocateBlock(string road, int id) const {
 	if (addresses.find(road) == addresses.end()) {
 		return nullptr;
 	}
-	auto plots = addresses.at(road);
-	if (id < 0 || id >= (int)plots.size()) {
+	auto blocks = addresses.at(road);
+	if (id < 0 || id >= (int)blocks.size()) {
 		return nullptr;
 	}
-	return plots[id];
+	return blocks[id];
 }
 

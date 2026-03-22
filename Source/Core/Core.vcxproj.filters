@@ -126,7 +126,7 @@
     <ClCompile Include="society\job.cpp">
       <Filter>society</Filter>
     </ClCompile>
-    <ClCompile Include="map\plot.cpp">
+    <ClCompile Include="map\block.cpp">
       <Filter>map</Filter>
     </ClCompile>
     <ClCompile Include="populace\commute.cpp">
@@ -242,7 +242,7 @@
     <ClInclude Include="society\job.h">
       <Filter>society</Filter>
     </ClInclude>
-    <ClInclude Include="map\plot.h">
+    <ClInclude Include="map\block.h">
       <Filter>map</Filter>
     </ClInclude>
     <ClInclude Include="populace\commute.h">

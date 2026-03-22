@@ -27,24 +27,24 @@ void AZoneBase::Tick(float DeltaTime) {
 	//location /= 1000.f;
 
 	//TArray<FZone> zones;
-	//auto plots = ((AGlobalBase*)global)->GetMap()->GetRoadnet()->GetPlots();
-	//for(auto plot : plots) {
-	//	FVector plotLocation = FVector(plot->GetPosX(), plot->GetPosY(), 0.f);
-	//	if((location - plotLocation).Size() > 64.f) {
+	//auto blocks = ((AGlobalBase*)global)->GetMap()->GetRoadnet()->GetBlocks();
+	//for(auto block : blocks) {
+	//	FVector blockLocation = FVector(block->GetPosX(), block->GetPosY(), 0.f);
+	//	if((location - blockLocation).Size() > 64.f) {
 	//		continue;
 	//	}
-	//	auto plotZones = plot->GetZones();
-	//	for (auto plotZone : plotZones) {
-	//		if(zoneInstances.find(plotZone.first) != zoneInstances.end()) {
+	//	auto blockZones = block->GetZones();
+	//	for (auto blockZone : blockZones) {
+	//		if(zoneInstances.find(blockZone.first) != zoneInstances.end()) {
 	//			continue;
 	//		}
-	//		auto zone = plotZone.second;
+	//		auto zone = blockZone.second;
 	//		FZone zoneInfo;
-	//		zoneInfo.name = UTF8_TO_TCHAR(plotZone.first.data());
+	//		zoneInfo.name = UTF8_TO_TCHAR(blockZone.first.data());
 	//		auto center = zone->GetPosition();
 	//		zoneInfo.center = FVector(center.first, center.second, 0.f);
 	//		zoneInfo.size = FVector(zone->GetSizeX(), zone->GetSizeY(), 100.f);
-	//		zoneInfo.rotation = plot->GetRotation();
+	//		zoneInfo.rotation = block->GetRotation();
 	//		zoneInfo.fences.Add(
 	//			FFence(FVector(zone->GetSizeX() / 2.f - 0.2f, 0.f, 0.f),
 	//				FVector(0.1f, zone->GetSizeY() - 0.4f, 0.1f)));

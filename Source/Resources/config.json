@@ -1,35 +1,30 @@
 {
-	"dll_paths": [
-		"C:/Workspace/UE5/Projects/Forever_UE/x64/Release"
-	],
-	
-	"terrain_mods": ["ocean", "mountain"],
-	"roadnet_mod": "empty",
-	"zone_mods": ["residential"],
-	"building_mods": ["empty"],
-	"component_mods": ["empty"],
-	"room_mods": ["empty"],
-	"asset_mods": ["empty"],
-	"name_mod": "empty",
-	"scheduler_mods": ["empty"],
-	"job_mods": ["empty"],
-	"calendar_mods": ["empty"],
-	"organization_mods": ["empty"],
-	"event_mods": ["empty"],
-	"change_mods": ["empty"],
-	"product_mods": ["empty"],
-	"storage_mods": ["empty"],
-	"manufacture_mods": ["empty"],
-	"route_mods": ["empty"],
-	"station_mods": ["empty"],
-	"vehicle_mods": ["empty"],
-	"skill_mods": ["empty"],
-	
-	"resource_paths": [
-		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
-		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
-		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
-	],
-	
-	"story_path": "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/ys.json"
+   "asset_mods" : [ "empty" ],
+   "building_mods" : [ "empty" ],
+   "calendar_mods" : [ "empty" ],
+   "change_mods" : [ "empty" ],
+   "component_mods" : [ "empty" ],
+   "dll_paths" : [ "C:/Workspace/UE5/Projects/Forever_UE/x64/Release" ],
+   "event_mods" : [ "empty" ],
+   "job_mods" : [ "empty" ],
+   "manufacture_mods" : [ "empty" ],
+   "name_mods" : "",
+   "organization_mods" : [ "empty" ],
+   "product_mods" : [ "empty" ],
+   "resource_paths" : [
+      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
+      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
+      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
+   ],
+   "roadnet_mod" : "jing",
+   "room_mods" : [ "empty" ],
+   "route_mods" : [ "empty" ],
+   "scheduler_mods" : [ "empty" ],
+   "skill_mods" : [ "empty" ],
+   "station_mods" : [ "empty" ],
+   "storage_mods" : [ "empty" ],
+   "story_path" : "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/ys.json",
+   "terrain_mods" : [ "ocean", "mountain" ],
+   "vehicle_mods" : [ "empty" ],
+   "zone_mods" : [ "residential" ]
 }

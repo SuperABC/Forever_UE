@@ -25,7 +25,7 @@ public:
     static std::function<int(Lot*)> ZoneAssigner;
 
     // 设计园区
-    virtual void AssignZone(Lot* lot) = 0;
+    virtual void LayoutZone(Lot* lot) = 0;
 
     // 内部建筑
     std::vector<std::pair<std::string, float>> buildings;

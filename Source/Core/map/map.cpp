@@ -362,27 +362,27 @@ int Map::Init(int chunkX, int chunkY) {
 
     debugf("Log: Generate zones.\n");
     auto zoneTypes = zoneFactory->GetTypes();
-    for (auto plot : roadnet->GetPlots()) {
-        if (!plot) continue;
+    for (auto block : roadnet->GetBlocks()) {
+        if (!block) continue;
         vector<Zone*> zones;
         for (auto type : zoneTypes) {
-            for (auto zone : zoneFactory->CreateZones(type, plot)) {
+            for (auto zone : zoneFactory->CreateZones(type, block)) {
                 zones.push_back(new Zone(zoneFactory, type));
             }
         }
         for (auto zone : zones) {
-            zone->AssignZone(plot);
+            zone->LayoutZone(block);
             string name = zone->GetName();
-            plot->AddZone(name, zone);
+            block->AddZone(name, zone);
         }
         for (auto& zone : zones) {
             if (!zone) continue;
-            zone->SetParent(plot);
+            zone->SetParent(block);
             //for (auto& b : zone->GetBuildings()) {
             //    Building* building = b.second;
             //    if (!building) continue;
             //    building->SetParent(zone);
-            //    building->SetParent(plot);
+            //    building->SetParent(block);
             //}
             if (this->zones.find(zone->GetName()) != this->zones.end()) {
                 THROW_EXCEPTION(RuntimeException, "Duplicate zone name: " + zone->GetName() + ".\n");

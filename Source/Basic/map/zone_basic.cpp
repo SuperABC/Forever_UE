@@ -25,7 +25,7 @@ string ResidentialZone::GetName() const {
 	return "住宅园区" + to_string(id);
 }
 
-void ResidentialZone::AssignZone(Lot* lot) {
+void ResidentialZone::LayoutZone(Lot* lot) {
 	Quad::SetAcreage(10000.f);
 	buildings = { {"residential", 1.f}, {"residential", 1.f} };
 }

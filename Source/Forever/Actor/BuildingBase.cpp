@@ -27,23 +27,23 @@ void ABuildingBase::Tick(float DeltaTime) {
 	//location /= 1000.f;
 
 	//TArray<FBuilding> buildings;
-	//auto plots = ((AGlobalBase*)global)->GetMap()->GetRoadnet()->GetPlots();
-	//for (auto plot : plots) {
-	//	FVector plotLocation = FVector(plot->GetPosX(), plot->GetPosY(), 0.f);
-	//	if ((location - plotLocation).Size() > 64.f) {
+	//auto blocks = ((AGlobalBase*)global)->GetMap()->GetRoadnet()->GetBlocks();
+	//for (auto block : blocks) {
+	//	FVector blockLocation = FVector(block->GetPosX(), block->GetPosY(), 0.f);
+	//	if ((location - blockLocation).Size() > 64.f) {
 	//		continue;
 	//	}
-	//	auto plotBuildings = plot->GetBuildings();
-	//	for (auto plotBuilding : plotBuildings) {
-	//		if (plotBuilding.second->GetAcreage() <= 0.f)continue;
-	//		if (buildingInstances.find(plotBuilding.first) != buildingInstances.end()) {
+	//	auto blockBuildings = block->GetBuildings();
+	//	for (auto blockBuilding : blockBuildings) {
+	//		if (blockBuilding.second->GetAcreage() <= 0.f)continue;
+	//		if (buildingInstances.find(blockBuilding.first) != buildingInstances.end()) {
 	//			continue;
 	//		}
-	//		auto building = plotBuilding.second;
+	//		auto building = blockBuilding.second;
 	//		FBuilding buildingInfo;
-	//		buildingInfo.name = UTF8_TO_TCHAR(plotBuilding.first.data());
+	//		buildingInfo.name = UTF8_TO_TCHAR(blockBuilding.first.data());
 	//		auto construction = building->GetConstruction();
-	//		auto center = plot->GetPosition(
+	//		auto center = block->GetPosition(
 	//			building->GetPosX() - building->GetSizeX() / 2.f + construction.GetPosX(),
 	//			building->GetPosY() - building->GetSizeY() / 2.f + construction.GetPosY());
 	//		buildingInfo.center = FVector(center.first, center.second,
@@ -53,13 +53,13 @@ void ABuildingBase::Tick(float DeltaTime) {
 	//		}
 	//		buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(),
 	//			building->GetHeight() * (building->GetLayers() + building->GetBasements()));
-	//		buildingInfo.rotation = plot->GetRotation();
+	//		buildingInfo.rotation = block->GetRotation();
 	//		ConstructBuilding(building, buildingInfo);
 	//		buildings.Add(buildingInfo);
 	//	}
-	//	auto plotZones = plot->GetZones();
-	//	for (auto plotZone : plotZones) {
-	//		auto zone = plotZone.second;
+	//	auto blockZones = block->GetZones();
+	//	for (auto blockZone : blockZones) {
+	//		auto zone = blockZone.second;
 	//		for(auto zoneBuilding : zone->GetBuildings()) {
 	//			if (zoneBuilding.second->GetAcreage() <= 0.f)continue;
 	//			if (buildingInstances.find(zoneBuilding.first) != buildingInstances.end()) {
@@ -69,7 +69,7 @@ void ABuildingBase::Tick(float DeltaTime) {
 	//			FBuilding buildingInfo;
 	//			buildingInfo.name = UTF8_TO_TCHAR(zoneBuilding.first.data());
 	//			auto construction = building->GetConstruction();
-	//			auto center = plot->GetPosition(
+	//			auto center = block->GetPosition(
 	//				zone->GetPosX() - zone->GetSizeX() / 2 + building->GetPosX() - building->GetSizeX() / 2.f + construction.GetPosX(),
 	//				zone->GetPosY() - zone->GetSizeY() / 2 + building->GetPosY() - building->GetSizeY() / 2.f + construction.GetPosY());
 	//			buildingInfo.center = FVector(center.first, center.second,
@@ -79,7 +79,7 @@ void ABuildingBase::Tick(float DeltaTime) {
 	//			}
 	//			buildingInfo.size = FVector(construction.GetSizeX(), construction.GetSizeY(),
 	//				building->GetHeight() * (building->GetLayers() + building->GetBasements()));
-	//			buildingInfo.rotation = plot->GetRotation();
+	//			buildingInfo.rotation = block->GetRotation();
 	//			ConstructBuilding(building, buildingInfo);
 	//			buildings.Add(buildingInfo);
 	//		}

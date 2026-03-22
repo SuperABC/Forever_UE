@@ -115,7 +115,7 @@ public:
     //void SetBuilding(Building* building, const std::string& name, std::pair<float, float> offset);
 
     // 寻址
-    //Plot* LocatePlot(const std::string& address) const;
+    //Block* LocateBlock(const std::string& address) const;
     //Zone* LocateZone(const std::string& address) const;
     //Building* LocateBuilding(const std::string& address) const;
     //Room* LocateRoom(const std::string& address) const;

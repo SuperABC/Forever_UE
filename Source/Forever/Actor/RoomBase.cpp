@@ -33,7 +33,7 @@ void ARoomBase::SetGlobal(AActor* g) {
 //		auto pos = room->GetPosition(room->GetSizeX() / 2.f, room->GetSizeY() / 2.f);
 //		roomInfo.center = FVector(pos.first, pos.second, (room->GetLayer() + 0.5f) * building->GetHeight());
 //		roomInfo.size = FVector(room->GetSizeX(), room->GetSizeY(), building->GetHeight());
-//		roomInfo.rotation = building->GetParentPlot()->GetRotation();
+//		roomInfo.rotation = building->GetParentBlock()->GetRotation();
 //		rooms.Add(roomInfo);
 //	}
 //	UpdateRoom(UTF8_TO_TCHAR(name.data()), rooms, {});

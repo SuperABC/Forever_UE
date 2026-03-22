@@ -338,7 +338,7 @@ void Lot::SetArea(AREA_TYPE a) {
 
 pair<float, float> Lot::GetVertex(int idx) const {
 	if (idx < 1 || idx > 4) {
-		THROW_EXCEPTION(OutOfRangeException, "Plot vertex out of range [0, 3].\n");
+		THROW_EXCEPTION(OutOfRangeException, "Block vertex out of range [0, 3].\n");
 	}
 
 	float hx = sizeX / 2.0f;
@@ -375,7 +375,7 @@ pair<float, float> Lot::GetPosition(float x, float y) const {
 
 void Lot::SetPosition(Node n1, Node n2, Node n3, const vector<float>& margin) {
 	if (margin.size() != 4) {
-		THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
+		THROW_EXCEPTION(InvalidArgumentException, "Block must have 4 margins.\n");
 	}
 
 	float x1 = n1.GetX(), y1 = n1.GetY();
@@ -390,7 +390,7 @@ void Lot::SetPosition(Node n1, Node n2, Node n3, const vector<float>& margin) {
 	float dot = ux * vx + uy * vy;
 	const float eps = 1e-5f;
 	if (abs(dot) > eps) {
-		THROW_EXCEPTION(InvalidArgumentException, "Plot edges are not perpendicular.\n");
+		THROW_EXCEPTION(InvalidArgumentException, "Block edges are not perpendicular.\n");
 	}
 
 	// 计算尺寸
@@ -423,7 +423,7 @@ void Lot::SetPosition(Node n1, Node n2, Node n3, const vector<float>& margin) {
 
 void Lot::SetPosition(Node n1, Node n2, Node n3, Node n4, const vector<float>& margin) {
 	if (margin.size() != 4) {
-		THROW_EXCEPTION(InvalidArgumentException, "Plot must have 4 margins.\n");
+		THROW_EXCEPTION(InvalidArgumentException, "Block must have 4 margins.\n");
 	}
 
 	vector<Node> nodes = { n1, n2, n3, n4 };
@@ -465,7 +465,7 @@ void Lot::SetPosition(Node n1, Node n2, Node n3, Node n4, const vector<float>& m
 
 	if (abs(dot1) > eps || abs(dot2) > eps ||
 		abs(dot3) > eps || abs(dot4) > eps) {
-		THROW_EXCEPTION(InvalidArgumentException, "Plot edges are not perpendicular.\n");
+		THROW_EXCEPTION(InvalidArgumentException, "Block edges are not perpendicular.\n");
 	}
 
 	// 检查对边长度相等
@@ -475,7 +475,7 @@ void Lot::SetPosition(Node n1, Node n2, Node n3, Node n4, const vector<float>& m
 	float len4 = sqrt(u4x * u4x + u4y * u4y);
 
 	if (abs(len1 - len3) > eps || abs(len2 - len4) > eps) {
-		THROW_EXCEPTION(InvalidArgumentException, "Plot opposite edges are not equal.\n");
+		THROW_EXCEPTION(InvalidArgumentException, "Block opposite edges are not equal.\n");
 	}
 
 	// 计算尺寸（取相邻两边长度）

@@ -2,7 +2,7 @@
 
 #include "zone_mod.h"
 
-#include "plot.h"
+#include "block.h"
 
 
 // 子类注册函数
@@ -20,7 +20,7 @@ public:
 
     static std::function<int(Lot*)> ZoneAssigner;
 
-    virtual void AssignZone(Lot* plot);
+    virtual void LayoutZone(Lot* block);
 
 private:
     static int count;
@@ -29,7 +29,7 @@ private:
 };
 
 // 园区实体
-class Plot;
+class Block;
 class Zone {
 public:
     Zone() = delete;
@@ -43,13 +43,13 @@ public:
     std::string GetName() const;
 
     // 设计园区
-    void AssignZone(Lot* plot);
+    void LayoutZone(Lot* block);
 
     // 获取所在地块
-    Plot* GetParent() const;
+    Block* GetParent() const;
 
     // 设置所在地块
-    void SetParent(Plot* plot);
+    void SetParent(Block* block);
 
     // 获取私人房东ID
     int GetOwner() const;
@@ -88,7 +88,7 @@ private:
     std::string type;
     std::string name;
 
-    Plot* parentPlot;
+    Block* parentBlock;
     std::string fullAddress;
     bool stated;
     //Person* owner;

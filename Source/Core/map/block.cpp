@@ -1,4 +1,4 @@
-﻿#include "plot.h"
+﻿#include "block.h"
 #include "utility.h"
 #include "error.h"
 
@@ -9,17 +9,17 @@
 
 using namespace std;
 
-Plot::Plot() :
+Block::Block() :
 	Lot(), address(), zones() {//, buildings() {
 
 }
 
-Plot::Plot(Lot lot) :
+Block::Block(Lot lot) :
 	Lot(lot), address(), zones() {//, buildings() {
 
 }
 
-Plot::~Plot() {
+Block::~Block() {
 	for (auto [road, _] : roads) {
 		delete road;
 	}
@@ -28,37 +28,37 @@ Plot::~Plot() {
 	}
 }
 
-const vector<pair<Connection*, float>>& Plot::GetRoads() const {
+const vector<pair<Connection*, float>>& Block::GetRoads() const {
 	return roads;
 }
 
-void Plot::SetRoads(const vector<pair<Connection*, float>>& r) {
+void Block::SetRoads(const vector<pair<Connection*, float>>& r) {
 	roads = r;
 }
 
-unordered_map<string, Zone*>& Plot::GetZones() {
+unordered_map<string, Zone*>& Block::GetZones() {
 	return zones;
 }
 
-//unordered_map<string, Building*>& Plot::GetBuildings() {
+//unordered_map<string, Building*>& Block::GetBuildings() {
 //	return buildings;
 //}
 
-void Plot::AddZone(const string& name, Zone* zone) {
+void Block::AddZone(const string& name, Zone* zone) {
 	if (zones.find(name) != zones.end()) {
 		THROW_EXCEPTION(RuntimeException, "Duplicate zone name: " + name + ".\n");
 	}
 	zones[name] = zone;
 }
 
-//void Plot::AddBuilding(const string& name, Building* building) {
+//void Block::AddBuilding(const string& name, Building* building) {
 //	if (buildings.find(name) != buildings.end()) {
 //		THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + name + ".\n");
 //	}
 //	buildings[name] = building;
 //}
 
-Zone* Plot::GetZone(const string& name) const {
+Zone* Block::GetZone(const string& name) const {
 	for (const auto& [zoneName, zonePtr] : zones) {
 		if (zoneName == name) {
 			return zonePtr;
@@ -67,7 +67,7 @@ Zone* Plot::GetZone(const string& name) const {
 	return nullptr;
 }
 
-//Building* Plot::GetBuilding(const string& name) const {
+//Building* Block::GetBuilding(const string& name) const {
 //	for (const auto& [bldName, bldPtr] : buildings) {
 //		if (bldName == name) {
 //			return bldPtr;
@@ -76,7 +76,7 @@ Zone* Plot::GetZone(const string& name) const {
 //	return nullptr;
 //}
 
-void Plot::RemoveZone(const string& name) {
+void Block::RemoveZone(const string& name) {
 	for (auto it = zones.begin(); it != zones.end(); ) {
 		if (it->first == name) {
 			it = zones.erase(it);
@@ -87,7 +87,7 @@ void Plot::RemoveZone(const string& name) {
 	}
 }
 
-//void Plot::RemoveBuilding(const string& name) {
+//void Block::RemoveBuilding(const string& name) {
 //	for (auto it = buildings.begin(); it != buildings.end(); ) {
 //		if (it->first == name) {
 //			it = buildings.erase(it);
@@ -98,12 +98,12 @@ void Plot::RemoveZone(const string& name) {
 //	}
 //}
 
-void Plot::SetAddress(const string& road, int id) {
+void Block::SetAddress(const string& road, int id) {
 	address.first = road;
 	address.second = id;
 }
 
-string Plot::GetAddress() const {
+string Block::GetAddress() const {
 	return address.first + " " + to_string(address.second);
 }
 
