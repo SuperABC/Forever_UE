@@ -76,7 +76,7 @@ public:
 	const std::unordered_map<std::string, Building*>& GetBuildings();
 
 	// 自动分布建筑
-	//void ArrangeBuildings();
+	void ArrangeBuildings();
 
 	// 获取园区中心世界位置
 	void GetPosition(float& x, float& y) const;

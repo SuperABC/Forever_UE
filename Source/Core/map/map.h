@@ -124,6 +124,8 @@ public:
 	//Room* LocateRoom(const std::string& address) const;
 
 private:
+	void ArrangeBlocks();
+
 	// 统一工厂
 	static TerrainFactory* terrainFactory;
 	static RoadnetFactory* roadnetFactory;

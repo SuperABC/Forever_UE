@@ -115,7 +115,8 @@ shared_ptr<Element> Chunk::GetElement(int x, int y) const {
 
 Map::Map() :
 	width(0),
-	height(0) {
+	height(0),
+	roadnet(nullptr) {
 	if (!terrainFactory) {
 		terrainFactory = new TerrainFactory();
 	}
@@ -516,6 +517,28 @@ int Map::Init(int chunkX, int chunkY) {
 		}
 	}
 
+	debugf("Log: Arranging zones and buildings.\n");
+	ArrangeBlocks();
+	for (auto block : roadnet->GetBlocks()) {
+		if (!block) continue;
+		auto zones = block->GetZones();
+		for (auto& [name, zone] : zones) {
+			if (!zone) continue;
+			zone->ArrangeBuildings();
+			SetZone(zone, name);
+			for (auto& building : zone->GetBuildings()) {
+				if (!building.second) continue;
+				SetBuilding(building.second, building.first,
+					make_pair(zone->GetQuad()->GetLeft(), zone->GetQuad()->GetBottom()));
+			}
+		}
+		auto buildings = block->GetBuildings();
+		for (auto& [name, building] : buildings) {
+			if (!building) continue;
+			SetBuilding(building, name);
+		}
+	}
+
 	return 0;
 }
 
@@ -625,5 +648,359 @@ float Map::GetHeight(int x, int y) const {
 
 Roadnet* Map::GetRoadnet() const {
 	return roadnet;
+}
+
+unordered_map<string, Zone*>& Map::GetZones() {
+	return zones;
+}
+
+unordered_map<string, Building*>& Map::GetBuildings() {
+	return buildings;
+}
+
+Zone* Map::GetZone(const string& name) const {
+	auto it = zones.find(name);
+	if (it == zones.end()) return nullptr;
+	return it->second;
+}
+
+Building* Map::GetBuilding(const string& name) const {
+	auto it = buildings.find(name);
+	if (it == buildings.end()) {
+		for (auto& [_, zone] : zones) {
+			auto building = zone->GetBuilding(name.data());
+			if (building)return building;
+		}
+		return nullptr;
+	}
+	return it->second;
+}
+
+void Map::SetZone(Zone* zone, const string& name) {
+	if (!zone) {
+		THROW_EXCEPTION(NullPointerException, "Zone is null.\n");
+	}
+	auto block = zone->GetParent();
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Zone's parent block is null.\n");
+	}
+
+	// 计算四个顶点（世界坐标）
+	auto v1 = block->GetPosition(zone->GetQuad()->GetPosX() + zone->GetQuad()->GetSizeX() / 2.f, zone->GetQuad()->GetPosY() + zone->GetQuad()->GetSizeY() / 2.f);
+	auto v2 = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f, zone->GetQuad()->GetPosY() + zone->GetQuad()->GetSizeY() / 2.f);
+	auto v3 = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f, zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f);
+	auto v4 = block->GetPosition(zone->GetQuad()->GetPosX() + zone->GetQuad()->GetSizeX() / 2.f, zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f);
+
+	vector<pair<float, float>> points = { v1, v2, v3, v4 };
+	int minX = (int)points[0].first;
+	int maxX = (int)points[0].first;
+	int minY = (int)points[0].second;
+	int maxY = (int)points[0].second;
+	for (const auto& [x, y] : points) { // 结构化绑定
+		minX = min(minX, (int)x);
+		maxX = max(maxX, (int)x);
+		minY = min(minY, (int)y);
+		maxY = max(maxY, (int)y);
+	}
+
+	for (int x = minX; x <= maxX; ++x) {
+		for (int y = minY; y <= maxY; ++y) {
+			bool inside = false;
+			for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
+				const auto& [x1, y1] = points[i];
+				const auto& [x2, y2] = points[j];
+				if (((y1 > y) != (y2 > y)) &&
+					(x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)) {
+					inside = !inside;
+				}
+			}
+			if (inside) {
+				auto element = GetElement(x, y);
+				if (element) {
+					element->SetZone(name);
+				}
+			}
+		}
+	}
+}
+
+void Map::SetBuilding(Building* building, const string& name) {
+	if (!building) {
+		THROW_EXCEPTION(NullPointerException, "Building is null.\n");
+	}
+	auto block = building->GetParentBlock();
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Building's parent block is null.\n");
+	}
+
+	auto v1 = block->GetPosition(building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f, building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
+	auto v2 = block->GetPosition(building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f, building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
+	auto v3 = block->GetPosition(building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f, building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
+	auto v4 = block->GetPosition(building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f, building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
+
+	vector<pair<float, float>> points = { v1, v2, v3, v4 };
+	int minX = (int)points[0].first;
+	int maxX = (int)points[0].first;
+	int minY = (int)points[0].second;
+	int maxY = (int)points[0].second;
+	for (const auto& [x, y] : points) {
+		minX = min(minX, (int)x);
+		maxX = max(maxX, (int)x);
+		minY = min(minY, (int)y);
+		maxY = max(maxY, (int)y);
+	}
+
+	for (int x = minX; x <= maxX; ++x) {
+		for (int y = minY; y <= maxY; ++y) {
+			bool inside = false;
+			for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
+				const auto& [x1, y1] = points[i];
+				const auto& [x2, y2] = points[j];
+				if (((y1 > y) != (y2 > y)) &&
+					(x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)) {
+					inside = !inside;
+				}
+			}
+			if (inside) {
+				auto element = GetElement(x, y);
+				if (element) {
+					element->SetBuilding(name);
+				}
+			}
+		}
+	}
+}
+
+void Map::SetBuilding(Building* building, const string& name, pair<float, float> offset) {
+	if (!building) {
+		THROW_EXCEPTION(NullPointerException, "Building is null.\n");
+	}
+	auto block = building->GetParentBlock();
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Building's parent block is null.\n");
+	}
+
+	auto v1 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f, offset.second + building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
+	auto v2 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f, offset.second + building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
+	auto v3 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f, offset.second + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
+	auto v4 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f, offset.second + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
+
+	vector<pair<float, float>> points = { v1, v2, v3, v4 };
+	int minX = (int)points[0].first;
+	int maxX = (int)points[0].first;
+	int minY = (int)points[0].second;
+	int maxY = (int)points[0].second;
+	for (const auto& [x, y] : points) {
+		minX = min(minX, (int)x);
+		maxX = max(maxX, (int)x);
+		minY = min(minY, (int)y);
+		maxY = max(maxY, (int)y);
+	}
+
+	for (int x = minX; x <= maxX; ++x) {
+		for (int y = minY; y <= maxY; ++y) {
+			bool inside = false;
+			for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
+				const auto& [x1, y1] = points[i];
+				const auto& [x2, y2] = points[j];
+				if (((y1 > y) != (y2 > y)) &&
+					(x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)) {
+					inside = !inside;
+				}
+			}
+			if (inside) {
+				auto element = GetElement(x, y);
+				if (element) {
+					element->SetBuilding(name);
+				}
+			}
+		}
+	}
+}
+
+void Map::ArrangeBlocks() {
+	if (!roadnet) return;
+	auto blocks = roadnet->GetBlocks();
+	for (auto block : blocks) {
+		if (!block) continue;
+		auto zones = block->GetZones();
+		auto buildings = block->GetBuildings();
+
+		if (zones.empty() && buildings.empty()) continue;
+
+		float acreageTotal = block->GetAcreage();
+		float acreageUsed = 0.f;
+
+		for (const auto& [name, zone] : zones) {
+			if (zone) acreageUsed += zone->GetQuad()->GetAcreage();
+		}
+		for (const auto& [name, building] : buildings) {
+			if (building) acreageUsed += building->GetQuad()->GetAcreage();
+		}
+		float acreageRemain = acreageTotal - acreageUsed;
+
+		bool acreageAllocate = false;
+		if (acreageRemain > 0) {
+			for (auto& [name, building] : buildings) {
+				if (!building) continue;
+				float acreageTmp = building->RandomAcreage();
+				float acreageMax = building->GetAcreageMax();
+				float acreageMin = building->GetAcreageMin();
+
+				float acreageExpand = acreageMax - acreageTmp;
+
+				if (acreageExpand > acreageRemain && acreageRemain > 0) {
+					float acreageNew = acreageTmp + acreageRemain;
+					if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
+						building->GetQuad()->SetAcreage(acreageNew);
+						acreageUsed += acreageRemain;
+						acreageRemain = 0.f;
+						acreageAllocate = true;
+						break;
+					}
+				}
+			}
+		}
+
+		Quad* emptyRect = nullptr;
+		vector<Quad*> elements;
+		if (acreageRemain > 0 && !acreageAllocate) {
+			emptyRect = new Block();
+			emptyRect->SetAcreage(acreageRemain);
+			elements.push_back(emptyRect);
+		}
+
+		for (const auto& [name, zone] : zones) {
+			if (zone) elements.push_back(zone->GetQuad());
+		}
+		for (const auto& [name, building] : buildings) {
+			if (building) elements.push_back(building->GetQuad());
+		}
+
+		if (elements.empty()) continue;
+
+		sort(elements.begin(), elements.end(), [](Quad* a, Quad* b) {
+			return a->GetAcreage() > b->GetAcreage();
+			});
+
+		Quad container = Quad(block->GetSizeX() / 2, block->GetSizeY() / 2, block->GetSizeX(), block->GetSizeY());
+		if (elements.size() == 1) {
+			elements[0]->SetPosition(container.GetPosX(), container.GetPosY(), container.GetSizeX(), container.GetSizeY());
+		}
+		else {
+			class Chunk : public Quad {
+			public:
+				Chunk(Quad* r1, Quad* r2) : r1(r1), r2(r2) { acreage = r1->GetAcreage() + r2->GetAcreage(); }
+				Quad* r1, * r2;
+			};
+			while (elements.size() > 2) {
+				Chunk* tmp = new Chunk(elements[elements.size() - 1], elements[elements.size() - 2]);
+				elements.pop_back();
+				int i = (int)elements.size() - 2;
+				for (; i >= 0; --i) {
+					if (tmp->GetAcreage() > elements[i]->GetAcreage()) {
+						elements[i + 1] = elements[i];
+					}
+					else {
+						elements[i + 1] = tmp;
+						break;
+					}
+				}
+				if (i < 0) elements[0] = tmp;
+			}
+
+			if (container.GetSizeX() > container.GetSizeY()) {
+				if (GetRandom(2)) {
+					int divX = int(container.GetLeft() +
+						(container.GetRight() - container.GetLeft()) * elements[0]->GetAcreage() / container.GetAcreage());
+					if (abs(divX - container.GetLeft()) < 2) divX = (int)container.GetLeft();
+					if (abs(divX - container.GetRight()) < 2) divX = (int)container.GetRight();
+					elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
+					elements[1]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
+				}
+				else {
+					int divX = int(container.GetLeft() +
+						(container.GetRight() - container.GetLeft()) * elements[1]->GetAcreage() / container.GetAcreage());
+					if (abs(divX - container.GetLeft()) < 2) divX = (int)container.GetLeft();
+					if (abs(divX - container.GetRight()) < 2) divX = (int)container.GetRight();
+					elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), (float)divX, container.GetTop());
+					elements[0]->SetVertices((float)divX, container.GetBottom(), container.GetRight(), container.GetTop());
+				}
+			}
+			else {
+				if (GetRandom(2)) {
+					int divY = int(container.GetBottom() +
+						(container.GetTop() - container.GetBottom()) * elements[0]->GetAcreage() / container.GetAcreage());
+					if (abs(divY - container.GetBottom()) < 2) divY = (int)container.GetBottom();
+					if (abs(divY - container.GetTop()) < 2) divY = (int)container.GetTop();
+					elements[0]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
+					elements[1]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
+				}
+				else {
+					int divY = int(container.GetBottom() +
+						(container.GetTop() - container.GetBottom()) * elements[1]->GetAcreage() / container.GetAcreage());
+					if (abs(divY - container.GetBottom()) < 2) divY = (int)container.GetBottom();
+					if (abs(divY - container.GetTop()) < 2) divY = (int)container.GetTop();
+					elements[1]->SetVertices(container.GetLeft(), container.GetBottom(), container.GetRight(), (float)divY);
+					elements[0]->SetVertices(container.GetLeft(), (float)divY, container.GetRight(), container.GetTop());
+				}
+			}
+
+			while (!elements.empty()) {
+				auto tmp = elements.back();
+				elements.pop_back();
+				if (auto chunk = dynamic_cast<Chunk*>(tmp)) {
+					Quad* rect1 = chunk->r1;
+					Quad* rect2 = chunk->r2;
+
+					if (tmp->GetAcreage() > 0) {
+						if (tmp->GetSizeX() > tmp->GetSizeY()) {
+							if (GetRandom(2)) {
+								int divX = int(tmp->GetLeft() +
+									tmp->GetSizeX() * rect1->GetAcreage() / tmp->GetAcreage());
+								if (abs(divX - tmp->GetLeft()) < 2) divX = (int)tmp->GetLeft();
+								if (abs(divX - tmp->GetRight()) < 2) divX = (int)tmp->GetRight();
+								rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
+								rect2->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
+							}
+							else {
+								int divX = int(tmp->GetLeft() +
+									tmp->GetSizeX() * rect2->GetAcreage() / tmp->GetAcreage());
+								if (abs(divX - tmp->GetLeft()) < 2) divX = (int)tmp->GetLeft();
+								if (abs(divX - tmp->GetRight()) < 2) divX = (int)tmp->GetRight();
+								rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), (float)divX, tmp->GetTop());
+								rect1->SetVertices((float)divX, tmp->GetBottom(), tmp->GetRight(), tmp->GetTop());
+							}
+						}
+						else {
+							if (GetRandom(2)) {
+								int divY = int(tmp->GetBottom() +
+									tmp->GetSizeY() * rect1->GetAcreage() / tmp->GetAcreage());
+								if (abs(divY - tmp->GetBottom()) < 2) divY = (int)tmp->GetBottom();
+								if (abs(divY - tmp->GetTop()) < 2) divY = (int)tmp->GetTop();
+								rect1->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
+								rect2->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
+							}
+							else {
+								int divY = int(tmp->GetBottom() +
+									tmp->GetSizeY() * rect2->GetAcreage() / tmp->GetAcreage());
+								if (abs(divY - tmp->GetBottom()) < 2) divY = (int)tmp->GetBottom();
+								if (abs(divY - tmp->GetTop()) < 2) divY = (int)tmp->GetTop();
+								rect2->SetVertices(tmp->GetLeft(), tmp->GetBottom(), tmp->GetRight(), (float)divY);
+								rect1->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
+							}
+						}
+						if (dynamic_cast<Chunk*>(rect1)) elements.push_back(rect1);
+						if (dynamic_cast<Chunk*>(rect2)) elements.push_back(rect2);
+					}
+					delete chunk;
+				}
+			}
+		}
+
+		if (emptyRect) {
+			delete emptyRect;
+		}
+	}
 }
 
