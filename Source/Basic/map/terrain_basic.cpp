@@ -5,7 +5,9 @@ using namespace std;
 
 // 海洋地形
 
-OceanTerrain::OceanTerrain() {
+int OceanTerrain::count = 0;
+
+OceanTerrain::OceanTerrain() : id(count++) {
 
 }
 
@@ -13,31 +15,34 @@ OceanTerrain::~OceanTerrain() {
 
 }
 
-string OceanTerrain::GetId() {
-    return "ocean";
+const char* OceanTerrain::GetId() {
+	return "ocean";
 }
 
-string OceanTerrain::GetType() const {
-    return "ocean";
+const char* OceanTerrain::GetType() const {
+	return "ocean";
 }
 
-string OceanTerrain::GetName() const {
-    return "海洋地形";
+const char* OceanTerrain::GetName() {
+	name = "海洋地形" + to_string(id);
+	return name.data();
 }
 
 float OceanTerrain::GetPriority() const {
-    return 1.0f;
+	return 1.0f;
 }
 
 void OceanTerrain::DistributeTerrain(int width, int height,
-    function<bool(int, int, string, float)> setElement,
-    function<string(int, int)> getTerrain, function<float(int, int)> getHeight) const {
+	function<bool(int, int, string, float)> setElement,
+	function<string(int, int)> getTerrain, function<float(int, int)> getHeight) const {
 
 }
 
 // 山区地形
 
-MountainTerrain::MountainTerrain() {
+int MountainTerrain::count = 0;
+
+MountainTerrain::MountainTerrain() : id(count++) {
 
 }
 
@@ -45,24 +50,25 @@ MountainTerrain::~MountainTerrain() {
 
 }
 
-string MountainTerrain::GetId() {
-    return "mountain";
+const char* MountainTerrain::GetId() {
+	return "mountain";
 }
 
-string MountainTerrain::GetType() const {
-    return "mountain";
+const char* MountainTerrain::GetType() const {
+	return "mountain";
 }
 
-string MountainTerrain::GetName() const {
-    return "山区地形";
+const char* MountainTerrain::GetName() {
+	name = "山区地形" + to_string(id);
+	return name.data();
 }
 
 float MountainTerrain::GetPriority() const {
-    return 0.9f;
+	return 0.9f;
 }
 
 void MountainTerrain::DistributeTerrain(int width, int height,
-    function<bool(int, int, string, float)> setElement,
-    function<string(int, int)> getTerrain, function<float(int, int)> getHeight) const {
+	function<bool(int, int, string, float)> setElement,
+	function<string(int, int)> getTerrain, function<float(int, int)> getHeight) const {
 
 }

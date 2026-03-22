@@ -3,7 +3,9 @@
 
 using namespace std;
 
-EmptyRoadnet::EmptyRoadnet() {
+int EmptyRoadnet::count = 0;
+
+EmptyRoadnet::EmptyRoadnet() : id(count++) {
 
 }
 
@@ -11,16 +13,17 @@ EmptyRoadnet::~EmptyRoadnet() {
 
 }
 
-string EmptyRoadnet::GetId() {
+const char* EmptyRoadnet::GetId() {
 	return "empty";
 }
 
-string EmptyRoadnet::GetType() const {
+const char* EmptyRoadnet::GetType() const {
 	return "empty";
 }
 
-string EmptyRoadnet::GetName() const {
-	return "空路网";
+const char* EmptyRoadnet::GetName() {
+	name = "空路网" + to_string(id);
+	return name.data();
 }
 
 void EmptyRoadnet::DistributeRoadnet(int width, int height,
@@ -72,7 +75,7 @@ void Roadnet::DistributeRoadnet(int width, int height,
 	for (auto connection : mod->connections) {
 		connections.push_back(new Connection(connection));
 	}
-	for (auto [lot, connections] : mod->quads) {
+	for (auto [lot, connections] : mod->lots) {
 		auto block = new Block(lot);
 		vector<pair<Connection*, float>> roads;
 		for (auto connection : connections) {

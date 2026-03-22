@@ -8,7 +8,9 @@ using namespace std;
 
 // 井字路网
 
-JingRoadnet::JingRoadnet() {
+int JingRoadnet::count = 0;
+
+JingRoadnet::JingRoadnet() : id(count++) {
 
 }
 
@@ -16,16 +18,17 @@ JingRoadnet::~JingRoadnet() {
 
 }
 
-string JingRoadnet::GetId() {
+const char* JingRoadnet::GetId() {
 	return "jing";
 }
 
-string JingRoadnet::GetType() const {
+const char* JingRoadnet::GetType() const {
 	return "jing";
 }
 
-string JingRoadnet::GetName() const {
-	return "井字路网";
+const char* JingRoadnet::GetName() {
+	name = "井字路网" + to_string(id);
+	return name.data();
 }
 
 void JingRoadnet::DistributeRoadnet(int width, int height,
@@ -132,14 +135,14 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		connections.emplace_back("城南东路", nodes[idx1], nodes[idx2]);
 	}
 
-	quads.emplace_back(Lot(northWest, northEast, southEast, southWest, { 0.5f, 0.5f, 0.5f, 0.5f }), 
+	lots.emplace_back(Lot(northWest, northEast, southEast, southWest, { 0.5f, 0.5f, 0.5f, 0.5f }), 
 		vector<pair<Connection, float>>({
 		{connections[0], 0.5f},
 		{connections[1], 0.5f},
 		{connections[2], 0.5f},
 		{connections[3], 0.5f}
 	}));
-	quads.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+	lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 
 	for (size_t i = 1; i < min(horizontalNode1w.size(), horizontalNode2w.size()); i++) {
 		if (get((int)horizontalNode1w[i].first.GetX(), (int)horizontalNode1w[i].first.GetY()) != "plain") continue;
@@ -152,12 +155,12 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [seNode, seIdx] = horizontalNode2w[i - 1];
 		const auto& [swNode, swIdx] = horizontalNode2w[i];
 
-		quads.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f }),
+		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f }),
 			vector<pair<Connection, float>>({
 			{Connection("城西北路", nodes[nwIdx], nodes[neIdx]), 0.5f},
 			{Connection("城西南路", nodes[swIdx], nodes[seIdx]), 0.5f}
 		}));
-		quads.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 
 	for (size_t i = 1; i < min(horizontalNode1e.size(), horizontalNode2e.size()); i++) {
@@ -171,12 +174,12 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [seNode, seIdx] = horizontalNode2e[i];
 		const auto& [swNode, swIdx] = horizontalNode2e[i - 1];
 
-		quads.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f) }),
+		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f) }),
 			vector<pair<Connection, float>>({
 			{Connection("城东北路", nodes[neIdx], nodes[nwIdx]), 0.5f},
 			{Connection("城东南路", nodes[seIdx], nodes[swIdx]), 0.5f}
 		}));
-		quads.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 
 	for (size_t i = 1; i < min(verticalNode1n.size(), verticalNode2n.size()); i++) {
@@ -190,12 +193,12 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [seNode, seIdx] = verticalNode2n[i - 1];
 		const auto& [swNode, swIdx] = verticalNode1n[i - 1];
 
-		quads.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f }),
+		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.0f, 0.5f, (i == 1 ? 0.5f : 0.0f), 0.5f }),
 			vector<pair<Connection, float>>({
 			{Connection("城北西路", nodes[nwIdx], nodes[swIdx]), 0.5f},
 			{Connection("城北东路", nodes[neIdx], nodes[seIdx]), 0.5f}
 		}));
-		quads.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 
 	for (size_t i = 1; i < min(verticalNode1s.size(), verticalNode2s.size()); i++) {
@@ -209,12 +212,12 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [seNode, seIdx] = verticalNode2s[i];
 		const auto& [swNode, swIdx] = verticalNode1s[i];
 
-		quads.emplace_back(Lot(nwNode, neNode, seNode, swNode, { (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f, 0.5f }),
+		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { (i == 1 ? 0.5f : 0.0f), 0.5f, 0.0f, 0.5f }),
 			vector<pair<Connection, float>>({
 			{Connection("城南西路", nodes[swIdx], nodes[nwIdx]), 0.5f},
 			{Connection("城南东路", nodes[seIdx], nodes[neIdx]), 0.5f}
 				}));
-		quads.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 }
 

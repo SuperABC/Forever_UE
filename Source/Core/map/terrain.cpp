@@ -3,7 +3,9 @@
 
 using namespace std;
 
-EmptyTerrain::EmptyTerrain() {
+int EmptyTerrain::count = 0;
+
+EmptyTerrain::EmptyTerrain() : id(count++) {
 
 }
 
@@ -11,16 +13,17 @@ EmptyTerrain::~EmptyTerrain() {
 
 }
 
-string EmptyTerrain::GetId() {
+const char* EmptyTerrain::GetId() {
 	return "empty";
 }
 
-string EmptyTerrain::GetType() const {
+const char* EmptyTerrain::GetType() const {
 	return "empty";
 }
 
-string EmptyTerrain::GetName() const {
-	return "空地形";
+const char* EmptyTerrain::GetName() {
+	name = "空地形" + to_string(id);
+	return name.data();
 }
 
 float EmptyTerrain::GetPriority() const {

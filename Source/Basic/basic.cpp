@@ -32,17 +32,13 @@ extern "C" __declspec(dllexport) void* GetModTerrains() {
 
 extern "C" __declspec(dllexport) void RegisterModTerrains(TerrainFactory* factory) {
 	factory->RegisterTerrain(OceanTerrain::GetId(),
-		[]() {
-			return new OceanTerrain();
-		}, [](TerrainMod* terrain) {
-			delete terrain;
-		});
+		[]() { return new OceanTerrain(); },
+		[](TerrainMod* terrain) { delete terrain; }
+	);
 	factory->RegisterTerrain(MountainTerrain::GetId(),
-		[]() {
-			return new MountainTerrain();
-		}, [](TerrainMod* terrain) {
-			delete terrain;
-		});
+		[]() { return new MountainTerrain(); },
+		[](TerrainMod* terrain) { delete terrain; }
+	);
 }
 
 extern "C" __declspec(dllexport) void* GetModRoadnets() {
@@ -52,11 +48,9 @@ extern "C" __declspec(dllexport) void* GetModRoadnets() {
 
 extern "C" __declspec(dllexport) void RegisterModRoadnets(RoadnetFactory* factory) {
 	factory->RegisterRoadnet(JingRoadnet::GetId(),
-		[]() {
-			return new JingRoadnet();
-		}, [](RoadnetMod* terrain) {
-			delete terrain;
-		});
+		[]() { return new JingRoadnet(); },
+		[](RoadnetMod* terrain) { delete terrain; }
+	);
 }
 
 extern "C" __declspec(dllexport) void* GetModZones() {
@@ -66,9 +60,20 @@ extern "C" __declspec(dllexport) void* GetModZones() {
 
 extern "C" __declspec(dllexport) void RegisterModZones(ZoneFactory* factory) {
 	factory->RegisterZone(ResidentialZone::GetId(), ResidentialZone::ZoneAssigner,
-		[]() {
-			return new ResidentialZone();
-		}, [](ZoneMod* zone) {
-			delete zone;
-		});
+		[]() { return new ResidentialZone(); },
+		[](ZoneMod* zone) { delete zone; }
+	);
+}
+
+extern "C" __declspec(dllexport) void* GetModBuildings() {
+	static vector<string> mods = { "residential" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* factory) {
+	factory->RegisterBuilding(ResidentialBuilding::GetId(),
+		ResidentialBuilding::GetPowers(), ResidentialBuilding::BuildingAssigner,
+		[]() { return new ResidentialBuilding(); },
+		[](BuildingMod* zone) { delete zone; }
+	);
 }

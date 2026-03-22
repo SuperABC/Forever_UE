@@ -9,10 +9,16 @@ public:
 	JingRoadnet();
 	virtual ~JingRoadnet();
 
-	static std::string GetId();
-	virtual std::string GetType() const override;
-	virtual std::string GetName() const override;
+	static const char* GetId();
+	virtual const char* GetType() const override;
+	virtual const char* GetName() override;
 
 	virtual void DistributeRoadnet(int width, int height,
 		std::function<std::string(int, int)> get) override;
+
+private:
+	static int count;
+
+	int id;
+	std::string name;
 };

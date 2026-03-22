@@ -375,7 +375,7 @@ int main() {
 	::map->InitTerrains(modHandles, mods);
 	::map->InitRoadnets(modHandles, mods);
 	::map->InitZones(modHandles, mods);
-	//::map->InitBuildings(modHandles, mods);
+	::map->InitBuildings(modHandles, mods);
 	//::map->InitComponents(modHandles, mods);
 	//::map->InitRooms(modHandles, mods);
 

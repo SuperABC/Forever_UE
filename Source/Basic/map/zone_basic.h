@@ -6,19 +6,20 @@
 // 住宅园区
 class ResidentialZone : public ZoneMod {
 public:
-    ResidentialZone();
-    virtual ~ResidentialZone();
+	ResidentialZone();
+	virtual ~ResidentialZone();
 
-    static std::string GetId();
-    virtual std::string GetType() const override;
-    virtual std::string GetName() const override;
+	static const char* GetId();
+	virtual const char* GetType() const override;
+	virtual const char* GetName() override;
 
-    static std::function<int(Lot*)> ZoneAssigner;
+	static std::function<int(Lot*)> ZoneAssigner;
 
-    virtual void LayoutZone(Lot* lot);
+	virtual void LayoutZone(Lot* lot);
 
 private:
-    static int count;
+	static int count;
 
-    int id;
+	int id;
+	std::string name;
 };

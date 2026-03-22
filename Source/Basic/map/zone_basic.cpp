@@ -13,16 +13,17 @@ ResidentialZone::~ResidentialZone() {
 
 }
 
-string ResidentialZone::GetId() {
+const char* ResidentialZone::GetId() {
 	return "residential";
 }
 
-string ResidentialZone::GetType() const {
+const char* ResidentialZone::GetType() const {
 	return "residential";
 }
 
-string ResidentialZone::GetName() const {
-	return "住宅园区" + to_string(id);
+const char* ResidentialZone::GetName() {
+	name = "住宅园区" + to_string(id);
+	return name.data();
 }
 
 void ResidentialZone::LayoutZone(Lot* lot) {

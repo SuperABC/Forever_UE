@@ -21,19 +21,19 @@ Node::~Node() {
 }
 
 int Node::GetId() const {
-    return id;
+	return id;
 }
 
 float Node::GetX() const {
-    return posX;
+	return posX;
 }
 
 float Node::GetY() const {
-    return posY;
+	return posY;
 }
 
 float Node::GetZ() const {
-    return posZ;
+	return posZ;
 }
 
 Node::Node(const Node& other) : id(other.id), posX(other.posX), posY(other.posY), posZ(other.posZ) {
@@ -41,32 +41,32 @@ Node::Node(const Node& other) : id(other.id), posX(other.posX), posY(other.posY)
 }
 
 Node& Node::operator=(const Node& other) {
-    if (this != &other) {
-        posX = other.posX;
-        posY = other.posY;
-        posZ = other.posZ;
-        id = other.id;
-    }
-    return *this;
+	if (this != &other) {
+		posX = other.posX;
+		posY = other.posY;
+		posZ = other.posZ;
+		id = other.id;
+	}
+	return *this;
 }
 
 static int binomial(int n, int k) {
-    if (k < 0 || k > n) return 0;
-    if (k == 0 || k == n) return 1;
-    long long res = 1;
-    for (int i = 1; i <= k; ++i) {
-        res = res * (n - i + 1) / i;
-    }
-    return static_cast<int>(res);
+	if (k < 0 || k > n) return 0;
+	if (k == 0 || k == n) return 1;
+	long long res = 1;
+	for (int i = 1; i <= k; ++i) {
+		res = res * (n - i + 1) / i;
+	}
+	return static_cast<int>(res);
 }
 
 static double bernstein(int n, int i, double t) {
-    return binomial(n, i) * pow(t, i) * pow(1.0 - t, n - i);
+	return binomial(n, i) * pow(t, i) * pow(1.0 - t, n - i);
 }
 
 Connection::Connection(string name, Node n1, Node n2, float radius, float begin, float end)
-    : name(name), radius(radius), begin(begin), end(end),
-    beginVertex(new Node(n1)), endVertex(new Node(n2)) {
+	: name(name), radius(radius), begin(begin), end(end),
+	beginVertex(new Node(n1)), endVertex(new Node(n2)) {
 
 }
 
@@ -92,117 +92,117 @@ Connection& Connection::operator=(const Connection& other) {
 }
 
 Connection::~Connection() {
-    delete beginVertex;
-    delete endVertex;
-    for (auto& p : controlVertices) {
-        delete p.first;
-    }
+	delete beginVertex;
+	delete endVertex;
+	for (auto& p : controlVertices) {
+		delete p.first;
+	}
 }
 
 void Connection::AddControls(vector<pair<Node, float>> controls) {
-    for (auto& pair : controls) {
-        controlVertices.emplace_back(new Node(pair.first), pair.second);
-    }
+	for (auto& pair : controls) {
+		controlVertices.emplace_back(new Node(pair.first), pair.second);
+	}
 }
 
 bool Connection::operator==(const Connection& other) const {
-    return name == other.name &&
-        beginVertex->GetId() == other.beginVertex->GetId() &&
-        endVertex->GetId() == other.endVertex->GetId();
+	return name == other.name &&
+		beginVertex->GetId() == other.beginVertex->GetId() &&
+		endVertex->GetId() == other.endVertex->GetId();
 }
 
 string Connection::GetName() const {
-    return name;
+	return name;
 }
 
 Node Connection::GetStart() const {
-    return GetPoint(begin);
+	return GetPoint(begin);
 }
 
 Node Connection::GetEnd() const {
-    return GetPoint(end);
+	return GetPoint(end);
 }
 
 Node Connection::GetPoint(float f) const {
-    if (f < 0.f || f > 1.f) {
-        debugf("Warning: Bizier query position out of [0, 1].\n");
-        if (f < 0.f)f = 0.f;
-        if (f > 1.f)f = 1.f;
-    }
+	if (f < 0.f || f > 1.f) {
+		debugf("Warning: Bizier query position out of [0, 1].\n");
+		if (f < 0.f)f = 0.f;
+		if (f > 1.f)f = 1.f;
+	}
 
-    float x1 = beginVertex->GetX();
-    float y1 = beginVertex->GetY();
-    float z1 = beginVertex->GetZ();
-    float x2 = endVertex->GetX();
-    float y2 = endVertex->GetY();
-    float z2 = endVertex->GetZ();
+	float x1 = beginVertex->GetX();
+	float y1 = beginVertex->GetY();
+	float z1 = beginVertex->GetZ();
+	float x2 = endVertex->GetX();
+	float y2 = endVertex->GetY();
+	float z2 = endVertex->GetZ();
 
-    if (controlVertices.empty()) {
-        float x = x1 + f * (x2 - x1);
-        float y = y1 + f * (y2 - y1);
-        float z = z1 + f * (z2 - z1);
-        return Node(x, y, z);
-    }
-    else {
-        int n = static_cast<int>(controlVertices.size());
-        vector<pair<Node*, float>> allPoints;
-        allPoints.reserve(n + 2);
-        allPoints.emplace_back(beginVertex, 1.0f);
-        for (auto& p : controlVertices) {
-            allPoints.push_back(p);
-        }
-        allPoints.emplace_back(endVertex, 1.0f);
+	if (controlVertices.empty()) {
+		float x = x1 + f * (x2 - x1);
+		float y = y1 + f * (y2 - y1);
+		float z = z1 + f * (z2 - z1);
+		return Node(x, y, z);
+	}
+	else {
+		int n = static_cast<int>(controlVertices.size());
+		vector<pair<Node*, float>> allPoints;
+		allPoints.reserve(n + 2);
+		allPoints.emplace_back(beginVertex, 1.0f);
+		for (auto& p : controlVertices) {
+			allPoints.push_back(p);
+		}
+		allPoints.emplace_back(endVertex, 1.0f);
 
-        int m = static_cast<int>(allPoints.size()) - 1;
-        double sumWeight = 0.0;
-        double x = 0.0, y = 0.0, z = 0.0;
+		int m = static_cast<int>(allPoints.size()) - 1;
+		double sumWeight = 0.0;
+		double x = 0.0, y = 0.0, z = 0.0;
 
-        for (int i = 0; i <= m; ++i) {
-            double B = bernstein(m, i, f);
-            double w = allPoints[i].second;
-            sumWeight += B * w;
-            x += B * w * allPoints[i].first->GetX();
-            y += B * w * allPoints[i].first->GetY();
-            z += B * w * allPoints[i].first->GetZ();
-        }
+		for (int i = 0; i <= m; ++i) {
+			double B = bernstein(m, i, f);
+			double w = allPoints[i].second;
+			sumWeight += B * w;
+			x += B * w * allPoints[i].first->GetX();
+			y += B * w * allPoints[i].first->GetY();
+			z += B * w * allPoints[i].first->GetZ();
+		}
 
-        if (sumWeight != 0.0) {
-            x /= sumWeight;
-            y /= sumWeight;
-            z /= sumWeight;
-        }
-        return Node(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
-    }
+		if (sumWeight != 0.0) {
+			x /= sumWeight;
+			y /= sumWeight;
+			z /= sumWeight;
+		}
+		return Node(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+	}
 }
 
 float Connection::GetRadius() const {
-    return radius;
+	return radius;
 }
 
 static float ComputeLength(const Connection& connection, float t1, float t2, int segments = 16) {
-    if (t1 == t2) return 0.0f;
-    if (t1 > t2) swap(t1, t2);
-    float step = (t2 - t1) / segments;
-    float length = 0.0f;
-    Node prev = connection.GetPoint(t1);
-    for (int i = 1; i <= segments; ++i) {
-        float t = t1 + i * step;
-        Node curr = connection.GetPoint(t);
-        float dx = curr.GetX() - prev.GetX();
-        float dy = curr.GetY() - prev.GetY();
-        float dz = curr.GetZ() - prev.GetZ();
-        length += sqrt(dx * dx + dy * dy + dz * dz);
-        prev = curr;
-    }
-    return length;
+	if (t1 == t2) return 0.0f;
+	if (t1 > t2) swap(t1, t2);
+	float step = (t2 - t1) / segments;
+	float length = 0.0f;
+	Node prev = connection.GetPoint(t1);
+	for (int i = 1; i <= segments; ++i) {
+		float t = t1 + i * step;
+		Node curr = connection.GetPoint(t);
+		float dx = curr.GetX() - prev.GetX();
+		float dy = curr.GetY() - prev.GetY();
+		float dz = curr.GetZ() - prev.GetZ();
+		length += sqrt(dx * dx + dy * dy + dz * dz);
+		prev = curr;
+	}
+	return length;
 }
 
 float Connection::CalcDistance() const {
-    return ComputeLength(*this, begin, end);
+	return ComputeLength(*this, begin, end);
 }
 
 float Connection::CalcDistance(float f1, float f2) const {
-    return ComputeLength(*this, f1, f2);
+	return ComputeLength(*this, f1, f2);
 }
 
 Quad::Quad() : posX(0.f), posY(0.f), sizeX(0.f), sizeY(0.f), acreage(0.f) {
@@ -218,101 +218,101 @@ Quad::~Quad() {
 }
 
 float Quad::GetPosX() const {
-    return posX;
+	return posX;
 }
 
 void Quad::SetPosX(float x) {
-    posX = x;
+	posX = x;
 }
 
 float Quad::GetPosY() const {
-    return posY;
+	return posY;
 }
 
 void Quad::SetPosY(float y) {
-    posY = y;
+	posY = y;
 }
 
 float Quad::GetSizeX() const {
-    return sizeX;
+	return sizeX;
 }
 
 void Quad::SetSizeX(float w) {
-    sizeX = w;
+	sizeX = w;
 }
 
 float Quad::GetSizeY() const {
-    return sizeY;
+	return sizeY;
 }
 
 void Quad::SetSizeY(float h) {
-    sizeY = h;
+	sizeY = h;
 }
 
 float Quad::GetLeft() const {
-    return posX - sizeX / 2.f;
+	return posX - sizeX / 2.f;
 }
 
 float Quad::GetRight() const {
-    return posX + sizeX / 2.f;
+	return posX + sizeX / 2.f;
 }
 
 float Quad::GetBottom() const {
-    return posY - sizeY / 2.f;
+	return posY - sizeY / 2.f;
 }
 
 float Quad::GetTop() const {
-    return posY + sizeY / 2.f;
+	return posY + sizeY / 2.f;
 }
 
 void Quad::SetVertices(float x1, float y1, float x2, float y2) {
-    if (x1 > x2) {
-        swap(x1, x2);
-    }
-    if (y1 > y2) {
-        swap(y1, y2);
-    }
+	if (x1 > x2) {
+		swap(x1, x2);
+	}
+	if (y1 > y2) {
+		swap(y1, y2);
+	}
 
-    posX = (x1 + x2) / 2.f;
-    posY = (y1 + y2) / 2.f;
-    sizeX = x2 - x1;
-    sizeY = y2 - y1;
-    acreage = sizeX * sizeY * 100.f;
+	posX = (x1 + x2) / 2.f;
+	posY = (y1 + y2) / 2.f;
+	sizeX = x2 - x1;
+	sizeY = y2 - y1;
+	acreage = sizeX * sizeY * 100.f;
 }
 
 void Quad::SetPosition(float x, float y, float w, float h) {
-    posX = x;
-    posY = y;
-    sizeX = w;
-    sizeY = h;
-    acreage = sizeX * sizeY * 100.f;
+	posX = x;
+	posY = y;
+	sizeX = w;
+	sizeY = h;
+	acreage = sizeX * sizeY * 100.f;
 }
 
 float Quad::GetAcreage() const {
-    return acreage;
+	return acreage;
 }
 
 void Quad::SetAcreage(float a) {
-    acreage = a;
+	acreage = a;
 }
 
 Lot::Lot() :
-	Quad(), rotation(0.f), area(AREA_GREEN) {
+	Quad(), rotation(0.f), area(AREA_NONE) {
 
 }
 
 Lot::Lot(float x, float y, float w, float h, float r) :
-	Quad(x, y, w, h), rotation(r), area(AREA_GREEN) {
+	Quad(x, y, w, h), rotation(r), area(AREA_NONE) {
 
 }
 
 Lot::Lot(Node n1, Node n2, Node n3, vector<float> margin) :
-	Quad(), rotation(0.f), area(AREA_GREEN) {
+	Quad(), rotation(0.f), area(AREA_NONE) {
 	SetPosition(n1, n2, n3, margin);
 }
 
 Lot::Lot(Node n1, Node n2, Node n3, Node n4, vector<float> margin) :
-	Quad(), rotation(0.f), area(AREA_GREEN) {
+	Quad(), rotation(0.f), area(AREA_NONE) {
 	SetPosition(n1, n2, n3, n4, margin);
 }
 

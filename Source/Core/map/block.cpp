@@ -10,12 +10,12 @@
 using namespace std;
 
 Block::Block() :
-	Lot(), address(), zones() {//, buildings() {
+	Lot(), address(), zones(), buildings() {
 
 }
 
 Block::Block(Lot lot) :
-	Lot(lot), address(), zones() {//, buildings() {
+	Lot(lot), address(), zones(), buildings() {
 
 }
 
@@ -25,6 +25,9 @@ Block::~Block() {
 	}
 	for (auto [_, zone] : zones) {
 		delete zone;
+	}
+	for (auto [_, building] : buildings) {
+		delete building;
 	}
 }
 
@@ -40,9 +43,9 @@ unordered_map<string, Zone*>& Block::GetZones() {
 	return zones;
 }
 
-//unordered_map<string, Building*>& Block::GetBuildings() {
-//	return buildings;
-//}
+unordered_map<string, Building*>& Block::GetBuildings() {
+	return buildings;
+}
 
 void Block::AddZone(const string& name, Zone* zone) {
 	if (zones.find(name) != zones.end()) {
@@ -51,12 +54,12 @@ void Block::AddZone(const string& name, Zone* zone) {
 	zones[name] = zone;
 }
 
-//void Block::AddBuilding(const string& name, Building* building) {
-//	if (buildings.find(name) != buildings.end()) {
-//		THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + name + ".\n");
-//	}
-//	buildings[name] = building;
-//}
+void Block::AddBuilding(const string& name, Building* building) {
+	if (buildings.find(name) != buildings.end()) {
+		THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + name + ".\n");
+	}
+	buildings[name] = building;
+}
 
 Zone* Block::GetZone(const string& name) const {
 	for (const auto& [zoneName, zonePtr] : zones) {
@@ -67,14 +70,14 @@ Zone* Block::GetZone(const string& name) const {
 	return nullptr;
 }
 
-//Building* Block::GetBuilding(const string& name) const {
-//	for (const auto& [bldName, bldPtr] : buildings) {
-//		if (bldName == name) {
-//			return bldPtr;
-//		}
-//	}
-//	return nullptr;
-//}
+Building* Block::GetBuilding(const string& name) const {
+	for (const auto& [bldName, bldPtr] : buildings) {
+		if (bldName == name) {
+			return bldPtr;
+		}
+	}
+	return nullptr;
+}
 
 void Block::RemoveZone(const string& name) {
 	for (auto it = zones.begin(); it != zones.end(); ) {
@@ -87,16 +90,16 @@ void Block::RemoveZone(const string& name) {
 	}
 }
 
-//void Block::RemoveBuilding(const string& name) {
-//	for (auto it = buildings.begin(); it != buildings.end(); ) {
-//		if (it->first == name) {
-//			it = buildings.erase(it);
-//		}
-//		else {
-//			++it;
-//		}
-//	}
-//}
+void Block::RemoveBuilding(const string& name) {
+	for (auto it = buildings.begin(); it != buildings.end(); ) {
+		if (it->first == name) {
+			it = buildings.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
 
 void Block::SetAddress(const string& road, int id) {
 	address.first = road;

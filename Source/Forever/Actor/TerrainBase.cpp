@@ -13,7 +13,7 @@ ATerrainBase::~ATerrainBase() {
 }
 
 void ATerrainBase::BeginPlay() {
-    Super::BeginPlay();
+	Super::BeginPlay();
 }
 
 void ATerrainBase::Tick(float DeltaTime) {

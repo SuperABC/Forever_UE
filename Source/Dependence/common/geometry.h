@@ -175,6 +175,7 @@ enum AREA_TYPE : int {
 	AREA_OFFICIAL_MIDDLE,
 	AREA_OFFICIAL_LOW,
 	AREA_GREEN,
+	AREA_END
 };
 
 class Lot : public Quad {

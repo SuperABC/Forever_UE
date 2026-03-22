@@ -9,7 +9,7 @@
 
 
 class Zone;
-//class Building;
+class Building;
 class Block : public Lot {
 public:
 	// 构造空街区
@@ -29,13 +29,13 @@ public:
 
 	// 内部Quad管理
 	std::unordered_map<std::string, Zone*>& GetZones();
-	//std::unordered_map<std::string, Building*>& GetBuildings();
+	std::unordered_map<std::string, Building*>& GetBuildings();
 	void AddZone(const std::string& name, Zone* zone);
-	//void AddBuilding(const std::string& name, Building* building);
+	void AddBuilding(const std::string& name, Building* building);
 	Zone* GetZone(const std::string& name) const;
-	//Building* GetBuilding(const std::string& name) const;
+	Building* GetBuilding(const std::string& name) const;
 	void RemoveZone(const std::string& name);
-	//void RemoveBuilding(const std::string& name);
+	void RemoveBuilding(const std::string& name);
 
 	// 寻址
 	void SetAddress(const std::string& road, int id);
@@ -46,6 +46,6 @@ protected:
 	std::pair<std::string, int> address;
 
 	VARIABLE_HOLDER std::unordered_map<std::string, Zone*> zones;
-	//VARIABLE_HOLDER std::unordered_map<std::string, Building*> buildings;
+	VARIABLE_HOLDER std::unordered_map<std::string, Building*> buildings;
 };
 

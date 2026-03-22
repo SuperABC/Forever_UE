@@ -205,7 +205,7 @@ void Parser::PrintHelp(CMD_TYPE type) const {
 			cout << '-' << opt.abbreviation << ", ";
 		}
 		else {
-			cout << "    ";
+			cout << "	";
 		}
 
 		cout << pair.first;
@@ -214,7 +214,7 @@ void Parser::PrintHelp(CMD_TYPE type) const {
 			cout << "=VALUE";
 		}
 
-		cout << "\n    " << opt.help << "\n\n";
+		cout << "\n	" << opt.help << "\n\n";
 	}
 }
 
