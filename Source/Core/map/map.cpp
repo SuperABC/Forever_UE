@@ -12,6 +12,8 @@ TerrainFactory* Map::terrainFactory = nullptr;
 RoadnetFactory* Map::roadnetFactory = nullptr;
 ZoneFactory* Map::zoneFactory = nullptr;
 BuildingFactory* Map::buildingFactory = nullptr;
+ComponentFactory* Map::componentFactory = nullptr;
+RoomFactory* Map::roomFactory = nullptr;
 
 Element::Element() :
 	terrain("plain"),
@@ -116,7 +118,12 @@ shared_ptr<Element> Chunk::GetElement(int x, int y) const {
 Map::Map() :
 	width(0),
 	height(0),
-	roadnet(nullptr) {
+	chunks(),
+	playerPos(0, 0),
+	roadnet(nullptr),
+	zones(),
+	buildings(),
+	layout(nullptr) {
 	if (!terrainFactory) {
 		terrainFactory = new TerrainFactory();
 	}
@@ -129,12 +136,12 @@ Map::Map() :
 	if (!buildingFactory) {
 		buildingFactory = new BuildingFactory();
 	}
-	//if (!componentFactory) {
-	//	componentFactory = new ComponentFactory();
-	//}
-	//if (!roomFactory) {
-	//	roomFactory = new RoomFactory();
-	//}
+	if (!componentFactory) {
+		componentFactory = new ComponentFactory();
+	}
+	if (!roomFactory) {
+		roomFactory = new RoomFactory();
+	}
 }
 
 Map::~Map() {
@@ -146,8 +153,8 @@ void Map::LoadConfigs() const {
 	roadnetFactory->RemoveAll();
 	zoneFactory->RemoveAll();
 	buildingFactory->RemoveAll();
-	//componentFactory->RemoveAll();
-	//roomFactory->RemoveAll();
+	componentFactory->RemoveAll();
+	roomFactory->RemoveAll();
 
 	auto terrains = Config::GetEnables("terrain");
 	for (auto terrain : terrains) {
@@ -166,14 +173,14 @@ void Map::LoadConfigs() const {
 	for (auto building : buildings) {
 		buildingFactory->SetConfig(building, true);
 	}
-	//auto components = Config::GetEnables("component");
-	//for (auto component : components) {
-	//	componentFactory->SetConfig(component, true);
-	//}
-	//auto rooms = Config::GetEnables("room");
-	//for (auto room : rooms) {
-	//	roomFactory->SetConfig(room, true);
-	//}
+	auto components = Config::GetEnables("component");
+	for (auto component : components) {
+		componentFactory->SetConfig(component, true);
+	}
+	auto rooms = Config::GetEnables("room");
+	for (auto room : rooms) {
+		roomFactory->SetConfig(room, true);
+	}
 }
 
 void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
@@ -211,7 +218,7 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
 		if (terrainFactory->CheckRegistered(terrainId)) {
 			auto terrain = terrainFactory->CreateTerrain(terrainId);
 			debugf("Log: Created test terrain %s.\n", terrainId);
-			terrainFactory->DestroyTerrains({ terrain });
+			terrainFactory->DestroyTerrain(terrain);
 		}
 		else {
 			debugf("Warning: Terrain %s not registered.\n", terrainId);
@@ -347,6 +354,94 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
 		}
 		else {
 			debugf("Warning: Building %s not registered.\n", buildingId);
+		}
+	}
+#endif
+}
+
+void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
+	componentFactory->RegisterComponent(EmptyComponent::GetId(),
+		[]() { return new EmptyComponent(); },
+		[](ComponentMod* building) { delete building; }
+	);
+
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
+		}
+		else {
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
+		}
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModComponentsFunc)GetProcAddress(modHandle, "RegisterModComponents");
+			if (registerFunc) {
+				registerFunc(componentFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
+	}
+
+#ifdef MOD_TEST
+	auto componentList = { "mod" };
+	for (const auto& componentId : componentList) {
+		if (componentFactory->CheckRegistered(componentId)) {
+			auto component = componentFactory->CreateComponent(componentId);
+			debugf("Log: Created test component %s.\n", componentId);
+			componentFactory->DestroyComponent(component);
+		}
+		else {
+			debugf("Warning: Component %s not registered.\n", componentId);
+		}
+	}
+#endif
+}
+
+void Map::InitRooms(unordered_map<string, HMODULE>& modHandles,
+	vector<string>& dlls) {
+	roomFactory->RegisterRoom(EmptyRoom::GetId(),
+		[]() { return new EmptyRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
+		}
+		else {
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
+		}
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModRoomsFunc)GetProcAddress(modHandle, "RegisterModRooms");
+			if (registerFunc) {
+				registerFunc(roomFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
+	}
+
+#ifdef MOD_TEST
+	auto roomList = { "mod" };
+	for (const auto& roomId : roomList) {
+		if (roomFactory->CheckRegistered(roomId)) {
+			auto room = roomFactory->CreateRoom(roomId);
+			debugf("Log: Created test room %s.\n", roomId);
+			roomFactory->DestroyRoom(room);
+		}
+		else {
+			debugf("Warning: Room %s not registered.\n", roomId);
 		}
 	}
 #endif
@@ -539,6 +634,43 @@ int Map::Init(int chunkX, int chunkY) {
 		}
 	}
 
+	debugf("Log: Generate components and rooms.\n");
+	int capacity = 0;
+	if (layout) delete layout;
+	layout = Building::ReadTemplates(Config::GetLayouts());
+	for (auto& [name, building] : buildings) {
+		if (!building) continue;
+		building->PlaceConstruction();
+		building->LayoutBuilding(layout, componentFactory, roomFactory);
+		for (auto component : building->GetComponents()) {
+			if (!component) continue;
+			component->SetParent(building);
+			for (auto room : component->GetRooms()) {
+				if (!room) continue;
+				room->SetParent(component);
+				room->SetParent(building);
+				capacity += room->ResidentialCapacity();
+			}
+		}
+	}
+	for (auto& [name, zone] : zones) {
+		if (!zone) continue;
+		for (auto& [name, building] : zone->GetBuildings()) {
+			if (!building) continue;
+			building->PlaceConstruction();
+			building->LayoutBuilding(layout, componentFactory, roomFactory);
+			for (auto component : building->GetComponents()) {
+				if (!component) continue;
+				component->SetParent(building);
+				for (auto room : component->GetRooms()) {
+					if (!room) continue;
+					room->SetParent(component);
+					room->SetParent(building);
+					capacity += room->ResidentialCapacity();
+				}
+			}
+		}
+	}
 	return 0;
 }
 

@@ -234,7 +234,7 @@ void Config::WriteConfig(const string& path) {
 	if (names.size() > 1) {
 		debugf("Warning: Selected more than one name mods.\n");
 	}
-	root["name_mods"] = names[0];
+	root["name_mod"] = names[0];
 
 	JsonValue schedulers = JsonValue(DATA_ARRAY);
 	for (auto modEnable : modEnables["scheduler"]) {

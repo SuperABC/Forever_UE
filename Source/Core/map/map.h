@@ -4,6 +4,8 @@
 #include "roadnet.h"
 #include "zone.h"
 #include "building.h"
+#include "component.h"
+#include "room.h"
 
 #define CHUNK_SIZE 256
 
@@ -72,6 +74,10 @@ public:
 		std::vector<std::string>& dlls);
 	void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles,
 		std::vector<std::string>& dlls);
+	void InitComponents(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
+	void InitRooms(std::unordered_map<std::string, HMODULE>& modHandles,
+		std::vector<std::string>& dlls);
 
 	// 初始化地图
 	int Init(int chunkX, int chunkY);
@@ -107,8 +113,8 @@ public:
 	std::unordered_map<std::string, Building*>& GetBuildings();
 
 	// 获取组合/房间
-	//std::vector<Component*> GetComponents() const;
-	//std::vector<Room*> GetRooms() const;
+	std::vector<Component*> GetComponents() const;
+	std::vector<Room*> GetRooms() const;
 
 	// 获取/设置元素所属园区/建筑
 	Zone* GetZone(const std::string& name) const;
@@ -118,10 +124,10 @@ public:
 	void SetBuilding(Building* building, const std::string& name, std::pair<float, float> offset);
 
 	// 寻址
-	//Block* LocateBlock(const std::string& address) const;
-	//Zone* LocateZone(const std::string& address) const;
-	//Building* LocateBuilding(const std::string& address) const;
-	//Room* LocateRoom(const std::string& address) const;
+	Block* LocateBlock(const std::string& address) const;
+	Zone* LocateZone(const std::string& address) const;
+	Building* LocateBuilding(const std::string& address) const;
+	Room* LocateRoom(const std::string& address) const;
 
 private:
 	void ArrangeBlocks();
@@ -131,6 +137,8 @@ private:
 	static RoadnetFactory* roadnetFactory;
 	static ZoneFactory* zoneFactory;
 	static BuildingFactory* buildingFactory;
+	static ComponentFactory* componentFactory;
+	static RoomFactory* roomFactory;
 
 	// 地图信息
 	int width;
@@ -148,4 +156,7 @@ private:
 
 	// 建筑
 	std::unordered_map<std::string, Building*> buildings;
+
+	// 预设布局
+	Layout* layout;
 };

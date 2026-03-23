@@ -5,9 +5,20 @@
 #include "../common/geometry.h"
 
 #include <string>
+#include <tuple>
 #include <functional>
 
 
+// 建筑方向
+enum FACE_DIRECTION : int {
+	FACE_WEST,
+	FACE_EAST,
+	FACE_NORTH,
+	FACE_SOUTH
+};
+static char faceAbbr[4] = { 'w', 'e', 'n', 's' };
+
+// pair哈希以作为map键
 struct PairHash {
 	std::size_t operator()(const std::pair<std::string, int>& p) const {
 		return std::hash<std::string>()(p.first) ^ (std::hash<int>()(p.second) << 1);
@@ -55,10 +66,10 @@ public:
 	void AssignFloors(int face, std::vector<std::string> layouts);
 
 	// 为模板中第slot个独立房间生成房间，按id并入component
-	void AssignRoom(int level, int slot, std::string name, std::string component, int id);
+	void AssignRoom(int level, int slot, std::string room, std::string component, int id);
 
 	// 为模板中第slot个联排房间生成房间，按id并入component
-	void ArrangeRow(int level, int slot, std::string name, float acreage, std::string component, int id);
+	void ArrangeRow(int level, int slot, std::string room, float acreage, std::string component, int id);
 
 	// 最大面积限制
 	float maxAcreage;
@@ -81,13 +92,13 @@ public:
 	// 所有楼层布局及方向（包含地下及地上）
 	std::vector<std::pair<std::string, int>> templates;
 
-	//												component	id		每个room				floor	slot
-	// 单间模板房间	
-	std::unordered_map<std::pair<std::string, int>, std::vector<std::pair<int, int>>, PairHash> singles;
+	//												component	id		每个room				floor		slot	type
+	// 单间模板房间
+	std::unordered_map<std::pair<std::string, int>, std::vector<std::tuple<int, int, std::string>>, PairHash> singles;
 
-	//												component	id		每个floor		每个room				slot	面积
+	//												component	id		每个floor		每个room				slot		type			面积
 	// 联排模板房间
-	std::unordered_map<std::pair<std::string, int>, std::vector<std::vector<std::pair<int, float>>>, PairHash> rows;
+	std::unordered_map<std::pair<std::string, int>, std::vector<std::vector<std::tuple<int, std::string, float>>>, PairHash> rows;
 };
 
 class BuildingFactory {

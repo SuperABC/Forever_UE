@@ -27,6 +27,34 @@ public:
 	COMSTOM_INIT virtual void DistributeTerrain(int width, int height,
 		std::function<bool(int, int, std::string, float)> setElement,
 		std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const = 0;
+
+protected:
+    // 地形填充，若ovewrite为true，则全图填充，否则只填充平原
+    int FloodTerrain(
+        int x, int y, int num, bool overwrite, int width, int height,
+        std::function<bool(int, int, std::string, float)> set,
+        std::function<std::string(int, int)> get) const;
+        
+    // 检查地形填充处是否为当前边界
+    bool CheckBoundary(
+        int x, int y, bool overwrite, int width, int height,
+        std::function<bool(int, int, std::string, float)> set,
+        std::function<std::string(int, int)> get) const;
+
+    // 更新地形填充边界
+    void UpdateBoundary(
+        int x, int y, std::vector<std::pair<int, int>>& q, bool overwrite, int width, int height,
+        std::function<bool(int, int, std::string, float)> set,
+        std::function<std::string(int, int)> get) const;
+
+    // 地形滤波
+    void ShapeFilter(int x, int y, int width, int height,
+        std::function<bool(int, int, std::string, float)> set,
+        std::function<std::string(int, int)> get, int side = 1, float threshold = 0.5f) const;
+        
+private:
+    std::vector<int> dx;
+    std::vector<int> dy;
 };
 
 class TerrainFactory {

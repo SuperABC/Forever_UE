@@ -77,3 +77,27 @@ extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* fact
 		[](BuildingMod* zone) { delete zone; }
 	);
 }
+
+extern "C" __declspec(dllexport) void* GetModComponents() {
+	static vector<string> mods = { "residential" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModComponents(ComponentFactory* factory) {
+	factory->RegisterComponent(ResidentialComponent::GetId(),
+		[]() { return new ResidentialComponent(); },
+		[](ComponentMod* zone) { delete zone; }
+	);
+}
+
+extern "C" __declspec(dllexport) void* GetModRooms() {
+	static vector<string> mods = { "residential" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
+	factory->RegisterRoom(ResidentialRoom::GetId(),
+		[]() { return new ResidentialRoom(); },
+		[](RoomMod* zone) { delete zone; }
+	);
+}

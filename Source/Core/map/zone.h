@@ -8,27 +8,6 @@
 // 子类注册函数
 typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
 
-// 空园区
-class EmptyZone : public ZoneMod {
-public:
-	EmptyZone();
-	virtual ~EmptyZone();
-
-	static const char* GetId();
-	virtual const char* GetType() const override;
-	virtual const char* GetName() override;
-
-	static std::function<int(Lot*)> ZoneAssigner;
-
-	virtual void LayoutZone(Lot* block);
-
-private:
-	static int count;
-
-	int id;
-	std::string name;
-};
-
 // 园区实体
 class Block;
 class Building;
@@ -57,17 +36,17 @@ public:
 	// 设置所在地块
 	void SetParent(Block* block);
 
-	// 获取私人房东ID
-	//int GetOwner() const;
-
-	// 设置私人房东ID
-	//void SetOwner(int owner);
-
 	// 获取是否由政府拥有
 	bool GetStated() const;
 
 	// 设置是否由政府拥有
 	void SetStated(bool state);
+
+	// 获取私人房东ID
+	//int GetOwner() const;
+
+	// 设置私人房东ID
+	//void SetOwner(int owner);
 
 	// 获取一栋建筑
 	Building* GetBuilding(std::string name);
@@ -82,7 +61,7 @@ public:
 	void GetPosition(float& x, float& y) const;
 
 	// 获取地址
-	const char* GetAddress();
+	std::string GetAddress();
 
 private:
 	ZoneMod* mod;
@@ -92,9 +71,30 @@ private:
 	std::string name;
 
 	Block* parentBlock;
-	std::string fullAddress;
 	bool stated;
 	//Person* owner;
+	std::string fullAddress;
 	VARIABLE_HOLDER std::unordered_map<std::string, Building*> buildings;
+};
+
+// 空园区
+class EmptyZone : public ZoneMod {
+public:
+	EmptyZone();
+	virtual ~EmptyZone();
+
+	static const char* GetId();
+	virtual const char* GetType() const override;
+	virtual const char* GetName() override;
+
+	static std::function<int(Lot*)> ZoneAssigner;
+
+	virtual void LayoutZone(Lot* block);
+
+private:
+	static int count;
+
+	int id;
+	std::string name;
 };
 

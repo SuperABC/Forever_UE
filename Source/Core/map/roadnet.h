@@ -8,26 +8,6 @@
 // 子类注册函数
 typedef void (*RegisterModRoadnetsFunc)(RoadnetFactory* factory);
 
-// 空路网
-class EmptyRoadnet : public RoadnetMod {
-public:
-	EmptyRoadnet();
-	virtual ~EmptyRoadnet();
-
-	static const char* GetId();
-	virtual const char* GetType() const override;
-	virtual const char* GetName() override;
-
-	virtual void DistributeRoadnet(int width, int height,
-		std::function<std::string(int, int)> get) override;
-
-private:
-	static int count;
-
-	int id;
-	std::string name;
-};
-
 // 路网实体
 class Roadnet {
 public:
@@ -82,5 +62,25 @@ private:
 	VARIABLE_HOLDER std::vector<Block*> blocks;
 	//VARIABLE_HOLDER std::vector<Route*> routes;
 	std::unordered_map<std::string, std::vector<Block*>> addresses;
+};
+
+// 空路网
+class EmptyRoadnet : public RoadnetMod {
+public:
+	EmptyRoadnet();
+	virtual ~EmptyRoadnet();
+
+	static const char* GetId();
+	virtual const char* GetType() const override;
+	virtual const char* GetName() override;
+
+	virtual void DistributeRoadnet(int width, int height,
+		std::function<std::string(int, int)> get) override;
+
+private:
+	static int count;
+
+	int id;
+	std::string name;
 };
 

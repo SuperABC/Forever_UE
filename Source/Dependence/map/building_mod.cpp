@@ -4,7 +4,16 @@
 using namespace std;
 
 // 无构造
-BuildingMod::BuildingMod() {
+BuildingMod::BuildingMod() :
+	maxAcreage(10000.f),
+	minAcreage(0.f),
+	layers(1),
+	basements(0),
+	height(0.4f),
+	construction(),
+	templates(),
+	singles(),
+	rows() {
 
 }
 
@@ -20,6 +29,7 @@ void BuildingMod::AllocateFloors() {
 
 // 根据模板生成一层楼层
 void BuildingMod::AssignFloor(int level, int face, string layout) {
+	templates.resize(basements + layers);
 	level += basements;
 	if (level < 0 || level >= templates.size()) {
 		THROW_EXCEPTION(OutOfRangeException, "Assigning floor our of basements or layers range.\n");
@@ -44,15 +54,17 @@ void BuildingMod::AssignFloors(int face, vector<string> layouts) {
 	}
 }
 
-void BuildingMod::AssignRoom(int level, int slot, string name, string component, int id) {
-	singles[{ component, id }].emplace_back(level, slot);
+void BuildingMod::AssignRoom(int level, int slot, string room, string component, int id) {
+	level += basements;
+	singles[{ component, id }].emplace_back(level, slot, room);
 }
 
-void BuildingMod::ArrangeRow(int level, int slot, string name, float acreage, string component, int id) {
+void BuildingMod::ArrangeRow(int level, int slot, string room, float acreage, string component, int id) {
+	level += basements;
 	if (rows.find({ component, id }) == rows.end()) {
 		rows[{ component, id }].resize(basements + layers);
 	}
-	rows[{ component, id }][level].emplace_back(slot, acreage);
+	rows[{ component, id }][level].emplace_back(slot, room, acreage);
 }
 
 // 注册建筑

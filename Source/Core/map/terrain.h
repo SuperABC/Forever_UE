@@ -6,29 +6,6 @@
 // 子类注册函数
 typedef void (*RegisterModTerrainsFunc)(TerrainFactory* factory);
 
-// 空地形
-class EmptyTerrain : public TerrainMod {
-public:
-	EmptyTerrain();
-	virtual ~EmptyTerrain();
-
-	static const char* GetId();
-	virtual const char* GetType() const override;
-	virtual const char* GetName() override;
-
-	virtual float GetPriority() const override;
-
-	virtual void DistributeTerrain(int width, int height,
-		std::function<bool(int, int, std::string, float)> setElement,
-		std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const override;
-
-private:
-	static int count;
-
-	int id;
-	std::string name;
-};
-
 // 地形实体
 class Terrain {
 public:
@@ -54,6 +31,29 @@ private:
 	TerrainFactory* factory;
 
 	std::string type;
+	std::string name;
+};
+
+// 空地形
+class EmptyTerrain : public TerrainMod {
+public:
+	EmptyTerrain();
+	virtual ~EmptyTerrain();
+
+	static const char* GetId();
+	virtual const char* GetType() const override;
+	virtual const char* GetName() override;
+
+	virtual float GetPriority() const override;
+
+	virtual void DistributeTerrain(int width, int height,
+		std::function<bool(int, int, std::string, float)> setElement,
+		std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const override;
+
+private:
+	static int count;
+
+	int id;
 	std::string name;
 };
 

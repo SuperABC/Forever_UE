@@ -3,34 +3,6 @@
 
 using namespace std;
 
-int EmptyRoadnet::count = 0;
-
-EmptyRoadnet::EmptyRoadnet() : id(count++) {
-
-}
-
-EmptyRoadnet::~EmptyRoadnet() {
-
-}
-
-const char* EmptyRoadnet::GetId() {
-	return "empty";
-}
-
-const char* EmptyRoadnet::GetType() const {
-	return "empty";
-}
-
-const char* EmptyRoadnet::GetName() {
-	name = "空路网" + to_string(id);
-	return name.data();
-}
-
-void EmptyRoadnet::DistributeRoadnet(int width, int height,
-	function<string(int, int)> get) {
-
-}
-
 Roadnet::Roadnet(RoadnetFactory* factory, string roadnet) :
 	mod(factory->CreateRoadnet(roadnet)),
 	factory(factory),
@@ -120,5 +92,33 @@ Block* Roadnet::LocateBlock(string road, int id) const {
 		return nullptr;
 	}
 	return blocks[id];
+}
+
+int EmptyRoadnet::count = 0;
+
+EmptyRoadnet::EmptyRoadnet() : id(count++) {
+
+}
+
+EmptyRoadnet::~EmptyRoadnet() {
+
+}
+
+const char* EmptyRoadnet::GetId() {
+	return "empty";
+}
+
+const char* EmptyRoadnet::GetType() const {
+	return "empty";
+}
+
+const char* EmptyRoadnet::GetName() {
+	name = "空路网" + to_string(id);
+	return name.data();
+}
+
+void EmptyRoadnet::DistributeRoadnet(int width, int height,
+	function<string(int, int)> get) {
+
 }
 

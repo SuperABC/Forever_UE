@@ -51,7 +51,7 @@ void ResidentialBuilding::LayoutBuilding() {
 		layers = 4 + GetRandom(4);
 	}
 	basements = 1;
-	height = 4.f;
+	height = 0.4f;
 
 	int direction = 0;
 	if (GetSizeX() > GetSizeY()) {

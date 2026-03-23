@@ -376,8 +376,8 @@ int main() {
 	::map->InitRoadnets(modHandles, mods);
 	::map->InitZones(modHandles, mods);
 	::map->InitBuildings(modHandles, mods);
-	//::map->InitComponents(modHandles, mods);
-	//::map->InitRooms(modHandles, mods);
+	::map->InitComponents(modHandles, mods);
+	::map->InitRooms(modHandles, mods);
 
 	// 读取Populace相关类及Mod
 	populace->LoadConfigs();

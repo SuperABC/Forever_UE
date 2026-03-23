@@ -82,11 +82,11 @@ protected:
 	AActor* global;
 
 private:
-	//float GetRotation(FACE_DIRECTION direction);
-	//void ConstructBuilding(Building* building, FBuilding& info);
-	//TArray<FWall> ConstructQuad(FVector center, FVector size, std::vector<bool> directions,
-	//	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors,
-	//	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows);
+	float GetRotation(FACE_DIRECTION direction);
+	void ConstructBuilding(Building* building, FBuilding& info);
+	TArray<FWall> ConstructQuad(FVector center, FVector size, std::vector<bool> directions,
+		std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors,
+		std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows);
 
-	//std::unordered_map<std::string, AActor*> buildingInstances;
+	std::unordered_map<std::string, AActor*> buildingInstances;
 };

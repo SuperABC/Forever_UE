@@ -3,12 +3,12 @@
    "building_mods" : [ "residential" ],
    "calendar_mods" : [ "empty" ],
    "change_mods" : [ "empty" ],
-   "component_mods" : [ "empty" ],
+   "component_mods" : [ "residential" ],
    "dll_paths" : [ "C:/Workspace/UE5/Projects/Forever_UE/x64/Release" ],
    "event_mods" : [ "empty" ],
    "job_mods" : [ "empty" ],
    "manufacture_mods" : [ "empty" ],
-   "name_mods" : "",
+   "name_mod" : "empty",
    "organization_mods" : [ "empty" ],
    "product_mods" : [ "empty" ],
    "resource_paths" : [
@@ -17,7 +17,7 @@
       "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
    ],
    "roadnet_mod" : "jing",
-   "room_mods" : [ "empty" ],
+   "room_mods" : [ "residential" ],
    "route_mods" : [ "empty" ],
    "scheduler_mods" : [ "empty" ],
    "skill_mods" : [ "empty" ],

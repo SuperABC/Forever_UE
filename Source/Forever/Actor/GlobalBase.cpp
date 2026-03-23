@@ -64,8 +64,8 @@ void AGlobalBase::BeginPlay() {
 		map->InitRoadnets(modHandles, mods);
 		map->InitZones(modHandles, mods);
 		map->InitBuildings(modHandles, mods);
-		//map->InitComponents(modHandles, mods);
-		//map->InitRooms(modHandles, mods);
+		map->InitComponents(modHandles, mods);
+		map->InitRooms(modHandles, mods);
 
 		// 读取Populace相关类及Mod
 		populace->LoadConfigs();
@@ -140,6 +140,7 @@ void AGlobalBase::BeginPlay() {
 		SetLocation(FVector(pos.first, pos.second, 0.f));
 	}
 	catch (ExceptionBase& e) {
+		debugf(e.GetDetailedInfo().data());
 		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
 	}
 }

@@ -5,37 +5,6 @@
 
 using namespace std;
 
-int EmptyZone::count = 0;
-
-EmptyZone::EmptyZone() : id(count++) {
-
-}
-
-EmptyZone::~EmptyZone() {
-
-}
-
-const char* EmptyZone::GetId() {
-	return "empty";
-}
-
-const char* EmptyZone::GetType() const {
-	return "empty";
-}
-
-const char* EmptyZone::GetName() {
-	name = "空园区" + to_string(id);
-	return name.data();
-}
-
-void EmptyZone::LayoutZone(Lot* lot) {
-
-}
-
-function<int(Lot*)> EmptyZone::ZoneAssigner = [](Lot* lot) {
-	return 0;
-};
-
 Zone::Zone(ZoneFactory* factory, string zone) :
 	mod(factory->CreateZone(zone)),
 	factory(factory),
@@ -69,10 +38,40 @@ Quad* Zone::GetQuad() {
 
 void Zone::LayoutZone(Lot* block, BuildingFactory* factory) {
 	mod->LayoutZone(block);
-	for (auto [type, scalar] : mod->buildings) {
-		auto building = new Building(factory, type);
-		auto name = building->GetName();
-		buildings[name] = building;
+
+	float acreageTmp = 0.f;
+	int attempt = 0;
+	for (int i = 0; i < (int)mod->buildings.size(); i++) {
+		if (acreageTmp >= mod->GetAcreage() || attempt > 16) {
+			break;
+		}
+
+		const auto& [buildingType, ratio] = mod->buildings[i];
+		Building* building = new Building(factory, buildingType);
+		if (!building) {
+			attempt++;
+			i--;
+			continue;
+		}
+
+		float acreageBuilding = building->RandomAcreage() * ratio;
+		float acreageMin = building->GetAcreageMin() * ratio;
+		float acreageMax = building->GetAcreageMax() * ratio;
+		if (mod->GetAcreage() - acreageTmp < acreageMin) {
+			attempt++;
+			i--;
+			continue;
+		}
+		else if (mod->GetAcreage() - acreageTmp < acreageBuilding) {
+			acreageBuilding = mod->GetAcreage() - acreageTmp;
+		}
+
+		acreageTmp += acreageBuilding;
+		building->GetQuad()->SetAcreage(acreageBuilding);
+		if (buildings.find(building->GetName()) != buildings.end()) {
+			THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + building->GetName() + ".\n");
+		}
+		buildings[building->GetName()] = building;
 	}
 }
 
@@ -142,7 +141,7 @@ void Zone::ArrangeBuildings() {
 	if (acreageRemain > 0) {
 		for (auto& [name, building] : buildings) {
 			if (!building) continue;
-			float acreageTmp = building->RandomAcreage();
+			float acreageTmp = building->GetQuad()->GetAcreage();
 			float acreageMax = building->GetAcreageMax();
 			float acreageMin = building->GetAcreageMin();
 
@@ -323,7 +322,7 @@ void Zone::GetPosition(float& x, float& y) const {
 }
 
 // 获取完整地址
-const char* Zone::GetAddress() {
+string Zone::GetAddress() {
 	if (fullAddress != "") {
 		return fullAddress.data();
 	}
@@ -332,3 +331,34 @@ const char* Zone::GetAddress() {
 	fullAddress = blockAddress + " " + GetName();
 	return fullAddress.data();
 }
+
+int EmptyZone::count = 0;
+
+EmptyZone::EmptyZone() : id(count++) {
+
+}
+
+EmptyZone::~EmptyZone() {
+
+}
+
+const char* EmptyZone::GetId() {
+	return "empty";
+}
+
+const char* EmptyZone::GetType() const {
+	return "empty";
+}
+
+const char* EmptyZone::GetName() {
+	name = "空园区" + to_string(id);
+	return name.data();
+}
+
+void EmptyZone::LayoutZone(Lot* lot) {
+
+}
+
+function<int(Lot*)> EmptyZone::ZoneAssigner = [](Lot* lot) {
+	return 0;
+	};
