@@ -20,8 +20,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Folder Picker")
+	UFUNCTION(BlueprintCallable, Category = "Config")
 	static FString SelectFolder();
+	UFUNCTION(BlueprintCallable, Category = "Config")
+	static FString SelectFile();
 	UFUNCTION(BlueprintCallable, Category = "Config")
 	TArray<FString> GetDllPaths();
 	UFUNCTION(BlueprintCallable, Category = "Config")

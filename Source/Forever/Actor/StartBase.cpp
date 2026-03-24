@@ -27,9 +27,36 @@ FString AStartBase::SelectFolder() {
 	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
 	if (DesktopPlatform) {
 		void* ParentWindowHandle = FSlateApplication::Get().GetActiveTopLevelWindow()->GetNativeWindow()->GetOSWindowHandle();
-		DesktopPlatform->OpenDirectoryDialog(ParentWindowHandle, TEXT("Select Folder"), FPaths::ProjectDir(), SelectedPath);
+		DesktopPlatform->OpenDirectoryDialog(
+			ParentWindowHandle,
+			TEXT("Select Folder"),
+			FPaths::ProjectDir(),
+			SelectedPath);
 	}
 	return SelectedPath;
+}
+
+FString AStartBase::SelectFile() {
+	FString SelectedFilePath;
+	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+	if (DesktopPlatform) {
+		void* ParentWindowHandle = FSlateApplication::Get().GetActiveTopLevelWindow()->GetNativeWindow()->GetOSWindowHandle();
+		TArray<FString> OutFiles;
+		DesktopPlatform->OpenFileDialog(
+			ParentWindowHandle,
+			TEXT("Select File"),
+			FPaths::ProjectDir(),
+			TEXT(""),
+			TEXT("JSON files (*.json)|*.json|All files (*.*)|*.*"),
+			EFileDialogFlags::None,
+			OutFiles
+		);
+
+		if (OutFiles.Num() > 0) {
+			SelectedFilePath = OutFiles[0];
+		}
+	}
+	return SelectedFilePath;
 }
 
 TArray<FString> AStartBase::GetDllPaths() {
