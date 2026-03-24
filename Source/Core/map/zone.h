@@ -12,7 +12,7 @@ typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
 class Block;
 class Building;
 class BuildingFactory;
-class Zone {
+class Zone : public Quad {
 public:
 	Zone() = delete;
 	Zone(ZoneFactory* factory, std::string zone);
@@ -23,9 +23,6 @@ public:
 
 	// 获取名称
 	std::string GetName() const;
-
-	// 获取几何
-	Quad* GetQuad();
 
 	// 设计园区
 	void LayoutZone(Lot* block, BuildingFactory* factory);

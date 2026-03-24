@@ -35,16 +35,16 @@ function<int(Lot*)> ResidentialBuilding::BuildingAssigner = [](Lot* lot) {
 };
 
 float ResidentialBuilding::RandomAcreage() {
-	maxAcreage = 9600.f;
-	minAcreage = 600.f;
-	return 600.f * powf(1.f + GetRandom(1000) / 1000.f * 3.f, 2);
+	maxAcreage = 18000.f;
+	minAcreage = 2000.f;
+	return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 2.f, 2);
 }
 
-void ResidentialBuilding::LayoutBuilding() {
-	if (GetAcreage() < 1000) {
+void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
+	if (quad->GetAcreage() < 1000) {
 		layers = 1 + GetRandom(2);
 	}
-	else if (GetAcreage() < 4000) {
+	else if (quad->GetAcreage() < 4000) {
 		layers = 2 + GetRandom(3);
 	}
 	else {
@@ -54,8 +54,8 @@ void ResidentialBuilding::LayoutBuilding() {
 	height = 0.4f;
 
 	int direction = 0;
-	if (GetSizeX() > GetSizeY()) {
-		if (GetSizeY() > 3.f) {
+	if (quad->GetSizeX() > quad->GetSizeY()) {
+		if (quad->GetSizeY() > 3.f) {
 			direction = GetRandom(2);
 		}
 		else {
@@ -63,7 +63,7 @@ void ResidentialBuilding::LayoutBuilding() {
 		}
 	}
 	else {
-		if (GetSizeX() > 3.f) {
+		if (quad->GetSizeX() > 3.f) {
 			direction = 2 + GetRandom(2);
 		}
 		else {
@@ -86,5 +86,5 @@ void ResidentialBuilding::LayoutBuilding() {
 }
 
 void ResidentialBuilding::PlaceConstruction() {
-	construction = Quad(0.5f * GetSizeX(), 0.5f * GetSizeY(), 0.8f * GetSizeX(), 0.8f * GetSizeY());
+	construction = Quad(0.5f, 0.5f, 0.6f, 0.6f);
 }

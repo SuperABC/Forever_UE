@@ -14,7 +14,7 @@ enum FACE_DIRECTION : int;
 // 房间实体
 class Building;
 class Component;
-class Room {
+class Room : public Quad {
 public:
 	using WallHole = std::unordered_map<
 		FACE_DIRECTION,
@@ -30,9 +30,6 @@ public:
 
 	// 获取名称
 	std::string GetName() const;
-
-	// 获取几何
-	Quad* GetQuad();
 
 	// 获取所在建筑
 	Building* GetParentBuilding() const;

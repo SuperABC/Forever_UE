@@ -18,7 +18,7 @@ public:
 	static std::function<int(Lot*)> BuildingAssigner;
 
 	virtual float RandomAcreage();
-	virtual void LayoutBuilding();
+	virtual void LayoutBuilding(const Quad* quad);
 	virtual void PlaceConstruction();
 
 private:

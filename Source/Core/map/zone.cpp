@@ -32,17 +32,14 @@ string Zone::GetName() const {
 	return name;
 }
 
-Quad* Zone::GetQuad() {
-	return mod;
-}
-
 void Zone::LayoutZone(Lot* block, BuildingFactory* factory) {
 	mod->LayoutZone(block);
+	SetAcreage(mod->acreage);
 
 	float acreageTmp = 0.f;
 	int attempt = 0;
 	for (int i = 0; i < (int)mod->buildings.size(); i++) {
-		if (acreageTmp >= mod->GetAcreage() || attempt > 16) {
+		if (acreageTmp >= mod->acreage || attempt > 16) {
 			break;
 		}
 
@@ -57,17 +54,17 @@ void Zone::LayoutZone(Lot* block, BuildingFactory* factory) {
 		float acreageBuilding = building->RandomAcreage() * ratio;
 		float acreageMin = building->GetAcreageMin() * ratio;
 		float acreageMax = building->GetAcreageMax() * ratio;
-		if (mod->GetAcreage() - acreageTmp < acreageMin) {
+		if (mod->acreage - acreageTmp < acreageMin) {
 			attempt++;
 			i--;
 			continue;
 		}
-		else if (mod->GetAcreage() - acreageTmp < acreageBuilding) {
-			acreageBuilding = mod->GetAcreage() - acreageTmp;
+		else if (mod->acreage - acreageTmp < acreageBuilding) {
+			acreageBuilding = mod->acreage - acreageTmp;
 		}
 
 		acreageTmp += acreageBuilding;
-		building->GetQuad()->SetAcreage(acreageBuilding);
+		building->SetAcreage(acreageBuilding);
 		if (buildings.find(building->GetName()) != buildings.end()) {
 			THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + building->GetName() + ".\n");
 		}
@@ -125,7 +122,7 @@ void Zone::ArrangeBuildings() {
 		return;
 	}
 
-	float acreageTotal = mod->GetAcreage();
+	float acreageTotal = GetAcreage();
 	float acreageUsed = 0.f;
 
 	for (const auto& [name, building] : buildings) {
@@ -133,7 +130,7 @@ void Zone::ArrangeBuildings() {
 			debugf("Warning: null building found in zone, skipping.\n");
 			continue;
 		}
-		acreageUsed += building->GetQuad()->GetAcreage();
+		acreageUsed += building->GetAcreage();
 	}
 	float acreageRemain = acreageTotal - acreageUsed;
 
@@ -141,7 +138,7 @@ void Zone::ArrangeBuildings() {
 	if (acreageRemain > 0) {
 		for (auto& [name, building] : buildings) {
 			if (!building) continue;
-			float acreageTmp = building->GetQuad()->GetAcreage();
+			float acreageTmp = building->GetAcreage();
 			float acreageMax = building->GetAcreageMax();
 			float acreageMin = building->GetAcreageMin();
 
@@ -150,7 +147,7 @@ void Zone::ArrangeBuildings() {
 			if (acreageExpand > acreageRemain && acreageRemain > 0) {
 				float acreageNew = acreageTmp + acreageRemain;
 				if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
-					building->GetQuad()->SetAcreage(acreageNew);
+					building->SetAcreage(acreageNew);
 					acreageUsed += acreageRemain;
 					acreageRemain = 0.f;
 					acreageAllocate = true;
@@ -170,7 +167,7 @@ void Zone::ArrangeBuildings() {
 
 	for (const auto& [name, building] : buildings) {
 		if (building) {
-			elements.push_back(building->GetQuad());
+			elements.push_back(building);
 		}
 	}
 
@@ -182,7 +179,7 @@ void Zone::ArrangeBuildings() {
 		return a->GetAcreage() > b->GetAcreage();
 		});
 
-	Quad container = Quad(mod->GetSizeX() / 2, mod->GetSizeY() / 2, mod->GetSizeX(), mod->GetSizeY());
+	Quad container = Quad(GetSizeX() / 2, GetSizeY() / 2, GetSizeX(), GetSizeY());
 	if (elements.size() == 1) {
 		elements[0]->SetPosition(container.GetPosX(), container.GetPosY(), container.GetSizeX(), container.GetSizeY());
 	}
@@ -315,7 +312,7 @@ void Zone::ArrangeBuildings() {
 void Zone::ClearZero() {
 	for (auto it = buildings.begin(); it != buildings.end(); ) {
 		Building* building = it->second;
-		if (building != nullptr && building->GetQuad()->GetAcreage() == 0) {
+		if (building != nullptr && building->GetAcreage() == 0) {
 			delete building;
 			it = buildings.erase(it);
 		}
@@ -330,7 +327,7 @@ void Zone::ClearZero() {
 void Zone::GetPosition(float& x, float& y) const {
 	auto block = GetParent();
 	if (block) {
-		auto center = block->GetPosition(mod->GetPosX(), mod->GetPosY());
+		auto center = block->GetPosition(GetPosX(), GetPosY());
 		x = center.first;
 		y = center.second;
 	}

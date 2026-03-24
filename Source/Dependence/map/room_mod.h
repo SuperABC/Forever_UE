@@ -8,7 +8,7 @@
 #include <functional>
 
 
-class RoomMod : public Quad {
+class RoomMod {
 public:
 	// 无构造
 	RoomMod();

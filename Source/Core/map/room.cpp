@@ -38,10 +38,6 @@ string Room::GetName() const {
 	return name;
 }
 
-Quad* Room::GetQuad() {
-	return mod;
-}
-
 Building* Room::GetParentBuilding() const {
 	return parentBuilding;
 }
@@ -237,23 +233,23 @@ std::pair<float, float> Room::GetPosition(float x, float y) const {
 	auto block = GetParentBuilding()->GetParentBlock();
 	auto zone = building->GetParentZone();
 	if (zone) {
-		float blockX = zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f +
-			building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f +
+		float blockX = zone->GetPosX() - zone->GetSizeX() / 2.f +
+			building->GetPosX() - building->GetSizeX() / 2.f +
 			building->GetConstruction().GetPosX() - building->GetConstruction().GetSizeX() / 2.f +
-			mod->GetPosX() - mod->GetSizeX() / 2.f + x;
-		float blockY = zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f +
-			building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f +
+			GetPosX() - GetSizeX() / 2.f + x;
+		float blockY = zone->GetPosY() - zone->GetSizeY() / 2.f +
+			building->GetPosY() - building->GetSizeY() / 2.f +
 			building->GetConstruction().GetPosY() - building->GetConstruction().GetSizeY() / 2.f +
-			mod->GetPosY() - mod->GetSizeY() / 2.f + y;
+			GetPosY() - GetSizeY() / 2.f + y;
 		return block->GetPosition(blockX, blockY);
 	}
 	else {
-		float blockX = building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f +
+		float blockX = building->GetPosX() - building->GetSizeX() / 2.f +
 			building->GetConstruction().GetPosX() - building->GetConstruction().GetSizeX() / 2.f +
-			mod->GetPosX() - mod->GetSizeX() / 2.f + x;
-		float blockY = building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f +
+			GetPosX() - GetSizeX() / 2.f + x;
+		float blockY = building->GetPosY() - building->GetSizeY() / 2.f +
 			building->GetConstruction().GetPosY() - building->GetConstruction().GetSizeY() / 2.f +
-			mod->GetPosY() - mod->GetSizeY() / 2.f + y;
+			GetPosY() - GetSizeY() / 2.f + y;
 		return block->GetPosition(blockX, blockY);
 	}
 	return { 0.f, 0.f };

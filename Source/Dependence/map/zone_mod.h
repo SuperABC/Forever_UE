@@ -8,7 +8,7 @@
 #include <functional>
 
 
-class ZoneMod : public Quad {
+class ZoneMod {
 public:
 	// 无构造
 	ZoneMod();
@@ -26,6 +26,9 @@ public:
 
 	// 设计园区
 	COMSTOM_INIT virtual void LayoutZone(Lot* lot) = 0;
+
+	// 园区面积
+	float acreage;
 
 	// 内部建筑
 	std::vector<std::pair<std::string, float>> buildings;

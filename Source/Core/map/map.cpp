@@ -593,7 +593,7 @@ int Map::Init(int chunkX, int chunkY) {
 		if (!block) continue;
 		float acreageBlock = block->GetAcreage();
 		for (auto& zone : block->GetZones()) {
-			if (zone.second) acreageBlock -= zone.second->GetQuad()->GetAcreage();
+			if (zone.second) acreageBlock -= zone.second->GetAcreage();
 		}
 		if (acreageBlock <= 0.f) continue;
 
@@ -641,7 +641,7 @@ int Map::Init(int chunkX, int chunkY) {
 			}
 
 			acreageTmp += acreageBuilding;
-			building->GetQuad()->SetAcreage(acreageBuilding);
+			building->SetAcreage(acreageBuilding);
 			building->SetParent(block);
 			block->AddBuilding(building->GetName(), building);
 			if (buildings.find(building->GetName()) != buildings.end()) {
@@ -665,7 +665,7 @@ int Map::Init(int chunkX, int chunkY) {
 			for (auto& building : zone->GetBuildings()) {
 				if (!building.second) continue;
 				SetBuilding(building.second, building.first,
-					make_pair(zone->GetQuad()->GetLeft(), zone->GetQuad()->GetBottom()));
+					make_pair(zone->GetLeft(), zone->GetBottom()));
 			}
 		}
 		auto buildings = block->GetBuildings();
@@ -849,14 +849,14 @@ void Map::SetZone(Zone* zone, const string& name) {
 	}
 
 	// 计算四个顶点（世界坐标）
-	auto v1 = block->GetPosition(zone->GetQuad()->GetPosX() + zone->GetQuad()->GetSizeX() / 2.f,
-		zone->GetQuad()->GetPosY() + zone->GetQuad()->GetSizeY() / 2.f);
-	auto v2 = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f,
-		zone->GetQuad()->GetPosY() + zone->GetQuad()->GetSizeY() / 2.f);
-	auto v3 = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f,
-		zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f);
-	auto v4 = block->GetPosition(zone->GetQuad()->GetPosX() + zone->GetQuad()->GetSizeX() / 2.f,
-		zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f);
+	auto v1 = block->GetPosition(zone->GetPosX() + zone->GetSizeX() / 2.f,
+		zone->GetPosY() + zone->GetSizeY() / 2.f);
+	auto v2 = block->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f,
+		zone->GetPosY() + zone->GetSizeY() / 2.f);
+	auto v3 = block->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f,
+		zone->GetPosY() - zone->GetSizeY() / 2.f);
+	auto v4 = block->GetPosition(zone->GetPosX() + zone->GetSizeX() / 2.f,
+		zone->GetPosY() - zone->GetSizeY() / 2.f);
 
 	vector<pair<float, float>> points = { v1, v2, v3, v4 };
 	int minX = (int)points[0].first;
@@ -931,14 +931,14 @@ void Map::SetBuilding(Building* building, const string& name, const pair<float, 
 		THROW_EXCEPTION(NullPointerException, "Building's parent block is null.\n");
 	}
 
-	auto v1 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f,
-		offset.second + building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
-	auto v2 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f,
-		offset.second + building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
-	auto v3 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f,
-		offset.second + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
-	auto v4 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f,
-		offset.second + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
+	auto v1 = block->GetPosition(offset.first + building->GetPosX() + building->GetSizeX() / 2.f,
+		offset.second + building->GetPosY() + building->GetSizeY() / 2.f);
+	auto v2 = block->GetPosition(offset.first + building->GetPosX() - building->GetSizeX() / 2.f,
+		offset.second + building->GetPosY() + building->GetSizeY() / 2.f);
+	auto v3 = block->GetPosition(offset.first + building->GetPosX() - building->GetSizeX() / 2.f,
+		offset.second + building->GetPosY() - building->GetSizeY() / 2.f);
+	auto v4 = block->GetPosition(offset.first + building->GetPosX() + building->GetSizeX() / 2.f,
+		offset.second + building->GetPosY() - building->GetSizeY() / 2.f);
 
 	vector<pair<float, float>> points = { v1, v2, v3, v4 };
 	int minX = (int)points[0].first;
@@ -1159,10 +1159,10 @@ void Map::ArrangeBlocks() {
 		float acreageUsed = 0.f;
 
 		for (const auto& [name, zone] : zones) {
-			if (zone) acreageUsed += zone->GetQuad()->GetAcreage();
+			if (zone) acreageUsed += zone->GetAcreage();
 		}
 		for (const auto& [name, building] : buildings) {
-			if (building) acreageUsed += building->GetQuad()->GetAcreage();
+			if (building) acreageUsed += building->GetAcreage();
 		}
 		float acreageRemain = acreageTotal - acreageUsed;
 
@@ -1170,7 +1170,7 @@ void Map::ArrangeBlocks() {
 		if (acreageRemain > 0) {
 			for (auto& [name, building] : buildings) {
 				if (!building) continue;
-				float acreageTmp = building->RandomAcreage();
+				float acreageTmp = building->GetAcreage();
 				float acreageMax = building->GetAcreageMax();
 				float acreageMin = building->GetAcreageMin();
 
@@ -1179,7 +1179,7 @@ void Map::ArrangeBlocks() {
 				if (acreageExpand > acreageRemain && acreageRemain > 0) {
 					float acreageNew = acreageTmp + acreageRemain;
 					if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
-						building->GetQuad()->SetAcreage(acreageNew);
+						building->SetAcreage(acreageNew);
 						acreageUsed += acreageRemain;
 						acreageRemain = 0.f;
 						acreageAllocate = true;
@@ -1198,10 +1198,10 @@ void Map::ArrangeBlocks() {
 		}
 
 		for (const auto& [name, zone] : zones) {
-			if (zone) elements.push_back(zone->GetQuad());
+			if (zone) elements.push_back(zone);
 		}
 		for (const auto& [name, building] : buildings) {
-			if (building) elements.push_back(building->GetQuad());
+			if (building) elements.push_back(building);
 		}
 
 		if (elements.empty()) continue;
@@ -1337,7 +1337,7 @@ void Map::ClearZero() {
 		if (!block) continue;
 		for (auto it = block->GetZones().begin(); it != block->GetZones().end(); ) {
 			Zone* zone = it->second;
-			if (zone != nullptr && zone->GetQuad()->GetAcreage() == 0) {
+			if (zone != nullptr && zone->GetAcreage() == 0) {
 				delete zone;
 				zones.erase(it->first);
 				it = block->GetZones().erase(it);
@@ -1348,7 +1348,7 @@ void Map::ClearZero() {
 		}
 		for (auto it = block->GetBuildings().begin(); it != block->GetBuildings().end(); ) {
 			Building* building = it->second;
-			if (building != nullptr && building->GetQuad()->GetAcreage() == 0) {
+			if (building != nullptr && building->GetAcreage() == 0) {
 				delete building;
 				buildings.erase(it->first);
 				it = block->GetBuildings().erase(it);

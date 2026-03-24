@@ -27,7 +27,7 @@ const char* ResidentialZone::GetName() {
 }
 
 void ResidentialZone::LayoutZone(Lot* lot) {
-	Quad::SetAcreage(10000.f);
+	acreage = 10000.f;
 	buildings = { {"residential", 1.f}, {"residential", 1.f} };
 }
 

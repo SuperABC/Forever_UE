@@ -25,7 +25,7 @@ struct PairHash {
 	}
 };
 
-class BuildingMod : public Quad {
+class BuildingMod {
 public:
 	// 无构造
 	BuildingMod();
@@ -48,7 +48,7 @@ public:
 	COMSTOM_INIT virtual float RandomAcreage() = 0;
 
 	// 布局建筑内部
-	COMSTOM_INIT virtual void LayoutBuilding() = 0;
+	COMSTOM_INIT virtual void LayoutBuilding(const Quad* quad) = 0;
 
 	// 放置楼栋
 	COMSTOM_INIT virtual void PlaceConstruction() = 0;

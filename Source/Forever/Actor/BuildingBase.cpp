@@ -35,7 +35,7 @@ void ABuildingBase::Tick(float DeltaTime) {
 		}
 		auto blockBuildings = block->GetBuildings();
 		for (auto blockBuilding : blockBuildings) {
-			if (blockBuilding.second->GetQuad()->GetAcreage() <= 0.f)continue;
+			if (blockBuilding.second->GetAcreage() <= 0.f)continue;
 			if (buildingInstances.find(blockBuilding.first) != buildingInstances.end()) {
 				continue;
 			}
@@ -44,8 +44,8 @@ void ABuildingBase::Tick(float DeltaTime) {
 			buildingInfo.name = UTF8_TO_TCHAR(blockBuilding.first.data());
 			auto construction = building->GetConstruction();
 			auto center = block->GetPosition(
-				building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f + construction.GetPosX(),
-				building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f + construction.GetPosY());
+				building->GetPosX() - building->GetSizeX() / 2.f + construction.GetPosX(),
+				building->GetPosY() - building->GetSizeY() / 2.f + construction.GetPosY());
 			buildingInfo.center = FVector(center.first, center.second,
 				building->GetHeight() * (building->GetLayers() - building->GetBasements()) / 2.f);
 			if ((location - buildingInfo.center).Size() > 32.f) {
@@ -61,7 +61,7 @@ void ABuildingBase::Tick(float DeltaTime) {
 		for (auto blockZone : blockZones) {
 			auto zone = blockZone.second;
 			for(auto zoneBuilding : zone->GetBuildings()) {
-				if (zoneBuilding.second->GetQuad()->GetAcreage() <= 0.f)continue;
+				if (zoneBuilding.second->GetAcreage() <= 0.f)continue;
 				if (buildingInstances.find(zoneBuilding.first) != buildingInstances.end()) {
 					continue;
 				}
@@ -70,8 +70,8 @@ void ABuildingBase::Tick(float DeltaTime) {
 				buildingInfo.name = UTF8_TO_TCHAR(zoneBuilding.first.data());
 				auto construction = building->GetConstruction();
 				auto center = block->GetPosition(
-					zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2 + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f + construction.GetPosX(),
-					zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2 + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f + construction.GetPosY());
+					zone->GetPosX() - zone->GetSizeX() / 2 + building->GetPosX() - building->GetSizeX() / 2.f + construction.GetPosX(),
+					zone->GetPosY() - zone->GetSizeY() / 2 + building->GetPosY() - building->GetSizeY() / 2.f + construction.GetPosY());
 				buildingInfo.center = FVector(center.first, center.second,
 					building->GetHeight() * (building->GetLayers() - building->GetBasements()) / 2.f);
 				if ((location - buildingInfo.center).Size() > 32.f) {
@@ -185,8 +185,8 @@ void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
 	}
 	for (auto room : building->GetRooms()) {
 		info.walls.Append(ConstructQuad(
-			FVector(room->GetQuad()->GetPosX(), room->GetQuad()->GetPosY(), (room->GetLayer() + 0.5f) * building->GetHeight()) + bias,
-			FVector(room->GetQuad()->GetSizeX(), room->GetQuad()->GetSizeY(), building->GetHeight()), { true, true, true, true },
+			FVector(room->GetPosX(), room->GetPosY(), (room->GetLayer() + 0.5f) * building->GetHeight()) + bias,
+			FVector(room->GetSizeX(), room->GetSizeY(), building->GetHeight()), { true, true, true, true },
 			room->GetDoors(), room->GetWindows()));
 	}
 }

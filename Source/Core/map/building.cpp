@@ -310,10 +310,6 @@ string Building::GetName() const {
 	return name;
 }
 
-Quad* Building::GetQuad() {
-	return mod;
-}
-
 float Building::RandomAcreage() {
 	return mod->RandomAcreage();
 }
@@ -328,7 +324,8 @@ float Building::GetAcreageMax() {
 
 void Building::PlaceConstruction() {
 	mod->PlaceConstruction();
-	construction = mod->construction;
+	construction = Quad(mod->construction.GetPosX() * GetSizeX(), mod->construction.GetPosY() * GetSizeY(),
+		mod->construction.GetSizeX() * GetSizeX(), mod->construction.GetSizeY() * GetSizeY());
 }
 
 Block* Building::GetParentBlock() const {
@@ -414,13 +411,13 @@ void Building::GetPosition(float& x, float& y) const {
 
 	auto zone = GetParentZone();
 	if(zone) {
-		auto center = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f + mod->GetPosX(),
-			zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f + mod->GetPosY());
+		auto center = block->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f + GetPosX(),
+			zone->GetPosY() - zone->GetSizeY() / 2.f + GetPosY());
 		x = center.first;
 		y = center.second;
 	}
 	else{
-		auto center = block->GetPosition(mod->GetPosX(), mod->GetPosY());
+		auto center = block->GetPosition(GetPosX(), GetPosY());
 		x = center.first;
 		y = center.second;
 	}
@@ -446,7 +443,7 @@ string Building::GetAddress() {
 }
 
 void Building::LayoutBuilding(Layout* layout, ComponentFactory* componentFactory, RoomFactory* roomFactory) {
-	mod->LayoutBuilding();
+	mod->LayoutBuilding(this);
 	basements = mod->basements;
 	layers = mod->layers;
 	height = mod->height;
@@ -743,7 +740,7 @@ void Building::AssignRoom(int level, int slot, string name,
 	room->SetLayer(level);
 
 	auto& single = singles[slot];
-	room->GetQuad()->SetPosition(
+	room->SetPosition(
 		single.GetPosX(), single.GetPosY(),
 		single.GetSizeX(), single.GetSizeY());
 	room->SetDoors(single.GetDoors());
@@ -770,7 +767,7 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage,
 	auto& row = rows[slot];
 
 	float num = row.GetAcreage() / acreage;
-	if (num == 0 || num - (int)num >= 0.5f)
+	if (num < 1 || num - (int)num >= 0.5f)
 		num = num + 1;
 
 	if (row.GetDirection() == 0 || row.GetDirection() == 1) {
@@ -782,7 +779,7 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage,
 			}
 			room->SetLayer(level);
 
-			room->GetQuad()->SetVertices(
+			room->SetVertices(
 				row.GetLeft(), row.GetBottom() + div * i,
 				row.GetRight(), row.GetBottom() + div * (i + 1));
 			room->SetDoors(rows[slot].GetDoors());
@@ -802,7 +799,7 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage,
 			}
 			room->SetLayer(level);
 
-			room->GetQuad()->SetVertices(
+			room->SetVertices(
 				row.GetLeft() + div * i, row.GetBottom(),
 				row.GetLeft() + div * (i + 1), row.GetTop());
 			room->SetDoors(rows[slot].GetDoors());
@@ -918,7 +915,7 @@ float EmptyBuilding::RandomAcreage() {
 	return 0.f;
 }
 
-void EmptyBuilding::LayoutBuilding() {
+void EmptyBuilding::LayoutBuilding(const Quad* quad) {
 
 }
 

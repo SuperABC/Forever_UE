@@ -151,7 +151,7 @@ public:
 // 建筑实体
 class Block;
 class Zone;
-class Building {
+class Building : public Quad {
 public:
 	Building() = delete;
 	Building(BuildingFactory* factory, std::string building);
@@ -162,9 +162,6 @@ public:
 
 	// 获取名称
 	std::string GetName() const;
-
-	// 获取几何
-	Quad* GetQuad();
 
 	// 采样面积
 	float RandomAcreage();
@@ -303,7 +300,7 @@ public:
 	static std::function<int(Lot*)> BuildingAssigner;
 
 	virtual float RandomAcreage();
-	virtual void LayoutBuilding();
+	virtual void LayoutBuilding(const Quad* quad);
 	virtual void PlaceConstruction();
 
 private:
