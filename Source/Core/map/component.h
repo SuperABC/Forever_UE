@@ -13,8 +13,13 @@ class Building;
 class Room;
 class Component {
 public:
+    // 禁止默认构造
 	Component() = delete;
+
+    // 通过类型从工厂构造
 	Component(ComponentFactory* factory, std::string component);
+
+    // 析构组合
 	~Component();
 
 	// 获取类型
@@ -36,14 +41,22 @@ public:
 	void AddRoom(Room* room);
 
 private:
-	ComponentMod* mod;
+    // 模组对象
+	OBJECT_HOLDER ComponentMod* mod;
+
+    // 工厂
 	ComponentFactory* factory;
 
+    // 组合类型
 	std::string type;
+
+    // 组合名称
 	std::string name;
 
+    // 所在建筑
 	Building* parentBuilding;
 
+    // 包含房间
 	std::vector<Room*> rooms;
 };
 

@@ -22,7 +22,7 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 配置房间属性
-	virtual void ConfigRoom() = 0;
+	COMSTOM_INIT virtual void ConfigRoom() = 0;
 
 	// 是否可居住
 	bool isResidential;
@@ -71,10 +71,13 @@ public:
 	void DestroyRoom(RoomMod* terrain) const;
 
 private:
+    // 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<RoomMod* ()>, std::function<void(RoomMod*)>>
 	> registries;
+    
+    // 启用配置
 	std::unordered_map<std::string, bool> configs;
 };
 

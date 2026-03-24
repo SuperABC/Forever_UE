@@ -1,12 +1,7 @@
-﻿#include "../common/error.h"
-#include "../common/utility.h"
-
-#include "roadnet_basic.h"
+﻿#include "roadnet_basic.h"
 
 
 using namespace std;
-
-// 井字路网
 
 int JingRoadnet::count = 0;
 

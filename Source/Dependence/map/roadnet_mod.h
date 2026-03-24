@@ -37,12 +37,12 @@ public:
 
 class RoadnetFactory {
 public:
-	// 清空注册
-	void RemoveAll();
-
 	// 注册路网
 	void RegisterRoadnet(const std::string& id,
 		std::function<RoadnetMod* ()> creator, std::function<void(RoadnetMod*)> deleter);
+
+	// 清空注册
+	void RemoveAll();
 
 	// 创建路网
 	RoadnetMod* CreateRoadnet(const std::string& id) const;
@@ -60,10 +60,13 @@ public:
 	void DestroyRoadnet(RoadnetMod* roadnet) const;
 
 private:
+    // 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<RoadnetMod* ()>, std::function<void(RoadnetMod*)>>
 	> registries;
+	
+    // 启用配置
 	std::unordered_map<std::string, bool> configs;
 };
 

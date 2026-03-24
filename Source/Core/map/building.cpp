@@ -8,10 +8,9 @@
 
 using namespace std;
 
-// 楼梯
-
 Stair::Stair(vector<float> params) :
-	direction(FACE_WEST), params(move(params)) {
+	direction(FACE_WEST),
+	params(params) {
 
 }
 
@@ -39,10 +38,8 @@ void Stair::InstanciateQuad(float width, float height) {
 	Quad::SetPosition(x, y, w, h);
 }
 
-// 天花板
-
 Ceiling::Ceiling(vector<float> params) :
-	params(move(params)) {
+	params(params) {
 
 }
 
@@ -62,9 +59,8 @@ void Ceiling::InstanciateQuad(float width, float height) {
 	Quad::SetPosition(x, y, w, h);
 }
 
-// 走廊
 Corridor::Corridor(vector<float> params) :
-	walls(4, false), doors(), windows(), params(move(params)) {
+	walls(4, false), doors(), windows(), params(params) {
 
 }
 
@@ -121,10 +117,8 @@ void Corridor::InstanciateQuad(float width, float height) {
 	Quad::SetPosition(x, y, w, h);
 }
 
-// 独立房间
-
 Single::Single(vector<float> params) :
-	doors(), windows(), params(move(params)) {
+	doors(), windows(), params(params) {
 
 }
 
@@ -164,10 +158,8 @@ void Single::InstanciateQuad(float width, float height) {
 	Quad::SetPosition(x, y, w, h);
 }
 
-// 联排房间
-
 Row::Row(vector<float> params) :
-	direction(FACE_WEST), doors(), windows(), params(move(params)) {
+	direction(FACE_WEST), doors(), windows(), params(params) {
 
 }
 
@@ -214,8 +206,6 @@ void Row::InstanciateQuad(float width, float height) {
 	float h = abs(params[6] * height + params[7] - params[2] * height - params[3]);
 	Quad::SetPosition(x, y, w, h);
 }
-
-// 楼层
 
 Floor::Floor(int level, float width, float height)
 	: level(level), number(0) {
@@ -281,7 +271,6 @@ Building::Building(BuildingFactory* factory, string building) :
 	name(mod->GetName()),
 	parentZone(nullptr),
 	parentBlock(nullptr),
-	stated(false),
 	layers(1),
 	basements(0),
 	height(0.4f),
@@ -310,24 +299,6 @@ string Building::GetName() const {
 	return name;
 }
 
-float Building::RandomAcreage() {
-	return mod->RandomAcreage();
-}
-
-float Building::GetAcreageMin() {
-	return mod->minAcreage;
-}
-
-float Building::GetAcreageMax() {
-	return mod->maxAcreage;
-}
-
-void Building::PlaceConstruction() {
-	mod->PlaceConstruction();
-	construction = Quad(mod->construction.GetPosX() * GetSizeX(), mod->construction.GetPosY() * GetSizeY(),
-		mod->construction.GetSizeX() * GetSizeX(), mod->construction.GetSizeY() * GetSizeY());
-}
-
 Block* Building::GetParentBlock() const {
 	return parentBlock;
 }
@@ -342,22 +313,6 @@ Zone* Building::GetParentZone() const {
 
 void Building::SetParent(Zone* zone) {
 	parentZone = zone;
-}
-
-//int Building::GetOwner() const {
-//	return owner;
-//}
-
-//void Building::SetOwner(int owner) {
-//	this->owner = owner;
-//}
-
-bool Building::GetStated() const {
-	return stated;
-}
-
-void Building::SetStated(bool stated) {
-	this->stated = stated;
 }
 
 int Building::GetLayers() const {
@@ -388,6 +343,31 @@ const Quad Building::GetConstruction() const {
 	return construction;
 }
 
+void Building::PlaceConstruction() {
+	mod->PlaceConstruction();
+	construction = Quad(mod->construction.GetPosX() * GetSizeX(), mod->construction.GetPosY() * GetSizeY(),
+		mod->construction.GetSizeX() * GetSizeX(), mod->construction.GetSizeY() * GetSizeY());
+}
+
+string Building::GetAddress() {
+	if (address != "") {
+		return address.data();
+	}
+
+	auto zone = GetParentZone();
+	if(zone) {
+		auto zoneAddress = GetParentZone()->GetAddress();
+		address = zoneAddress + " " + GetName();
+		return address;
+	}
+	else {
+		auto blockAddress = GetParentBlock()->GetAddress();
+		address = blockAddress + " " + GetName();
+		return address;
+	}
+
+}
+
 vector<Component*>& Building::GetComponents() {
 	return components;
 }
@@ -401,6 +381,18 @@ Floor* Building::GetFloor(int level) const {
 	if (idx >= 0 && idx < floors.size())
 		return floors[idx];
 	return nullptr;
+}
+
+float Building::RandomAcreage() {
+	return mod->RandomAcreage();
+}
+
+float Building::GetAcreageMin() {
+	return mod->minAcreage;
+}
+
+float Building::GetAcreageMax() {
+	return mod->maxAcreage;
 }
 
 void Building::GetPosition(float& x, float& y) const {
@@ -421,25 +413,6 @@ void Building::GetPosition(float& x, float& y) const {
 		x = center.first;
 		y = center.second;
 	}
-}
-
-string Building::GetAddress() {
-	if (fullAddress != "") {
-		return fullAddress.data();
-	}
-
-	auto zone = GetParentZone();
-	if(zone) {
-		auto zoneAddress = GetParentZone()->GetAddress();
-		fullAddress = zoneAddress + " " + GetName();
-		return fullAddress;
-	}
-	else {
-		auto blockAddress = GetParentBlock()->GetAddress();
-		fullAddress = blockAddress + " " + GetName();
-		return fullAddress;
-	}
-
 }
 
 void Building::LayoutBuilding(Layout* layout, ComponentFactory* componentFactory, RoomFactory* roomFactory) {

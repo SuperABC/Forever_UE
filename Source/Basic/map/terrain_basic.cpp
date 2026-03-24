@@ -3,8 +3,6 @@
 
 using namespace std;
 
-// 海洋地形
-
 int OceanTerrain::count = 0;
 
 OceanTerrain::OceanTerrain() : id(count++) {
@@ -146,8 +144,6 @@ void OceanTerrain::DistributeTerrain(int width, int height,
         }
     }
 }
-
-// 山区地形
 
 int MountainTerrain::count = 0;
 

@@ -9,20 +9,25 @@
 // 子类注册函数
 typedef void (*RegisterModRoomsFunc)(RoomFactory* factory);
 
-enum FACE_DIRECTION : int;
-
 // 房间实体
+enum FACE_DIRECTION : int;
 class Building;
 class Component;
 class Room : public Quad {
 public:
+    // 门窗类
 	using WallHole = std::unordered_map<
 		FACE_DIRECTION,
 		std::vector<std::pair<std::vector<float>, Quad>>
 	>;
 
+    // 禁止默认构造
 	Room() = delete;
+
+    // 通过类型从工厂构造
 	Room(RoomFactory* factory, std::string component);
+
+    // 析构房间
 	~Room();
 
 	// 获取类型
@@ -34,11 +39,11 @@ public:
 	// 获取所在建筑
 	Building* GetParentBuilding() const;
 
-	// 获取所在组合
-	Component* GetParentComponent() const;
-
 	// 设置所在建筑
 	void SetParent(Building* building);
+
+	// 获取所在组合
+	Component* GetParentComponent() const;
 
 	// 设置所在组合
 	void SetParent(Component* component);
@@ -48,18 +53,6 @@ public:
 
 	// 设置所在层数
 	void SetLayer(int layer);
-
-	// 获取是否由政府拥有
-	bool GetStated() const;
-
-	// 设置是否由政府拥有
-	void SetStated(bool stated);
-
-	// 获取私人房东ID
-	//int GetOwner() const;
-
-	// 设置私人房东ID
-	//void SetOwner(int owner);
 
 	// 获取门框
 	const WallHole& GetDoors() const;
@@ -79,50 +72,11 @@ public:
 	// 设置门牌号
 	void SetNumber(int floor, int number);
 
-	// 获取住户
-	//const std::vector<int>& GetTenants() const;
-
-	// 添加住户
-	//void AddTenant(int id);
-
-	// 移除住户
-	//bool RemoveTenant(int id);
-
-	// 获取工人
-	//const std::vector<int>& GetWorkers() const;
-
-	// 添加工人
-	//void AddWorker(int id);
-
-	// 移除工人
-	//bool RemoveWorker(int id);
-
-	// 获取仓库
-	//Storage* GetStorage() const;
-
-	// 设置仓库
-	//void SetStorage(Storage* storage);
-
-	// 移除仓库（返回值需要delete）
-	//Storage* RemoveStorage();
-
-	// 获取工坊
-	//const std::vector<Manufacture*>& GetManufactures() const;
-
-	// 添加工坊
-	//void AddManufacture(Manufacture* manufacture);
-
-	// 移除工坊（只操作第一个符合名称的对象，且返回值需要delete）
-	//Manufacture* RemoveManufacture(const std::string& name);
-
-	// 清空工坊（返回值需要delete）
-	//std::vector<Manufacture*> ClearManufactures();
+	// 获取完整地址
+	std::string GetAddress() const;
 
 	// 获取世界坐标
 	std::pair<float, float> GetPosition(float x, float y) const;
-
-	// 获取完整地址
-	std::string GetAddress() const;
 
 	// 是否可作为住宅
 	bool IsResidential() const;
@@ -149,24 +103,35 @@ public:
 	std::vector<std::string> ManufactureTypes() const;
 
 private:
+    // 模组对象
 	RoomMod* mod;
+
+    // 工厂
 	RoomFactory* factory;
 
+    // 房间类型
 	std::string type;
+
+    // 房间名称
 	std::string name;
 
+    // 所在建筑
 	Building* parentBuilding;
+
+    // 所在组合
 	Component* parentComponent;
+
+    // 所在楼层
 	int layer;
-	bool stated;
-	//Person* owner;
+
+    // 门
 	WallHole doors;
+
+    // 窗
 	WallHole windows;
+
+    // 门牌号
 	std::string number;
-	//std::vector<Person*> tenants;
-	//std::vector<Person*> workers;
-	//OBJECT_HOLDER Storage* storage;
-	//OBJECT_HOLDER std::vector<Manufacture*> manufactures;
 };
 
 // 空房间

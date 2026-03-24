@@ -8,7 +8,8 @@ Component::Component(ComponentFactory* factory, string Component) :
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),
-	parentBuilding(nullptr) {
+	parentBuilding(nullptr),
+	rooms() {
 
 }
 
@@ -32,12 +33,10 @@ void Component::SetParent(Building* building) {
 	parentBuilding = building;
 }
 
-// 获取所有包含房间
 vector<Room*>& Component::GetRooms() {
 	return rooms;
 }
 
-// 添加房间
 void Component::AddRoom(Room* room) {
 	if (room == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Room is null when adding to component.");

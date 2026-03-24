@@ -14,8 +14,13 @@ class Building;
 class BuildingFactory;
 class Zone : public Quad {
 public:
+    // 禁止默认构造
 	Zone() = delete;
+
+    // 通过类型从工厂构造
 	Zone(ZoneFactory* factory, std::string zone);
+	
+    // 析构园区
 	~Zone();
 
 	// 获取类型
@@ -24,26 +29,14 @@ public:
 	// 获取名称
 	std::string GetName() const;
 
-	// 设计园区
-	void LayoutZone(Lot* block, BuildingFactory* factory);
-
 	// 获取所在地块
 	Block* GetParent() const;
 
 	// 设置所在地块
 	void SetParent(Block* block);
 
-	// 获取是否由政府拥有
-	bool GetStated() const;
-
-	// 设置是否由政府拥有
-	void SetStated(bool state);
-
-	// 获取私人房东ID
-	//int GetOwner() const;
-
-	// 设置私人房东ID
-	//void SetOwner(int owner);
+	// 获取地址
+	std::string GetAddress();
 
 	// 获取一栋建筑
 	Building* GetBuilding(std::string name);
@@ -51,29 +44,38 @@ public:
 	// 获取园区内所有建筑
 	const std::unordered_map<std::string, Building*>& GetBuildings();
 
+	// 获取园区中心世界位置
+	void GetPosition(float& x, float& y) const;
+
+	// 设计园区
+	void LayoutZone(Lot* block, BuildingFactory* factory);
+
 	// 自动分布建筑
 	void ArrangeBuildings();
 
 	// 清理空建筑
 	void ClearZero();
 
-	// 获取园区中心世界位置
-	void GetPosition(float& x, float& y) const;
-
-	// 获取地址
-	std::string GetAddress();
-
 private:
-	ZoneMod* mod;
+    // 模组对象
+	OBJECT_HOLDER ZoneMod* mod;
+
+    // 工厂
 	ZoneFactory* factory;
 
+    // 地形类型
 	std::string type;
+
+    // 地形名称
 	std::string name;
 
+    // 所在街区
 	Block* parentBlock;
-	bool stated;
-	//Person* owner;
-	std::string fullAddress;
+	
+	// 完整地址
+	std::string address;
+
+	// 内部建筑
 	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
 };
 

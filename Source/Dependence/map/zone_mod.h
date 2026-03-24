@@ -62,11 +62,16 @@ public:
 	void DestroyZone(ZoneMod* zone) const;
 
 private:
+    // 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<ZoneMod* ()>, std::function<void(ZoneMod*)>>
 	> registries;
+    
+    // 启用配置
 	std::unordered_map<std::string, bool> configs;
+	
+    // 园区生成器
 	std::unordered_map<std::string, std::function<int(Lot*)>> assigners;
 };
 

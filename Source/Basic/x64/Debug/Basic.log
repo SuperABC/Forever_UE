@@ -1,4 +1,10 @@
 ﻿  basic.cpp
+  building_basic.cpp
+  component_basic.cpp
+  roadnet_basic.cpp
+  room_basic.cpp
   terrain_basic.cpp
+  zone_basic.cpp
   正在生成代码...
+    正在创建库 C:\Workspace\UE5\Projects\Forever_UE\x64\Debug\Basic.lib 和对象 C:\Workspace\UE5\Projects\Forever_UE\x64\Debug\Basic.exp
   Basic.vcxproj -> C:\Workspace\UE5\Projects\Forever_UE\x64\Debug\Basic.dll

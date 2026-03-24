@@ -9,8 +9,13 @@ typedef void (*RegisterModTerrainsFunc)(TerrainFactory* factory);
 // 地形实体
 class Terrain {
 public:
+    // 禁止默认构造
 	Terrain() = delete;
+
+    // 通过类型从工厂构造
 	Terrain(TerrainFactory* factory, std::string terrain);
+
+    // 析构地形
 	~Terrain();
 
 	// 获取类型
@@ -30,10 +35,16 @@ public:
 		std::function<bool(int, int, float)> setHeight) const;
 
 private:
-	TerrainMod* mod;
+    // 模组对象
+	OBJECT_HOLDER TerrainMod* mod;
+
+    // 工厂
 	TerrainFactory* factory;
 
+    // 地形类型
 	std::string type;
+
+    // 地形名称
 	std::string name;
 };
 

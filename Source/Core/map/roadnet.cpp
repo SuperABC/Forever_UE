@@ -11,7 +11,6 @@ Roadnet::Roadnet(RoadnetFactory* factory, string roadnet) :
 	nodes(),
 	connections(),
 	blocks(),
-	//routes(),
 	addresses() {
 
 }
@@ -82,7 +81,6 @@ void Roadnet::AllocateAddress() {
 	}
 }
 
-// 寻址地块
 Block* Roadnet::LocateBlock(string road, int id) const {
 	if (addresses.find(road) == addresses.end()) {
 		return nullptr;

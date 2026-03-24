@@ -43,10 +43,13 @@ public:
 	void DestroyComponent(ComponentMod* terrain) const;
 
 private:
+    // 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<ComponentMod* ()>, std::function<void(ComponentMod*)>>
 	> registries;
+    
+    // 启用配置
 	std::unordered_map<std::string, bool> configs;
 };
 

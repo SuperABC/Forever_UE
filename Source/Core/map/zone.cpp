@@ -11,8 +11,8 @@ Zone::Zone(ZoneFactory* factory, string zone) :
 	type(mod->GetType()),
 	name(mod->GetName()),
 	parentBlock(nullptr),
-	fullAddress(""), 
-	stated(false) {
+	address(""),
+	buildings() {
 
 }
 
@@ -30,6 +30,45 @@ string Zone::GetType() const {
 
 string Zone::GetName() const {
 	return name;
+}
+
+Block* Zone::GetParent() const {
+	return parentBlock;
+}
+
+void Zone::SetParent(Block* block) {
+	parentBlock = block;
+}
+
+Building* Zone::GetBuilding(string name) {
+	auto it = buildings.find(name);
+	if (it != buildings.end()) {
+		return it->second;
+	}
+	return nullptr;
+}
+
+const unordered_map<string, Building*>& Zone::GetBuildings() {
+	return buildings;
+}
+
+string Zone::GetAddress() {
+	if (address != "") {
+		return address.data();
+	}
+
+	auto blockAddress = GetParent()->GetAddress();
+	address = blockAddress + " " + GetName();
+	return address.data();
+}
+
+void Zone::GetPosition(float& x, float& y) const {
+	auto block = GetParent();
+	if (block) {
+		auto center = block->GetPosition(GetPosX(), GetPosY());
+		x = center.first;
+		y = center.second;
+	}
 }
 
 void Zone::LayoutZone(Lot* block, BuildingFactory* factory) {
@@ -72,51 +111,6 @@ void Zone::LayoutZone(Lot* block, BuildingFactory* factory) {
 	}
 }
 
-// 获取所在地块
-Block* Zone::GetParent() const {
-	return parentBlock;
-}
-
-// 设置所在地块
-void Zone::SetParent(Block* block) {
-	parentBlock = block;
-}
-
-// 获取私人房东ID
-//int Zone::GetOwner() const {
-//	return owner;
-//}
-
-// 设置私人房东ID
-//void Zone::SetOwner(int owner) {
-//	this->owner = owner;
-//}
-
-// 获取是否由政府拥有
-bool Zone::GetStated() const {
-	return stated;
-}
-
-// 设置是否由政府拥有
-void Zone::SetStated(bool stated) {
-	this->stated = stated;
-}
-
-// 获取一栋建筑
-Building* Zone::GetBuilding(string name) {
-	auto it = buildings.find(name);
-	if (it != buildings.end()) {
-		return it->second;
-	}
-	return nullptr;
-}
-
-// 获取园区内所有建筑
-const unordered_map<string, Building*>& Zone::GetBuildings() {
-	return buildings;
-}
-
-// 自动分布建筑
 void Zone::ArrangeBuildings() {
 	if (buildings.empty()) {
 		return;
@@ -308,7 +302,6 @@ void Zone::ArrangeBuildings() {
 	}
 }
 
-// 清理空园区建筑
 void Zone::ClearZero() {
 	for (auto it = buildings.begin(); it != buildings.end(); ) {
 		Building* building = it->second;
@@ -320,28 +313,6 @@ void Zone::ClearZero() {
 			++it;
 		}
 	}
-}
-
-
-// 获取园区中心世界位置
-void Zone::GetPosition(float& x, float& y) const {
-	auto block = GetParent();
-	if (block) {
-		auto center = block->GetPosition(GetPosX(), GetPosY());
-		x = center.first;
-		y = center.second;
-	}
-}
-
-// 获取完整地址
-string Zone::GetAddress() {
-	if (fullAddress != "") {
-		return fullAddress.data();
-	}
-
-	auto blockAddress = GetParent()->GetAddress();
-	fullAddress = blockAddress + " " + GetName();
-	return fullAddress.data();
 }
 
 int EmptyZone::count = 0;

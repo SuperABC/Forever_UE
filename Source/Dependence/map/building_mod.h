@@ -18,7 +18,7 @@ enum FACE_DIRECTION : int {
 };
 static char faceAbbr[4] = { 'w', 'e', 'n', 's' };
 
-// pair哈希以作为map键
+// 规定pair哈希以作为map键
 struct PairHash {
 	std::size_t operator()(const std::pair<std::string, int>& p) const {
 		return std::hash<std::string>()(p.first) ^ (std::hash<int>()(p.second) << 1);
@@ -92,11 +92,11 @@ public:
 	// 所有楼层布局及方向（包含地下及地上）
 	std::vector<std::pair<std::string, int>> templates;
 
-	//												component	id		每个room				floor		slot	type
+	//							component		id		每个room		floor	slot	type
 	// 单间模板房间
 	std::unordered_map<std::pair<std::string, int>, std::vector<std::tuple<int, int, std::string>>, PairHash> singles;
 
-	//												component	id		每个floor		每个room				slot		type			面积
+	//							component		id		每个floor	每个room			slot	type	面积
 	// 联排模板房间
 	std::unordered_map<std::pair<std::string, int>, std::vector<std::vector<std::tuple<int, std::string, float>>>, PairHash> rows;
 };
@@ -130,12 +130,19 @@ public:
 	void DestroyBuilding(BuildingMod* zone) const;
 
 private:
+    // 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<BuildingMod* ()>, std::function<void(BuildingMod*)>>
 	> registries;
+    
+    // 启用配置
 	std::unordered_map<std::string, bool> configs;
+    
+    // 权重
 	std::unordered_map<std::string, std::vector<float>> powers;
+	
+    // 建筑生成器
 	std::unordered_map<std::string, std::function<int(Lot*)>> assigners;
 };
 

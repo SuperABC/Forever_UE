@@ -11,8 +11,13 @@ typedef void (*RegisterModRoadnetsFunc)(RoadnetFactory* factory);
 // 路网实体
 class Roadnet {
 public:
+    // 禁止默认构造
 	Roadnet() = delete;
+
+    // 通过类型从工厂构造
 	Roadnet(RoadnetFactory* factory, std::string roadnet);
+	
+    // 析构地形
 	~Roadnet();
 
 	// 获取类型
@@ -40,27 +45,22 @@ public:
 	// 按地址查找
 	Block* LocateBlock(std::string road, int id) const;
 
-	// 自动寻路
-	//const std::vector<Connection> AutoNavigate(
-	//	const std::vector<std::pair<Connection, float>>& startRoads, const std::vector<std::pair<Connection, float>>& endRoads) const;
-	//const std::vector<Connection> AutoNavigate(
-	//	const Block* startBlock, const Block* endBlock) const;
-	//const std::vector<Connection> AutoNavigate(
-	//	const std::vector<std::pair<Connection, float>>& startRoads, const Block* endBlock) const;
-	//const std::vector<Connection> AutoNavigate(
-	//	const Block* startBlock, const std::vector<std::pair<Connection, float>>& endRoads) const;
-
 private:
-	RoadnetMod* mod;
+    // 模组对象
+	OBJECT_HOLDER RoadnetMod* mod;
+
+    // 工厂
 	RoadnetFactory* factory;
 
+    // 路网类型
 	std::string type;
+
+    // 路网名称
 	std::string name;
 
 	OBJECT_HOLDER std::vector<Node*> nodes;
 	OBJECT_HOLDER std::vector<Connection*> connections;
 	OBJECT_HOLDER std::vector<Block*> blocks;
-	//OBJECT_HOLDER std::vector<Route*> routes;
 	std::unordered_map<std::string, std::vector<Block*>> addresses;
 };
 

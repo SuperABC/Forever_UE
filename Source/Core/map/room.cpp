@@ -14,15 +14,9 @@ Room::Room(RoomFactory* factory, string room) :
 	parentBuilding(nullptr),
 	parentComponent(nullptr),
 	layer(0),
-	stated(false),
-	//owner(nullptr),
 	doors(),
 	windows(),
-	number("")//,
-	//tenants(),
-	//workers(),
-	//storage(),
-	{//manufactures() {
+	number("") {
 
 }
 
@@ -42,39 +36,19 @@ Building* Room::GetParentBuilding() const {
 	return parentBuilding;
 }
 
-// 获取所在组合
-Component* Room::GetParentComponent() const {
-	return parentComponent;
-}
-
 // 设置所在建筑
 void Room::SetParent(Building* building) {
 	parentBuilding = building;
 }
 
+// 获取所在组合
+Component* Room::GetParentComponent() const {
+	return parentComponent;
+}
+
 // 设置所在组合
 void Room::SetParent(Component* component) {
 	parentComponent = component;
-}
-
-// 获取私人房东ID
-//int Room::GetOwner() const {
-//	return owner;
-//}
-
-// 设置私人房东ID
-//void Room::SetOwner(int owner) {
-//	this->owner = owner;
-//}
-
-// 获取是否由政府拥有
-bool Room::GetStated() const {
-	return stated;
-}
-
-// 设置是否由政府拥有
-void Room::SetStated(bool stated) {
-	this->stated = stated;
 }
 
 // 获取所在楼层
@@ -129,103 +103,6 @@ void Room::SetNumber(int floor, int number) {
 string Room::GetAddress() const {
 	return GetParentBuilding()->GetAddress() + " " + number;
 }
-
-// 获取住户
-//const vector<int>& Room::GetTenants() const {
-//	return tenants;
-//}
-
-// 添加住户
-//void Room::AddTenant(int id) {
-//	tenants.push_back(id);
-//}
-
-// 移除住户并返回是否找到
-//bool Room::RemoveTenant(int id) {
-//	for (auto& tenant : tenants) {
-//		if (tenant == id) {
-//			tenant = tenants.back();
-//			tenants.pop_back();
-//			return true;
-//		}
-//	}
-//	return false;
-//}
-
-// 获取工人
-//const vector<int>& Room::GetWorkers() const {
-//	return workers;
-//}
-
-// 添加住户
-//void Room::AddWorker(int id) {
-//	workers.push_back(id);
-//}
-
-// 移除工人并返回是否找到
-//bool Room::RemoveWorker(int id) {
-//	for (auto& worker : workers) {
-//		if (worker == id) {
-//			worker = workers.back();
-//			workers.pop_back();
-//			return true;
-//		}
-//	}
-//	return false;
-//}
-
-// 获取仓库
-//Storage* Room::GetStorage() const {
-//	return storage;
-//}
-
-// 设置仓库
-//void Room::SetStorage(Storage* storage) {
-//	if (storage == nullptr) {
-//		THROW_EXCEPTION(NullPointerException, "Storage is null when attaching to room.");
-//	}
-//	this->storage = storage;
-//}
-
-// 移除仓库并返回
-//Storage* Room::RemoveStorage() {
-//	auto item = storage;
-//	storage = nullptr;
-//	return item;
-//}
-
-// 获取工坊
-//const vector<Manufacture*>& Room::GetManufactures() const {
-//	return manufactures;
-//}
-
-// 添加工坊
-//void Room::AddManufacture(Manufacture* manufacture) {
-//	if (manufacture == nullptr) {
-//		THROW_EXCEPTION(NullPointerException, "Manufacture is null when attaching to room.");
-//	}
-//	manufactures.push_back(manufacture);
-//}
-
-// 移除第一个符合名字的工坊并返回
-//Manufacture* Room::RemoveManufacture(const string& name) {
-//	for (auto& manufacture : manufactures) {
-//		if (manufacture->GetName() == name) {
-//			auto item = manufacture;
-//			manufacture = manufactures.back();
-//			manufactures.pop_back();
-//			return item;
-//		}
-//	}
-//	return nullptr;
-//}
-
-// 清空工坊并返回
-//vector<Manufacture*> Room::ClearManufactures() {
-//	auto items = manufactures;
-//	manufactures.clear();
-//	return items;
-//}
 
 // 获取世界坐标
 std::pair<float, float> Room::GetPosition(float x, float y) const {

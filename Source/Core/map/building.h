@@ -153,8 +153,13 @@ class Block;
 class Zone;
 class Building : public Quad {
 public:
+    // 禁止默认构造
 	Building() = delete;
+	
+    // 通过类型从工厂构造
 	Building(BuildingFactory* factory, std::string building);
+
+    // 析构建筑
 	~Building();
 
 	// 获取类型
@@ -162,18 +167,6 @@ public:
 
 	// 获取名称
 	std::string GetName() const;
-
-	// 采样面积
-	float RandomAcreage();
-
-	// 面积下限
-	float GetAcreageMin();
-
-	// 面积上限
-	float GetAcreageMax();
-
-	// 放置楼栋
-	void PlaceConstruction();
 
 	// 获取所在地块
 	Block* GetParentBlock() const;
@@ -186,12 +179,6 @@ public:
 
 	// 设置所在园区
 	void SetParent(Zone* zone);
-
-	// 获取是否由政府拥有
-	bool GetStated() const;
-
-	// 设置是否由政府拥有
-	void SetStated(bool stated);
 
 	// 获取总地面层数
 	int GetLayers() const;
@@ -214,6 +201,12 @@ public:
 	// 获取建筑楼体范围
 	const Quad GetConstruction() const;
 
+	// 放置建筑楼体
+	void PlaceConstruction();
+
+	// 获取地址
+	std::string GetAddress();
+
 	// 获取楼内全部组合	
 	std::vector<Component*>& GetComponents();
 
@@ -223,17 +216,17 @@ public:
 	// 获取楼层
 	Floor* GetFloor(int level) const;
 
-	// 获取私人房东ID
-	//int GetOwner() const;
+	// 采样面积
+	float RandomAcreage();
 
-	// 设置私人房东ID
-	//void SetOwner(int owner);
+	// 面积下限
+	float GetAcreageMin();
+
+	// 面积上限
+	float GetAcreageMax();
 
 	// 获取建筑中心世界位置
 	void GetPosition(float& x, float& y) const;
-
-	// 获取地址
-	std::string GetAddress();
 
 	// 布局内部对象
 	void LayoutBuilding(Layout* layout, ComponentFactory* componentFactory, RoomFactory* roomFactory);
@@ -265,23 +258,46 @@ private:
 	// 根据转向修改朝向参数
 	static int InverseDirection(int direction, int face);
 
-	BuildingMod* mod;
+    // 模组对象
+	OBJECT_HOLDER BuildingMod* mod;
+
+    // 工厂
 	BuildingFactory* factory;
 
+    // 建筑类型
 	std::string type;
+
+    // 建筑名称
 	std::string name;
 
+    // 所在园区
 	Zone* parentZone;
+
+    // 所在街区
 	Block* parentBlock;
+
+    // 地面层数
 	int layers;
+
+    // 地下层数
 	int basements;
+
+    // 层高
 	float height;
+
+    // 建筑楼体范围
 	Quad construction;
-	bool stated;
-	//Person* owner;
-	std::string fullAddress;
+	
+	// 完整地址
+	std::string address;
+	
+	// 楼层
 	OBJECT_HOLDER std::vector<Floor*> floors;
+	
+	// 组合
 	OBJECT_HOLDER std::vector<Component*> components;
+	
+	// 房间
 	OBJECT_HOLDER std::vector<Room*> rooms;
 };
 

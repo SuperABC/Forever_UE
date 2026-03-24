@@ -3,30 +3,25 @@
 
 using namespace std;
 
-// 无构造
 RoomMod::RoomMod() {
 
 }
 
-// 无析构
 RoomMod::~RoomMod() {
 
 }
 
-// 注册房间
 void RoomFactory::RegisterRoom(const string& id,
 	function<RoomMod* ()> creator, function<void(RoomMod*)> deleter) {
 	registries[id] = { creator, deleter };
 }
 
-// 清空注册
 void RoomFactory::RemoveAll() {
 	for (auto& config : configs) {
 		config.second = false;
 	}
 }
 
-// 创建房间
 RoomMod* RoomFactory::CreateRoom(const string& id) const {
 	auto config = configs.find(id);
 	if (config == configs.end() || !config->second) {
@@ -50,17 +45,14 @@ RoomMod* RoomFactory::CreateRoom(const string& id) const {
 	return nullptr;
 }
 
-// 检查是否注册
 bool RoomFactory::CheckRegistered(const string& id) const {
 	return registries.find(id) != registries.end();
 }
 
-// 设置启用配置
 void RoomFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
 }
 
-// 析构房间
 void RoomFactory::DestroyRoom(RoomMod* terrain) const {
 	if (!terrain) {
 		debugf("Warning: Room is null when deleting.\n");

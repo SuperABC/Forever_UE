@@ -3,19 +3,16 @@
 
 using namespace std;
 
-// 无构造
 TerrainMod::TerrainMod() :
     dx{ -1, 1, 0, 0 },
     dy{ 0, 0, -1, 1 } {
 
 }
 
-// 无析构
 TerrainMod::~TerrainMod() {
 
 }
 
-// 地形填充，若ovewrite为true，则全图填充，否则只填充平原
 int TerrainMod::FloodTerrain(
     int x, int y, int num, bool overwrite, int width, int height,
     function<string(int, int)> get, function<bool(int, int, string)> set) const {
@@ -52,7 +49,6 @@ int TerrainMod::FloodTerrain(
     return count;
 }
 
-// 检查地形填充处是否为当前边界
 bool TerrainMod::CheckBoundary(
     int x, int y, bool overwrite, int width, int height,
     function<string(int, int)> get, function<bool(int, int, string)> set) const {
@@ -73,7 +69,6 @@ bool TerrainMod::CheckBoundary(
     return false;
 }
 
-// 更新地形填充边界
 void TerrainMod::UpdateBoundary(
     int x, int y, vector<pair<int, int>>& q, bool overwrite, int width, int height,
     function<string(int, int)> get, function<bool(int, int, string)> set) const {
@@ -95,7 +90,6 @@ void TerrainMod::UpdateBoundary(
     }
 }
 
-// 地形滤波
 void TerrainMod::ShapeFilter(int x, int y, int width, int height,
     function<string(int, int)> get, function<bool(int, int, string)> set,
     int side, float threshold) const {
@@ -115,26 +109,23 @@ void TerrainMod::ShapeFilter(int x, int y, int width, int height,
                 ++count;
         }
     }
-    // 实际统计的区域可能小于全窗口，按比例计算阈值
+    
     int actual_total = (x_end - x_start + 1) * (y_end - y_start + 1);
     if (count > actual_total * threshold)
         set(x, y, GetType());
 }
 
-// 注册地形
 void TerrainFactory::RegisterTerrain(const string& id,
 	function<TerrainMod* ()> creator, function<void(TerrainMod*)> deleter) {
 	registries[id] = { creator, deleter };
 }
 
-// 清空注册
 void TerrainFactory::RemoveAll() {
 	for (auto& config : configs) {
 		config.second = false;
 	}
 }
 
-// 创建地形
 TerrainMod* TerrainFactory::CreateTerrain(const string& id) const {
 	auto config = configs.find(id);
 	if (config == configs.end() || !config->second) {
@@ -158,17 +149,14 @@ TerrainMod* TerrainFactory::CreateTerrain(const string& id) const {
 	return nullptr;
 }
 
-// 检查是否注册
 bool TerrainFactory::CheckRegistered(const string& id) const {
 	return registries.find(id) != registries.end();
 }
 
-// 设置启用配置
 void TerrainFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
 }
 
-// 获取所有启用地形
 vector<string> TerrainFactory::GetTerrains() const {
 	vector<string> terrains;
 	for (auto& registry : registries) {
@@ -180,7 +168,6 @@ vector<string> TerrainFactory::GetTerrains() const {
 	return terrains;
 }
 
-// 析构地形
 void TerrainFactory::DestroyTerrain(TerrainMod* terrain) const {
 	if (!terrain) {
 		debugf("Warning: Terrain is null when deleting.\n");

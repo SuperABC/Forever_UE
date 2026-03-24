@@ -3,30 +3,25 @@
 
 using namespace std;
 
-// 无构造
 ComponentMod::ComponentMod() {
 
 }
 
-// 无析构
 ComponentMod::~ComponentMod() {
 
 }
 
-// 注册组合
 void ComponentFactory::RegisterComponent(const string& id,
 	function<ComponentMod* ()> creator, function<void(ComponentMod*)> deleter) {
 	registries[id] = { creator, deleter };
 }
 
-// 清空注册
 void ComponentFactory::RemoveAll() {
 	for (auto& config : configs) {
 		config.second = false;
 	}
 }
 
-// 创建组合
 ComponentMod* ComponentFactory::CreateComponent(const string& id) const {
 	auto config = configs.find(id);
 	if (config == configs.end() || !config->second) {
@@ -50,17 +45,14 @@ ComponentMod* ComponentFactory::CreateComponent(const string& id) const {
 	return nullptr;
 }
 
-// 检查是否注册
 bool ComponentFactory::CheckRegistered(const string& id) const {
 	return registries.find(id) != registries.end();
 }
 
-// 设置启用配置
 void ComponentFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
 }
 
-// 析构组合
 void ComponentFactory::DestroyComponent(ComponentMod* Component) const {
 	if (!Component) {
 		debugf("Warning: Component is null when deleting.\n");
