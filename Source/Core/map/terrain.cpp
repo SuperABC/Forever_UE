@@ -28,9 +28,9 @@ float Terrain::GetPriority() const {
 }
 
 void Terrain::DistributeTerrain(int width, int height,
-	function<bool(int, int, string, float)> setElement,
-	function<string(int, int)> getTerrain, function<float(int, int)> getHeight) const {
-	return mod->DistributeTerrain(width, height, setElement, getTerrain, getHeight);
+	function<string(int, int)> getTerrain, function<bool(int, int, string)> setTerrain,
+	function<float(int, int)> getHeight, function<bool(int, int, float)> setHeight) const {
+	return mod->DistributeTerrain(width, height, getTerrain, setTerrain, getHeight, setHeight);
 }
 
 int EmptyTerrain::count = 0;
@@ -61,8 +61,8 @@ float EmptyTerrain::GetPriority() const {
 }
 
 void EmptyTerrain::DistributeTerrain(int width, int height,
-	function<bool(int, int, string, float)> setElement,
-	function<string(int, int)> getTerrain, function<float(int, int)> getHeight) const {
+	function<string(int, int)> getTerrain, function<bool(int, int, string)> setTerrain,
+	function<float(int, int)> getHeight, function<bool(int, int, float)> setHeight) const {
 
 }
 

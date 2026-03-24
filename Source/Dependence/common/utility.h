@@ -16,7 +16,7 @@
 #define COMSTOM_INIT
 #define COMSTOM_TICK
 
-#define VARIABLE_HOLDER
+#define OBJECT_HOLDER
 
 #ifdef _DEBUG
 #define MOD_TEST

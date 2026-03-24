@@ -33,8 +33,8 @@ float OceanTerrain::GetPriority() const {
 }
 
 void OceanTerrain::DistributeTerrain(int width, int height,
-	function<bool(int, int, string, float)> setElement,
-	function<string(int, int)> getTerrain, function<float(int, int)> getHeight) const {
+	function<string(int, int)> getTerrain, function<bool(int, int, string)> setTerrain,
+	function<float(int, int)> getHeight, function<bool(int, int, float)> setHeight) const {
 
     // 随机生成四个方向是否临海，并保证至少有一面临海
     int distribute = 0;
@@ -52,7 +52,8 @@ void OceanTerrain::DistributeTerrain(int width, int height,
             if (limit > width)
                 limit = width;
             for (int x = 0; x < limit; x++) {
-                setElement(x, y, GetType(), 0.f);
+                setTerrain(x, y, GetType());
+                setHeight(x, y, 0.f);
             }
             slope += float(GetRandom(33) - 16) / 256.0f;
             shift += slope;
@@ -77,7 +78,8 @@ void OceanTerrain::DistributeTerrain(int width, int height,
             if (start < 0)
                 start = 0;
             for (int x = width - 1; x >= start; x--) {
-                setElement(x, y, GetType(), 0.f);
+                setTerrain(x, y, GetType());
+                setHeight(x, y, 0.f);
             }
             slope += float(GetRandom(33) - 16) / 256.0f;
             shift += slope;
@@ -102,7 +104,8 @@ void OceanTerrain::DistributeTerrain(int width, int height,
             if (limit > height)
                 limit = height;
             for (int y = 0; y < limit; y++) {
-                setElement(x, y, GetType(), 0.f);
+                setTerrain(x, y, GetType());
+                setHeight(x, y, 0.f);
             }
             slope += float(GetRandom(33) - 16) / 256.0f;
             shift += slope;
@@ -127,7 +130,8 @@ void OceanTerrain::DistributeTerrain(int width, int height,
             if (start < 0)
                 start = 0;
             for (int y = height - 1; y >= start; y--) {
-                setElement(x, y, GetType(), 0.f);
+                setTerrain(x, y, GetType());
+                setHeight(x, y, 0.f);
             }
             slope += float(GetRandom(33) - 16) / 256.0f;
             shift += slope;
@@ -173,8 +177,8 @@ float MountainTerrain::GetPriority() const {
 }
 
 void MountainTerrain::DistributeTerrain(int width, int height,
-	function<bool(int, int, string, float)> setElement,
-	function<string(int, int)> getTerrain, function<float(int, int)> getHeight) const {
+	function<string(int, int)> getTerrain, function<bool(int, int, string)> setTerrain,
+	function<float(int, int)> getHeight, function<bool(int, int, float)> setHeight) const {
 
     int scalar = width * height / (512 * 512);
     int num = scalar > 1 ? (4 + GetRandom(scalar * 2)) : 0;
@@ -195,12 +199,12 @@ void MountainTerrain::DistributeTerrain(int width, int height,
             scalar * 0.2f *
             ((GetRandom(4) ? 0 : 1) * GetRandom(512 * 512)) +
             GetRandom(128 * 128));
-        FloodTerrain(x, y, area, false, width, height, setElement, getTerrain);
+        FloodTerrain(x, y, area, false, width, height, getTerrain, setTerrain);
         mountain++;
     }
     for (int i = 2; i < width - 2; i++) {
         for (int j = 2; j < height - 2; j++) {
-            ShapeFilter(i, j, width, height, setElement, getTerrain, 2, 0.5f);
+            ShapeFilter(i, j, width, height, getTerrain, setTerrain, 2, 0.5f);
         }
     }
     debugf("Log: Generate mountain %d.\n", mountain);

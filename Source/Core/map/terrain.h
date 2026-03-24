@@ -24,8 +24,11 @@ public:
 
 	// 构建地形
 	void DistributeTerrain(int width, int height,
-		std::function<bool(int, int, std::string, float)> setElement,
-		std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const;
+		std::function<std::string(int, int)> getTerrain, 
+		std::function<bool(int, int, std::string)> setTerrain,
+        std::function<float(int, int)> getHeight, 
+		std::function<bool(int, int, float)> setHeight) const;
+
 private:
 	TerrainMod* mod;
 	TerrainFactory* factory;
@@ -47,8 +50,10 @@ public:
 	virtual float GetPriority() const override;
 
 	virtual void DistributeTerrain(int width, int height,
-		std::function<bool(int, int, std::string, float)> setElement,
-		std::function<std::string(int, int)> getTerrain, std::function<float(int, int)> getHeight) const override;
+		std::function<std::string(int, int)> getTerrain, 
+		std::function<bool(int, int, std::string)> setTerrain,
+        std::function<float(int, int)> getHeight, 
+		std::function<bool(int, int, float)> setHeight) const override;
 
 private:
 	static int count;

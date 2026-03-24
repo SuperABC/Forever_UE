@@ -57,10 +57,10 @@ private:
 	std::string type;
 	std::string name;
 
-	VARIABLE_HOLDER std::vector<Node*> nodes;
-	VARIABLE_HOLDER std::vector<Connection*> connections;
-	VARIABLE_HOLDER std::vector<Block*> blocks;
-	//VARIABLE_HOLDER std::vector<Route*> routes;
+	OBJECT_HOLDER std::vector<Node*> nodes;
+	OBJECT_HOLDER std::vector<Connection*> connections;
+	OBJECT_HOLDER std::vector<Block*> blocks;
+	//OBJECT_HOLDER std::vector<Route*> routes;
 	std::unordered_map<std::string, std::vector<Block*>> addresses;
 };
 

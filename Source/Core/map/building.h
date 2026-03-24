@@ -283,9 +283,9 @@ private:
 	bool stated;
 	//Person* owner;
 	std::string fullAddress;
-	VARIABLE_HOLDER std::vector<Floor*> floors;
-	VARIABLE_HOLDER std::vector<Component*> components;
-	VARIABLE_HOLDER std::vector<Room*> rooms;
+	OBJECT_HOLDER std::vector<Floor*> floors;
+	OBJECT_HOLDER std::vector<Component*> components;
+	OBJECT_HOLDER std::vector<Room*> rooms;
 };
 
 // 空建筑

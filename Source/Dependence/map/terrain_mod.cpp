@@ -18,8 +18,7 @@ TerrainMod::~TerrainMod() {
 // 地形填充，若ovewrite为true，则全图填充，否则只填充平原
 int TerrainMod::FloodTerrain(
     int x, int y, int num, bool overwrite, int width, int height,
-    function<bool(int, int, string, float)> set,
-    function<string(int, int)> get) const {
+    function<string(int, int)> get, function<bool(int, int, string)> set) const {
     vector<pair<int, int>> q;
 
     if (x < 0 || x >= width - 1 || y < 0 || y >= height - 1)
@@ -27,7 +26,7 @@ int TerrainMod::FloodTerrain(
     if (get(x, y) == GetType())
         return 0;
 
-    set(x, y, GetType(), 0.f);
+    set(x, y, GetType());
     int count = 1;
 
     for (int i = 0; i < 4; ++i) {
@@ -44,10 +43,10 @@ int TerrainMod::FloodTerrain(
         q[idx] = q.back();
         q.pop_back();
 
-        set(cx, cy, GetType(), 0.f);
+        set(cx, cy, GetType());
         ++count;
 
-        UpdateBoundary(cx, cy, q, overwrite, width, height, set, get);
+        UpdateBoundary(cx, cy, q, overwrite, width, height, get, set);
     }
 
     return count;
@@ -56,8 +55,7 @@ int TerrainMod::FloodTerrain(
 // 检查地形填充处是否为当前边界
 bool TerrainMod::CheckBoundary(
     int x, int y, bool overwrite, int width, int height,
-    function<bool(int, int, string, float)> set,
-    function<string(int, int)> get) const {
+    function<string(int, int)> get, function<bool(int, int, string)> set) const {
     if (x == 0 || x == width - 1 || y == 0 || y == height - 1)
         return true;
     for (int i = 0; i < 4; ++i) {
@@ -78,13 +76,12 @@ bool TerrainMod::CheckBoundary(
 // 更新地形填充边界
 void TerrainMod::UpdateBoundary(
     int x, int y, vector<pair<int, int>>& q, bool overwrite, int width, int height,
-    function<bool(int, int, string, float)> set,
-    function<string(int, int)> get) const {
+    function<string(int, int)> get, function<bool(int, int, string)> set) const {
     for (int i = 0; i < 4; ++i) {
         int nx = x + dx[i];
         int ny = y + dy[i];
         if (nx >= 0 && nx < width && ny >= 0 && ny < height &&
-            CheckBoundary(nx, ny, overwrite, width, height, set, get)) {
+            CheckBoundary(nx, ny, overwrite, width, height, get, set)) {
             bool overlap = false;
             for (auto [bx, by] : q) {
                 if (bx == nx && by == ny) {
@@ -100,8 +97,8 @@ void TerrainMod::UpdateBoundary(
 
 // 地形滤波
 void TerrainMod::ShapeFilter(int x, int y, int width, int height,
-    function<bool(int, int, string, float)> set,
-    function<string(int, int)> get, int side, float threshold) const {
+    function<string(int, int)> get, function<bool(int, int, string)> set,
+    int side, float threshold) const {
     if (get(x, y) == GetType())
         return;
 
@@ -121,7 +118,7 @@ void TerrainMod::ShapeFilter(int x, int y, int width, int height,
     // 实际统计的区域可能小于全窗口，按比例计算阈值
     int actual_total = (x_end - x_start + 1) * (y_end - y_start + 1);
     if (count > actual_total * threshold)
-        set(x, y, GetType(), 0.f);
+        set(x, y, GetType());
 }
 
 // 注册地形

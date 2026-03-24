@@ -57,6 +57,9 @@ public:
 	// 自动分布建筑
 	void ArrangeBuildings();
 
+	// 清理空建筑
+	void ClearZero();
+
 	// 获取园区中心世界位置
 	void GetPosition(float& x, float& y) const;
 
@@ -74,7 +77,7 @@ private:
 	bool stated;
 	//Person* owner;
 	std::string fullAddress;
-	VARIABLE_HOLDER std::unordered_map<std::string, Building*> buildings;
+	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
 };
 
 // 空园区

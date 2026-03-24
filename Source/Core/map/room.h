@@ -168,8 +168,8 @@ private:
 	std::string number;
 	//std::vector<Person*> tenants;
 	//std::vector<Person*> workers;
-	//VARIABLE_HOLDER Storage* storage;
-	//VARIABLE_HOLDER std::vector<Manufacture*> manufactures;
+	//OBJECT_HOLDER Storage* storage;
+	//OBJECT_HOLDER std::vector<Manufacture*> manufactures;
 };
 
 // 空房间

@@ -31,9 +31,8 @@ string Element::GetTerrain() const {
 	return terrain;
 }
 
-bool Element::SetTerrain(const string& terrain, float height) {
+bool Element::SetTerrain(const string& terrain) {
 	this->terrain = terrain;
-	this->height = height;
 	return true;
 }
 
@@ -65,39 +64,84 @@ bool Element::SetBuilding(const string& building) {
 }
 
 Chunk::Chunk(int x, int y) : offsetX(x), offsetY(y) {
-	elements = vector<vector<shared_ptr<Element>>>(CHUNK_SIZE,
-		vector<shared_ptr<Element>>(CHUNK_SIZE, nullptr));
+	elements = vector<vector<Element*>>(CHUNK_SIZE, vector<Element*>(CHUNK_SIZE, nullptr));
 	for (int i = 0; i < CHUNK_SIZE; ++i) {
 		for (int j = 0; j < CHUNK_SIZE; ++j) {
-			elements[j][i] = make_shared<Element>();
+			elements[j][i] = new Element();
 		}
 	}
 }
 
 Chunk::~Chunk() {
-
+	for (int i = 0; i < CHUNK_SIZE; ++i) {
+		for (int j = 0; j < CHUNK_SIZE; ++j) {
+			delete elements[j][i];
+		}
+	}
 }
 
 string Chunk::GetTerrain(int x, int y) const {
 	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
 		return "";
 	}
 	return elements[y - offsetY][x - offsetX]->GetTerrain();
 }
 
-bool Chunk::SetTerrain(int x, int y, const string& terrain, float height) {
+bool Chunk::SetTerrain(int x, int y, const string& terrain) {
 	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
 		return false;
 	}
-	return elements[y - offsetY][x - offsetX]->SetTerrain(terrain, height);
+	return elements[y - offsetY][x - offsetX]->SetTerrain(terrain);
 }
 
 float Chunk::GetHeight(int x, int y) const {
 	if (!CheckXY(x, y)) {
-		debugf("Warning: Invalid chunk coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
+		debugf("Warning: Invalid coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
 		return 0.f;
 	}
 	return elements[y - offsetY][x - offsetX]->GetHeight();
+}
+
+bool Chunk::SetHeight(int x, int y, float height) {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
+		return false;
+	}
+	return elements[y - offsetY][x - offsetX]->SetHeight(height);
+}
+
+string Chunk::GetZone(int x, int y) const {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
+		return "";
+	}
+	return elements[y - offsetY][x - offsetX]->GetZone();
+}
+
+bool Chunk::SetZone(int x, int y, const string& zone) {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
+		return false;
+	}
+	return elements[y - offsetY][x - offsetX]->SetTerrain(zone);
+}
+
+string Chunk::GetBuilding(int x, int y) const {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
+		return "";
+	}
+	return elements[y - offsetY][x - offsetX]->GetBuilding();
+}
+
+bool Chunk::SetBuilding(int x, int y, const string& building) {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for chunk (%d, %d).\n", x, y, offsetX, offsetY);
+		return false;
+	}
+	return elements[y - offsetY][x - offsetX]->SetBuilding(building);
 }
 
 bool Chunk::CheckXY(int x, int y) const {
@@ -108,18 +152,11 @@ bool Chunk::CheckXY(int x, int y) const {
 	return true;
 }
 
-shared_ptr<Element> Chunk::GetElement(int x, int y) const {
-	if (!CheckXY(x, y)) {
-		return nullptr;
-	}
-	return elements[y - offsetY][x - offsetX];
-}
-
 Map::Map() :
 	width(0),
 	height(0),
 	chunks(),
-	playerPos(0, 0),
+	playerPos(0.f, 0.f),
 	roadnet(nullptr),
 	zones(),
 	buildings(),
@@ -145,7 +182,7 @@ Map::Map() :
 }
 
 Map::~Map() {
-	delete roadnet;
+
 }
 
 void Map::LoadConfigs() const {
@@ -184,7 +221,7 @@ void Map::LoadConfigs() const {
 }
 
 void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
-	vector<string>& dlls) {
+	const vector<string>& dlls) {
 	terrainFactory->RegisterTerrain(EmptyTerrain::GetId(),
 		[]() { return new EmptyTerrain(); },
 		[](TerrainMod* terrain) { delete terrain; }
@@ -228,7 +265,7 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
 }
 
 void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
-	vector<string>& dlls) {
+	const vector<string>& dlls) {
 	roadnetFactory->RegisterRoadnet(EmptyRoadnet::GetId(),
 		[]() { return new EmptyRoadnet(); },
 		[](RoadnetMod* roadnet) { delete roadnet; });
@@ -271,7 +308,7 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
 }
 
 void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
-	vector<string>& dlls) {
+	const vector<string>& dlls) {
 	zoneFactory->RegisterZone(EmptyZone::GetId(), EmptyZone::ZoneAssigner,
 		[]() { return new EmptyZone(); },
 		[](ZoneMod* zone) { delete zone; }
@@ -315,7 +352,7 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
 }
 
 void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
-	vector<string>& dlls) {
+	const vector<string>& dlls) {
 	buildingFactory->RegisterBuilding(EmptyBuilding::GetId(),
 		EmptyBuilding::GetPowers(), EmptyBuilding::BuildingAssigner,
 		[]() { return new EmptyBuilding(); },
@@ -360,7 +397,7 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
 }
 
 void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
-	vector<string>& dlls) {
+	const vector<string>& dlls) {
 	componentFactory->RegisterComponent(EmptyComponent::GetId(),
 		[]() { return new EmptyComponent(); },
 		[](ComponentMod* building) { delete building; }
@@ -404,7 +441,7 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
 }
 
 void Map::InitRooms(unordered_map<string, HMODULE>& modHandles,
-	vector<string>& dlls) {
+	const vector<string>& dlls) {
 	roomFactory->RegisterRoom(EmptyRoom::GetId(),
 		[]() { return new EmptyRoom(); },
 		[](RoomMod* room) { delete room; }
@@ -460,11 +497,10 @@ int Map::Init(int chunkX, int chunkY) {
 	playerPos.second = height / 2.f;
 
 	debugf("Log: Initializing map with size %d x %d (chunk size: %d x %d).\n", width, height, chunkX, chunkY);
-	chunks = vector<vector<shared_ptr<Chunk>>>(chunkY,
-		vector<shared_ptr<Chunk>>(chunkX, nullptr));
+	chunks = vector<vector<Chunk*>>(chunkY, vector<Chunk*>(chunkX, nullptr));
 	for (int i = 0; i < chunkX; ++i) {
 		for (int j = 0; j < chunkY; ++j) {
-			chunks[j][i] = make_shared<Chunk>(i * CHUNK_SIZE, j * CHUNK_SIZE);
+			chunks[j][i] = new Chunk(i * CHUNK_SIZE, j * CHUNK_SIZE);
 		}
 	}
 
@@ -472,11 +508,14 @@ int Map::Init(int chunkX, int chunkY) {
 	auto getTerrain = [this](int x, int y) -> string {
 		return this->GetTerrain(x, y);
 		};
+	auto setTerrain = [this](int x, int y, string terrain) -> bool {
+		return this->SetTerrain(x, y, terrain);
+		};
 	auto getHeight = [this](int x, int y) -> float {
 		return this->GetHeight(x, y);
 		};
-	auto setElement = [this](int x, int y, string terrain, float height) -> bool {
-		return this->SetTerrain(x, y, terrain, height);
+	auto setHeight = [this](int x, int y, float height) -> bool {
+		return this->SetHeight(x, y, height);
 		};
 	auto terrainNames = terrainFactory->GetTerrains();
 	vector<Terrain*> terrains;
@@ -488,7 +527,7 @@ int Map::Init(int chunkX, int chunkY) {
 			return a->GetPriority() > b->GetPriority();
 		});
 	for (auto& terrain : terrains) {
-		terrain->DistributeTerrain(width, height, setElement, getTerrain, getHeight);
+		terrain->DistributeTerrain(width, height, getTerrain, setTerrain, getHeight, setHeight);
 	}
 	for (auto terrain : terrains) {
 		delete terrain;
@@ -614,12 +653,14 @@ int Map::Init(int chunkX, int chunkY) {
 
 	debugf("Log: Arranging zones and buildings.\n");
 	ArrangeBlocks();
+	ClearZero();
 	for (auto block : roadnet->GetBlocks()) {
 		if (!block) continue;
 		auto zones = block->GetZones();
 		for (auto& [name, zone] : zones) {
 			if (!zone) continue;
 			zone->ArrangeBuildings();
+			zone->ClearZero();
 			SetZone(zone, name);
 			for (auto& building : zone->GetBuildings()) {
 				if (!building.second) continue;
@@ -675,137 +716,127 @@ int Map::Init(int chunkX, int chunkY) {
 }
 
 void Map::Destroy() {
+	for (auto &row : chunks) {
+		for (auto &chunk : row) {
+			delete chunk;
+		}
+	}
 	chunks.clear();
+
+	zones.clear();
+	buildings.clear();
+
+	if(roadnet)delete roadnet;
+	roadnet = nullptr;
+
+	if(layout)delete layout;
+	layout = nullptr;
 }
 
 pair<int, int> Map::GetSize() const {
 	return make_pair(width, height);
 }
 
-pair<float, float> Map::GetPlayerPos() const {
-	return playerPos;
-}
-
-bool Map::CheckXY(int x, int y) const {
-	if (x < 0 || y < 0 || x >= width || y >= height) {
-		return false;
-	}
-	return true;
-}
-
-shared_ptr<Chunk> Map::GetChunk(int x, int y) const {
-	if (!CheckXY(x, y)) {
-		THROW_EXCEPTION(InvalidArgumentException, "Invalid chunk query position.\n");
-	}
-
-	int chunkX = x / CHUNK_SIZE;
-	int chunkY = y / CHUNK_SIZE;
-
-	if (chunkY < 0 || chunkY >= (int)chunks.size() || chunkX < 0 || chunkX >= (int)chunks[0].size()) {
-		THROW_EXCEPTION(OutOfRangeException, "Chunk index out of range.\n");
-	}
-	return chunks[chunkY][chunkX];
-}
-
-shared_ptr<Element> Map::GetElement(int x, int y) const {
-	if (!CheckXY(x, y)) {
-		THROW_EXCEPTION(InvalidArgumentException, "Invalid element query position.\n");
-	}
-
-	int chunkX = x / CHUNK_SIZE;
-	int chunkY = y / CHUNK_SIZE;
-
-	if (chunkY < 0 || chunkY >= (int)chunks.size() || chunkX < 0 || chunkX >= (int)chunks[0].size()) {
-		THROW_EXCEPTION(OutOfRangeException, "Chunk index out of range.\n");
-	}
-	auto chunk = chunks[chunkY][chunkX];
-	if (!chunk) {
-		THROW_EXCEPTION(NullPointerException, "Chunk is null.\n");
-	}
-	return chunk->GetElement(x, y);
-}
-
 string Map::GetTerrain(int x, int y) const {
 	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
 		return "";
 	}
 
 	int chunkX = x / CHUNK_SIZE;
 	int chunkY = y / CHUNK_SIZE;
 
-	if (chunkY >= (int)chunks.size() || chunkX >= (int)chunks[0].size()) {
+	auto chunk = chunks[chunkY][chunkX];
+	if (!chunk) {
+		debugf("Warning: Chunk (%d, %d) is null.\n", chunkX, chunkY);
 		return "";
 	}
-	auto chunk = chunks[chunkY][chunkX];
-	if (!chunk) return "";
 	return chunk->GetTerrain(x, y);
 }
 
-bool Map::SetTerrain(int x, int y, const string& terrain, float height) {
+bool Map::SetTerrain(int x, int y, const string& terrain) {
 	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
 		return false;
 	}
 
 	int chunkX = x / CHUNK_SIZE;
 	int chunkY = y / CHUNK_SIZE;
 
-	if (chunkY >= (int)chunks.size() || chunkX >= (int)chunks[0].size()) {
+	auto chunk = chunks[chunkY][chunkX];
+	if (!chunk) {
+		debugf("Warning: Chunk (%d, %d) is null.\n", chunkX, chunkY);
 		return false;
 	}
-	auto chunk = chunks[chunkY][chunkX];
-	if (!chunk) return false;
-	return chunk->SetTerrain(x, y, terrain, height);
+	return chunk->SetTerrain(x, y, terrain);
 }
 
 float Map::GetHeight(int x, int y) const {
 	if (!CheckXY(x, y)) {
-		debugf("Warning: Invalid map coordinates (%d, %d).\n", x, y);
+		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
 		return 0.f;
 	}
 
 	int chunkX = x / CHUNK_SIZE;
 	int chunkY = y / CHUNK_SIZE;
 
-	if (chunkY >= (int)chunks.size() || chunkX >= (int)chunks[0].size()) {
-		debugf("Warning: Chunk index out of range (%d, %d).\n", chunkX, chunkY);
-		return 0.f;
-	}
 	auto chunk = chunks[chunkY][chunkX];
 	if (!chunk) {
-		debugf("Warning: Chunk is null at (%d, %d).\n", chunkX, chunkY);
+		debugf("Warning: Chunk (%d, %d) is null.\n", chunkX, chunkY);
 		return 0.f;
 	}
 	return chunk->GetHeight(x, y);
 }
 
-Roadnet* Map::GetRoadnet() const {
-	return roadnet;
-}
-
-unordered_map<string, Zone*>& Map::GetZones() {
-	return zones;
-}
-
-unordered_map<string, Building*>& Map::GetBuildings() {
-	return buildings;
-}
-
-Zone* Map::GetZone(const string& name) const {
-	auto it = zones.find(name);
-	if (it == zones.end()) return nullptr;
-	return it->second;
-}
-
-Building* Map::GetBuilding(const string& name) const {
-	auto it = buildings.find(name);
-	if (it == buildings.end()) {
-		for (auto& [_, zone] : zones) {
-			auto building = zone->GetBuilding(name.data());
-			if (building)return building;
-		}
-		return nullptr;
+bool Map::SetHeight(int x, int y, float height) {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
+		return false;
 	}
-	return it->second;
+
+	int chunkX = x / CHUNK_SIZE;
+	int chunkY = y / CHUNK_SIZE;
+
+	auto chunk = chunks[chunkY][chunkX];
+	if (!chunk) {
+		debugf("Warning: Chunk (%d, %d) is null.\n", chunkX, chunkY);
+		return false;
+	}
+	return chunk->SetHeight(x, y, height);
+}
+
+string Map::GetZone(int x, int y) const {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
+		return "";
+	}
+
+	int chunkX = x / CHUNK_SIZE;
+	int chunkY = y / CHUNK_SIZE;
+
+	auto chunk = chunks[chunkY][chunkX];
+	if (!chunk) {
+		debugf("Warning: Chunk (%d, %d) is null.\n", chunkX, chunkY);
+		return "";
+	}
+	return chunk->GetZone(x, y);
+}
+
+bool Map::SetZone(int x, int y, const string& zone) {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
+		return false;
+	}
+
+	int chunkX = x / CHUNK_SIZE;
+	int chunkY = y / CHUNK_SIZE;
+
+	auto chunk = chunks[chunkY][chunkX];
+	if (!chunk) {
+		debugf("Warning: Chunk (%d, %d) is null.\n", chunkX, chunkY);
+		return false;
+	}
+	return chunk->SetZone(x, y, zone);
 }
 
 void Map::SetZone(Zone* zone, const string& name) {
@@ -818,57 +849,14 @@ void Map::SetZone(Zone* zone, const string& name) {
 	}
 
 	// 计算四个顶点（世界坐标）
-	auto v1 = block->GetPosition(zone->GetQuad()->GetPosX() + zone->GetQuad()->GetSizeX() / 2.f, zone->GetQuad()->GetPosY() + zone->GetQuad()->GetSizeY() / 2.f);
-	auto v2 = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f, zone->GetQuad()->GetPosY() + zone->GetQuad()->GetSizeY() / 2.f);
-	auto v3 = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f, zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f);
-	auto v4 = block->GetPosition(zone->GetQuad()->GetPosX() + zone->GetQuad()->GetSizeX() / 2.f, zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f);
-
-	vector<pair<float, float>> points = { v1, v2, v3, v4 };
-	int minX = (int)points[0].first;
-	int maxX = (int)points[0].first;
-	int minY = (int)points[0].second;
-	int maxY = (int)points[0].second;
-	for (const auto& [x, y] : points) { // 结构化绑定
-		minX = min(minX, (int)x);
-		maxX = max(maxX, (int)x);
-		minY = min(minY, (int)y);
-		maxY = max(maxY, (int)y);
-	}
-
-	for (int x = minX; x <= maxX; ++x) {
-		for (int y = minY; y <= maxY; ++y) {
-			bool inside = false;
-			for (size_t i = 0, j = points.size() - 1; i < points.size(); j = i++) {
-				const auto& [x1, y1] = points[i];
-				const auto& [x2, y2] = points[j];
-				if (((y1 > y) != (y2 > y)) &&
-					(x < (x2 - x1) * (y - y1) / (y2 - y1) + x1)) {
-					inside = !inside;
-				}
-			}
-			if (inside) {
-				auto element = GetElement(x, y);
-				if (element) {
-					element->SetZone(name);
-				}
-			}
-		}
-	}
-}
-
-void Map::SetBuilding(Building* building, const string& name) {
-	if (!building) {
-		THROW_EXCEPTION(NullPointerException, "Building is null.\n");
-	}
-	auto block = building->GetParentBlock();
-	if (!block) {
-		THROW_EXCEPTION(NullPointerException, "Building's parent block is null.\n");
-	}
-
-	auto v1 = block->GetPosition(building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f, building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
-	auto v2 = block->GetPosition(building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f, building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
-	auto v3 = block->GetPosition(building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f, building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
-	auto v4 = block->GetPosition(building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f, building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
+	auto v1 = block->GetPosition(zone->GetQuad()->GetPosX() + zone->GetQuad()->GetSizeX() / 2.f,
+		zone->GetQuad()->GetPosY() + zone->GetQuad()->GetSizeY() / 2.f);
+	auto v2 = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f,
+		zone->GetQuad()->GetPosY() + zone->GetQuad()->GetSizeY() / 2.f);
+	auto v3 = block->GetPosition(zone->GetQuad()->GetPosX() - zone->GetQuad()->GetSizeX() / 2.f,
+		zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f);
+	auto v4 = block->GetPosition(zone->GetQuad()->GetPosX() + zone->GetQuad()->GetSizeX() / 2.f,
+		zone->GetQuad()->GetPosY() - zone->GetQuad()->GetSizeY() / 2.f);
 
 	vector<pair<float, float>> points = { v1, v2, v3, v4 };
 	int minX = (int)points[0].first;
@@ -894,16 +882,47 @@ void Map::SetBuilding(Building* building, const string& name) {
 				}
 			}
 			if (inside) {
-				auto element = GetElement(x, y);
-				if (element) {
-					element->SetBuilding(name);
-				}
+				SetZone(x, y, name);
 			}
 		}
 	}
 }
 
-void Map::SetBuilding(Building* building, const string& name, pair<float, float> offset) {
+string Map::GetBuilding(int x, int y) const {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
+		return "";
+	}
+
+	int chunkX = x / CHUNK_SIZE;
+	int chunkY = y / CHUNK_SIZE;
+
+	auto chunk = chunks[chunkY][chunkX];
+	if (!chunk) {
+		debugf("Warning: Chunk (%d, %d) is null.\n", chunkX, chunkY);
+		return "";
+	}
+	return chunk->GetBuilding(x, y);
+}
+
+bool Map::SetBuilding(int x, int y, const string& building) {
+	if (!CheckXY(x, y)) {
+		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
+		return false;
+	}
+
+	int chunkX = x / CHUNK_SIZE;
+	int chunkY = y / CHUNK_SIZE;
+
+	auto chunk = chunks[chunkY][chunkX];
+	if (!chunk) {
+		debugf("Warning: Chunk (%d, %d) is null.\n", chunkX, chunkY);
+		return "";
+	}
+	return chunk->SetBuilding(x, y, building);
+}
+
+void Map::SetBuilding(Building* building, const string& name, const pair<float, float>& offset) {
 	if (!building) {
 		THROW_EXCEPTION(NullPointerException, "Building is null.\n");
 	}
@@ -912,10 +931,14 @@ void Map::SetBuilding(Building* building, const string& name, pair<float, float>
 		THROW_EXCEPTION(NullPointerException, "Building's parent block is null.\n");
 	}
 
-	auto v1 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f, offset.second + building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
-	auto v2 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f, offset.second + building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
-	auto v3 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f, offset.second + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
-	auto v4 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f, offset.second + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
+	auto v1 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f,
+		offset.second + building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
+	auto v2 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f,
+		offset.second + building->GetQuad()->GetPosY() + building->GetQuad()->GetSizeY() / 2.f);
+	auto v3 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() - building->GetQuad()->GetSizeX() / 2.f,
+		offset.second + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
+	auto v4 = block->GetPosition(offset.first + building->GetQuad()->GetPosX() + building->GetQuad()->GetSizeX() / 2.f,
+		offset.second + building->GetQuad()->GetPosY() - building->GetQuad()->GetSizeY() / 2.f);
 
 	vector<pair<float, float>> points = { v1, v2, v3, v4 };
 	int minX = (int)points[0].first;
@@ -941,13 +964,185 @@ void Map::SetBuilding(Building* building, const string& name, pair<float, float>
 				}
 			}
 			if (inside) {
-				auto element = GetElement(x, y);
-				if (element) {
-					element->SetBuilding(name);
-				}
+				SetBuilding(x, y, name);
 			}
 		}
 	}
+}
+
+pair<float, float> Map::GetPlayerPos() const {
+	return playerPos;
+}
+
+Roadnet* Map::GetRoadnet() const {
+	return roadnet;
+}
+
+const unordered_map<string, Zone*>& Map::GetZones() const {
+	return zones;
+}
+
+const Zone* Map::GetZone(const string& name) const {
+	auto it = zones.find(name);
+	if (it == zones.end()) return nullptr;
+	return it->second;
+}
+
+const unordered_map<string, Building*>& Map::GetBuildings() const {
+	return buildings;
+}
+
+const Building* Map::GetBuilding(const string& name) const {
+	auto it = buildings.find(name);
+	if (it == buildings.end()) {
+		for (auto& [_, zone] : zones) {
+			auto building = zone->GetBuilding(name);
+			if (building)return building;
+		}
+		return nullptr;
+	}
+	return it->second;
+}
+
+vector<Component*> Map::GetComponents() const {
+	vector<Component*> components;
+	for (const auto& [name, zone] : zones) {
+		if (!zone) continue;
+		for (auto [name, building] : zone->GetBuildings()) {
+			if (!building) continue;
+			const auto& current = building->GetComponents();
+			components.insert(components.end(), current.begin(), current.end());
+		}
+	}
+	for (const auto& [name, building] : buildings) {
+		if (!building) continue;
+		const auto& current = building->GetComponents();
+		components.insert(components.end(), current.begin(), current.end());
+	}
+	return components;
+}
+
+vector<Room*> Map::GetRooms() const {
+	vector<Room*> rooms;
+	for (const auto& [name, zone] : zones) {
+		if (!zone) continue;
+		for (auto [name, building] : zone->GetBuildings()) {
+			if (!building) continue;
+			const auto& current = building->GetRooms();
+			rooms.insert(rooms.end(), current.begin(), current.end());
+		}
+	}
+	for (const auto& [name, building] : buildings) {
+		if (!building) continue;
+		const auto& current = building->GetRooms();
+		rooms.insert(rooms.end(), current.begin(), current.end());
+	}
+	return rooms;
+}
+
+const Block* Map::LocateBlock(const string& address) const {
+	istringstream iss(address);
+	string road;
+	int id = -1;
+	iss >> road >> id;
+	if (id < 0 || !roadnet) return nullptr;
+	return roadnet->LocateBlock(road, id);
+}
+
+const Zone* Map::LocateZone(const string& address) const {
+	istringstream iss(address);
+	string road;
+	int id = -1;
+	iss >> road >> id;
+	if (id < 0 || !roadnet) return nullptr;
+	auto block = roadnet->LocateBlock(road, id);
+	if (!block) return nullptr;
+
+	string zone;
+	iss >> zone;
+	auto& blockZones = block->GetZones();
+	auto it = blockZones.find(zone);
+	if (it == blockZones.end()) return nullptr;
+	return it->second;
+}
+
+const Building* Map::LocateBuilding(const string& address) const {
+	istringstream iss(address);
+	string road;
+	int id = -1;
+	iss >> road >> id;
+	if (id < 0 || !roadnet) return nullptr;
+	auto block = roadnet->LocateBlock(road, id);
+	if (!block) return nullptr;
+
+	string token;
+	iss >> token;
+	auto& blockZones = block->GetZones();
+	auto it = blockZones.find(token);
+	if (it == blockZones.end()) {
+		auto& blockBuildings = block->GetBuildings();
+		auto bit = blockBuildings.find(token);
+		if (bit == blockBuildings.end()) return nullptr;
+		return bit->second;
+	}
+	else {
+		Zone* zone = it->second;
+		if (!zone) return nullptr;
+		string building;
+		iss >> building;
+		auto& zoneBuildings = zone->GetBuildings();
+		auto bit = zoneBuildings.find(building);
+		if (bit == zoneBuildings.end()) return nullptr;
+		return bit->second;
+	}
+}
+
+const Room* Map::LocateRoom(const string& address) const {
+	istringstream iss(address);
+	string road;
+	int id = -1;
+	iss >> road >> id;
+	if (id < 0 || !roadnet) return nullptr;
+	auto block = roadnet->LocateBlock(road, id);
+	if (!block) return nullptr;
+
+	string token;
+	iss >> token;
+	auto& blockZones = block->GetZones();
+	auto it = blockZones.find(token);
+	if (it == blockZones.end()) {
+		auto& blockBuildings = block->GetBuildings();
+		auto bit = blockBuildings.find(token);
+		if (bit == blockBuildings.end()) return nullptr;
+		Building* building = bit->second;
+		if (!building) return nullptr;
+		int roomId = -1;
+		iss >> roomId;
+		if (roomId < 0 || roomId >= (int)building->GetRooms().size()) return nullptr;
+		return building->GetRooms()[roomId];
+	}
+	else {
+		Zone* zone = it->second;
+		if (!zone) return nullptr;
+		string building;
+		iss >> building;
+		auto& zoneBuildings = zone->GetBuildings();
+		auto bit = zoneBuildings.find(building);
+		if (bit == zoneBuildings.end()) return nullptr;
+		Building* bld = bit->second;
+		if (!bld) return nullptr;
+		int roomId = -1;
+		iss >> roomId;
+		if (roomId < 0 || roomId >= (int)bld->GetRooms().size()) return nullptr;
+		return bld->GetRooms()[roomId];
+	}
+}
+
+bool Map::CheckXY(int x, int y) const {
+	if (x < 0 || y < 0 || x >= width || y >= height) {
+		return false;
+	}
+	return true;
 }
 
 void Map::ArrangeBlocks() {
@@ -1132,6 +1327,35 @@ void Map::ArrangeBlocks() {
 
 		if (emptyRect) {
 			delete emptyRect;
+		}
+	}
+}
+
+void Map::ClearZero() {
+	auto blocks = roadnet->GetBlocks();
+	for (auto block : blocks) {
+		if (!block) continue;
+		for (auto it = block->GetZones().begin(); it != block->GetZones().end(); ) {
+			Zone* zone = it->second;
+			if (zone != nullptr && zone->GetQuad()->GetAcreage() == 0) {
+				delete zone;
+				zones.erase(it->first);
+				it = block->GetZones().erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+		for (auto it = block->GetBuildings().begin(); it != block->GetBuildings().end(); ) {
+			Building* building = it->second;
+			if (building != nullptr && building->GetQuad()->GetAcreage() == 0) {
+				delete building;
+				buildings.erase(it->first);
+				it = block->GetBuildings().erase(it);
+			}
+			else {
+				++it;
+			}
 		}
 	}
 }

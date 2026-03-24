@@ -42,10 +42,10 @@ public:
 	std::string GetAddress() const;
 
 protected:
-	VARIABLE_HOLDER std::vector<std::pair<Connection*, float>> roads;
+	OBJECT_HOLDER std::vector<std::pair<Connection*, float>> roads;
 	std::pair<std::string, int> address;
 
-	VARIABLE_HOLDER std::unordered_map<std::string, Zone*> zones;
-	VARIABLE_HOLDER std::unordered_map<std::string, Building*> buildings;
+	OBJECT_HOLDER std::unordered_map<std::string, Zone*> zones;
+	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
 };
 

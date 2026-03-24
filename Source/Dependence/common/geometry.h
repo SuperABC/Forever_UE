@@ -86,12 +86,12 @@ public:
 private:
 	std::string name;
 
-	VARIABLE_HOLDER Node* beginVertex;
-	VARIABLE_HOLDER Node* endVertex;
+	OBJECT_HOLDER Node* beginVertex;
+	OBJECT_HOLDER Node* endVertex;
 	float begin, end;
 	float radius;
 
-	VARIABLE_HOLDER std::vector<std::pair<Node*, float>> controlVertices;
+	OBJECT_HOLDER std::vector<std::pair<Node*, float>> controlVertices;
 };
 
 class Quad {

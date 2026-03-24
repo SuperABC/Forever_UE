@@ -311,6 +311,21 @@ void Zone::ArrangeBuildings() {
 	}
 }
 
+// 清理空园区建筑
+void Zone::ClearZero() {
+	for (auto it = buildings.begin(); it != buildings.end(); ) {
+		Building* building = it->second;
+		if (building != nullptr && building->GetQuad()->GetAcreage() == 0) {
+			delete building;
+			it = buildings.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
+
 // 获取园区中心世界位置
 void Zone::GetPosition(float& x, float& y) const {
 	auto block = GetParent();
