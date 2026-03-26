@@ -93,13 +93,7 @@
     <ClCompile Include="story\script.cpp">
       <Filter>story</Filter>
     </ClCompile>
-    <ClCompile Include="story\change.cpp">
-      <Filter>story</Filter>
-    </ClCompile>
     <ClCompile Include="story\dialog.cpp">
-      <Filter>story</Filter>
-    </ClCompile>
-    <ClCompile Include="story\event.cpp">
       <Filter>story</Filter>
     </ClCompile>
     <ClCompile Include="industry\product.cpp">
@@ -136,9 +130,6 @@
       <Filter>story</Filter>
     </ClCompile>
     <ClCompile Include="common\config.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="common\json.cpp">
       <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -209,13 +200,7 @@
     <ClInclude Include="story\script.h">
       <Filter>story</Filter>
     </ClInclude>
-    <ClInclude Include="story\change.h">
-      <Filter>story</Filter>
-    </ClInclude>
     <ClInclude Include="story\dialog.h">
-      <Filter>story</Filter>
-    </ClInclude>
-    <ClInclude Include="story\event.h">
       <Filter>story</Filter>
     </ClInclude>
     <ClInclude Include="industry\product.h">
@@ -252,9 +237,6 @@
       <Filter>story</Filter>
     </ClInclude>
     <ClInclude Include="common\config.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="common\json.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

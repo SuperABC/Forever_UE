@@ -36,8 +36,7 @@
     <ClCompile Include="society\calendar_basic.cpp" />
     <ClCompile Include="society\job_basic.cpp" />
     <ClCompile Include="society\organization_basic.cpp" />
-    <ClCompile Include="story\change_basic.cpp" />
-    <ClCompile Include="story\event_basic.cpp" />
+    <ClCompile Include="story\script_basic.cpp" />
     <ClCompile Include="traffic\route_basic.cpp" />
     <ClCompile Include="traffic\station_basic.cpp" />
     <ClCompile Include="traffic\vehicle_basic.cpp" />
@@ -59,8 +58,7 @@
     <ClInclude Include="society\calendar_basic.h" />
     <ClInclude Include="society\job_basic.h" />
     <ClInclude Include="society\organization_basic.h" />
-    <ClInclude Include="story\change_basic.h" />
-    <ClInclude Include="story\event_basic.h" />
+    <ClInclude Include="story\script_basic.h" />
     <ClInclude Include="traffic\route_basic.h" />
     <ClInclude Include="traffic\station_basic.h" />
     <ClInclude Include="traffic\vehicle_basic.h" />

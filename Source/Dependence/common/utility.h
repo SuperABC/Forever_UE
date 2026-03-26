@@ -14,7 +14,7 @@
 #define REPLACE_PATH(path) (path)
 
 #define COMSTOM_INIT
-#define COMSTOM_TICK
+#define COMSTOM_RUNTIME
 
 #define OBJECT_HOLDER
 

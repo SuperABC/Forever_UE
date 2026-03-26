@@ -74,10 +74,7 @@
     <ClCompile Include="society\organization_basic.cpp">
       <Filter>society</Filter>
     </ClCompile>
-    <ClCompile Include="story\change_basic.cpp">
-      <Filter>story</Filter>
-    </ClCompile>
-    <ClCompile Include="story\event_basic.cpp">
+    <ClCompile Include="story\script_basic.cpp">
       <Filter>story</Filter>
     </ClCompile>
     <ClCompile Include="traffic\route_basic.cpp">
@@ -139,10 +136,7 @@
     <ClInclude Include="society\organization_basic.h">
       <Filter>society</Filter>
     </ClInclude>
-    <ClInclude Include="story\change_basic.h">
-      <Filter>story</Filter>
-    </ClInclude>
-    <ClInclude Include="story\event_basic.h">
+    <ClInclude Include="story\script_basic.h">
       <Filter>story</Filter>
     </ClInclude>
     <ClInclude Include="traffic\route_basic.h">

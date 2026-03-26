@@ -137,7 +137,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common\config.cpp" />
-    <ClCompile Include="common\json.cpp" />
     <ClCompile Include="industry\industry.cpp" />
     <ClCompile Include="industry\manufacture.cpp" />
     <ClCompile Include="industry\product.cpp" />
@@ -163,10 +162,8 @@
     <ClCompile Include="society\job.cpp" />
     <ClCompile Include="society\organization.cpp" />
     <ClCompile Include="society\society.cpp" />
-    <ClCompile Include="story\change.cpp" />
     <ClCompile Include="story\condition.cpp" />
     <ClCompile Include="story\dialog.cpp" />
-    <ClCompile Include="story\event.cpp" />
     <ClCompile Include="story\milestone.cpp" />
     <ClCompile Include="story\script.cpp" />
     <ClCompile Include="story\story.cpp" />
@@ -177,7 +174,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\config.h" />
-    <ClInclude Include="common\json.h" />
     <ClInclude Include="industry\industry.h" />
     <ClInclude Include="industry\manufacture.h" />
     <ClInclude Include="industry\product.h" />
@@ -203,10 +199,8 @@
     <ClInclude Include="society\job.h" />
     <ClInclude Include="society\organization.h" />
     <ClInclude Include="society\society.h" />
-    <ClInclude Include="story\change.h" />
     <ClInclude Include="story\condition.h" />
     <ClInclude Include="story\dialog.h" />
-    <ClInclude Include="story\event.h" />
     <ClInclude Include="story\milestone.h" />
     <ClInclude Include="story\script.h" />
     <ClInclude Include="story\story.h" />

@@ -15,11 +15,10 @@
   calendar_basic.cpp
   job_basic.cpp
   organization_basic.cpp
-  change_basic.cpp
-  event_basic.cpp
+  script_basic.cpp
   route_basic.cpp
-  正在编译...
   station_basic.cpp
+  正在编译...
   vehicle_basic.cpp
     正在创建库 C:\Workspace\UE5\Projects\Forever_UE\x64\Release\Basic.lib 和对象 C:\Workspace\UE5\Projects\Forever_UE\x64\Release\Basic.exp
   正在生成代码

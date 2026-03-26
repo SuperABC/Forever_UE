@@ -1,6 +1,6 @@
 {
    "asset_mods" : [ "empty" ],
-   "building_mods" : [ "residential" ],
+   "building_mods" : [ "residential", "empty" ],
    "calendar_mods" : [ "empty" ],
    "change_mods" : [ "empty" ],
    "component_mods" : [ "residential" ],

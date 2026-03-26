@@ -2,7 +2,8 @@
 
 #include "../common/utility.h"
 #include "../common/error.h"
-#include "../common/geometry.h"
+
+#include "geometry.h"
 
 #include <string>
 #include <functional>

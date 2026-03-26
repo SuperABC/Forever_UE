@@ -66,10 +66,7 @@
     <ClCompile Include="society\calendar_mod.cpp">
       <Filter>society</Filter>
     </ClCompile>
-    <ClCompile Include="story\event_mod.cpp">
-      <Filter>story</Filter>
-    </ClCompile>
-    <ClCompile Include="story\change_mod.cpp">
+    <ClCompile Include="story\script_mod.cpp">
       <Filter>story</Filter>
     </ClCompile>
     <ClCompile Include="industry\product_mod.cpp">
@@ -96,8 +93,17 @@
     <ClCompile Include="society\job_mod.cpp">
       <Filter>society</Filter>
     </ClCompile>
-    <ClCompile Include="common\geometry.cpp">
+    <ClCompile Include="common\json.cpp">
       <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="story\event.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\change.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="map\geometry.cpp">
+      <Filter>map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,10 +146,7 @@
     <ClInclude Include="society\organization_mod.h">
       <Filter>society</Filter>
     </ClInclude>
-    <ClInclude Include="story\change_mod.h">
-      <Filter>story</Filter>
-    </ClInclude>
-    <ClInclude Include="story\event_mod.h">
+    <ClInclude Include="story\script_mod.h">
       <Filter>story</Filter>
     </ClInclude>
     <ClInclude Include="industry\product_mod.h">
@@ -170,8 +173,17 @@
     <ClInclude Include="society\job_mod.h">
       <Filter>society</Filter>
     </ClInclude>
-    <ClInclude Include="common\geometry.h">
+    <ClInclude Include="common\json.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="story\change.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\event.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="map\geometry.h">
+      <Filter>map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
