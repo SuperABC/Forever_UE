@@ -52,53 +52,53 @@ void ARoomBase::RemoveInstance(FString name) {
 }
 
 void ARoomBase::EnterRoom(FString room) {
-	//auto story = ((AGlobalBase*)global)->GetStoryActor();
-	//auto zone = ((AGlobalBase*)global)->GetStory()->GetValue("player.zone").second;
-	//auto building = ((AGlobalBase*)global)->GetStory()->GetValue("player.building").second;
-	//if (holds_alternative<string>(zone)) {
-	//	if (holds_alternative<string>(building)) {
-	//		story->EnterRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()),
-	//			UTF8_TO_TCHAR(get<std::string>(building).data()), room);
-	//	}
-	//	else {
-	//		story->EnterRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()), "", room);
-	//	}
-	//}
-	//else {
-	//	if (holds_alternative<string>(building)) {
-	//		story->EnterRoom("", UTF8_TO_TCHAR(get<std::string>(building).data()), room);
-	//	}
-	//	else {
-	//		story->EnterRoom("", "", room);
-	//	}
-	//}
+	auto story = ((AGlobalBase*)global)->GetStoryActor();
+	auto zone = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.zone").second;
+	auto building = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.building").second;
+	if (holds_alternative<string>(zone)) {
+		if (holds_alternative<string>(building)) {
+			story->EnterRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()),
+				UTF8_TO_TCHAR(get<std::string>(building).data()), room);
+		}
+		else {
+			story->EnterRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()), "", room);
+		}
+	}
+	else {
+		if (holds_alternative<string>(building)) {
+			story->EnterRoom("", UTF8_TO_TCHAR(get<std::string>(building).data()), room);
+		}
+		else {
+			story->EnterRoom("", "", room);
+		}
+	}
 
-	//((AGlobalBase*)global)->GetStory()->SetValue("player.room", TCHAR_TO_UTF8(*room));
+	((AGlobalBase*)global)->GetStory()->GetScript()->SetValue("player.room", TCHAR_TO_UTF8(*room));
 }
 
 void ARoomBase::LeaveRoom(FString room) {
-	//((AGlobalBase*)global)->GetStory()->SetValue("player.room", "");
+	((AGlobalBase*)global)->GetStory()->GetScript()->SetValue("player.room", "");
 
-	//auto story = ((AGlobalBase*)global)->GetStoryActor();
-	//auto zone = ((AGlobalBase*)global)->GetStory()->GetValue("player.zone").second;
-	//auto building = ((AGlobalBase*)global)->GetStory()->GetValue("player.building").second;
-	//if (holds_alternative<string>(zone)) {
-	//	if (holds_alternative<string>(building)) {
-	//		story->LeaveRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()),
-	//			UTF8_TO_TCHAR(get<std::string>(building).data()), room);
-	//	}
-	//	else {
-	//		story->LeaveRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()), "", room);
-	//	}
-	//}
-	//else {
-	//	if (holds_alternative<string>(building)) {
-	//		story->LeaveRoom("", UTF8_TO_TCHAR(get<std::string>(building).data()), room);
-	//	}
-	//	else {
-	//		story->LeaveRoom("", "", room);
-	//	}
-	//}
+	auto story = ((AGlobalBase*)global)->GetStoryActor();
+	auto zone = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.zone").second;
+	auto building = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.building").second;
+	if (holds_alternative<string>(zone)) {
+		if (holds_alternative<string>(building)) {
+			story->LeaveRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()),
+				UTF8_TO_TCHAR(get<std::string>(building).data()), room);
+		}
+		else {
+			story->LeaveRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()), "", room);
+		}
+	}
+	else {
+		if (holds_alternative<string>(building)) {
+			story->LeaveRoom("", UTF8_TO_TCHAR(get<std::string>(building).data()), room);
+		}
+		else {
+			story->LeaveRoom("", "", room);
+		}
+	}
 }
 
 

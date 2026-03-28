@@ -16,10 +16,9 @@ unordered_map<string, vector<string>> Config::dllPaths = {};
 unordered_map<string, unordered_map<string, bool>> Config::modEnables = {};
 vector<string> Config::resourcePaths = {};
 unordered_map<string, vector<string>> Config::layoutPaths = {};
-unordered_map<string, unordered_map<string, string>> Config::jobPaths = {};
-unordered_map<string, vector<string>> Config::characterPaths = {};
+unordered_map<string, unordered_map<string, string>> Config::scriptPaths = {};
 unordered_map<string, vector<string>> Config::actionPaths = {};
-unordered_set<string> Config::scriptPaths = {};
+unordered_set<string> Config::storyPaths = {};
 
 bool CheckFileFormat(const filesystem::path& filePath, const string& format) {
 	if (!filesystem::is_regular_file(filePath))
@@ -36,10 +35,9 @@ void Config::ReadConfig(const string& path) {
 	modEnables.clear();
 	resourcePaths.clear();
 	layoutPaths.clear();
-	jobPaths.clear();
-	characterPaths.clear();
-	actionPaths.clear();
 	scriptPaths.clear();
+	actionPaths.clear();
+	storyPaths.clear();
 
 	JsonReader reader;
 	JsonValue root;
@@ -350,8 +348,8 @@ void Config::WriteConfig(const string& path) {
 	root["resource_paths"] = resources;
 
 	JsonValue stories = JsonValue(DATA_ARRAY);
-	for (auto scriptPath : scriptPaths) {
-		JsonValue story = JsonValue(scriptPath);
+	for (auto storyPath : storyPaths) {
+		JsonValue story = JsonValue(storyPath);
 		stories.append(story);
 	}
 	root["story_paths"] = stories;
@@ -840,24 +838,14 @@ vector<string> Config::GetLayouts() {
 	return layouts;
 }
 
-unordered_map<string, string> Config::GetJobs() {
-	unordered_map<string, string> jobs;
+unordered_map<string, string> Config::GetScripts() {
+	unordered_map<string, string> scripts;
 
-	for (auto& jobPath : jobPaths) {
-		jobs.insert(jobPath.second.begin(), jobPath.second.end());
+	for (auto& scriptPath : scriptPaths) {
+		scripts.insert(scriptPath.second.begin(), scriptPath.second.end());
 	}
 
-	return jobs;
-}
-
-vector<string> Config::GetCharacters() {
-	vector<string> characters;
-
-	for (auto& characterPath : characterPaths) {
-		characters.insert(characters.end(), characterPath.second.begin(), characterPath.second.end());
-	}
-
-	return characters;
+	return scripts;
 }
 
 vector<string> Config::GetActions() {
@@ -886,8 +874,7 @@ void Config::AddResourcePath(const string& path) {
 	}
 	if(!duplicated)resourcePaths.push_back(path);
 	layoutPaths[path].clear();
-	jobPaths[path].clear();
-	characterPaths[path].clear();
+	scriptPaths[path].clear();
 	actionPaths[path].clear();
 
 	for (const auto& entry : filesystem::recursive_directory_iterator(dir)) {
@@ -902,14 +889,11 @@ void Config::AddResourcePath(const string& path) {
 			if (ext == ".layout") {
 				layoutPaths[path].push_back(fullPath);
 			}
-			else if (ext == ".job") {
+			else if (ext == ".script") {
 				filesystem::path p(fullPath);
 				string filename = p.filename().string();
-				string basename = filename.substr(0, filename.length() - 4);
-				jobPaths[path][basename] = fullPath;
-			}
-			else if (ext == ".character") {
-				characterPaths[path].push_back(fullPath);
+				string basename = filename.substr(0, filename.length() - 7);
+				scriptPaths[path][basename] = fullPath;
 			}
 			else if (ext == ".action") {
 				actionPaths[path].push_back(fullPath);
@@ -928,20 +912,19 @@ void Config::RemoveResourcePath(const string& path) {
 		}
 	}
 	layoutPaths.erase(path);
-	jobPaths.erase(path);
-	characterPaths.erase(path);
+	scriptPaths.erase(path);
 	actionPaths.erase(path);
 }
 
-unordered_set<string> Config::GetScripts() {
-	return scriptPaths;
+unordered_set<string> Config::GetStories() {
+	return storyPaths;
 }
 
 void Config::AddScript(const std::string& path) {
-	scriptPaths.insert(path);
+	storyPaths.insert(path);
 }
 
 void Config::RemoveScript(const std::string& path) {
-	scriptPaths.erase(path);
+	storyPaths.erase(path);
 }
 

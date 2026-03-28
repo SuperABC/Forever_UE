@@ -18,17 +18,10 @@ void ATrafficBase::BeginPlay() {
 void ATrafficBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	//if (dirty) {
-	//	dirty = false;
-	//	UpdateTraffic();
-	//}
 }
 
 void ATrafficBase::SetGlobal(AActor* g) {
 	this->global = g;
 }
 
-//void ATrafficBase::MarkDirty() {
-//	dirty = true;
-//}
 

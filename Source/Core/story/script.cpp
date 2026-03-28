@@ -30,6 +30,50 @@ string Script::GetName() const {
 	return name;
 }
 
+pair<bool, ValueType> Script::GetValue(const string& name) const {
+    auto it = variables.find(name);
+    if (it != variables.end()) {
+        return { true, it->second };
+    }
+    return { false, 0 };
+}
+
+void Script::SetValue(const string& name, ValueType value) {
+    variables[name] = value;
+}
+
+void Script::RemoveValue(const string& name) {
+    variables.erase(name);
+}
+
+vector<Action> Script::PreTrigger(Event* event) {
+    vector<Action> actions;
+
+    mod->PreTrigger(event);
+
+    actions.reserve(mod->actionQueue.size());
+    while (!mod->actionQueue.empty()) {
+        actions.push_back(mod->actionQueue.front());
+        mod->actionQueue.pop();
+    }
+
+    return actions;
+}
+
+vector<Action> Script::PostTrigger(Event* event) {
+    vector<Action> actions;
+
+    mod->PostTrigger(event);
+
+    actions.reserve(mod->actionQueue.size());
+    while (!mod->actionQueue.empty()) {
+        actions.push_back(mod->actionQueue.front());
+        mod->actionQueue.pop();
+    }
+
+    return actions;
+}
+
 void Script::ReadScript(const string& path) {
     if (caches.find(path) != caches.end()) {
         return;
@@ -110,7 +154,7 @@ vector<string> Script::ReadNames(const string& path) {
     return caches[path].first;
 }
 
-void Script::ReadMilestones(const std::string& path) {
+void Script::ReadMilestones(const string& path) {
     ReadScript(path);
     if (caches.find(path) == caches.end()) {
         THROW_EXCEPTION(RuntimeException, "Read script failed: " + path + "\n");
@@ -197,46 +241,6 @@ void Script::DeactivateMilestone(const string& name) {
             it++;
         }
     }
-}
-
-void Script::SetValue(const string& name, ValueType value) {
-    variables[name] = value;
-}
-
-vector<Action> Script::PreTrigger(Event* event) {
-    vector<Action> actions;
-
-    mod->PreTrigger(event);
-
-    actions.reserve(mod->actionQueue.size());
-    while (!mod->actionQueue.empty()) {
-        actions.push_back(mod->actionQueue.front());
-        mod->actionQueue.pop();
-    }
-
-    return actions;
-}
-
-vector<Action> Script::PostTrigger(Event* event) {
-    vector<Action> actions;
-
-    mod->PostTrigger(event);
-
-    actions.reserve(mod->actionQueue.size());
-    while (!mod->actionQueue.empty()) {
-        actions.push_back(mod->actionQueue.front());
-        mod->actionQueue.pop();
-    }
-
-    return actions;
-}
-
-pair<bool, ValueType> Script::GetValue(const string& name) const {
-    auto it = variables.find(name);
-    if (it != variables.end()) {
-        return { true, it->second };
-    }
-    return { false, 0 };
 }
 
 vector<Event*> Script::BuildEvent(JsonValue root) {

@@ -184,13 +184,13 @@ public:
 	const std::unordered_map<std::string, Zone*>& GetZones() const;
 
 	// 根据名称查找园区
-	const Zone* GetZone(const std::string& name) const;
+	Zone* GetZone(const std::string& name) const;
 
 	// 获取所有建筑
 	const std::unordered_map<std::string, Building*>& GetBuildings() const;
 
 	// 根据名称查找建筑
-	const Building* GetBuilding(const std::string& name) const;
+	Building* GetBuilding(const std::string& name) const;
 
 	// 获取所有组合
 	std::vector<Component*> GetComponents() const;

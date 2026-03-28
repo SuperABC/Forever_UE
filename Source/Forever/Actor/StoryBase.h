@@ -27,6 +27,9 @@ public:
 	void AddFront(Dialog* dialog);
 	void AddBack(Dialog* dialog);
 
+	void MatchEvent(Event* e, Story* story,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+
 	void ApplyChange(Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 

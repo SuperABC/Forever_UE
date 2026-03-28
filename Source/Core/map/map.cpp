@@ -987,7 +987,7 @@ const unordered_map<string, Zone*>& Map::GetZones() const {
 	return zones;
 }
 
-const Zone* Map::GetZone(const string& name) const {
+Zone* Map::GetZone(const string& name) const {
 	auto it = zones.find(name);
 	if (it == zones.end()) return nullptr;
 	return it->second;
@@ -997,7 +997,7 @@ const unordered_map<string, Building*>& Map::GetBuildings() const {
 	return buildings;
 }
 
-const Building* Map::GetBuilding(const string& name) const {
+Building* Map::GetBuilding(const string& name) const {
 	auto it = buildings.find(name);
 	if (it == buildings.end()) {
 		for (auto& [_, zone] : zones) {

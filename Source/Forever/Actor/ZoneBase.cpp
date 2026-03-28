@@ -78,15 +78,15 @@ void AZoneBase::SetInstance(FString name, AActor* actor) {
 }
 
 void AZoneBase::EnterZone(FString zone) {
-	//auto story = ((AGlobalBase*)global)->GetStoryActor();
-	//story->EnterZone(zone);
+	auto story = ((AGlobalBase*)global)->GetStoryActor();
+	story->EnterZone(zone);
 
-	//((AGlobalBase*)global)->GetStory()->SetValue("player.zone", TCHAR_TO_UTF8(*zone));
+	((AGlobalBase*)global)->GetStory()->GetScript()->SetValue("player.zone", TCHAR_TO_UTF8(*zone));
 }
 
 void AZoneBase::LeaveZone(FString zone) {
-	//((AGlobalBase*)global)->GetStory()->SetValue("player.zone", "");
+	((AGlobalBase*)global)->GetStory()->GetScript()->SetValue("player.zone", "");
 
-	//auto story = ((AGlobalBase*)global)->GetStoryActor();
-	//story->LeaveZone(zone);
+	auto story = ((AGlobalBase*)global)->GetStoryActor();
+	story->LeaveZone(zone);
 }

@@ -125,14 +125,14 @@ TArray<FString> AStartBase::GetResources() {
 		paths.Add(FString(UTF8_TO_TCHAR(layoutPath.data())));
 	}
 
-	auto jobPaths = Config::GetJobs();
-	for (auto [jobName, jobPath] : jobPaths) {
-		paths.Add(FString(UTF8_TO_TCHAR(jobPath.data())));
+	auto scriptPaths = Config::GetScripts();
+	for (auto [scriptName, scriptPath] : scriptPaths) {
+		paths.Add(FString(UTF8_TO_TCHAR(scriptPath.data())));
 	}
 
-	auto characterPaths = Config::GetCharacters();
-	for (auto characterPath : characterPaths) {
-		paths.Add(FString(UTF8_TO_TCHAR(characterPath.data())));
+	auto actionPaths = Config::GetActions();
+	for (auto actionPath : actionPaths) {
+		paths.Add(FString(UTF8_TO_TCHAR(actionPath.data())));
 	}
 
 	return paths;
@@ -149,9 +149,9 @@ void AStartBase::RemoveResourcePath(FString path) {
 TArray<FString> AStartBase::GetScriptPaths() {
 	TArray<FString> paths;
 
-	auto scripts = Config::GetScripts();
-	for (auto script : scripts) {
-		paths.Add(FString(UTF8_TO_TCHAR(script.data())));
+	auto stories = Config::GetStories();
+	for (auto story : stories) {
+		paths.Add(FString(UTF8_TO_TCHAR(story.data())));
 	}
 
 	return paths;

@@ -77,8 +77,8 @@ void Story::Init() {
 	Destroy();
 
 	script = new Script(scriptFactory, scriptFactory->GetMain());
-	for (auto s : Config::GetScripts()) {
-		script->ReadMilestones(s);
+	for (auto story : Config::GetStories()) {
+		script->ReadMilestones(story);
 	}
 }
 
@@ -106,7 +106,7 @@ void Story::ApplyChange(Change* change, Story* story,
 		}
 		Condition condition;
 		condition.ParseCondition(obj->GetValue());
-		script->variables[obj->GetVariable()] = condition.EvaluateValue(getValues);
+		script->SetValue(obj->GetVariable(), condition.EvaluateValue(getValues));
 	}
 	else if (type == "remove_value") {
 		auto obj = dynamic_cast<RemoveValueChange*>(change);
@@ -116,7 +116,7 @@ void Story::ApplyChange(Change* change, Story* story,
 		if (obj->GetVariable().substr(0, 7) == "system.") {
 			return;
 		}
-		script->variables.erase(obj->GetVariable());
+		script->RemoveValue(obj->GetVariable());
 	}
 	else if (type == "deactivate_milestone") {
 		auto obj = dynamic_cast<DeactivateMilestoneChange*>(change);

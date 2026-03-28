@@ -32,6 +32,9 @@ public:
 	// 设置变量
 	void SetValue(const std::string& name, ValueType value);
 
+	// 移除变量
+	void RemoveValue(const std::string& name);
+
 	// 脚本前逻辑
 	std::vector<Action> PreTrigger(Event* event);
 
@@ -53,9 +56,6 @@ public:
 
 	// 停用里程碑
 	void DeactivateMilestone(const std::string& name);
-
-	// 变量列表
-	std::unordered_map<std::string, ValueType> variables;
 
 private:
 	// 读取事件
@@ -93,6 +93,9 @@ private:
 
 	// 活动里程碑
 	std::vector<MilestoneNode*> actives;
+
+	// 变量列表
+	std::unordered_map<std::string, ValueType> variables;
 
 };
 

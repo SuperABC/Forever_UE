@@ -42,23 +42,20 @@ public:
 	// 获取所有layout路径
 	static std::vector<std::string> GetLayouts();
 
-	// 获取所有job路径
-	static std::unordered_map<std::string, std::string> GetJobs();
-
-	// 获取所有character路径
-	static std::vector<std::string> GetCharacters();
+	// 获取所有script路径
+	static std::unordered_map<std::string, std::string> GetScripts();
 
 	// 获取所有action路径
 	static std::vector<std::string> GetActions();
 
-	// 添加resourcePaths并识别其中包含的layout/job/character文件路径
+	// 添加resourcePaths并识别其中包含的layout/script/action文件路径
 	static void AddResourcePath(const std::string& path);
 
-	// 移除resourcePaths及对应的layout/job/character文件路径
+	// 移除resourcePaths及对应的layout/script/action文件路径
 	static void RemoveResourcePath(const std::string& path);
 
 	// 获取主剧情路径
-	static std::unordered_set<std::string> GetScripts();
+	static std::unordered_set<std::string> GetStories();
 
 	// 添加主剧情路径
 	static void AddScript(const std::string& path);
@@ -79,16 +76,13 @@ private:
 	// resource path -> [ layout path ]
 	static std::unordered_map<std::string, std::vector<std::string>> layoutPaths;
 
-	// resource path -> [ job name -> job path ]
-	static std::unordered_map<std::string, std::unordered_map<std::string, std::string>> jobPaths;
-
-	// resource path -> [ character path ]
-	static std::unordered_map<std::string, std::vector<std::string>> characterPaths;
+	// resource path -> [ script name -> script path ]
+	static std::unordered_map<std::string, std::unordered_map<std::string, std::string>> scriptPaths;
 
 	// resource path -> [ action path ]
 	static std::unordered_map<std::string, std::vector<std::string>> actionPaths;
 
-	// script path
-	static std::unordered_set<std::string> scriptPaths;
+	// story path
+	static std::unordered_set<std::string> storyPaths;
 };
 
