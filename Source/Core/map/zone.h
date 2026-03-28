@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "story/script.h"
+
 #include "zone_mod.h"
 
 #include "block.h"
@@ -44,6 +46,9 @@ public:
 	// 获取园区内所有建筑
 	const std::unordered_map<std::string, Building*>& GetBuildings();
 
+	// 获取剧情
+	Script* GetScript();
+
 	// 获取园区中心世界位置
 	void GetPosition(float& x, float& y) const;
 
@@ -55,6 +60,9 @@ public:
 
 	// 清理空建筑
 	void ClearZero();
+
+	// 读取剧情
+	void ReadScript();
 
 private:
     // 模组对象
@@ -77,6 +85,9 @@ private:
 
 	// 内部建筑
 	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
+
+	// 关联剧情
+	Script* script;
 };
 
 // 空园区

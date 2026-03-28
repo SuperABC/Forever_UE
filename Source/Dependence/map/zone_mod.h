@@ -33,6 +33,9 @@ public:
 
 	// 内部建筑
 	std::vector<std::pair<std::string, float>> buildings;
+
+	// 关联剧情
+	std::string script;
 };
 
 class ZoneFactory {

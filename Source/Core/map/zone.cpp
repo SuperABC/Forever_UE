@@ -1,4 +1,6 @@
-﻿#include "zone.h"
+﻿#include "common/config.h"
+
+#include "zone.h"
 
 #include <algorithm>
 
@@ -62,6 +64,10 @@ string Zone::GetAddress() {
 	return address.data();
 }
 
+Script* Zone::GetScript() {
+	return script;
+}
+
 void Zone::GetPosition(float& x, float& y) const {
 	auto block = GetParent();
 	if (block) {
@@ -109,6 +115,8 @@ void Zone::LayoutZone(Lot* block, BuildingFactory* factory) {
 		}
 		buildings[building->GetName()] = building;
 	}
+
+	ReadScript();
 }
 
 void Zone::ArrangeBuildings() {
@@ -313,6 +321,10 @@ void Zone::ClearZero() {
 			++it;
 		}
 	}
+}
+
+void Zone::ReadScript() {
+	script->ReadMilestones(Config::GetScript(mod->script));
 }
 
 int EmptyZone::count = 0;

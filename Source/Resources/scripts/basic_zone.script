@@ -1,0 +1,24 @@
+[
+{
+	"milestone": "enter_zone",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "enter_zone", "zone": "$$self.name"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "set_value", "variable": "player.zone", "value": "$$self.name"},
+	],
+	"subsequences": []
+},
+{
+	"milestone": "leave_zone",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "leave_zone", "zone": "$$self.name"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "set_value", "variable": "player.zone", "value": ""},
+	],
+	"subsequences": []
+}
+]

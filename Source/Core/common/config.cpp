@@ -848,6 +848,16 @@ unordered_map<string, string> Config::GetScripts() {
 	return scripts;
 }
 
+std::string Config::GetScript(const std::string& name) {
+	for (auto& scriptPath : scriptPaths) {
+		if (scriptPath.second.find(name) != scriptPath.second.end()) {
+			return scriptPath.second[name];
+		}
+	}
+
+	return "";
+}
+
 vector<string> Config::GetActions() {
 	vector<string> actions;
 

@@ -45,6 +45,9 @@ public:
 	// 获取所有script路径
 	static std::unordered_map<std::string, std::string> GetScripts();
 
+	// 按名称查找script路径
+	static std::string GetScript(const std::string& name);
+
 	// 获取所有action路径
 	static std::vector<std::string> GetActions();
 
