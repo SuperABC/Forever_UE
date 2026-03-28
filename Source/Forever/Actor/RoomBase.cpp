@@ -52,53 +52,77 @@ void ARoomBase::RemoveInstance(FString name) {
 }
 
 void ARoomBase::EnterRoom(FString room) {
-	auto story = ((AGlobalBase*)global)->GetStoryActor();
+	auto storyBase = ((AGlobalBase*)global)->GetStoryActor();
+	auto story = ((AGlobalBase*)global)->GetStory();
 	auto zone = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.zone").second;
 	auto building = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.building").second;
+	Event* event;
 	if (holds_alternative<string>(zone)) {
 		if (holds_alternative<string>(building)) {
-			story->EnterRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()),
-				UTF8_TO_TCHAR(get<std::string>(building).data()), room);
+			event = new EnterRoomEvent(
+				TCHAR_TO_UTF8(*get<std::string>(zone).data()),
+				TCHAR_TO_UTF8(*get<std::string>(building).data()),
+				TCHAR_TO_UTF8(*room));
 		}
 		else {
-			story->EnterRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()), "", room);
+			event = new EnterRoomEvent(
+				TCHAR_TO_UTF8(*get<std::string>(zone).data()), "", TCHAR_TO_UTF8(*room));
 		}
 	}
 	else {
 		if (holds_alternative<string>(building)) {
-			story->EnterRoom("", UTF8_TO_TCHAR(get<std::string>(building).data()), room);
+			event = new EnterRoomEvent(
+				"", TCHAR_TO_UTF8(*get<std::string>(building).data()), TCHAR_TO_UTF8(*room));
 		}
 		else {
-			story->EnterRoom("", "", room);
+			event = new EnterRoomEvent(
+				"", "", TCHAR_TO_UTF8(*room));
 		}
 	}
 
-	((AGlobalBase*)global)->GetStory()->GetScript()->SetValue("player.room", TCHAR_TO_UTF8(*room));
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](string name) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(name);
+		}
+	};
+	storyBase->MatchEvent(event, story->GetScript(), getValues);
 }
 
 void ARoomBase::LeaveRoom(FString room) {
-	((AGlobalBase*)global)->GetStory()->GetScript()->SetValue("player.room", "");
-
-	auto story = ((AGlobalBase*)global)->GetStoryActor();
+	auto storyBase = ((AGlobalBase*)global)->GetStoryActor();
+	auto story = ((AGlobalBase*)global)->GetStory();
 	auto zone = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.zone").second;
 	auto building = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.building").second;
+	Event* event;
 	if (holds_alternative<string>(zone)) {
 		if (holds_alternative<string>(building)) {
-			story->LeaveRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()),
-				UTF8_TO_TCHAR(get<std::string>(building).data()), room);
+			event = new LeaveRoomEvent(
+				TCHAR_TO_UTF8(*get<std::string>(zone).data()),
+				TCHAR_TO_UTF8(*get<std::string>(building).data()),
+				TCHAR_TO_UTF8(*room));
 		}
 		else {
-			story->LeaveRoom(UTF8_TO_TCHAR(get<std::string>(zone).data()), "", room);
+			event = new LeaveRoomEvent(
+				TCHAR_TO_UTF8(*get<std::string>(zone).data()), "", TCHAR_TO_UTF8(*room));
 		}
 	}
 	else {
 		if (holds_alternative<string>(building)) {
-			story->LeaveRoom("", UTF8_TO_TCHAR(get<std::string>(building).data()), room);
+			event = new LeaveRoomEvent(
+				"", TCHAR_TO_UTF8(*get<std::string>(building).data()), TCHAR_TO_UTF8(*room));
 		}
 		else {
-			story->LeaveRoom("", "", room);
+			event = new LeaveRoomEvent(
+				"", "", TCHAR_TO_UTF8(*room));
 		}
 	}
+
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](string name) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(name);
+		}
+	};
+	storyBase->MatchEvent(event, story->GetScript(), getValues);
 }
 
 

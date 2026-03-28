@@ -61,13 +61,13 @@ public:
 	void DestroyRoadnet(RoadnetMod* roadnet) const;
 
 private:
-    // 注册表
+	// 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<RoadnetMod* ()>, std::function<void(RoadnetMod*)>>
 	> registries;
 	
-    // 启用配置
+	// 启用配置
 	std::unordered_map<std::string, bool> configs;
 };
 

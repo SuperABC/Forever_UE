@@ -16,13 +16,13 @@ class Building;
 class BuildingFactory;
 class Zone : public Quad {
 public:
-    // 禁止默认构造
+	// 禁止默认构造
 	Zone() = delete;
 
-    // 通过类型从工厂构造
+	// 通过类型从工厂构造
 	Zone(ZoneFactory* factory, const std::string& zone);
 	
-    // 析构园区
+	// 析构园区
 	~Zone();
 
 	// 获取类型
@@ -46,8 +46,14 @@ public:
 	// 获取园区内所有建筑
 	const std::unordered_map<std::string, Building*>& GetBuildings();
 
+	// 获取剧情与脚本
+	std::pair<std::string, std::string> GetScriptSetup();
+
 	// 获取剧情
 	Script* GetScript();
+
+	// 设置剧情
+	void SetScript(Script* script);
 
 	// 获取园区中心世界位置
 	void GetPosition(float& x, float& y) const;
@@ -61,23 +67,20 @@ public:
 	// 清理空建筑
 	void ClearZero();
 
-	// 读取剧情
-	void ReadScript();
-
 private:
-    // 模组对象
+	// 模组对象
 	OBJECT_HOLDER ZoneMod* mod;
 
-    // 工厂
+	// 工厂
 	ZoneFactory* factory;
 
-    // 地形类型
+	// 地形类型
 	std::string type;
 
-    // 地形名称
+	// 地形名称
 	std::string name;
 
-    // 所在街区
+	// 所在街区
 	Block* parentBlock;
 	
 	// 完整地址
@@ -87,7 +90,7 @@ private:
 	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
 
 	// 关联剧情
-	Script* script;
+	OBJECT_HOLDER Script* script;
 };
 
 // 空园区

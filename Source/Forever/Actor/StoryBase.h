@@ -27,7 +27,7 @@ public:
 	void AddFront(Dialog* dialog);
 	void AddBack(Dialog* dialog);
 
-	void MatchEvent(Event* e, Story* story,
+	void MatchEvent(Event* e, Script* script,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	void ApplyChange(Change* change,
@@ -50,18 +50,6 @@ public:
 	void ScriptMessage(FString message);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void OptionDialog(FString name, FString option);
-	UFUNCTION(BlueprintCallable, Category = "Story")
-	void EnterZone(FString zone);
-	UFUNCTION(BlueprintCallable, Category = "Story")
-	void LeaveZone(FString zone);
-	UFUNCTION(BlueprintCallable, Category = "Story")
-	void EnterBuilding(FString zone, FString building);
-	UFUNCTION(BlueprintCallable, Category = "Story")
-	void LeaveBuilding(FString zone, FString building);
-	UFUNCTION(BlueprintCallable, Category = "Story")
-	void EnterRoom(FString zone, FString building, FString room);
-	UFUNCTION(BlueprintCallable, Category = "Story")
-	void LeaveRoom(FString zone, FString building, FString room);
 
 protected:
 	virtual void BeginPlay() override;

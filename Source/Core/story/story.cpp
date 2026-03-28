@@ -9,8 +9,7 @@ using namespace std;
 ScriptFactory* Story::scriptFactory = nullptr;
 
 Story::Story() :
-	script(nullptr),
-	objectScripts() {
+	script(nullptr) {
 	if (!scriptFactory) {
 		scriptFactory = new ScriptFactory();
 	}
@@ -73,12 +72,34 @@ void Story::InitScripts(unordered_map<string, HMODULE>& modHandles,
 #endif
 }
 
-void Story::Init() {
+void Story::Init(Map* map) {
 	Destroy();
 
 	script = new Script(scriptFactory, scriptFactory->GetMain());
 	for (auto story : Config::GetStories()) {
 		script->ReadMilestones(story);
+	}
+
+	for (auto [name, zone] : map->GetZones()) {
+		auto setup = zone->GetScriptSetup();
+		auto script = new Script(scriptFactory, setup.first);
+		script->ReadMilestones(Config::GetScript(setup.second));
+		script->SetValue("self.name", name);
+		zone->SetScript(script);
+		for (auto [name, building] : zone->GetBuildings()) {
+			auto setup = building->GetScriptSetup();
+			auto script = new Script(scriptFactory, setup.first);
+			script->ReadMilestones(Config::GetScript(setup.second));
+			script->SetValue("self.name", name);
+			building->SetScript(script);
+		}
+	}
+	for (auto [name, building] : map->GetBuildings()) {
+		auto setup = building->GetScriptSetup();
+		auto script = new Script(scriptFactory, setup.first);
+		script->ReadMilestones(Config::GetScript(setup.second));
+		script->SetValue("self.name", name);
+		building->SetScript(script);
 	}
 }
 
@@ -87,9 +108,8 @@ void Story::Destroy() {
 	script = nullptr;
 }
 
-void Story::ApplyChange(Change* change, Story* story,
+void Story::ApplyChange(Change* change,
 	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
-
 	if (change == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
 	}

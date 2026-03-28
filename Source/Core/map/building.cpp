@@ -1,4 +1,6 @@
-﻿#include "building.h"
+﻿#include "common/config.h"
+
+#include "building.h"
 #include "json.h"
 
 #include <filesystem>
@@ -274,7 +276,8 @@ Building::Building(BuildingFactory* factory, const string& building) :
 	layers(1),
 	basements(0),
 	height(0.4f),
-	construction() {
+	construction(),
+	script(nullptr) {
 
 }
 
@@ -289,6 +292,8 @@ Building::~Building() {
 	for (auto room : rooms) {
 		delete room;
 	}
+
+	if(script)delete script;
 }
 
 string Building::GetType() const {
@@ -381,6 +386,18 @@ Floor* Building::GetFloor(int level) const {
 	if (idx >= 0 && idx < floors.size())
 		return floors[idx];
 	return nullptr;
+}
+
+std::pair<std::string, std::string> Building::GetScriptSetup() {
+	return mod->script;
+}
+
+Script* Building::GetScript() {
+	return script;
+}
+
+void Building::SetScript(Script* script) {
+	this->script = script;
 }
 
 float Building::RandomAcreage() {

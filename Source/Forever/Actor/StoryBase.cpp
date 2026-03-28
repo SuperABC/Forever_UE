@@ -54,35 +54,35 @@ void AStoryBase::AddBack(Dialog* dialog) {
 	}
 }
 
-void AStoryBase::MatchEvent(Event* event, Story* story,
+void AStoryBase::MatchEvent(Event* event, Script* script,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	try {
-		std::vector<Action> actions;
-		auto pres = story->GetScript()->PreTrigger(event);
+		vector<Action> actions;
+		auto pres = script->PreTrigger(event);
 		actions.insert(actions.end(), pres.begin(), pres.end());
-		auto matches = story->GetScript()->MatchEvent(event, getValues);
+		auto matches = script->MatchEvent(event, getValues);
 		actions.insert(actions.end(), matches.begin(), matches.end());
-		auto posts = story->GetScript()->PostTrigger(event);
+		auto posts = script->PostTrigger(event);
 		actions.insert(actions.end(), posts.begin(), posts.end());
 
 		for (auto action : actions) {
-			std::visit([&](auto* ptr) {
-				if constexpr (std::is_same_v<decltype(ptr), Dialog*>) {
+			visit([&](auto* ptr) {
+				if constexpr (is_same_v<decltype(ptr), Dialog*>) {
 					auto* dialog = dynamic_cast<Dialog*>(ptr);
 					if (dialog->GetCondition().EvaluateBool(getValues)) {
 						AddBack(dialog);
 					}
 				}
-				else if constexpr (std::is_same_v<decltype(ptr), Change*>) {
+				else if constexpr (is_same_v<decltype(ptr), Change*>) {
 					auto* change = dynamic_cast<Change*>(ptr);
 					if (change->GetCondition().EvaluateBool(getValues)) {
-						((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
-						((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
-						((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
-						((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
-						((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
-						((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
-						((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+						((AGlobalBase*)global)->GetMap()->ApplyChange(change, getValues);
+						((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, getValues);
+						((AGlobalBase*)global)->GetSociety()->ApplyChange(change, getValues);
+						((AGlobalBase*)global)->GetStory()->ApplyChange(change, getValues);
+						((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, getValues);
+						((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, getValues);
+						((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, getValues);
 
 						ApplyChange(change, getValues);
 					}
@@ -143,13 +143,13 @@ bool AStoryBase::SelectOption(FString selected) {
 			auto changes = option.GetChanges();
 			for (auto change : changes) {
 				if (!change->GetCondition().EvaluateBool(getValues))continue;
-				((AGlobalBase*)global)->GetMap()->ApplyChange(change, story, getValues);
-				((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, story, getValues);
-				((AGlobalBase*)global)->GetSociety()->ApplyChange(change, story, getValues);
-				((AGlobalBase*)global)->GetStory()->ApplyChange(change, story, getValues);
-				((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, story, getValues);
-				((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, story, getValues);
-				((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, story, getValues);
+				((AGlobalBase*)global)->GetMap()->ApplyChange(change, getValues);
+				((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, getValues);
+				((AGlobalBase*)global)->GetSociety()->ApplyChange(change, getValues);
+				((AGlobalBase*)global)->GetStory()->ApplyChange(change, getValues);
+				((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, getValues);
+				((AGlobalBase*)global)->GetTraffic()->ApplyChange(change, getValues);
+				((AGlobalBase*)global)->GetPlayer()->ApplyChange(change, getValues);
 
 				ApplyChange(change, getValues);
 			}
@@ -173,120 +173,43 @@ TArray<FString> AStoryBase::GetOptions(FString name) {
 
 void AStoryBase::GameStart() {
 	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new GameStartEvent();
+
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](string name) -> pair<bool, ValueType> {
 			return story->GetScript()->GetValue(name);
 		}
 	};
+	MatchEvent(event, story->GetScript(), getValues);
 
-	auto event = new GameStartEvent();
-	MatchEvent(event, story, getValues);
 	delete event;
 }
 
 void AStoryBase::ScriptMessage(FString message) {
 	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new ScriptMessageEvent(TCHAR_TO_UTF8(*message));
+
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](string name) -> pair<bool, ValueType> {
 			return story->GetScript()->GetValue(name);
 		}
 	};
+	MatchEvent(event, story->GetScript(), getValues);
 
-	auto event = new ScriptMessageEvent(TCHAR_TO_UTF8(*message));
-	MatchEvent(event, story, getValues);
 	delete event;
 }
 
 void AStoryBase::OptionDialog(FString name, FString option) {
 	auto story = ((AGlobalBase*)global)->GetStory();
-	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-		[&](string name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
-		}
-	};
-
 	auto event = new OptionDialogEvent(TCHAR_TO_UTF8(*name), TCHAR_TO_UTF8(*option));
-	MatchEvent(event, story, getValues);
-	delete event;
-}
 
-void AStoryBase::EnterZone(FString zone) {
-	auto story = ((AGlobalBase*)global)->GetStory();
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](string name) -> pair<bool, ValueType> {
 			return story->GetScript()->GetValue(name);
 		}
 	};
+	MatchEvent(event, story->GetScript(), getValues);
 
-	auto event = new EnterZoneEvent(TCHAR_TO_UTF8(*zone));
-	MatchEvent(event, story, getValues);
-	delete event;
-}
-
-void AStoryBase::LeaveZone(FString zone) {
-	auto story = ((AGlobalBase*)global)->GetStory();
-	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-		[&](string name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
-		}
-	};
-
-	auto event = new LeaveZoneEvent(TCHAR_TO_UTF8(*zone));
-	MatchEvent(event, story, getValues);
-	delete event;
-}
-
-void AStoryBase::EnterBuilding(FString zone, FString building) {
-	auto story = ((AGlobalBase*)global)->GetStory();
-	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-		[&](string name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
-		}
-	};
-
-	auto event = new EnterBuildingEvent(TCHAR_TO_UTF8(*zone), TCHAR_TO_UTF8(*building));
-	MatchEvent(event, story, getValues);
-	delete event;
-}
-
-void AStoryBase::LeaveBuilding(FString zone, FString building) {
-	auto story = ((AGlobalBase*)global)->GetStory();
-	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-		[&](string name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
-		}
-	};
-
-	auto event = new LeaveBuildingEvent(TCHAR_TO_UTF8(*zone), TCHAR_TO_UTF8(*building));
-	MatchEvent(event, story, getValues);
-	delete event;
-}
-
-void AStoryBase::EnterRoom(FString zone, FString building, FString room) {
-	auto story = ((AGlobalBase*)global)->GetStory();
-	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-		[&](string name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
-		}
-	};
-
-	auto event = new EnterRoomEvent(
-		TCHAR_TO_UTF8(*zone), TCHAR_TO_UTF8(*building), TCHAR_TO_UTF8(*room));
-	MatchEvent(event, story, getValues);
-	delete event;
-}
-
-void AStoryBase::LeaveRoom(FString zone, FString building, FString room) {
-	auto story = ((AGlobalBase*)global)->GetStory();
-	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-		[&](string name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
-		}
-	};
-
-	auto event = new LeaveRoomEvent(
-		TCHAR_TO_UTF8(*zone), TCHAR_TO_UTF8(*building), TCHAR_TO_UTF8(*room));
-	MatchEvent(event, story, getValues);
 	delete event;
 }
 

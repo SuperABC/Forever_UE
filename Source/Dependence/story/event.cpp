@@ -15,11 +15,11 @@ Event::~Event() {
 }
 
 const Condition& Event::GetCondition() {
-    return condition;
+	return condition;
 }
 
 void Event::SetCondition(const Condition& condition) {
-    this->condition = condition;
+	this->condition = condition;
 }
 
 GameStartEvent::GameStartEvent() {
@@ -31,17 +31,18 @@ GameStartEvent::~GameStartEvent() {
 }
 
 string GameStartEvent::GetType() const {
-    return "game_start";
+	return "game_start";
 }
 
-bool GameStartEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
-    return true;
+bool GameStartEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+	return true;
 }
 
 ScriptMessageEvent::ScriptMessageEvent(string message) :
-    message(message) {
+	message(message) {
 
 }
 
@@ -50,34 +51,48 @@ ScriptMessageEvent::~ScriptMessageEvent() {
 }
 
 string ScriptMessageEvent::GetType() const {
-    return "script_message";
+	return "script_message";
 }
 
-bool ScriptMessageEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool ScriptMessageEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<ScriptMessageEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<ScriptMessageEvent*>(e);
+	if (!other) return false;
 
-    return message == other->message;
+	bool result = true;
+	if (message.size() > 0 && other->message.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(message);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto messageValue = get_if<string>(&value)) {
+			result = (result && *messageValue == other->message);
+		}
+		else {
+			result = (result && message == other->message);
+		}
+	}
+
+	return result;
 }
 
 void ScriptMessageEvent::SetMessage(std::string message) {
-    this->message = message;
+	this->message = message;
 }
 
 string ScriptMessageEvent::GetMessage() const {
-    return message;
+	return message;
 }
 
 OptionDialogEvent::OptionDialogEvent(string name, string option) :
-    idx(-1), name(name), option(option) {
+	idx(-1), name(name), option(option) {
 
 }
 
 OptionDialogEvent::OptionDialogEvent(int idx, string option) :
-    idx(idx), name(""), option(option) {
+	idx(idx), name(""), option(option) {
 
 }
 
@@ -86,50 +101,75 @@ OptionDialogEvent::~OptionDialogEvent() {
 }
 
 string OptionDialogEvent::GetType() const {
-    return "option_dialog";
+	return "option_dialog";
 }
 
-bool OptionDialogEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool OptionDialogEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<OptionDialogEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<OptionDialogEvent*>(e);
+	if (!other) return false;
 
-    if (idx == -1 && name == "" ||
-        other->idx == -1 && other->name == "") {
-        return option == other->option;
-    }
+	if (idx == -1 && name == "" ||
+		other->idx == -1 && other->name == "") {
+		return option == other->option;
+	}
 
-    return name == other->name && option == other->option;
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto nameValue = get_if<string>(&value)) {
+			result = (result && *nameValue == other->name);
+		}
+		else {
+			result = (result && name == other->name);
+		}
+	}
+	if (option.size() > 0 && other->option.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(option);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto optionValue = get_if<string>(&value)) {
+			result = (result && *optionValue == other->option);
+		}
+		else {
+			result = (result && option == other->option);
+		}
+	}
+
+	return result;
 }
 
 void OptionDialogEvent::SetIdx(int idx) {
-    this->idx = idx;
+	this->idx = idx;
 }
 
 int OptionDialogEvent::GetIdx() const {
-    return idx;
+	return idx;
 }
 
 void OptionDialogEvent::SetName(string name) {
-    this->name = name;
+	this->name = name;
 }
 
 string OptionDialogEvent::GetName() const {
-    return name;
+	return name;
 }
 
 void OptionDialogEvent::SetOption(string option) {
-    this->option = option;
+	this->option = option;
 }
 
 string OptionDialogEvent::GetOption() const {
-    return option;
+	return option;
 }
 
 NPCMeetEvent::NPCMeetEvent(string npc) :
-    npc(npc) {
+	npc(npc) {
 
 }
 
@@ -138,29 +178,42 @@ NPCMeetEvent::~NPCMeetEvent() {
 }
 
 string NPCMeetEvent::GetType() const {
-    return "npc_meet";
+	return "npc_meet";
 }
 
-bool NPCMeetEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool NPCMeetEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<NPCMeetEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<NPCMeetEvent*>(e);
+	if (!other) return false;
 
-    return npc == other->npc;
+	bool result = true;
+	if (npc.size() > 0 && other->npc.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(npc);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto npcValue = get_if<string>(&value)) {
+			result = (result && *npcValue == other->npc);
+		}
+		else {
+			result = (result && npc == other->npc);
+		}
+	}
+	return result;
 }
 
 void NPCMeetEvent::SetNPC(string npc) {
-    this->npc = npc;
+	this->npc = npc;
 }
 
 string NPCMeetEvent::GetNPC() const {
-    return npc;
+	return npc;
 }
 
 CitizenBornEvent::CitizenBornEvent(string name)
-    : name(name) {
+	: name(name) {
 
 }
 
@@ -169,29 +222,42 @@ CitizenBornEvent::~CitizenBornEvent() {
 }
 
 string CitizenBornEvent::GetType() const {
-    return "citizen_born";
+	return "citizen_born";
 }
 
-bool CitizenBornEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool CitizenBornEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<CitizenBornEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<CitizenBornEvent*>(e);
+	if (!other) return false;
 
-    return name == other->name;
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto nameValue = get_if<string>(&value)) {
+			result = (result && *nameValue == other->name);
+		}
+		else {
+			result = (result && name == other->name);
+		}
+	}
+	return result;
 }
 
 void CitizenBornEvent::SetName(string name) {
-    this->name = name;
+	this->name = name;
 }
 
 string CitizenBornEvent::GetName() const {
-    return name;
+	return name;
 }
 
 CitizenDeceaseEvent::CitizenDeceaseEvent(string name, string reason)
-    : name(name), reason(reason) {
+	: name(name), reason(reason) {
 
 }
 
@@ -200,37 +266,61 @@ CitizenDeceaseEvent::~CitizenDeceaseEvent() {
 }
 
 string CitizenDeceaseEvent::GetType() const {
-    return "citizen_decease";
+	return "citizen_decease";
 }
 
-bool CitizenDeceaseEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool CitizenDeceaseEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<CitizenDeceaseEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<CitizenDeceaseEvent*>(e);
+	if (!other) return false;
 
-    return name == other->name && reason == other->reason;
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto nameValue = get_if<string>(&value)) {
+			result = (result && *nameValue == other->name);
+		}
+		else {
+			result = (result && name == other->name);
+		}
+	}
+	if (reason.size() > 0 && other->reason.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(reason);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto reasonValue = get_if<string>(&value)) {
+			result = (result && *reasonValue == other->reason);
+		}
+		else {
+			result = (result && reason == other->reason);
+		}
+	}
+	return result;
 }
 
 void CitizenDeceaseEvent::SetName(string name) {
-    this->name = name;
+	this->name = name;
 }
 
 string CitizenDeceaseEvent::GetName() const {
-    return name;
+	return name;
 }
 
 void CitizenDeceaseEvent::SetReason(string reason) {
-    this->reason = reason;
+	this->reason = reason;
 }
 
 string CitizenDeceaseEvent::GetReason() const {
-    return reason;
+	return reason;
 }
 
 EnterZoneEvent::EnterZoneEvent(string zone) :
-    zone(zone) {
+	zone(zone) {
 
 }
 
@@ -239,33 +329,43 @@ EnterZoneEvent::~EnterZoneEvent() {
 }
 
 string EnterZoneEvent::GetType() const {
-    return "enter_zone";
+	return "enter_zone";
 }
 
-bool EnterZoneEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool EnterZoneEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<EnterZoneEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<EnterZoneEvent*>(e);
+	if (!other) return false;
 
-    bool result = true;
-    if (zone.size() > 0 && other->zone.size() > 0)
-        result = (result && zone == other->zone);
+	bool result = true;
+	if (zone.size() > 0 && other->zone.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(zone);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto zoneValue = get_if<string>(&value)) {
+			result = (result && *zoneValue == other->zone);
+		}
+		else {
+			result = (result && zone == other->zone);
+		}
+	}
 
-    return result;
+	return result;
 }
 
 void EnterZoneEvent::SetZone(string zone) {
-    this->zone = zone;
+	this->zone = zone;
 }
 
 string EnterZoneEvent::GetZone() const {
-    return zone;
+	return zone;
 }
 
 LeaveZoneEvent::LeaveZoneEvent(string zone) :
-    zone(zone) {
+	zone(zone) {
 
 }
 
@@ -274,33 +374,42 @@ LeaveZoneEvent::~LeaveZoneEvent() {
 }
 
 string LeaveZoneEvent::GetType() const {
-    return "leave_zone";
+	return "leave_zone";
 }
 
-bool LeaveZoneEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool LeaveZoneEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<LeaveZoneEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<LeaveZoneEvent*>(e);
+	if (!other) return false;
 
-    bool result = true;
-    if (zone.size() > 0 && other->zone.size() > 0)
-        result = (result && zone == other->zone);
-
-    return result;
+	bool result = true;
+	if (zone.size() > 0 && other->zone.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(zone);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto zoneValue = get_if<string>(&value)) {
+			result = (result && *zoneValue == other->zone);
+		}
+		else {
+			result = (result && zone == other->zone);
+		}
+	}
+	return result;
 }
 
 void LeaveZoneEvent::SetZone(string zone) {
-    this->zone = zone;
+	this->zone = zone;
 }
 
 string LeaveZoneEvent::GetZone() const {
-    return zone;
+	return zone;
 }
 
 EnterBuildingEvent::EnterBuildingEvent(string zone, string building)
-    : zone(zone), building(building) {
+	: zone(zone), building(building) {
 
 }
 
@@ -309,43 +418,61 @@ EnterBuildingEvent::~EnterBuildingEvent() {
 }
 
 string EnterBuildingEvent::GetType() const {
-    return "enter_building";
+	return "enter_building";
 }
 
-bool EnterBuildingEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool EnterBuildingEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<EnterBuildingEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<EnterBuildingEvent*>(e);
+	if (!other) return false;
 
-    bool result = true;
-    if (zone.size() > 0 && other->zone.size() > 0)
-        result = (result && zone == other->zone);
-    if (building.size() > 0 && other->building.size() > 0)
-        result = (result && building == other->building);
-
-    return result;
+	bool result = true;
+	if (zone.size() > 0 && other->zone.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(zone);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto zoneValue = get_if<string>(&value)) {
+			result = (result && *zoneValue == other->zone);
+		}
+		else {
+			result = (result && zone == other->zone);
+		}
+	}
+	if (building.size() > 0 && other->building.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(building);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto buildingValue = get_if<string>(&value)) {
+			result = (result && *buildingValue == other->building);
+		}
+		else {
+			result = (result && building == other->building);
+		}
+	}
+	return result;
 }
 
 void EnterBuildingEvent::SetZone(string zone) {
-    this->zone = zone;
+	this->zone = zone;
 }
 
 string EnterBuildingEvent::GetZone() const {
-    return zone;
+	return zone;
 }
 
 void EnterBuildingEvent::SetBuilding(string building) {
-    this->building = building;
+	this->building = building;
 }
 
 string EnterBuildingEvent::GetBuilding() const {
-    return building;
+	return building;
 }
 
 LeaveBuildingEvent::LeaveBuildingEvent(string zone, string building)
-    : zone(zone), building(building) {
+	: zone(zone), building(building) {
 
 }
 
@@ -354,43 +481,61 @@ LeaveBuildingEvent::~LeaveBuildingEvent() {
 }
 
 string LeaveBuildingEvent::GetType() const {
-    return "leave_building";
+	return "leave_building";
 }
 
-bool LeaveBuildingEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool LeaveBuildingEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<LeaveBuildingEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<LeaveBuildingEvent*>(e);
+	if (!other) return false;
 
-    bool result = true;
-    if (zone.size() > 0 && other->zone.size() > 0)
-        result = (result && zone == other->zone);
-    if (building.size() > 0 && other->building.size() > 0)
-        result = (result && building == other->building);
-
-    return result;
+	bool result = true;
+	if (zone.size() > 0 && other->zone.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(zone);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto zoneValue = get_if<string>(&value)) {
+			result = (result && *zoneValue == other->zone);
+		}
+		else {
+			result = (result && zone == other->zone);
+		}
+	}
+	if (building.size() > 0 && other->building.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(building);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto buildingValue = get_if<string>(&value)) {
+			result = (result && *buildingValue == other->building);
+		}
+		else {
+			result = (result && building == other->building);
+		}
+	}
+	return result;
 }
 
 void LeaveBuildingEvent::SetZone(string zone) {
-    this->zone = zone;
+	this->zone = zone;
 }
 
 string LeaveBuildingEvent::GetZone() const {
-    return zone;
+	return zone;
 }
 
 void LeaveBuildingEvent::SetBuilding(string building) {
-    this->building = building;
+	this->building = building;
 }
 
 string LeaveBuildingEvent::GetBuilding() const {
-    return building;
+	return building;
 }
 
 EnterRoomEvent::EnterRoomEvent(string zone, string building, string room)
-    : zone(zone), building(building), room(room) {
+	: zone(zone), building(building), room(room) {
 
 }
 
@@ -399,53 +544,80 @@ EnterRoomEvent::~EnterRoomEvent() {
 }
 
 string EnterRoomEvent::GetType() const {
-    return "enter_room";
+	return "enter_room";
 }
 
-bool EnterRoomEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool EnterRoomEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<EnterRoomEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<EnterRoomEvent*>(e);
+	if (!other) return false;
 
-    bool result = true;
-    if (zone.size() > 0 && other->zone.size() > 0)
-        result = (result && zone == other->zone);
-    if (building.size() > 0 && other->building.size() > 0)
-        result = (result && building == other->building);
-    if (room.size() > 0 && other->room.size() > 0)
-        result = (result && room == other->room);
-
-    return result;
+	bool result = true;
+	if (zone.size() > 0 && other->zone.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(zone);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto zoneValue = get_if<string>(&value)) {
+			result = (result && *zoneValue == other->zone);
+		}
+		else {
+			result = (result && zone == other->zone);
+		}
+	}
+	if (building.size() > 0 && other->building.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(building);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto buildingValue = get_if<string>(&value)) {
+			result = (result && *buildingValue == other->building);
+		}
+		else {
+			result = (result && building == other->building);
+		}
+	}
+	if (room.size() > 0 && other->room.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(room);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto roomValue = get_if<string>(&value)) {
+			result = (result && *roomValue == other->room);
+		}
+		else {
+			result = (result && room == other->room);
+		}
+	}
+	return result;
 }
 
 void EnterRoomEvent::SetZone(string zone) {
-    this->zone = zone;
+	this->zone = zone;
 }
 
 string EnterRoomEvent::GetZone() const {
-    return zone;
+	return zone;
 }
 
 void EnterRoomEvent::SetBuilding(string building) {
-    this->building = building;
+	this->building = building;
 }
 
 string EnterRoomEvent::GetBuilding() const {
-    return building;
+	return building;
 }
 
 void EnterRoomEvent::SetRoom(string room) {
-    this->room = room;
+	this->room = room;
 }
 
 string EnterRoomEvent::GetRoom() const {
-    return room;
+	return room;
 }
 
 LeaveRoomEvent::LeaveRoomEvent(string zone, string building, string room)
-    : zone(zone), building(building), room(room) {
+	: zone(zone), building(building), room(room) {
 
 }
 
@@ -454,53 +626,80 @@ LeaveRoomEvent::~LeaveRoomEvent() {
 }
 
 string LeaveRoomEvent::GetType() const {
-    return "leave_room";
+	return "leave_room";
 }
 
-bool LeaveRoomEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool LeaveRoomEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<LeaveRoomEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<LeaveRoomEvent*>(e);
+	if (!other) return false;
 
-    bool result = true;
-    if (zone.size() > 0 && other->zone.size() > 0)
-        result = (result && zone == other->zone);
-    if (building.size() > 0 && other->building.size() > 0)
-        result = (result && building == other->building);
-    if (room.size() > 0 && other->room.size() > 0)
-        result = (result && room == other->room);
-
-    return result;
+	bool result = true;
+	if (zone.size() > 0 && other->zone.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(zone);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto zoneValue = get_if<string>(&value)) {
+			result = (result && *zoneValue == other->zone);
+		}
+		else {
+			result = (result && zone == other->zone);
+		}
+	}
+	if (building.size() > 0 && other->building.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(building);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto buildingValue = get_if<string>(&value)) {
+			result = (result && *buildingValue == other->building);
+		}
+		else {
+			result = (result && building == other->building);
+		}
+	}
+	if (room.size() > 0 && other->room.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(room);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto roomValue = get_if<string>(&value)) {
+			result = (result && *roomValue == other->room);
+		}
+		else {
+			result = (result && room == other->room);
+		}
+	}
+	return result;
 }
 
 void LeaveRoomEvent::SetZone(string zone) {
-    this->zone = zone;
+	this->zone = zone;
 }
 
 string LeaveRoomEvent::GetZone() const {
-    return zone;
+	return zone;
 }
 
 void LeaveRoomEvent::SetBuilding(string building) {
-    this->building = building;
+	this->building = building;
 }
 
 string LeaveRoomEvent::GetBuilding() const {
-    return building;
+	return building;
 }
 
 void LeaveRoomEvent::SetRoom(string room) {
-    this->room = room;
+	this->room = room;
 }
 
 string LeaveRoomEvent::GetRoom() const {
-    return room;
+	return room;
 }
 
 DepositChangeEvent::DepositChangeEvent(int result, int delta)
-    : result(result), delta(delta) {
+	: result(result), delta(delta) {
 
 }
 
@@ -509,37 +708,38 @@ DepositChangeEvent::~DepositChangeEvent() {
 }
 
 string DepositChangeEvent::GetType() const {
-    return "deposit_change";
+	return "deposit_change";
 }
 
-bool DepositChangeEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool DepositChangeEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<DepositChangeEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<DepositChangeEvent*>(e);
+	if (!other) return false;
 
-    return result == other->result && delta == other->delta;
+	return result == other->result && delta == other->delta;
 }
 
 void DepositChangeEvent::SetResult(int result) {
-    this->result = result;
+	this->result = result;
 }
 
 int DepositChangeEvent::GetResult() {
-    return result;
+	return result;
 }
 
 void DepositChangeEvent::SetDelta(int delta) {
-    this->delta = delta;
+	this->delta = delta;
 }
 
 int DepositChangeEvent::GetDelta() {
-    return delta;
+	return delta;
 }
 
 CashChangeEvent::CashChangeEvent(int result, int delta)
-    : result(result), delta(delta) {
+	: result(result), delta(delta) {
 
 }
 
@@ -548,37 +748,38 @@ CashChangeEvent::~CashChangeEvent() {
 }
 
 string CashChangeEvent::GetType() const {
-    return "cash_change";
+	return "cash_change";
 }
 
-bool CashChangeEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool CashChangeEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<CashChangeEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<CashChangeEvent*>(e);
+	if (!other) return false;
 
-    return result == other->result && delta == other->delta;
+	return result == other->result && delta == other->delta;
 }
 
 void CashChangeEvent::SetResult(int result) {
-    this->result = result;
+	this->result = result;
 }
 
 int CashChangeEvent::GetResult() {
-    return result;
+	return result;
 }
 
 void CashChangeEvent::SetDelta(int delta) {
-    this->delta = delta;
+	this->delta = delta;
 }
 
 int CashChangeEvent::GetDelta() {
-    return delta;
+	return delta;
 }
 
 GetItemEvent::GetItemEvent(string item, int num)
-    : item(item), num(num) {
+	: item(item), num(num) {
 
 }
 
@@ -587,37 +788,53 @@ GetItemEvent::~GetItemEvent() {
 }
 
 string GetItemEvent::GetType() const {
-    return "get_item";
+	return "get_item";
 }
 
-bool GetItemEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool GetItemEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<GetItemEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<GetItemEvent*>(e);
+	if (!other) return false;
 
-    return item == other->item && num == other->num;
+	bool result = true;
+	if (item.size() > 0 && other->item.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(item);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto itemValue = get_if<string>(&value)) {
+			result = (result && *itemValue == other->item);
+		}
+		else {
+			result = (result && item == other->item);
+		}
+	}
+	if (num != 0) {
+		result = result && (num == other->num);
+	}
+	return result;
 }
 
 void GetItemEvent::SetItem(string item) {
-    this->item = item;
+	this->item = item;
 }
 
 string GetItemEvent::GetItem() const {
-    return item;
+	return item;
 }
 
 void GetItemEvent::SetNum(int num) {
-    this->num = num;
+	this->num = num;
 }
 
 int GetItemEvent::GetNum() {
-    return num;
+	return num;
 }
 
 LoseItemEvent::LoseItemEvent(string item, int num)
-    : item(item), num(num) {
+	: item(item), num(num) {
 
 }
 
@@ -626,37 +843,53 @@ LoseItemEvent::~LoseItemEvent() {
 }
 
 string LoseItemEvent::GetType() const {
-    return "lose_item";
+	return "lose_item";
 }
 
-bool LoseItemEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool LoseItemEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<LoseItemEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<LoseItemEvent*>(e);
+	if (!other) return false;
 
-    return item == other->item && num == other->num;
+	bool result = true;
+	if (item.size() > 0 && other->item.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(item);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto itemValue = get_if<string>(&value)) {
+			result = (result && *itemValue == other->item);
+		}
+		else {
+			result = (result && item == other->item);
+		}
+	}
+	if (num != 0) {
+		result = result && (num == other->num);
+	}
+	return result;
 }
 
 void LoseItemEvent::SetItem(string item) {
-    this->item = item;
+	this->item = item;
 }
 
 string LoseItemEvent::GetItem() const {
-    return item;
+	return item;
 }
 
 void LoseItemEvent::SetNum(int num) {
-    this->num = num;
+	this->num = num;
 }
 
 int LoseItemEvent::GetNum() {
-    return num;
+	return num;
 }
 
 PlayerInjuredEvent::PlayerInjuredEvent(string wound) :
-    wound(wound) {
+	wound(wound) {
 
 }
 
@@ -665,29 +898,42 @@ PlayerInjuredEvent::~PlayerInjuredEvent() {
 }
 
 string PlayerInjuredEvent::GetType() const {
-    return "player_injured";
+	return "player_injured";
 }
 
-bool PlayerInjuredEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PlayerInjuredEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PlayerInjuredEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PlayerInjuredEvent*>(e);
+	if (!other) return false;
 
-    return wound == other->wound;
+	bool result = true;
+	if (wound.size() > 0 && other->wound.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(wound);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto woundValue = get_if<string>(&value)) {
+			result = (result && *woundValue == other->wound);
+		}
+		else {
+			result = (result && wound == other->wound);
+		}
+	}
+	return result;
 }
 
 void PlayerInjuredEvent::SetWound(string wound) {
-    this->wound = wound;
+	this->wound = wound;
 }
 
 string PlayerInjuredEvent::GetWound() const {
-    return wound;
+	return wound;
 }
 
 PlayerCuredEvent::PlayerCuredEvent(string wound) :
-    wound(wound) {
+	wound(wound) {
 
 }
 
@@ -696,29 +942,42 @@ PlayerCuredEvent::~PlayerCuredEvent() {
 }
 
 string PlayerCuredEvent::GetType() const {
-    return "player_cured";
+	return "player_cured";
 }
 
-bool PlayerCuredEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PlayerCuredEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PlayerCuredEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PlayerCuredEvent*>(e);
+	if (!other) return false;
 
-    return wound == other->wound;
+	bool result = true;
+	if (wound.size() > 0 && other->wound.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(wound);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto woundValue = get_if<string>(&value)) {
+			result = (result && *woundValue == other->wound);
+		}
+		else {
+			result = (result && wound == other->wound);
+		}
+	}
+	return result;
 }
 
 void PlayerCuredEvent::SetWound(string wound) {
-    this->wound = wound;
+	this->wound = wound;
 }
 
 string PlayerCuredEvent::GetWound() const {
-    return wound;
+	return wound;
 }
 
 PlayerIllEvent::PlayerIllEvent(string illness) :
-    illness(illness) {
+	illness(illness) {
 
 }
 
@@ -727,29 +986,42 @@ PlayerIllEvent::~PlayerIllEvent() {
 }
 
 string PlayerIllEvent::GetType() const {
-    return "player_ill";
+	return "player_ill";
 }
 
-bool PlayerIllEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PlayerIllEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PlayerIllEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PlayerIllEvent*>(e);
+	if (!other) return false;
 
-    return illness == other->illness;
+	bool result = true;
+	if (illness.size() > 0 && other->illness.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(illness);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto illnessValue = get_if<string>(&value)) {
+			result = (result && *illnessValue == other->illness);
+		}
+		else {
+			result = (result && illness == other->illness);
+		}
+	}
+	return result;
 }
 
 void PlayerIllEvent::SetIllness(string illness) {
-    this->illness = illness;
+	this->illness = illness;
 }
 
 string PlayerIllEvent::GetIllness() const {
-    return illness;
+	return illness;
 }
 
 PlayerRecoverEvent::PlayerRecoverEvent(string illness) :
-    illness(illness) {
+	illness(illness) {
 
 }
 
@@ -758,25 +1030,38 @@ PlayerRecoverEvent::~PlayerRecoverEvent() {
 }
 
 string PlayerRecoverEvent::GetType() const {
-    return "player_recover";
+	return "player_recover";
 }
 
-bool PlayerRecoverEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PlayerRecoverEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PlayerRecoverEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PlayerRecoverEvent*>(e);
+	if (!other) return false;
 
-    return illness == other->illness;
+	bool result = true;
+	if (illness.size() > 0 && other->illness.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(illness);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto illnessValue = get_if<string>(&value)) {
+			result = (result && *illnessValue == other->illness);
+		}
+		else {
+			result = (result && illness == other->illness);
+		}
+	}
+	return result;
 }
 
 void PlayerRecoverEvent::SetIllness(string illness) {
-    this->illness = illness;
+	this->illness = illness;
 }
 
 string PlayerRecoverEvent::GetIllness() const {
-    return illness;
+	return illness;
 }
 
 PlayerRestEvent::PlayerRestEvent(int minute) :
@@ -789,29 +1074,30 @@ PlayerRestEvent::~PlayerRestEvent() {
 }
 
 string PlayerRestEvent::GetType() const {
-    return "player_rest";
+	return "player_rest";
 }
 
-bool PlayerRestEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PlayerRestEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PlayerRestEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PlayerRestEvent*>(e);
+	if (!other) return false;
 
-    return minute == other->minute;
+	return minute == other->minute;
 }
 
 void PlayerRestEvent::SetMinute(int minute) {
-    this->minute = minute;
+	this->minute = minute;
 }
 
 int PlayerRestEvent::GetMinute() {
-    return minute;
+	return minute;
 }
 
 PlayerSleepEvent::PlayerSleepEvent(int hour) :
-    hour(hour) {
+	hour(hour) {
 
 }
 
@@ -820,29 +1106,30 @@ PlayerSleepEvent::~PlayerSleepEvent() {
 }
 
 string PlayerSleepEvent::GetType() const {
-    return "player_sleep";
+	return "player_sleep";
 }
 
-bool PlayerSleepEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PlayerSleepEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PlayerSleepEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PlayerSleepEvent*>(e);
+	if (!other) return false;
 
-    return hour == other->hour;
+	return hour == other->hour;
 }
 
 void PlayerSleepEvent::SetHour(int hour) {
-    this->hour = hour;
+	this->hour = hour;
 }
 
 int PlayerSleepEvent::GetHour() {
-    return hour;
+	return hour;
 }
 
 TimeUpEvent::TimeUpEvent(string timer) :
-    timer(timer) {
+	timer(timer) {
 
 }
 
@@ -851,29 +1138,30 @@ TimeUpEvent::~TimeUpEvent() {
 }
 
 string TimeUpEvent::GetType() const {
-    return "time_up";
+	return "time_up";
 }
 
-bool TimeUpEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool TimeUpEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<TimeUpEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<TimeUpEvent*>(e);
+	if (!other) return false;
 
-    return timer == other->timer;
+	return timer == other->timer;
 }
 
 void TimeUpEvent::SetTimer(string timer) {
-    this->timer = timer;
+	this->timer = timer;
 }
 
 string TimeUpEvent::GetTimer() const {
-    return timer;
+	return timer;
 }
 
 CountUpEvent::CountUpEvent(string counter) :
-    counter(counter) {
+	counter(counter) {
 
 }
 
@@ -882,29 +1170,30 @@ CountUpEvent::~CountUpEvent() {
 }
 
 string CountUpEvent::GetType() const {
-    return "count_up";
+	return "count_up";
 }
 
-bool CountUpEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool CountUpEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<CountUpEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<CountUpEvent*>(e);
+	if (!other) return false;
 
-    return counter == other->counter;
+	return counter == other->counter;
 }
 
 void CountUpEvent::SetCounter(string counter) {
-    this->counter = counter;
+	this->counter = counter;
 }
 
 string CountUpEvent::GetCounter() const {
-    return counter;
+	return counter;
 }
 
 UseSkillEvent::UseSkillEvent(string skill) :
-    skill(skill) {
+	skill(skill) {
 
 }
 
@@ -913,29 +1202,42 @@ UseSkillEvent::~UseSkillEvent() {
 }
 
 string UseSkillEvent::GetType() const {
-    return "use_skill";
+	return "use_skill";
 }
 
-bool UseSkillEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool UseSkillEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<UseSkillEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<UseSkillEvent*>(e);
+	if (!other) return false;
 
-    return skill == other->skill;
+	bool result = true;
+	if (skill.size() > 0 && other->skill.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(skill);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto skillValue = get_if<string>(&value)) {
+			result = (result && *skillValue == other->skill);
+		}
+		else {
+			result = (result && skill == other->skill);
+		}
+	}
+	return result;
 }
 
 void UseSkillEvent::SetSkill(string skill) {
-    this->skill = skill;
+	this->skill = skill;
 }
 
 string UseSkillEvent::GetSkill() const {
-    return skill;
+	return skill;
 }
 
 SkillChangeEvent::SkillChangeEvent(string skill, int level)
-    : skill(skill), level(level) {
+	: skill(skill), level(level) {
 
 }
 
@@ -944,37 +1246,51 @@ SkillChangeEvent::~SkillChangeEvent() {
 }
 
 string SkillChangeEvent::GetType() const {
-    return "skill_change";
+	return "skill_change";
 }
 
-bool SkillChangeEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool SkillChangeEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<SkillChangeEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<SkillChangeEvent*>(e);
+	if (!other) return false;
 
-    return skill == other->skill && level == other->level;
+	bool result = true;
+	if (skill.size() > 0 && other->skill.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(skill);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto skillValue = get_if<string>(&value)) {
+			result = (result && *skillValue == other->skill);
+		}
+		else {
+			result = (result && skill == other->skill);
+		}
+	}
+	result = result && (level == other->level);
+	return result;
 }
 
 void SkillChangeEvent::SetSkill(string skill) {
-    this->skill = skill;
+	this->skill = skill;
 }
 
 string SkillChangeEvent::GetSkill() const {
-    return skill;
+	return skill;
 }
 
 void SkillChangeEvent::SetLevel(int level) {
-    this->level = level;
+	this->level = level;
 }
 
 int SkillChangeEvent::GetLevel() {
-    return level;
+	return level;
 }
 
 BattleWinEvent::BattleWinEvent(string enemy) :
-    enemy(enemy) {
+	enemy(enemy) {
 
 }
 
@@ -983,29 +1299,42 @@ BattleWinEvent::~BattleWinEvent() {
 }
 
 string BattleWinEvent::GetType() const {
-    return "battle_win";
+	return "battle_win";
 }
 
-bool BattleWinEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool BattleWinEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<BattleWinEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<BattleWinEvent*>(e);
+	if (!other) return false;
 
-    return enemy == other->enemy;
+	bool result = true;
+	if (enemy.size() > 0 && other->enemy.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(enemy);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto enemyValue = get_if<string>(&value)) {
+			result = (result && *enemyValue == other->enemy);
+		}
+		else {
+			result = (result && enemy == other->enemy);
+		}
+	}
+	return result;
 }
 
 void BattleWinEvent::SetEnemy(string enemy) {
-    this->enemy = enemy;
+	this->enemy = enemy;
 }
 
 string BattleWinEvent::GetEnemy() const {
-    return enemy;
+	return enemy;
 }
 
 BattleLoseEvent::BattleLoseEvent(string enemy) :
-    enemy(enemy) {
+	enemy(enemy) {
 
 }
 
@@ -1014,31 +1343,42 @@ BattleLoseEvent::~BattleLoseEvent() {
 }
 
 string BattleLoseEvent::GetType() const {
-    return "battle_lose";
+	return "battle_lose";
 }
 
-bool BattleLoseEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool BattleLoseEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<BattleLoseEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<BattleLoseEvent*>(e);
+	if (!other) return false;
 
-    return enemy == other->enemy;
+	bool result = true;
+	if (enemy.size() > 0 && other->enemy.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(enemy);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto enemyValue = get_if<string>(&value)) {
+			result = (result && *enemyValue == other->enemy);
+		}
+		else {
+			result = (result && enemy == other->enemy);
+		}
+	}
+	return result;
 }
 
 void BattleLoseEvent::SetEnemy(string enemy) {
-    this->enemy = enemy;
+	this->enemy = enemy;
 }
 
 string BattleLoseEvent::GetEnemy() const {
-    return enemy;
+	return enemy;
 }
 
-// 逃跑成功
-
 EscapeSuccessEvent::EscapeSuccessEvent(string enemy) :
-    enemy(enemy) {
+	enemy(enemy) {
 
 }
 
@@ -1047,29 +1387,42 @@ EscapeSuccessEvent::~EscapeSuccessEvent() {
 }
 
 string EscapeSuccessEvent::GetType() const {
-    return "escape_success";
+	return "escape_success";
 }
 
-bool EscapeSuccessEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool EscapeSuccessEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<EscapeSuccessEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<EscapeSuccessEvent*>(e);
+	if (!other) return false;
 
-    return enemy == other->enemy;
+	bool result = true;
+	if (enemy.size() > 0 && other->enemy.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(enemy);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto enemyValue = get_if<string>(&value)) {
+			result = (result && *enemyValue == other->enemy);
+		}
+		else {
+			result = (result && enemy == other->enemy);
+		}
+	}
+	return result;
 }
 
 void EscapeSuccessEvent::SetEnemy(string enemy) {
-    this->enemy = enemy;
+	this->enemy = enemy;
 }
 
 string EscapeSuccessEvent::GetEnemy() const {
-    return enemy;
+	return enemy;
 }
 
 EscapeFailEvent::EscapeFailEvent(string enemy) :
-    enemy(enemy) {
+	enemy(enemy) {
 
 }
 
@@ -1078,29 +1431,42 @@ EscapeFailEvent::~EscapeFailEvent() {
 }
 
 string EscapeFailEvent::GetType() const {
-    return "escape_fail";
+	return "escape_fail";
 }
 
-bool EscapeFailEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool EscapeFailEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<EscapeFailEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<EscapeFailEvent*>(e);
+	if (!other) return false;
 
-    return enemy == other->enemy;
+	bool result = true;
+	if (enemy.size() > 0 && other->enemy.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(enemy);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto enemyValue = get_if<string>(&value)) {
+			result = (result && *enemyValue == other->enemy);
+		}
+		else {
+			result = (result && enemy == other->enemy);
+		}
+	}
+	return result;
 }
 
 void EscapeFailEvent::SetEnemy(string enemy) {
-    this->enemy = enemy;
+	this->enemy = enemy;
 }
 
 string EscapeFailEvent::GetEnemy() const {
-    return enemy;
+	return enemy;
 }
 
 CultivationChangeEvent::CultivationChangeEvent(string method, int level)
-    : method(method), level(level) {
+	: method(method), level(level) {
 
 }
 
@@ -1109,37 +1475,51 @@ CultivationChangeEvent::~CultivationChangeEvent() {
 }
 
 string CultivationChangeEvent::GetType() const {
-    return "cultivation_change";
+	return "cultivation_change";
 }
 
-bool CultivationChangeEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool CultivationChangeEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<CultivationChangeEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<CultivationChangeEvent*>(e);
+	if (!other) return false;
 
-    return method == other->method && level == other->level;
+	bool result = true;
+	if (method.size() > 0 && other->method.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(method);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto methodValue = get_if<string>(&value)) {
+			result = (result && *methodValue == other->method);
+		}
+		else {
+			result = (result && method == other->method);
+		}
+	}
+	result = result && (level == other->level);
+	return result;
 }
 
 void CultivationChangeEvent::SetMethod(string method) {
-    this->method = method;
+	this->method = method;
 }
 
 string CultivationChangeEvent::GetMethod() const {
-    return method;
+	return method;
 }
 
 void CultivationChangeEvent::SetLevel(int level) {
-    this->level = level;
+	this->level = level;
 }
 
 int CultivationChangeEvent::GetLevel() {
-    return level;
+	return level;
 }
 
 WantedChangeEvent::WantedChangeEvent(string reason, int level)
-    : reason(reason), level(level) {
+	: reason(reason), level(level) {
 
 }
 
@@ -1148,39 +1528,51 @@ WantedChangeEvent::~WantedChangeEvent() {
 }
 
 string WantedChangeEvent::GetType() const {
-    return "wanted_change";
+	return "wanted_change";
 }
 
-bool WantedChangeEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool WantedChangeEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<WantedChangeEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<WantedChangeEvent*>(e);
+	if (!other) return false;
 
-    return reason == other->reason && level == other->level;
+	bool result = true;
+	if (reason.size() > 0 && other->reason.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(reason);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto reasonValue = get_if<string>(&value)) {
+			result = (result && *reasonValue == other->reason);
+		}
+		else {
+			result = (result && reason == other->reason);
+		}
+	}
+	result = result && (level == other->level);
+	return result;
 }
 
 void WantedChangeEvent::SetReason(string reason) {
-    this->reason = reason;
+	this->reason = reason;
 }
 
 string WantedChangeEvent::GetReason() const {
-    return reason;
+	return reason;
 }
 
 void WantedChangeEvent::SetLevel(int level) {
-    this->level = level;
+	this->level = level;
 }
 
 int WantedChangeEvent::GetLevel() {
-    return level;
+	return level;
 }
 
-// 被捕
-
 PlayerArrestedEvent::PlayerArrestedEvent(string reason) :
-    reason(reason) {
+	reason(reason) {
 
 }
 
@@ -1189,29 +1581,42 @@ PlayerArrestedEvent::~PlayerArrestedEvent() {
 }
 
 string PlayerArrestedEvent::GetType() const {
-    return "player_arrested";
+	return "player_arrested";
 }
 
-bool PlayerArrestedEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PlayerArrestedEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PlayerArrestedEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PlayerArrestedEvent*>(e);
+	if (!other) return false;
 
-    return reason == other->reason;
+	bool result = true;
+	if (reason.size() > 0 && other->reason.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(reason);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto reasonValue = get_if<string>(&value)) {
+			result = (result && *reasonValue == other->reason);
+		}
+		else {
+			result = (result && reason == other->reason);
+		}
+	}
+	return result;
 }
 
 void PlayerArrestedEvent::SetReason(string reason) {
-    this->reason = reason;
+	this->reason = reason;
 }
 
 string PlayerArrestedEvent::GetReason() const {
-    return reason;
+	return reason;
 }
 
 PlayerReleasedEvent::PlayerReleasedEvent(string reason) :
-    reason(reason) {
+	reason(reason) {
 
 }
 
@@ -1220,29 +1625,42 @@ PlayerReleasedEvent::~PlayerReleasedEvent() {
 }
 
 string PlayerReleasedEvent::GetType() const {
-    return "player_released";
+	return "player_released";
 }
 
-bool PlayerReleasedEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PlayerReleasedEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PlayerReleasedEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PlayerReleasedEvent*>(e);
+	if (!other) return false;
 
-    return reason == other->reason;
+	bool result = true;
+	if (reason.size() > 0 && other->reason.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(reason);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto reasonValue = get_if<string>(&value)) {
+			result = (result && *reasonValue == other->reason);
+		}
+		else {
+			result = (result && reason == other->reason);
+		}
+	}
+	return result;
 }
 
 void PlayerReleasedEvent::SetReason(string reason) {
-    this->reason = reason;
+	this->reason = reason;
 }
 
 string PlayerReleasedEvent::GetReason() const {
-    return reason;
+	return reason;
 }
 
 WeatherChangeEvent::WeatherChangeEvent(string weather) :
-    weather(weather) {
+	weather(weather) {
 
 }
 
@@ -1251,29 +1669,42 @@ WeatherChangeEvent::~WeatherChangeEvent() {
 }
 
 string WeatherChangeEvent::GetType() const {
-    return "weather_change";
+	return "weather_change";
 }
 
-bool WeatherChangeEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool WeatherChangeEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<WeatherChangeEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<WeatherChangeEvent*>(e);
+	if (!other) return false;
 
-    return weather == other->weather;
+	bool result = true;
+	if (weather.size() > 0 && other->weather.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(weather);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto weatherValue = get_if<string>(&value)) {
+			result = (result && *weatherValue == other->weather);
+		}
+		else {
+			result = (result && weather == other->weather);
+		}
+	}
+	return result;
 }
 
 void WeatherChangeEvent::SetWeather(string weather) {
-    this->weather = weather;
+	this->weather = weather;
 }
 
 string WeatherChangeEvent::GetWeather() const {
-    return weather;
+	return weather;
 }
 
 PolicyChangeEvent::PolicyChangeEvent(string policy, bool status)
-    : policy(policy), status(status) {
+	: policy(policy), status(status) {
 
 }
 
@@ -1282,32 +1713,46 @@ PolicyChangeEvent::~PolicyChangeEvent() {
 }
 
 string PolicyChangeEvent::GetType() const {
-    return "policy_change";
+	return "policy_change";
 }
 
-bool PolicyChangeEvent::operator==(Event* e) {
-    if (!e) return false;
-    if (GetType() != e->GetType()) return false;
+bool PolicyChangeEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
 
-    auto other = dynamic_cast<PolicyChangeEvent*>(e);
-    if (!other) return false;
+	auto other = dynamic_cast<PolicyChangeEvent*>(e);
+	if (!other) return false;
 
-    return policy == other->policy && status == other->status;
+	bool result = true;
+	if (policy.size() > 0 && other->policy.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(policy);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto policyValue = get_if<string>(&value)) {
+			result = (result && *policyValue == other->policy);
+		}
+		else {
+			result = (result && policy == other->policy);
+		}
+	}
+	result = result && (status == other->status);
+	return result;
 }
 
 void PolicyChangeEvent::SetPolicy(string policy) {
-    this->policy = policy;
+	this->policy = policy;
 }
 
 string PolicyChangeEvent::GetPolicy() const {
-    return policy;
+	return policy;
 }
 
 void PolicyChangeEvent::SetStatus(bool status) {
-    this->status = status;
+	this->status = status;
 }
 
 bool PolicyChangeEvent::GetStatus() {
-    return status;
+	return status;
 }
 

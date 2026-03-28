@@ -106,7 +106,7 @@ void AGlobalBase::BeginPlay() {
 		//populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
 		//map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 		//society->Init(map, populace, player->GetTime());
-		story->Init();
+		story->Init(map);
 		//populace->Schedule();
 		//populace->Workload(story);
 		//populace->Characterize(story);

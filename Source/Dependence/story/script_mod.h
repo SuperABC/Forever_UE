@@ -73,13 +73,13 @@ public:
 	void DestroyScript(ScriptMod* terrain) const;
 
 private:
-    // 注册表
+	// 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<ScriptMod* ()>, std::function<void(ScriptMod*)>>
 	> registries;
-    
-    // 启用配置
+	
+	// 启用配置
 	std::unordered_map<std::string, bool> configs;
 
 	// 主线剧情脚本

@@ -26,13 +26,14 @@ vector<Event*> Milestone::GetTriggers() {
 	return triggers;
 }
 
-bool Milestone::MatchTrigger(Event* e) {
+bool Milestone::MatchTrigger(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 	if (triggers.size() <= 0)return false;
 	if (!e)return false;
 
 	for(auto trigger : triggers) {
 		if (trigger->GetType() != e->GetType())continue;
-		if (trigger->operator==(e)) {
+		if (trigger->Match(e, getValues)) {
 			return true;
 		}
 	}

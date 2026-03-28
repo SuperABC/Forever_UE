@@ -78,15 +78,51 @@ void AZoneBase::SetInstance(FString name, AActor* actor) {
 }
 
 void AZoneBase::EnterZone(FString zone) {
-	auto story = ((AGlobalBase*)global)->GetStoryActor();
-	story->EnterZone(zone);
+	auto storyBase = ((AGlobalBase*)global)->GetStoryActor();
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new EnterZoneEvent(TCHAR_TO_UTF8(*zone));
 
-	((AGlobalBase*)global)->GetStory()->GetScript()->SetValue("player.zone", TCHAR_TO_UTF8(*zone));
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](string name) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(name);
+		}
+	};
+	storyBase->MatchEvent(event, story->GetScript(), getValues);
+
+	auto zones = ((AGlobalBase*)global)->GetMap()->GetZones();
+	for (auto [_, z] : zones) {
+		getValues.push_back(
+			[&](string name) -> pair<bool, ValueType> {
+				return z->GetScript()->GetValue(name);
+			});
+		storyBase->MatchEvent(event, z->GetScript(), getValues);
+		getValues.pop_back();
+	}
+	
+	delete event;
 }
 
 void AZoneBase::LeaveZone(FString zone) {
-	((AGlobalBase*)global)->GetStory()->GetScript()->SetValue("player.zone", "");
+	auto storyBase = ((AGlobalBase*)global)->GetStoryActor();
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new LeaveZoneEvent(TCHAR_TO_UTF8(*zone));
 
-	auto story = ((AGlobalBase*)global)->GetStoryActor();
-	story->LeaveZone(zone);
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](string name) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(name);
+		}
+	};
+	storyBase->MatchEvent(event, story->GetScript(), getValues);
+
+	auto zones = ((AGlobalBase*)global)->GetMap()->GetZones();
+	for (auto [_, z] : zones) {
+		getValues.push_back(
+			[&](string name) -> pair<bool, ValueType> {
+				return z->GetScript()->GetValue(name);
+			});
+		storyBase->MatchEvent(event, z->GetScript(), getValues);
+		getValues.pop_back();
+	}
+
+	delete event;
 }

@@ -11,13 +11,13 @@ typedef void (*RegisterModScriptsFunc)(ScriptFactory* factory);
 // 事件实体
 class Script {
 public:
-    // 禁止默认构造
+	// 禁止默认构造
 	Script() = delete;
 
-    // 通过类型从工厂构造
+	// 通过类型从工厂构造
 	Script(ScriptFactory* factory, const std::string& script);
 
-    // 析构事件
+	// 析构事件
 	~Script();
 
 	// 获取类型
@@ -73,16 +73,16 @@ private:
 	// 读取数组
 	static std::vector<std::string> BuildSubsequences(JsonValue root);
 
-    // 模组对象
+	// 模组对象
 	OBJECT_HOLDER ScriptMod* mod;
 
-    // 工厂
+	// 工厂
 	ScriptFactory* factory;
 
-    // 事件类型
+	// 事件类型
 	std::string type;
 
-    // 事件名称
+	// 事件名称
 	std::string name;
 
 	// 脚本缓存

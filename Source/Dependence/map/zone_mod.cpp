@@ -6,7 +6,7 @@ using namespace std;
 ZoneMod::ZoneMod() :
 	acreage(0.f),
 	buildings(),
-	script("empty") {
+	script({ "empty", "" }) {
 
 }
 

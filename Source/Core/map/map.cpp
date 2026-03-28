@@ -733,7 +733,7 @@ void Map::Destroy() {
 	layout = nullptr;
 }
 
-void Map::ApplyChange(Change* change, Story* story,
+void Map::ApplyChange(Change* change,
 	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
 
 }

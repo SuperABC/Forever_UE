@@ -27,31 +27,31 @@ public:
 	COMSTOM_INIT virtual void DistributeTerrain(int width, int height,
 		std::function<std::string(int, int)> getTerrain, 
 		std::function<bool(int, int, std::string)> setTerrain,
-        std::function<float(int, int)> getHeight, 
+		std::function<float(int, int)> getHeight, 
 		std::function<bool(int, int, float)> setHeight) const = 0;
 
-    // 地形填充，若ovewrite为true，则全图填充，否则只填充平原
-    int FloodTerrain(
-        int x, int y, int num, bool overwrite, int width, int height,
-        std::function<std::string(int, int)> get, std::function<bool(int, int, std::string)> set) const;
-        
-    // 检查地形填充处是否为当前边界
-    bool CheckBoundary(
-        int x, int y, bool overwrite, int width, int height,
-        std::function<std::string(int, int)> get, std::function<bool(int, int, std::string)> set) const;
+	// 地形填充，若ovewrite为true，则全图填充，否则只填充平原
+	int FloodTerrain(
+		int x, int y, int num, bool overwrite, int width, int height,
+		std::function<std::string(int, int)> get, std::function<bool(int, int, std::string)> set) const;
+		
+	// 检查地形填充处是否为当前边界
+	bool CheckBoundary(
+		int x, int y, bool overwrite, int width, int height,
+		std::function<std::string(int, int)> get, std::function<bool(int, int, std::string)> set) const;
 
-    // 更新地形填充边界
-    void UpdateBoundary(
-        int x, int y, std::vector<std::pair<int, int>>& q, bool overwrite, int width, int height,
-        std::function<std::string(int, int)> get, std::function<bool(int, int, std::string)> set) const;
+	// 更新地形填充边界
+	void UpdateBoundary(
+		int x, int y, std::vector<std::pair<int, int>>& q, bool overwrite, int width, int height,
+		std::function<std::string(int, int)> get, std::function<bool(int, int, std::string)> set) const;
 
-    // 地形滤波
-    void ShapeFilter(int x, int y, int width, int height,
-        std::function<std::string(int, int)> get, std::function<bool(int, int, std::string)> set,
-        int side = 1, float threshold = 0.5f) const;
+	// 地形滤波
+	void ShapeFilter(int x, int y, int width, int height,
+		std::function<std::string(int, int)> get, std::function<bool(int, int, std::string)> set,
+		int side = 1, float threshold = 0.5f) const;
 
-    // 常量算子
-    std::vector<int> dx, dy;
+	// 常量算子
+	std::vector<int> dx, dy;
 };
 
 class TerrainFactory {
@@ -79,13 +79,13 @@ public:
 	void DestroyTerrain(TerrainMod* terrain) const;
 
 private:
-    // 注册表
+	// 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<TerrainMod* ()>, std::function<void(TerrainMod*)>>
 	> registries;
-    
-    // 启用配置
+	
+	// 启用配置
 	std::unordered_map<std::string, bool> configs;
 };
 

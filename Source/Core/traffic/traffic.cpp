@@ -31,7 +31,7 @@ void Traffic::LoadConfigs() const {
 	//}
 }
 
-void Traffic::ApplyChange(Change* change, Story* story,
+void Traffic::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 
 }

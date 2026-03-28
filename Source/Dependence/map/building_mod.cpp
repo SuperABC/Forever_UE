@@ -12,7 +12,8 @@ BuildingMod::BuildingMod() :
 	construction(),
 	templates(),
 	singles(),
-	rows() {
+	rows(),
+	script({ "empty", "" }) {
 
 }
 

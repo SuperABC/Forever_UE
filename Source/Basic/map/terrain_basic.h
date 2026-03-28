@@ -18,7 +18,7 @@ public:
 	virtual void DistributeTerrain(int width, int height,
 		std::function<std::string(int, int)> getTerrain, 
 		std::function<bool(int, int, std::string)> setTerrain,
-        std::function<float(int, int)> getHeight, 
+		std::function<float(int, int)> getHeight, 
 		std::function<bool(int, int, float)> setHeight) const override;
 
 private:
@@ -43,7 +43,7 @@ public:
 	virtual void DistributeTerrain(int width, int height,
 		std::function<std::string(int, int)> getTerrain, 
 		std::function<bool(int, int, std::string)> setTerrain,
-        std::function<float(int, int)> getHeight, 
+		std::function<float(int, int)> getHeight, 
 		std::function<bool(int, int, float)> setHeight) const override;
 
 private:

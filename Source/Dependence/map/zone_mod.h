@@ -34,8 +34,8 @@ public:
 	// 内部建筑
 	std::vector<std::pair<std::string, float>> buildings;
 
-	// 关联剧情
-	std::string script;
+	// 关联剧情与脚本
+	std::pair<std::string, std::string> script;
 };
 
 class ZoneFactory {
@@ -66,16 +66,16 @@ public:
 	void DestroyZone(ZoneMod* zone) const;
 
 private:
-    // 注册表
+	// 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<ZoneMod* ()>, std::function<void(ZoneMod*)>>
 	> registries;
-    
-    // 启用配置
+	
+	// 启用配置
 	std::unordered_map<std::string, bool> configs;
 	
-    // 园区生成器
+	// 园区生成器
 	std::unordered_map<std::string, std::function<int(Lot*)>> assigners;
 };
 

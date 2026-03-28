@@ -21,7 +21,7 @@ void Player::LoadConfigs() const {
 	//}
 }
 
-void Player::ApplyChange(Change* change, Story* story,
+void Player::ApplyChange(Change* change,
 	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
 
 }

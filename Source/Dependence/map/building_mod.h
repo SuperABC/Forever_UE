@@ -100,6 +100,9 @@ public:
 	//							component		id		每个floor	每个room			slot	type	面积
 	// 联排模板房间
 	std::unordered_map<std::pair<std::string, int>, std::vector<std::vector<std::tuple<int, std::string, float>>>, PairHash> rows;
+	
+	// 关联剧情与脚本
+	std::pair<std::string, std::string> script;
 };
 
 class BuildingFactory {
@@ -131,19 +134,19 @@ public:
 	void DestroyBuilding(BuildingMod* zone) const;
 
 private:
-    // 注册表
+	// 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<BuildingMod* ()>, std::function<void(BuildingMod*)>>
 	> registries;
-    
-    // 启用配置
+	
+	// 启用配置
 	std::unordered_map<std::string, bool> configs;
-    
-    // 权重
+	
+	// 权重
 	std::unordered_map<std::string, std::vector<float>> powers;
 	
-    // 建筑生成器
+	// 建筑生成器
 	std::unordered_map<std::string, std::function<int(Lot*)>> assigners;
 };
 

@@ -29,7 +29,7 @@ const char* ResidentialZone::GetName() {
 void ResidentialZone::LayoutZone(Lot* lot) {
 	acreage = 10000.f;
 	buildings = { {"residential", 1.f}, {"residential", 1.f} };
-	script = "basic_zone";
+	script = { "empty", "basic_zone" };
 }
 
 function<int(Lot*)> ResidentialZone::ZoneAssigner = [](Lot* lot) {

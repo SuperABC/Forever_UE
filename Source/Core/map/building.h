@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "story/script.h"
+
 #include "building_mod.h"
 
 #include "component.h"
@@ -153,13 +155,13 @@ class Block;
 class Zone;
 class Building : public Quad {
 public:
-    // 禁止默认构造
+	// 禁止默认构造
 	Building() = delete;
 	
-    // 通过类型从工厂构造
+	// 通过类型从工厂构造
 	Building(BuildingFactory* factory, const std::string& building);
 
-    // 析构建筑
+	// 析构建筑
 	~Building();
 
 	// 获取类型
@@ -216,6 +218,15 @@ public:
 	// 获取楼层
 	Floor* GetFloor(int level) const;
 
+	// 获取剧情与脚本
+	std::pair<std::string, std::string> GetScriptSetup();
+
+	// 获取剧情
+	Script* GetScript();
+
+	// 设置剧情
+	void SetScript(Script* script);
+
 	// 采样面积
 	float RandomAcreage();
 
@@ -258,34 +269,34 @@ private:
 	// 根据转向修改朝向参数
 	static int InverseDirection(int direction, int face);
 
-    // 模组对象
+	// 模组对象
 	OBJECT_HOLDER BuildingMod* mod;
 
-    // 工厂
+	// 工厂
 	BuildingFactory* factory;
 
-    // 建筑类型
+	// 建筑类型
 	std::string type;
 
-    // 建筑名称
+	// 建筑名称
 	std::string name;
 
-    // 所在园区
+	// 所在园区
 	Zone* parentZone;
 
-    // 所在街区
+	// 所在街区
 	Block* parentBlock;
 
-    // 地面层数
+	// 地面层数
 	int layers;
 
-    // 地下层数
+	// 地下层数
 	int basements;
 
-    // 层高
+	// 层高
 	float height;
 
-    // 建筑楼体范围
+	// 建筑楼体范围
 	Quad construction;
 	
 	// 完整地址
@@ -299,6 +310,9 @@ private:
 	
 	// 房间
 	OBJECT_HOLDER std::vector<Room*> rooms;
+	
+	// 关联剧情
+	OBJECT_HOLDER Script* script;
 };
 
 // 空建筑

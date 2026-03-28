@@ -14,7 +14,8 @@ Zone::Zone(ZoneFactory* factory, const string& zone) :
 	name(mod->GetName()),
 	parentBlock(nullptr),
 	address(""),
-	buildings() {
+	buildings(),
+	script(nullptr) {
 
 }
 
@@ -24,6 +25,8 @@ Zone::~Zone() {
 	for (auto [_, building] : buildings) {
 		delete building;
 	}
+
+	if(script)delete script;
 }
 
 string Zone::GetType() const {
@@ -64,8 +67,16 @@ string Zone::GetAddress() {
 	return address.data();
 }
 
+std::pair<std::string, std::string> Zone::GetScriptSetup() {
+	return mod->script;
+}
+
 Script* Zone::GetScript() {
 	return script;
+}
+
+void Zone::SetScript(Script* script) {
+	this->script = script;
 }
 
 void Zone::GetPosition(float& x, float& y) const {
@@ -115,8 +126,6 @@ void Zone::LayoutZone(Lot* block, BuildingFactory* factory) {
 		}
 		buildings[building->GetName()] = building;
 	}
-
-	ReadScript();
 }
 
 void Zone::ArrangeBuildings() {
@@ -321,10 +330,6 @@ void Zone::ClearZero() {
 			++it;
 		}
 	}
-}
-
-void Zone::ReadScript() {
-	script->ReadMilestones(Config::GetScript(mod->script));
 }
 
 int EmptyZone::count = 0;

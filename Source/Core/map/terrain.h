@@ -9,13 +9,13 @@ typedef void (*RegisterModTerrainsFunc)(TerrainFactory* factory);
 // 地形实体
 class Terrain {
 public:
-    // 禁止默认构造
+	// 禁止默认构造
 	Terrain() = delete;
 
-    // 通过类型从工厂构造
+	// 通过类型从工厂构造
 	Terrain(TerrainFactory* factory, const std::string& terrain);
 
-    // 析构地形
+	// 析构地形
 	~Terrain();
 
 	// 获取类型
@@ -31,20 +31,20 @@ public:
 	void DistributeTerrain(int width, int height,
 		std::function<std::string(int, int)> getTerrain, 
 		std::function<bool(int, int, std::string)> setTerrain,
-        std::function<float(int, int)> getHeight, 
+		std::function<float(int, int)> getHeight, 
 		std::function<bool(int, int, float)> setHeight) const;
 
 private:
-    // 模组对象
+	// 模组对象
 	OBJECT_HOLDER TerrainMod* mod;
 
-    // 工厂
+	// 工厂
 	TerrainFactory* factory;
 
-    // 地形类型
+	// 地形类型
 	std::string type;
 
-    // 地形名称
+	// 地形名称
 	std::string name;
 };
 
@@ -63,7 +63,7 @@ public:
 	virtual void DistributeTerrain(int width, int height,
 		std::function<std::string(int, int)> getTerrain, 
 		std::function<bool(int, int, std::string)> setTerrain,
-        std::function<float(int, int)> getHeight, 
+		std::function<float(int, int)> getHeight, 
 		std::function<bool(int, int, float)> setHeight) const override;
 
 private:

@@ -83,6 +83,8 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(i, 0, "residential", 200.f, component, 0);
 		ArrangeRow(i, 1, "residential", 200.f, component, 0);
 	}
+	
+	script = { "empty", "basic_building" };
 }
 
 void ResidentialBuilding::PlaceConstruction() {

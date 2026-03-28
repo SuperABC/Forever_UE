@@ -326,13 +326,13 @@ bool PrintDialog(Dialog* dialog, vector<function<pair<bool, ValueType>(const str
 			}
 			for (auto change : selected.GetChanges()) {
 				if (!change->GetCondition().EvaluateBool(getValues))continue;
-				::map->ApplyChange(change, story, getValues);
-				populace->ApplyChange(change, story, getValues);
-				society->ApplyChange(change, story, getValues);
-				story->ApplyChange(change, story, getValues);
-				industry->ApplyChange(change, story, getValues);
-				traffic->ApplyChange(change, story, getValues);
-				player->ApplyChange(change, story, getValues);
+				::map->ApplyChange(change, getValues);
+				populace->ApplyChange(change, getValues);
+				society->ApplyChange(change, getValues);
+				story->ApplyChange(change, getValues);
+				industry->ApplyChange(change, getValues);
+				traffic->ApplyChange(change, getValues);
+				player->ApplyChange(change, getValues);
 			}
 		}
 		else { // 如果当前段是对话
@@ -429,7 +429,7 @@ int main() {
 				//populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
 				//::map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 				//society->Init(::map, populace, player->GetTime());
-				story->Init();
+				story->Init(::map);
 				//populace->Schedule();
 				//populace->Workload(story);
 				//populace->Characterize(story);
@@ -480,13 +480,13 @@ int main() {
 						else if constexpr (std::is_same_v<decltype(ptr), Change*>) {
 							auto* change = dynamic_cast<Change*>(ptr);
 							if (change->GetCondition().EvaluateBool(getValues)) {
-								::map->ApplyChange(change, story, getValues);
-								populace->ApplyChange(change, story, getValues);
-								society->ApplyChange(change, story, getValues);
-								story->ApplyChange(change, story, getValues);
-								industry->ApplyChange(change, story, getValues);
-								traffic->ApplyChange(change, story, getValues);
-								player->ApplyChange(change, story, getValues);
+								::map->ApplyChange(change, getValues);
+								populace->ApplyChange(change, getValues);
+								society->ApplyChange(change, getValues);
+								story->ApplyChange(change, getValues);
+								industry->ApplyChange(change, getValues);
+								traffic->ApplyChange(change, getValues);
+								player->ApplyChange(change, getValues);
 							}
 						}
 					}, action);

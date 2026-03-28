@@ -32,7 +32,7 @@ void Society::LoadConfigs() const {
 	//}
 }
 
-void Society::ApplyChange(Change* change, Story* story,
+void Society::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 
 }

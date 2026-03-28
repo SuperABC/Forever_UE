@@ -33,7 +33,7 @@ void Populace::LoadConfigs() const {
 	//}
 }
 
-void Populace::ApplyChange(Change* change, Story* story,
+void Populace::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 
 }

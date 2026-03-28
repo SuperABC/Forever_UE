@@ -30,7 +30,7 @@ void Industry::LoadConfigs() const {
 	//}
 }
 
-void Industry::ApplyChange(Change* change, Story* story,
+void Industry::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 
 }

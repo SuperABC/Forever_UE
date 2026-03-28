@@ -6,7 +6,7 @@
 	"triggers": [{"type": "enter_zone", "zone": "$$self.name"}],
 	"dialogs": [],
 	"changes": [
-		{"type": "set_value", "variable": "player.zone", "value": "$$self.name"},
+		{"type": "set_value", "variable": "player.zone", "value": "$$self.name"}
 	],
 	"subsequences": []
 },
@@ -17,7 +17,7 @@
 	"triggers": [{"type": "leave_zone", "zone": "$$self.name"}],
 	"dialogs": [],
 	"changes": [
-		{"type": "set_value", "variable": "player.zone", "value": ""},
+		{"type": "set_value", "variable": "player.zone", "value": ""}
 	],
 	"subsequences": []
 }

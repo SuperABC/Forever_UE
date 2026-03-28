@@ -138,7 +138,7 @@ public:
 	void Destroy();
 
 	// 应用剧情变化
-	void ApplyChange(Change* change, Story* story,
+	void ApplyChange(Change* change,
 		std::vector < std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
 	// 获取地图尺寸

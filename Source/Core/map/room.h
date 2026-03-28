@@ -15,19 +15,19 @@ class Building;
 class Component;
 class Room : public Quad {
 public:
-    // 门窗类
+	// 门窗类
 	using WallHole = std::unordered_map<
 		FACE_DIRECTION,
 		std::vector<std::pair<std::vector<float>, Quad>>
 	>;
 
-    // 禁止默认构造
+	// 禁止默认构造
 	Room() = delete;
 
-    // 通过类型从工厂构造
+	// 通过类型从工厂构造
 	Room(RoomFactory* factory, const std::string& component);
 
-    // 析构房间
+	// 析构房间
 	~Room();
 
 	// 获取类型
@@ -103,34 +103,34 @@ public:
 	std::vector<std::string> ManufactureTypes() const;
 
 private:
-    // 模组对象
+	// 模组对象
 	RoomMod* mod;
 
-    // 工厂
+	// 工厂
 	RoomFactory* factory;
 
-    // 房间类型
+	// 房间类型
 	std::string type;
 
-    // 房间名称
+	// 房间名称
 	std::string name;
 
-    // 所在建筑
+	// 所在建筑
 	Building* parentBuilding;
 
-    // 所在组合
+	// 所在组合
 	Component* parentComponent;
 
-    // 所在楼层
+	// 所在楼层
 	int layer;
 
-    // 门
+	// 门
 	WallHole doors;
 
-    // 窗
+	// 窗
 	WallHole windows;
 
-    // 门牌号
+	// 门牌号
 	std::string number;
 };
 

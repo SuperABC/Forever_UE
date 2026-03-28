@@ -11,13 +11,13 @@ typedef void (*RegisterModRoadnetsFunc)(RoadnetFactory* factory);
 // 路网实体
 class Roadnet {
 public:
-    // 禁止默认构造
+	// 禁止默认构造
 	Roadnet() = delete;
 
-    // 通过类型从工厂构造
+	// 通过类型从工厂构造
 	Roadnet(RoadnetFactory* factory, const std::string& roadnet);
 	
-    // 析构地形
+	// 析构地形
 	~Roadnet();
 
 	// 获取类型
@@ -46,16 +46,16 @@ public:
 	Block* LocateBlock(const std::string& road, int id) const;
 
 private:
-    // 模组对象
+	// 模组对象
 	OBJECT_HOLDER RoadnetMod* mod;
 
-    // 工厂
+	// 工厂
 	RoadnetFactory* factory;
 
-    // 路网类型
+	// 路网类型
 	std::string type;
 
-    // 路网名称
+	// 路网名称
 	std::string name;
 
 	OBJECT_HOLDER std::vector<Node*> nodes;

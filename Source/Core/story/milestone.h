@@ -14,50 +14,51 @@ class Change;
 
 class Milestone {
 public:
-    Milestone(std::string name, std::vector<Event*> triggers, bool visible, Condition keep, std::string description,
-        std::string goal, std::vector<Dialog*> dialogs, std::vector<Change*> changes, std::vector<std::string> subsequences);
-    ~Milestone();
+	Milestone(std::string name, std::vector<Event*> triggers, bool visible, Condition keep, std::string description,
+		std::string goal, std::vector<Dialog*> dialogs, std::vector<Change*> changes, std::vector<std::string> subsequences);
+	~Milestone();
 
-    // 复合对象类型
-    std::vector<Event*> GetTriggers();
-    std::vector<Dialog*> GetDialogs();
-    std::vector<Change*> GetChanges();
+	// 复合对象类型
+	std::vector<Event*> GetTriggers();
+	std::vector<Dialog*> GetDialogs();
+	std::vector<Change*> GetChanges();
 
-    // 匹配事件
-    bool MatchTrigger(Event* e);
+	// 匹配事件
+	bool MatchTrigger(Event* e,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
-    // 获取参数
-    std::string GetName();
-    bool IsVisible();
+	// 获取参数
+	std::string GetName();
+	bool IsVisible();
 	Condition DropCondition();
-    bool DropSelf(std::vector < std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
-    std::string GetDescription();
-    std::string GetGoal();
+	bool DropSelf(std::vector < std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
+	std::string GetDescription();
+	std::string GetGoal();
 	std::vector<std::string> GetSubsequences();
 
 private:
-    std::string name;
-    std::vector<Event*> triggers;
-    bool visible;
-    Condition drop;
-    std::string description;
-    std::string goal;
-    std::vector<Dialog*> dialogs;
-    std::vector<Change*> changes;
+	std::string name;
+	std::vector<Event*> triggers;
+	bool visible;
+	Condition drop;
+	std::string description;
+	std::string goal;
+	std::vector<Dialog*> dialogs;
+	std::vector<Change*> changes;
 	std::vector<std::string> subsequences;
 };
 
 class MilestoneNode {
 public:
-    MilestoneNode();
+	MilestoneNode();
 	MilestoneNode(Milestone* milestone);
 
 	Milestone* content;
 
-    // 前置数量
+	// 前置数量
 	int premise = 0;
 
-    // 后置里程碑
+	// 后置里程碑
 	std::vector<MilestoneNode *> subsequents;
 };
 
