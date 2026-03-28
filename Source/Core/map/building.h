@@ -157,7 +157,7 @@ public:
 	Building() = delete;
 	
     // 通过类型从工厂构造
-	Building(BuildingFactory* factory, std::string building);
+	Building(BuildingFactory* factory, const std::string& building);
 
     // 析构建筑
 	~Building();
@@ -232,28 +232,28 @@ public:
 	void LayoutBuilding(Layout* layout, ComponentFactory* componentFactory, RoomFactory* roomFactory);
 
 	// 读取所有布局模板
-	static Layout* ReadTemplates(std::vector<std::string> paths);
+	static Layout* ReadTemplates(const std::vector<std::string>& paths);
 
 private:
 	// 根据模板生成一层楼层
-	void ReadFloor(int level, int face, std::string name, Layout* layout);
+	void ReadFloor(int level, int face, const std::string& name, Layout* layout);
 
 	// 按照单一模板生成所有楼层
-	void ReadFloors(int face, std::string name, Layout* layout);
+	void ReadFloors(int face, const std::string& name, Layout* layout);
 
 	// 按照层数个模板生成所有楼层
-	void ReadFloors(int face, std::vector<std::string> names, Layout* layout);
+	void ReadFloors(int face, const std::vector<std::string>& names, Layout* layout);
 
 	// 为模板中第slot个独立房间生成房间
-	void AssignRoom(int level, int slot, std::string name,
+	void AssignRoom(int level, int slot, const std::string& name,
 		Component* component, RoomFactory* factory);
 
 	// 为模板中第slot个联排房间生成房间
-	void ArrangeRow(int level, int slot, std::string name, float acreage,
+	void ArrangeRow(int level, int slot, const std::string& name, float acreage,
 		Component* component, RoomFactory* factory);
 
 	// 根据转向修改矩形参数
-	static std::vector<float> InverseParams(std::vector<float>& params, int face);
+	static std::vector<float> InverseParams(const std::vector<float>& params, int face);
 
 	// 根据转向修改朝向参数
 	static int InverseDirection(int direction, int face);

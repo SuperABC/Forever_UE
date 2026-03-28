@@ -1,12 +1,19 @@
 ﻿#include "story.h"
 #include "utility.h"
 #include "error.h"
+#include "config.h"
 
 
 using namespace std;
 
-Story::Story() {
+ScriptFactory* Story::scriptFactory = nullptr;
 
+Story::Story() :
+	script(nullptr),
+	objectScripts() {
+	if (!scriptFactory) {
+		scriptFactory = new ScriptFactory();
+	}
 }
 
 Story::~Story() {
@@ -14,15 +21,110 @@ Story::~Story() {
 }
 
 void Story::LoadConfigs() const {
-	//eventFactory->RemoveAll();
-	//changeFactory->RemoveAll();
+	scriptFactory->RemoveAll();
 
-	//auto events = Config::GetEnables("event");
-	//for (auto event : events) {
-	//	eventFactory->SetConfig(event, true);
-	//}
-	//auto changes = Config::GetEnables("change");
-	//for (auto change : changes) {
-	//	changeFactory->SetConfig(change, true);
-	//}
+	auto scripts = Config::GetEnables("script");
+	for (auto script : scripts) {
+		scriptFactory->SetConfig(script, true);
+	}
+}
+
+void Story::InitScripts(unordered_map<string, HMODULE>& modHandles,
+	const vector<string>& dlls) {
+	scriptFactory->RegisterScript(EmptyScript::GetId(), EmptyScript::MainStory(),
+		[]() { return new EmptyScript(); },
+		[](ScriptMod* script) { delete script; }
+	);
+
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
+		}
+		else {
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
+		}
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc = (RegisterModScriptsFunc)GetProcAddress(modHandle, "RegisterModScripts");
+			if (registerFunc) {
+				registerFunc(scriptFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
+	}
+
+#ifdef MOD_TEST
+	auto scriptList = { "mod" };
+	for (const auto& scriptId : scriptList) {
+		if (scriptFactory->CheckRegistered(scriptId)) {
+			auto script = scriptFactory->CreateScript(scriptId);
+			debugf("Log: Created test script %s.\n", scriptId);
+			scriptFactory->DestroyScript(script);
+		}
+		else {
+			debugf("Warning: Script %s not registered.\n", scriptId);
+		}
+	}
+#endif
+}
+
+void Story::Init() {
+	Destroy();
+
+	script = new Script(scriptFactory, scriptFactory->GetMain());
+	script->ReadMilestones(Config::GetScript());
+}
+
+void Story::Destroy() {
+	if(script)delete script;
+	script = nullptr;
+}
+
+void Story::ApplyChange(Change* change, Story* story,
+	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
+
+	if (change == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
+	}
+
+	auto type = change->GetType();
+
+	if (type == "set_value") {
+		auto obj = dynamic_cast<SetValueChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to SetValueChange.\n");
+		}
+		if (obj->GetVariable().substr(0, 7) == "system.") {
+			return;
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetValue());
+		script->variables[obj->GetVariable()] = condition.EvaluateValue(getValues);
+	}
+	else if (type == "remove_value") {
+		auto obj = dynamic_cast<RemoveValueChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to RemoveValueChange.\n");
+		}
+		if (obj->GetVariable().substr(0, 7) == "system.") {
+			return;
+		}
+		script->variables.erase(obj->GetVariable());
+	}
+	else if (type == "deactivate_milestone") {
+		auto obj = dynamic_cast<DeactivateMilestoneChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to DeactivateMilestoneChange.\n");
+		}
+		script->DeactivateMilestone(obj->GetMilestone());
+	}
+}
+
+Script* Story::GetScript() const {
+	return script;
 }

@@ -149,6 +149,8 @@
     <ClCompile Include="society\job_mod.cpp" />
     <ClCompile Include="society\organization_mod.cpp" />
     <ClCompile Include="story\change.cpp" />
+    <ClCompile Include="story\condition.cpp" />
+    <ClCompile Include="story\dialog.cpp" />
     <ClCompile Include="story\event.cpp" />
     <ClCompile Include="story\script_mod.cpp" />
     <ClCompile Include="traffic\route_mod.cpp" />
@@ -177,6 +179,8 @@
     <ClInclude Include="society\job_mod.h" />
     <ClInclude Include="society\organization_mod.h" />
     <ClInclude Include="story\change.h" />
+    <ClInclude Include="story\condition.h" />
+    <ClInclude Include="story\dialog.h" />
     <ClInclude Include="story\event.h" />
     <ClInclude Include="story\script_mod.h" />
     <ClInclude Include="traffic\route_mod.h" />

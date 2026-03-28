@@ -97,13 +97,9 @@ void Config::ReadConfig(const string& path) {
 		for (auto organizationMod : root["organization_mods"]) {
 			CheckMod("organization", organizationMod.AsString(), true);
 		}
-		CheckMod("event", "empty", false);
-		for (auto eventMod : root["event_mods"]) {
-			CheckMod("event", eventMod.AsString(), true);
-		}
-		CheckMod("change", "empty", false);
-		for (auto changeMod : root["change_mods"]) {
-			CheckMod("change", changeMod.AsString(), true);
+		CheckMod("script", "empty", false);
+		for (auto scriptMod : root["script_mods"]) {
+			CheckMod("script", scriptMod.AsString(), true);
 		}
 		CheckMod("product", "empty", false);
 		for (auto productMod : root["product_mods"]) {
@@ -272,23 +268,14 @@ void Config::WriteConfig(const string& path) {
 	}
 	root["organization_mods"] = organizations;
 
-	JsonValue events = JsonValue(DATA_ARRAY);
-	for (auto modEnable : modEnables["event"]) {
+	JsonValue scripts = JsonValue(DATA_ARRAY);
+	for (auto modEnable : modEnables["scripts"]) {
 		if (modEnable.second) {
-			JsonValue event = JsonValue(modEnable.first);
-			events.append(event);
+			JsonValue script = JsonValue(modEnable.first);
+			scripts.append(script);
 		}
 	}
-	root["event_mods"] = events;
-
-	JsonValue changes = JsonValue(DATA_ARRAY);
-	for (auto modEnable : modEnables["change"]) {
-		if (modEnable.second) {
-			JsonValue change = JsonValue(modEnable.first);
-			changes.append(change);
-		}
-	}
-	root["change_mods"] = changes;
+	root["script_mods"] = scripts;
 
 	JsonValue products = JsonValue(DATA_ARRAY);
 	for (auto modEnable : modEnables["product"]) {

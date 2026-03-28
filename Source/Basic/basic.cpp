@@ -100,3 +100,15 @@ extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
 		[](RoomMod* zone) { delete zone; }
 	);
 }
+
+extern "C" __declspec(dllexport) void* GetModScripts() {
+	static vector<string> mods = { "npc" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModScripts(ScriptFactory* factory) {
+	factory->RegisterScript(NPCScript::GetId(), NPCScript::MainStory(),
+		[]() { return new NPCScript(); },
+		[](ScriptMod* script) { delete script; }
+	);
+}

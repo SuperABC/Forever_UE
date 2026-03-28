@@ -105,6 +105,12 @@
     <ClCompile Include="map\geometry.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="story\dialog.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\condition.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_mod.h">
@@ -184,6 +190,12 @@
     </ClInclude>
     <ClInclude Include="map\geometry.h">
       <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="story\dialog.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\condition.h">
+      <Filter>story</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

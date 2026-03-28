@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Terrain::Terrain(TerrainFactory* factory, string terrain) :
+Terrain::Terrain(TerrainFactory* factory, const string& terrain) :
 	mod(factory->CreateTerrain(terrain)),
 	factory(factory),
 	type(mod->GetType()),

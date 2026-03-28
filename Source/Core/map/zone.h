@@ -18,7 +18,7 @@ public:
 	Zone() = delete;
 
     // 通过类型从工厂构造
-	Zone(ZoneFactory* factory, std::string zone);
+	Zone(ZoneFactory* factory, const std::string& zone);
 	
     // 析构园区
 	~Zone();
@@ -39,7 +39,7 @@ public:
 	std::string GetAddress();
 
 	// 获取一栋建筑
-	Building* GetBuilding(std::string name);
+	Building* GetBuilding(const std::string& name);
 
 	// 获取园区内所有建筑
 	const std::unordered_map<std::string, Building*>& GetBuildings();

@@ -64,305 +64,293 @@ string Utf8ToAnsi(const string& utf8Str) {
 }
 
 // 解析命令行输入事件
-//Event* ParseEvent(Parser& parser) {
-//	string type = parser.GetOption("--type");
-//	int id = -1;
-//	string target = "";
-//	string npc = "";
-//	string option = "";
-//	int num = 0;
-//	int level = 0;
-//	bool status = false;
-//
-//	if (type == "game_start") {
-//		return new GameStartEvent();
-//	}
-//	else if (type == "game_success") {
-//		string result = "";
-//		if (parser.HasOption("--result")) result = parser.GetOption("--result");
-//		return new GameSuccessEvent(result);
-//	}
-//	else if (type == "game_fail") {
-//		string result = "";
-//		if (parser.HasOption("--result")) result = parser.GetOption("--result");
-//		return new GameFailEvent(result);
-//	}
-//	else if (type == "option_dialog") {
-//		if (parser.HasOption("--id")) id = stoi(parser.GetOption("--id"));
-//		if (parser.HasOption("--target")) target = parser.GetOption("--target");
-//		if (parser.HasOption("--option")) option = parser.GetOption("--option");
-//		if (target.size() == 0)
-//			return new OptionDialogEvent(id, option);
-//		else {
-//			return new OptionDialogEvent(target, option);
-//		}
-//	}
-//	else if (type == "npc_meet") {
-//		if (parser.HasOption("--npc")) npc = parser.GetOption("--npc");
-//		return new NPCMeetEvent(npc);
-//	}
-//	else if (type == "citizen_born") {
-//		string name = "";
-//		GENDER_TYPE gender = GENDER_MALE;
-//		if (parser.HasOption("--name")) name = parser.GetOption("--name");
-//		if (parser.HasOption("--gender")) {
-//			string gender_str = parser.GetOption("--gender");
-//			if (gender_str == "male") gender = GENDER_MALE;
-//			else if (gender_str == "female") gender = GENDER_FEMALE;
-//		}
-//		return new CitizenBornEvent(name, gender);
-//	}
-//	else if (type == "citizen_decease") {
-//		string name = "";
-//		string reason = "";
-//		if (parser.HasOption("--name")) name = parser.GetOption("--name");
-//		if (parser.HasOption("--reason")) reason = parser.GetOption("--reason");
-//		return new CitizenDeceaseEvent(name, reason);
-//	}
-//	else if (type == "enter_zone") {
-//		string zone = "";
-//		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
-//		return new EnterZoneEvent(zone);
-//	}
-//	else if (type == "leave_zone") {
-//		string zone = "";
-//		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
-//		return new LeaveZoneEvent(zone);
-//	}
-//	else if (type == "enter_building") {
-//		string zone = "";
-//		string building = "";
-//		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
-//		if (parser.HasOption("--building")) building = parser.GetOption("--building");
-//		return new EnterBuildingEvent(zone, building);
-//	}
-//	else if (type == "leave_building") {
-//		string zone = "";
-//		string building = "";
-//		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
-//		if (parser.HasOption("--building")) building = parser.GetOption("--building");
-//		return new LeaveBuildingEvent(zone, building);
-//	}
-//	else if (type == "enter_room") {
-//		string zone = "";
-//		string building = "";
-//		string room = "";
-//		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
-//		if (parser.HasOption("--building")) building = parser.GetOption("--building");
-//		if (parser.HasOption("--room")) room = parser.GetOption("--room");
-//		return new EnterRoomEvent(zone, building, room);
-//	}
-//	else if (type == "leave_room") {
-//		string zone = "";
-//		string building = "";
-//		string room = "";
-//		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
-//		if (parser.HasOption("--building")) building = parser.GetOption("--building");
-//		if (parser.HasOption("--room")) room = parser.GetOption("--room");
-//		return new LeaveRoomEvent(zone, building, room);
-//	}
-//	else if (type == "deposit_change") {
-//		int result = 0;
-//		int delta = 0;
-//		if (parser.HasOption("--result")) result = stoi(parser.GetOption("--result"));
-//		if (parser.HasOption("--delta")) delta = stoi(parser.GetOption("--delta"));
-//		return new DepositChangeEvent(result, delta);
-//	}
-//	else if (type == "cash_change") {
-//		int result = 0;
-//		int delta = 0;
-//		if (parser.HasOption("--result")) result = stoi(parser.GetOption("--result"));
-//		if (parser.HasOption("--delta")) delta = stoi(parser.GetOption("--delta"));
-//		return new CashChangeEvent(result, delta);
-//	}
-//	else if (type == "get_item") {
-//		string item = "";
-//		int num = 0;
-//		if (parser.HasOption("--item")) item = parser.GetOption("--item");
-//		if (parser.HasOption("--num")) num = stoi(parser.GetOption("--num"));
-//		return new GetItemEvent(item, num);
-//	}
-//	else if (type == "lose_item") {
-//		string item = "";
-//		int num = 0;
-//		if (parser.HasOption("--item")) item = parser.GetOption("--item");
-//		if (parser.HasOption("--num")) num = stoi(parser.GetOption("--num"));
-//		return new LoseItemEvent(item, num);
-//	}
-//	else if (type == "player_injured") {
-//		string wound = "";
-//		if (parser.HasOption("--wound")) wound = parser.GetOption("--wound");
-//		return new PlayerInjuredEvent(wound);
-//	}
-//	else if (type == "player_cured") {
-//		string wound = "";
-//		if (parser.HasOption("--wound")) wound = parser.GetOption("--wound");
-//		return new PlayerCuredEvent(wound);
-//	}
-//	else if (type == "player_ill") {
-//		string illness = "";
-//		if (parser.HasOption("--illness")) illness = parser.GetOption("--illness");
-//		return new PlayerIllEvent(illness);
-//	}
-//	else if (type == "player_recover") {
-//		string illness = "";
-//		if (parser.HasOption("--illness")) illness = parser.GetOption("--illness");
-//		return new PlayerRecoverEvent(illness);
-//	}
-//	else if (type == "player_rest") {
-//		int minute = 0;
-//		if (parser.HasOption("--minute")) minute = stoi(parser.GetOption("--minute"));
-//		return new PlayerRestEvent(minute);
-//	}
-//	else if (type == "player_sleep") {
-//		int hour = 0;
-//		if (parser.HasOption("--hour")) hour = stoi(parser.GetOption("--hour"));
-//		return new PlayerSleepEvent(hour);
-//	}
-//	else if (type == "time_up") {
-//		string timer = "";
-//		if (parser.HasOption("--timer")) timer = parser.GetOption("--timer");
-//		return new TimeUpEvent(timer);
-//	}
-//	else if (type == "count_up") {
-//		string counter = "";
-//		if (parser.HasOption("--counter")) counter = parser.GetOption("--counter");
-//		return new CountUpEvent(counter);
-//	}
-//	else if (type == "use_skill") {
-//		string skill = "";
-//		if (parser.HasOption("--skill")) skill = parser.GetOption("--skill");
-//		return new UseSkillEvent(skill);
-//	}
-//	else if (type == "skill_change") {
-//		string skill = "";
-//		int level = 0;
-//		if (parser.HasOption("--skill")) skill = parser.GetOption("--skill");
-//		if (parser.HasOption("--level")) level = stoi(parser.GetOption("--level"));
-//		return new SkillChangeEvent(skill, level);
-//	}
-//	else if (type == "battle_win") {
-//		string enemy = "";
-//		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");
-//		return new BattleWinEvent(enemy);
-//	}
-//	else if (type == "battle_lose") {
-//		string enemy = "";
-//		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");
-//		return new BattleLoseEvent(enemy);
-//	}
-//	else if (type == "escape_success") {
-//		string enemy = "";
-//		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");
-//		return new EscapeSuccessEvent(enemy);
-//	}
-//	else if (type == "escape_fail") {
-//		string enemy = "";
-//		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");
-//		return new EscapeFailEvent(enemy);
-//	}
-//	else if (type == "cultivation_change") {
-//		string method = "";
-//		int level = 0;
-//		if (parser.HasOption("--method")) method = parser.GetOption("--method");
-//		if (parser.HasOption("--level")) level = stoi(parser.GetOption("--level"));
-//		return new CultivationChangeEvent(method, level);
-//	}
-//	else if (type == "wanted_change") {
-//		string reason = "";
-//		int level = 0;
-//		if (parser.HasOption("--reason")) reason = parser.GetOption("--reason");
-//		if (parser.HasOption("--level")) level = stoi(parser.GetOption("--level"));
-//		return new WantedChangeEvent(reason, level);
-//	}
-//	else if (type == "player_arrested") {
-//		string reason = "";
-//		if (parser.HasOption("--reason")) reason = parser.GetOption("--reason");
-//		return new PlayerArrestedEvent(reason);
-//	}
-//	else if (type == "player_released") {
-//		string reason = "";
-//		if (parser.HasOption("--reason")) reason = parser.GetOption("--reason");
-//		return new PlayerReleasedEvent(reason);
-//	}
-//	else if (type == "weather_change") {
-//		string weather = "";
-//		if (parser.HasOption("--weather")) weather = parser.GetOption("--weather");
-//		return new WeatherChangeEvent(weather);
-//	}
-//	else if (type == "policy_change") {
-//		string policy = "";
-//		bool status = false;
-//		if (parser.HasOption("--policy")) policy = parser.GetOption("--policy");
-//		if (parser.HasOption("--status")) {
-//			string status_str = parser.GetOption("--status");
-//			status = (status_str == "true" || status_str == "1");
-//		}
-//		return new PolicyChangeEvent(policy, status);
-//	}
-//
-//	return nullptr;
-//}
+Event* ParseEvent(Parser& parser) {
+	string type = parser.GetOption("--type");
+	int id = -1;
+	string message = "";
+	string name = "";
+	string npc = "";
+	string option = "";
+	int num = 0;
+	int level = 0;
+	bool status = false;
+
+	if (type == "game_start") {
+		return new GameStartEvent();
+	}
+	else if (type == "script_message") {
+		if (parser.HasOption("--message")) message = parser.GetOption("--message");
+		return new ScriptMessageEvent(message);
+	}
+	else if (type == "option_dialog") {
+		if (parser.HasOption("--id")) id = stoi(parser.GetOption("--id"));
+		if (parser.HasOption("--name")) name = parser.GetOption("--name");
+		if (parser.HasOption("--option")) option = parser.GetOption("--option");
+		if (name.size() == 0)
+			return new OptionDialogEvent(id, option);
+		else {
+			return new OptionDialogEvent(name, option);
+		}
+	}
+	else if (type == "npc_meet") {
+		if (parser.HasOption("--npc")) npc = parser.GetOption("--npc");
+		return new NPCMeetEvent(npc);
+	}
+	else if (type == "citizen_born") {
+		if (parser.HasOption("--name")) name = parser.GetOption("--name");
+		return new CitizenBornEvent(name);
+	}
+	else if (type == "citizen_decease") {
+		string name = "";
+		string reason = "";
+		if (parser.HasOption("--name")) name = parser.GetOption("--name");
+		if (parser.HasOption("--reason")) reason = parser.GetOption("--reason");
+		return new CitizenDeceaseEvent(name, reason);
+	}
+	else if (type == "enter_zone") {
+		string zone = "";
+		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
+		return new EnterZoneEvent(zone);
+	}
+	else if (type == "leave_zone") {
+		string zone = "";
+		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
+		return new LeaveZoneEvent(zone);
+	}
+	else if (type == "enter_building") {
+		string zone = "";
+		string building = "";
+		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
+		if (parser.HasOption("--building")) building = parser.GetOption("--building");
+		return new EnterBuildingEvent(zone, building);
+	}
+	else if (type == "leave_building") {
+		string zone = "";
+		string building = "";
+		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
+		if (parser.HasOption("--building")) building = parser.GetOption("--building");
+		return new LeaveBuildingEvent(zone, building);
+	}
+	else if (type == "enter_room") {
+		string zone = "";
+		string building = "";
+		string room = "";
+		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
+		if (parser.HasOption("--building")) building = parser.GetOption("--building");
+		if (parser.HasOption("--room")) room = parser.GetOption("--room");
+		return new EnterRoomEvent(zone, building, room);
+	}
+	else if (type == "leave_room") {
+		string zone = "";
+		string building = "";
+		string room = "";
+		if (parser.HasOption("--zone")) zone = parser.GetOption("--zone");
+		if (parser.HasOption("--building")) building = parser.GetOption("--building");
+		if (parser.HasOption("--room")) room = parser.GetOption("--room");
+		return new LeaveRoomEvent(zone, building, room);
+	}
+	else if (type == "deposit_change") {
+		int result = 0;
+		int delta = 0;
+		if (parser.HasOption("--result")) result = stoi(parser.GetOption("--result"));
+		if (parser.HasOption("--delta")) delta = stoi(parser.GetOption("--delta"));
+		return new DepositChangeEvent(result, delta);
+	}
+	else if (type == "cash_change") {
+		int result = 0;
+		int delta = 0;
+		if (parser.HasOption("--result")) result = stoi(parser.GetOption("--result"));
+		if (parser.HasOption("--delta")) delta = stoi(parser.GetOption("--delta"));
+		return new CashChangeEvent(result, delta);
+	}
+	else if (type == "get_item") {
+		string item = "";
+		int num = 0;
+		if (parser.HasOption("--item")) item = parser.GetOption("--item");
+		if (parser.HasOption("--num")) num = stoi(parser.GetOption("--num"));
+		return new GetItemEvent(item, num);
+	}
+	else if (type == "lose_item") {
+		string item = "";
+		int num = 0;
+		if (parser.HasOption("--item")) item = parser.GetOption("--item");
+		if (parser.HasOption("--num")) num = stoi(parser.GetOption("--num"));
+		return new LoseItemEvent(item, num);
+	}
+	else if (type == "player_injured") {
+		string wound = "";
+		if (parser.HasOption("--wound")) wound = parser.GetOption("--wound");
+		return new PlayerInjuredEvent(wound);
+	}
+	else if (type == "player_cured") {
+		string wound = "";
+		if (parser.HasOption("--wound")) wound = parser.GetOption("--wound");
+		return new PlayerCuredEvent(wound);
+	}
+	else if (type == "player_ill") {
+		string illness = "";
+		if (parser.HasOption("--illness")) illness = parser.GetOption("--illness");
+		return new PlayerIllEvent(illness);
+	}
+	else if (type == "player_recover") {
+		string illness = "";
+		if (parser.HasOption("--illness")) illness = parser.GetOption("--illness");
+		return new PlayerRecoverEvent(illness);
+	}
+	else if (type == "player_rest") {
+		int minute = 0;
+		if (parser.HasOption("--minute")) minute = stoi(parser.GetOption("--minute"));
+		return new PlayerRestEvent(minute);
+	}
+	else if (type == "player_sleep") {
+		int hour = 0;
+		if (parser.HasOption("--hour")) hour = stoi(parser.GetOption("--hour"));
+		return new PlayerSleepEvent(hour);
+	}
+	else if (type == "time_up") {
+		string timer = "";
+		if (parser.HasOption("--timer")) timer = parser.GetOption("--timer");
+		return new TimeUpEvent(timer);
+	}
+	else if (type == "count_up") {
+		string counter = "";
+		if (parser.HasOption("--counter")) counter = parser.GetOption("--counter");
+		return new CountUpEvent(counter);
+	}
+	else if (type == "use_skill") {
+		string skill = "";
+		if (parser.HasOption("--skill")) skill = parser.GetOption("--skill");
+		return new UseSkillEvent(skill);
+	}
+	else if (type == "skill_change") {
+		string skill = "";
+		int level = 0;
+		if (parser.HasOption("--skill")) skill = parser.GetOption("--skill");
+		if (parser.HasOption("--level")) level = stoi(parser.GetOption("--level"));
+		return new SkillChangeEvent(skill, level);
+	}
+	else if (type == "battle_win") {
+		string enemy = "";
+		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");
+		return new BattleWinEvent(enemy);
+	}
+	else if (type == "battle_lose") {
+		string enemy = "";
+		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");
+		return new BattleLoseEvent(enemy);
+	}
+	else if (type == "escape_success") {
+		string enemy = "";
+		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");
+		return new EscapeSuccessEvent(enemy);
+	}
+	else if (type == "escape_fail") {
+		string enemy = "";
+		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");
+		return new EscapeFailEvent(enemy);
+	}
+	else if (type == "cultivation_change") {
+		string method = "";
+		int level = 0;
+		if (parser.HasOption("--method")) method = parser.GetOption("--method");
+		if (parser.HasOption("--level")) level = stoi(parser.GetOption("--level"));
+		return new CultivationChangeEvent(method, level);
+	}
+	else if (type == "wanted_change") {
+		string reason = "";
+		int level = 0;
+		if (parser.HasOption("--reason")) reason = parser.GetOption("--reason");
+		if (parser.HasOption("--level")) level = stoi(parser.GetOption("--level"));
+		return new WantedChangeEvent(reason, level);
+	}
+	else if (type == "player_arrested") {
+		string reason = "";
+		if (parser.HasOption("--reason")) reason = parser.GetOption("--reason");
+		return new PlayerArrestedEvent(reason);
+	}
+	else if (type == "player_released") {
+		string reason = "";
+		if (parser.HasOption("--reason")) reason = parser.GetOption("--reason");
+		return new PlayerReleasedEvent(reason);
+	}
+	else if (type == "weather_change") {
+		string weather = "";
+		if (parser.HasOption("--weather")) weather = parser.GetOption("--weather");
+		return new WeatherChangeEvent(weather);
+	}
+	else if (type == "policy_change") {
+		string policy = "";
+		bool status = false;
+		if (parser.HasOption("--policy")) policy = parser.GetOption("--policy");
+		if (parser.HasOption("--status")) {
+			string status_str = parser.GetOption("--status");
+			status = (status_str == "true" || status_str == "1");
+		}
+		return new PolicyChangeEvent(policy, status);
+	}
+
+	return nullptr;
+}
 
 // 递归输出对话与选项
-//bool PrintDialog(Dialog& dialog, vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-//	auto sections = dialog.GetDialogs();
-//	if (sections.size() == 0)return false;
-//
-//	for (auto section : sections) {
-//		if (section.IsBranch()) { // 如果当前段是选项
-//			auto options = section.GetOptions();
-//			vector<int> indices;
-//			int i = 0, j = 0;
-//			for (auto option : options) {
-//				if (story->JudgeCondition(option.GetCondition(), getValues)) {
-//					indices.push_back(i++);
-//				}
-//			}
-//			if (indices.size() == 0) continue;
-//
-//			cout << "Options: " << endl;
-//			for (auto index : indices) {
-//				cout << j << ": " << Utf8ToAnsi(options[indices[j++]].GetOption()) << endl;
-//			}
-//			cin >> j;
-//			while (j >= indices.size()) {
-//				cout << "Out of range." << endl;
-//				cin >> j;
-//			}
-//			auto selected = options[indices[j]];
-//			for (auto dialog : selected.GetDialogs()) {
-//				if (story->JudgeCondition(dialog.GetCondition())) {
-//					PrintDialog(dialog, getValues);
-//				}
-//			}
-//			for (auto change : selected.GetChanges()) {
-//				if (!story->JudgeCondition(change->GetCondition()))continue;
-//				::map->ApplyChange(change, story, getValues);
-//				populace->ApplyChange(change, story, getValues);
-//				society->ApplyChange(change, story, getValues);
-//				story->ApplyChange(change, story, getValues);
-//				industry->ApplyChange(change, story, getValues);
-//				traffic->ApplyChange(change, story, getValues);
-//				player->ApplyChange(change, story, getValues);
-//			}
-//		}
-//		else { // 如果当前段是对话
-//			Condition conditionContent;
-//			conditionContent.ParseCondition(section.GetSpeaking().second);
-//			if (section.GetSpeaking().first.size() == 0) {
-//				cout << Utf8ToAnsi(ToString(conditionContent.EvaluateValue(getValues))) << endl;
-//			}
-//			else {
-//				Condition conditionSpeaker;
-//				conditionSpeaker.ParseCondition(section.GetSpeaking().first);
-//				cout << Utf8ToAnsi(ToString(conditionSpeaker.EvaluateValue(getValues))) << ": " <<
-//					Utf8ToAnsi(ToString(conditionContent.EvaluateValue(getValues))) << endl;
-//			}
-//		}
-//	}
-//	return true;
-//}
+bool PrintDialog(Dialog* dialog, vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	auto sections = dialog->GetDialogs();
+	if (sections.size() == 0)return false;
+
+	for (auto section : sections) {
+		if (section.IsBranch()) { // 如果当前段是选项
+			auto options = section.GetOptions();
+			vector<int> indices;
+			int i = 0, j = 0;
+			for (auto option : options) {
+				if (option.GetCondition().EvaluateBool(getValues)) {
+					indices.push_back(i++);
+				}
+			}
+			if (indices.size() == 0) continue;
+
+			cout << "Options: " << endl;
+			for (auto index : indices) {
+				cout << j << ": " << Utf8ToAnsi(options[indices[j++]].GetOption()) << endl;
+			}
+			cin >> j;
+			while (j >= indices.size()) {
+				cout << "Out of range." << endl;
+				cin >> j;
+			}
+			auto selected = options[indices[j]];
+			for (auto dialog : selected.GetDialogs()) {
+				if (dialog->GetCondition().EvaluateBool(getValues)) {
+					PrintDialog(dialog, getValues);
+				}
+			}
+			for (auto change : selected.GetChanges()) {
+				if (!change->GetCondition().EvaluateBool(getValues))continue;
+				::map->ApplyChange(change, story, getValues);
+				populace->ApplyChange(change, story, getValues);
+				society->ApplyChange(change, story, getValues);
+				story->ApplyChange(change, story, getValues);
+				industry->ApplyChange(change, story, getValues);
+				traffic->ApplyChange(change, story, getValues);
+				player->ApplyChange(change, story, getValues);
+			}
+		}
+		else { // 如果当前段是对话
+			Condition conditionContent;
+			conditionContent.ParseCondition(section.GetSpeaking().second);
+			if (section.GetSpeaking().first.size() == 0) {
+				cout << Utf8ToAnsi(ToString(conditionContent.EvaluateValue(getValues))) << endl;
+			}
+			else {
+				Condition conditionSpeaker;
+				conditionSpeaker.ParseCondition(section.GetSpeaking().first);
+				cout << Utf8ToAnsi(ToString(conditionSpeaker.EvaluateValue(getValues))) << ": " <<
+					Utf8ToAnsi(ToString(conditionContent.EvaluateValue(getValues))) << endl;
+			}
+		}
+	}
+	return true;
+}
 
 int main() {
 	Config::ReadConfig("../Resources/config.json");
@@ -393,8 +381,7 @@ int main() {
 
 	// 读取Story相关类及Mod
 	story->LoadConfigs();
-	//story->InitEvents(modHandles, mods);
-	//story->InitChanges(modHandles, mods);
+	story->InitScripts(modHandles, mods);
 
 	// 读取Industry相关类及Mod
 	industry->LoadConfigs();
@@ -434,18 +421,15 @@ int main() {
 			switch (type) {
 			case CMD_INIT: { // 初始化世界、人口、剧本
 				parser.AddOption("--block", 0, "Block num both horizontally and vertically.", true, "4");
-				parser.AddOption("--story", 0, "Story file.", true, REPLACE_PATH("../Resources/scripts/ys.json"));
 				parser.ParseCmd(cmd);
 
 				int size = atoi(parser.GetOption("--block").data());
 
-				//story->Init();
 				int accomodation = ::map->Init(size, size);
 				//populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
 				//::map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 				//society->Init(::map, populace, player->GetTime());
-				//story->InitVariables(player->GetTime());
-				//story->ReadStory("ys", Config::GetScript());
+				story->Init();
 				//populace->Schedule();
 				//populace->Workload(story);
 				//populace->Characterize(story);
@@ -461,125 +445,54 @@ int main() {
 			case CMD_EVENT: { // 文本模拟事件
 				parser.AddOption("--type", 0, "Event type.", true, "nothing_happen");
 
+				parser.AddOption("--message", 0, "Event target message.", true, "");
 				parser.AddOption("--id", 0, "Event target id.", true, "");
 				parser.AddOption("--target", 0, "Event target name.", true, "");
 				parser.AddOption("--option", 0, "Event option.", true, "");
 
-				//parser.ParseCmd(cmd);
-				//auto event = ParseEvent(parser);
-				//if (!event) {
-				//	THROW_EXCEPTION(CommandException, "Wrong input event format.");
-				//}
-				//
-				//{ // 全局事件
-				//	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-				//		[&](string name) -> pair<bool, ValueType> {
-				//			return story->GetValue(name);
-				//		}
-				//	};
-				//
-				//	auto actions = story->MatchEvent(event);
-				//	auto dialogs = actions.first;
-				//	auto changes = actions.second;
-				//	for (auto dialog : dialogs) {
-				//		if (story->JudgeCondition(dialog.GetCondition())) {
-				//			if (PrintDialog(dialog, getValues)) {
-				//				break;
-				//			}
-				//		}
-				//	}
-				//	for (auto change : changes) {
-				//		if (!story->JudgeCondition(change->GetCondition()))continue;
-				//		::map->ApplyChange(change, story, getValues);
-				//		populace->ApplyChange(change, story, getValues);
-				//		society->ApplyChange(change, story, getValues);
-				//		story->ApplyChange(change, story, getValues);
-				//		industry->ApplyChange(change, story, getValues);
-				//		traffic->ApplyChange(change, story, getValues);
-				//		player->ApplyChange(change, story, getValues);
-				//	}
-				//}
-				//
-				//{ // 人物事件
-				//	bool traverse = false;
-				//	int id = -1;
-				//	Person* person = nullptr;
-				//	auto type = event->GetType();
-				//	if (type == "game_start") {
-				//		traverse = true;
-				//	}
-				//	else if (type == "option_dialog") {
-				//		auto target = dynamic_cast<OptionDialogEvent*>(event)->GetTarget();
-				//		auto idx = dynamic_cast<OptionDialogEvent*>(event)->GetIdx();
-				//		if (target.size() == 0) {
-				//			if (idx >= populace->GetCitizens().size() || idx < 0) {
-				//				THROW_EXCEPTION(CommandException, "Wrong input citizen ID.");
-				//			}
-				//			person = populace->GetCitizens()[idx];
-				//			id = idx;
-				//		}
-				//		else {
-				//			person = populace->GetCitizen(target);
-				//			if (person == nullptr) {
-				//				THROW_EXCEPTION(CommandException, "Citizen not found.");
-				//			}
-				//			id = person->GetId();
-				//		}
-				//	}
-				//
-				//	if (traverse) {
-				//		for (int i = 0; i < populace->GetCitizens().size(); i++) {
-				//			vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-				//				[&](string name) -> pair<bool, ValueType> {
-				//					return story->GetValue(name);
-				//				},
-				//				[&](string name) -> pair<bool, ValueType> {
-				//					return populace->GetCitizens()[i]->GetValue(name);
-				//				}
-				//			};
-				//			auto [dialogs, changes] = populace->TriggerEvent(i, event, story);
-				//			for (auto dialog : dialogs) {
-				//				if (story->JudgeCondition(dialog.GetCondition())) {
-				//					if (PrintDialog(dialog, getValues)) {
-				//						break;
-				//					}
-				//				}
-				//			}
-				//			for (auto change : changes) {
-				//				if (!story->JudgeCondition(change->GetCondition()))continue;
-				//				::map->ApplyChange(change, story, getValues);
-				//				populace->ApplyChange(change, story, getValues);
-				//				story->ApplyChange(change, story, getValues);
-				//			}
-				//		}
-				//	}
-				//	else {
-				//		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-				//			[&](string name) -> pair<bool, ValueType> {
-				//				return story->GetValue(name);
-				//			},
-				//			[&](string name) -> pair<bool, ValueType> {
-				//				return person->GetValue(name);
-				//			}
-				//		};
-				//		auto [dialogs, changes] = populace->TriggerEvent(id, event, story);
-				//		for (auto dialog : dialogs) {
-				//			if (story->JudgeCondition(dialog.GetCondition())) {
-				//				if (PrintDialog(dialog, getValues)) {
-				//					break;
-				//				}
-				//			}
-				//		}
-				//		for (auto change : changes) {
-				//			if (!story->JudgeCondition(change->GetCondition()))continue;
-				//			::map->ApplyChange(change, story, getValues);
-				//			populace->ApplyChange(change, story, getValues);
-				//			story->ApplyChange(change, story, getValues);
-				//		}
-				//	}
-				//}
-				//
-				//delete event;
+				parser.ParseCmd(cmd);
+				auto event = ParseEvent(parser);
+				if (!event) {
+					THROW_EXCEPTION(CommandException, "Wrong input event format.");
+				}
+				
+				vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+					[&](string name) -> pair<bool, ValueType> {
+						return story->GetScript()->GetValue(name);
+					}
+				};
+				
+				std::vector<Action> actions;
+				auto pres = story->GetScript()->PreTrigger(event);
+				actions.insert(actions.end(), pres.begin(), pres.end());
+				auto matches = story->GetScript()->MatchEvent(event, getValues);
+				actions.insert(actions.end(), matches.begin(), matches.end());
+				auto posts = story->GetScript()->PostTrigger(event);
+				actions.insert(actions.end(), posts.begin(), posts.end());
+				for (auto action : actions) {
+					std::visit([&](auto* ptr) {
+						if constexpr (std::is_same_v<decltype(ptr), Dialog*>) {
+							auto* dialog = dynamic_cast<Dialog*>(ptr);
+							if (dialog->GetCondition().EvaluateBool(getValues)) {
+								PrintDialog(dialog, getValues);
+							}
+						}
+						else if constexpr (std::is_same_v<decltype(ptr), Change*>) {
+							auto* change = dynamic_cast<Change*>(ptr);
+							if (change->GetCondition().EvaluateBool(getValues)) {
+								::map->ApplyChange(change, story, getValues);
+								populace->ApplyChange(change, story, getValues);
+								society->ApplyChange(change, story, getValues);
+								story->ApplyChange(change, story, getValues);
+								industry->ApplyChange(change, story, getValues);
+								traffic->ApplyChange(change, story, getValues);
+								player->ApplyChange(change, story, getValues);
+							}
+						}
+					}, action);
+				}
+				
+				delete event;
 				break;
 			}
 			case CMD_LOOKUP: { // 查找信息

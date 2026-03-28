@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Room::Room(RoomFactory* factory, string room) :
+Room::Room(RoomFactory* factory, const string& room) :
 	mod(factory->CreateRoom(room)),
 	factory(factory),
 	type(mod->GetType()),

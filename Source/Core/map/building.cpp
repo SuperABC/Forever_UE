@@ -264,7 +264,7 @@ int Floor::AssignNumber() {
 	return number++;
 }
 
-Building::Building(BuildingFactory* factory, string building) :
+Building::Building(BuildingFactory* factory, const string& building) :
 	mod(factory->CreateBuilding(building)),
 	factory(factory),
 	type(mod->GetType()),
@@ -457,7 +457,7 @@ void Building::LayoutBuilding(Layout* layout, ComponentFactory* componentFactory
 	}
 }
 
-Layout* Building::ReadTemplates(vector<string> paths) {
+Layout* Building::ReadTemplates(const vector<string>& paths) {
 	auto layout = new Layout();
 
 	for (auto path : paths) {
@@ -631,7 +631,7 @@ Layout* Building::ReadTemplates(vector<string> paths) {
 	return layout;
 }
 
-void Building::ReadFloor(int level, int face, string name, Layout* layout) {
+void Building::ReadFloor(int level, int face, const string& name, Layout* layout) {
 	if (!layout) {
 		THROW_EXCEPTION(InvalidArgumentException, "Layout pointer is null.\n");
 	}
@@ -672,7 +672,7 @@ void Building::ReadFloor(int level, int face, string name, Layout* layout) {
 	floors[idx] = floor;
 }
 
-void Building::ReadFloors(int face, string name, Layout* layout) {
+void Building::ReadFloors(int face, const string& name, Layout* layout) {
 	if (!layout) {
 		THROW_EXCEPTION(InvalidArgumentException, "Layout pointer is null.\n");
 	}
@@ -681,7 +681,7 @@ void Building::ReadFloors(int face, string name, Layout* layout) {
 	}
 }
 
-void Building::ReadFloors(int face, vector<string> names, Layout* layout) {
+void Building::ReadFloors(int face, const vector<string>& names, Layout* layout) {
 	if (!layout) {
 		THROW_EXCEPTION(InvalidArgumentException, "Layout pointer is null.\n");
 	}
@@ -693,7 +693,7 @@ void Building::ReadFloors(int face, vector<string> names, Layout* layout) {
 	}
 }
 
-void Building::AssignRoom(int level, int slot, string name,
+void Building::AssignRoom(int level, int slot, const string& name,
 	Component* component, RoomFactory* factory) {
 	if (!component || !factory) {
 		THROW_EXCEPTION(InvalidArgumentException, "Component or factory is null.\n");
@@ -724,7 +724,7 @@ void Building::AssignRoom(int level, int slot, string name,
 	rooms.push_back(room);
 }
 
-void Building::ArrangeRow(int level, int slot, string name, float acreage,
+void Building::ArrangeRow(int level, int slot, const string& name, float acreage,
 	Component* component, RoomFactory* factory) {
 	if (!component || !factory) {
 		THROW_EXCEPTION(InvalidArgumentException, "Component or factory is null.\n");
@@ -785,7 +785,7 @@ void Building::ArrangeRow(int level, int slot, string name, float acreage,
 	}
 }
 
-vector<float> Building::InverseParams(vector<float>& params, int face) {
+vector<float> Building::InverseParams(const vector<float>& params, int face) {
 	if (face < 0 || face >= 4) {
 		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
 	}

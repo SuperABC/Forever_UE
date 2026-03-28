@@ -32,3 +32,8 @@ void Populace::LoadConfigs() const {
 	//	schedulerFactory->SetConfig(scheduler, true);
 	//}
 }
+
+void Populace::ApplyChange(Change* change, Story* story,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+
+}

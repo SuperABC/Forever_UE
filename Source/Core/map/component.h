@@ -17,7 +17,7 @@ public:
 	Component() = delete;
 
     // 通过类型从工厂构造
-	Component(ComponentFactory* factory, std::string component);
+	Component(ComponentFactory* factory, const std::string& component);
 
     // 析构组合
 	~Component();

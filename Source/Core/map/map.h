@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "story/story.h"
+
 #include "terrain.h"
 #include "roadnet.h"
 #include "zone.h"
@@ -134,6 +136,10 @@ public:
 
 	// 释放空间
 	void Destroy();
+
+	// 应用剧情变化
+	void ApplyChange(Change* change, Story* story,
+		std::vector < std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
 	// 获取地图尺寸
 	std::pair<int, int> GetSize() const;

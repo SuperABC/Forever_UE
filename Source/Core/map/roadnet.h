@@ -15,7 +15,7 @@ public:
 	Roadnet() = delete;
 
     // 通过类型从工厂构造
-	Roadnet(RoadnetFactory* factory, std::string roadnet);
+	Roadnet(RoadnetFactory* factory, const std::string& roadnet);
 	
     // 析构地形
 	~Roadnet();
@@ -43,7 +43,7 @@ public:
 	void AllocateAddress();
 
 	// 按地址查找
-	Block* LocateBlock(std::string road, int id) const;
+	Block* LocateBlock(const std::string& road, int id) const;
 
 private:
     // 模组对象

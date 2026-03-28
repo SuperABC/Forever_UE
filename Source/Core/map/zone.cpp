@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Zone::Zone(ZoneFactory* factory, string zone) :
+Zone::Zone(ZoneFactory* factory, const string& zone) :
 	mod(factory->CreateZone(zone)),
 	factory(factory),
 	type(mod->GetType()),
@@ -40,7 +40,7 @@ void Zone::SetParent(Block* block) {
 	parentBlock = block;
 }
 
-Building* Zone::GetBuilding(string name) {
+Building* Zone::GetBuilding(const string& name) {
 	auto it = buildings.find(name);
 	if (it != buildings.end()) {
 		return it->second;

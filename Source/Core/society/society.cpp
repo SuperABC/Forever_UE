@@ -31,3 +31,8 @@ void Society::LoadConfigs() const {
 	//	organizationFactory->SetConfig(organization, true);
 	//}
 }
+
+void Society::ApplyChange(Change* change, Story* story,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+
+}

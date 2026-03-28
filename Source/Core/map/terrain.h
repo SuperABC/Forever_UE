@@ -13,7 +13,7 @@ public:
 	Terrain() = delete;
 
     // 通过类型从工厂构造
-	Terrain(TerrainFactory* factory, std::string terrain);
+	Terrain(TerrainFactory* factory, const std::string& terrain);
 
     // 析构地形
 	~Terrain();

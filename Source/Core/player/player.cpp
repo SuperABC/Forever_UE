@@ -20,3 +20,8 @@ void Player::LoadConfigs() const {
 	//	skillFactory->SetConfig(skill, true);
 	//}
 }
+
+void Player::ApplyChange(Change* change, Story* story,
+	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
+
+}

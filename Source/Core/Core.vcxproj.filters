@@ -93,9 +93,6 @@
     <ClCompile Include="story\script.cpp">
       <Filter>story</Filter>
     </ClCompile>
-    <ClCompile Include="story\dialog.cpp">
-      <Filter>story</Filter>
-    </ClCompile>
     <ClCompile Include="industry\product.cpp">
       <Filter>industry</Filter>
     </ClCompile>
@@ -125,9 +122,6 @@
     </ClCompile>
     <ClCompile Include="populace\commute.cpp">
       <Filter>populace</Filter>
-    </ClCompile>
-    <ClCompile Include="story\condition.cpp">
-      <Filter>story</Filter>
     </ClCompile>
     <ClCompile Include="common\config.cpp">
       <Filter>common</Filter>
@@ -200,9 +194,6 @@
     <ClInclude Include="story\script.h">
       <Filter>story</Filter>
     </ClInclude>
-    <ClInclude Include="story\dialog.h">
-      <Filter>story</Filter>
-    </ClInclude>
     <ClInclude Include="industry\product.h">
       <Filter>industry</Filter>
     </ClInclude>
@@ -232,9 +223,6 @@
     </ClInclude>
     <ClInclude Include="populace\commute.h">
       <Filter>populace</Filter>
-    </ClInclude>
-    <ClInclude Include="story\condition.h">
-      <Filter>story</Filter>
     </ClInclude>
     <ClInclude Include="common\config.h">
       <Filter>common</Filter>

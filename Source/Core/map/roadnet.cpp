@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Roadnet::Roadnet(RoadnetFactory* factory, string roadnet) :
+Roadnet::Roadnet(RoadnetFactory* factory, const string& roadnet) :
 	mod(factory->CreateRoadnet(roadnet)),
 	factory(factory),
 	type(mod->GetType()),
@@ -81,7 +81,7 @@ void Roadnet::AllocateAddress() {
 	}
 }
 
-Block* Roadnet::LocateBlock(string road, int id) const {
+Block* Roadnet::LocateBlock(const string& road, int id) const {
 	if (addresses.find(road) == addresses.end()) {
 		return nullptr;
 	}

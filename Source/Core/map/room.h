@@ -25,7 +25,7 @@ public:
 	Room() = delete;
 
     // 通过类型从工厂构造
-	Room(RoomFactory* factory, std::string component);
+	Room(RoomFactory* factory, const std::string& component);
 
     // 析构房间
 	~Room();

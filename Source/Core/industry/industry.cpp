@@ -29,3 +29,8 @@ void Industry::LoadConfigs() const {
 	//	manufactureFactory->SetConfig(manufacture, true);
 	//}
 }
+
+void Industry::ApplyChange(Change* change, Story* story,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+
+}

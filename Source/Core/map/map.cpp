@@ -733,6 +733,11 @@ void Map::Destroy() {
 	layout = nullptr;
 }
 
+void Map::ApplyChange(Change* change, Story* story,
+	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
+
+}
+
 pair<int, int> Map::GetSize() const {
 	return make_pair(width, height);
 }

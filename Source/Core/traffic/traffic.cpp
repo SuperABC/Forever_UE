@@ -30,3 +30,8 @@ void Traffic::LoadConfigs() const {
 	//	vehicleFactory->SetConfig(vehicle, true);
 	//}
 }
+
+void Traffic::ApplyChange(Change* change, Story* story,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+
+}

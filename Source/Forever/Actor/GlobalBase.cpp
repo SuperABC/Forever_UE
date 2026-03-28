@@ -81,8 +81,7 @@ void AGlobalBase::BeginPlay() {
 
 		// 读取Story相关类及Mod
 		story->LoadConfigs();
-		//story->InitEvents(modHandles, mods);
-		//story->InitChanges(modHandles, mods);
+		story->InitScripts(modHandles, mods);
 
 		// 读取Industry相关类及Mod
 		industry->LoadConfigs();
@@ -107,8 +106,7 @@ void AGlobalBase::BeginPlay() {
 		//populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
 		//map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 		//society->Init(map, populace, player->GetTime());
-		//story->InitVariables(player->GetTime());
-		//story->ReadStory("ys", Config::GetScript());
+		story->Init();
 		//populace->Schedule();
 		//populace->Workload(story);
 		//populace->Characterize(story);
