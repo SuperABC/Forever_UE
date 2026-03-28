@@ -77,7 +77,9 @@ void Story::Init() {
 	Destroy();
 
 	script = new Script(scriptFactory, scriptFactory->GetMain());
-	script->ReadMilestones(Config::GetScript());
+	for (auto s : Config::GetScripts()) {
+		script->ReadMilestones(s);
+	}
 }
 
 void Story::Destroy() {

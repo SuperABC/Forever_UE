@@ -146,12 +146,23 @@ void AStartBase::RemoveResourcePath(FString path) {
 	Config::RemoveResourcePath(string(TCHAR_TO_UTF8(*path)));
 }
 
-FString AStartBase::GetScriptPath() {
-	return FString(UTF8_TO_TCHAR(Config::GetScript().data()));
+TArray<FString> AStartBase::GetScriptPaths() {
+	TArray<FString> paths;
+
+	auto scripts = Config::GetScripts();
+	for (auto script : scripts) {
+		paths.Add(FString(UTF8_TO_TCHAR(script.data())));
+	}
+
+	return paths;
 }
 
-void AStartBase::SetScriptPath(FString path) {
-	Config::SetScript(string(TCHAR_TO_UTF8(*path)));
+void AStartBase::AddScriptPath(FString path) {
+	Config::AddScript(string(TCHAR_TO_UTF8(*path)));
+}
+
+void AStartBase::RemoveScriptPath(FString path) {
+	Config::RemoveScript(string(TCHAR_TO_UTF8(*path)));
 }
 
 void AStartBase::SaveConfig() {

@@ -19,7 +19,7 @@ unordered_map<string, vector<string>> Config::layoutPaths = {};
 unordered_map<string, unordered_map<string, string>> Config::jobPaths = {};
 unordered_map<string, vector<string>> Config::characterPaths = {};
 unordered_map<string, vector<string>> Config::actionPaths = {};
-string Config::scriptPath = "";
+unordered_set<string> Config::scriptPaths = {};
 
 bool CheckFileFormat(const filesystem::path& filePath, const string& format) {
 	if (!filesystem::is_regular_file(filePath))
@@ -39,7 +39,7 @@ void Config::ReadConfig(const string& path) {
 	jobPaths.clear();
 	characterPaths.clear();
 	actionPaths.clear();
-	scriptPath = "";
+	scriptPaths.clear();
 
 	JsonReader reader;
 	JsonValue root;
@@ -134,7 +134,9 @@ void Config::ReadConfig(const string& path) {
 			AddResourcePath(resourcePath.AsString());
 		}
 
-		SetScript(root["story_path"].AsString());
+		for (auto storyPath : root["story_paths"]) {
+			AddScript(storyPath.AsString());
+		}
 	}
 	else {
 		fin.close();
@@ -269,7 +271,7 @@ void Config::WriteConfig(const string& path) {
 	root["organization_mods"] = organizations;
 
 	JsonValue scripts = JsonValue(DATA_ARRAY);
-	for (auto modEnable : modEnables["scripts"]) {
+	for (auto modEnable : modEnables["script"]) {
 		if (modEnable.second) {
 			JsonValue script = JsonValue(modEnable.first);
 			scripts.append(script);
@@ -347,8 +349,12 @@ void Config::WriteConfig(const string& path) {
 	}
 	root["resource_paths"] = resources;
 
-	JsonValue story = JsonValue(scriptPath);
-	root["story_path"] = story;
+	JsonValue stories = JsonValue(DATA_ARRAY);
+	for (auto scriptPath : scriptPaths) {
+		JsonValue story = JsonValue(scriptPath);
+		stories.append(story);
+	}
+	root["story_paths"] = stories;
 
 	ofstream fout(path);
 	if (!fout.is_open()) {
@@ -927,10 +933,15 @@ void Config::RemoveResourcePath(const string& path) {
 	actionPaths.erase(path);
 }
 
-string Config::GetScript() {
-	return scriptPath;
+unordered_set<string> Config::GetScripts() {
+	return scriptPaths;
 }
 
-void Config::SetScript(const string& path) {
-	scriptPath = path;
+void Config::AddScript(const std::string& path) {
+	scriptPaths.insert(path);
 }
+
+void Config::RemoveScript(const std::string& path) {
+	scriptPaths.erase(path);
+}
+

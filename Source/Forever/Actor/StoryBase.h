@@ -44,6 +44,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void GameStart();
 	UFUNCTION(BlueprintCallable, Category = "Story")
+	void ScriptMessage(FString message);
+	UFUNCTION(BlueprintCallable, Category = "Story")
 	void OptionDialog(FString name, FString option);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void EnterZone(FString zone);

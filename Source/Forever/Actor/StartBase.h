@@ -45,9 +45,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Config")
 	void RemoveResourcePath(FString path);
 	UFUNCTION(BlueprintCallable, Category = "Config")
-	FString GetScriptPath();
+	TArray<FString> GetScriptPaths();
 	UFUNCTION(BlueprintCallable, Category = "Config")
-	void SetScriptPath(FString path);
+	void AddScriptPath(FString path);
+	UFUNCTION(BlueprintCallable, Category = "Config")
+	void RemoveScriptPath(FString path);
 	UFUNCTION(BlueprintCallable, Category = "Config")
 	void SaveConfig();
 

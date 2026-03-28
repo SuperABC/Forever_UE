@@ -21,16 +21,16 @@ public:
 	// 获取所有dll绝对路径
 	static std::vector<std::string> GetMods();
 
-	// 添加dllPath并识别其中包含的mod文件路径并写入配置文件
+	// 添加dllPath并识别其中包含的mod文件路径
 	static void AddDllPath(const std::string& path);
 
-	// 移除dllPath及对应的mod文件路径并写入配置文件
+	// 移除dllPath及对应的mod文件路径
 	static void RemoveDllPath(const std::string& path);
 
 	// 获取一类mod的启用情况
 	static std::unordered_map<std::string, bool> GetChecks(const std::string& type);
 
-	// 设置mod是否启用并写入配置文件
+	// 设置mod是否启用
 	static void CheckMod(const std::string& type, const std::string& mod, bool enabled);
 
 	// 获取一类所有启用mod
@@ -51,17 +51,20 @@ public:
 	// 获取所有action路径
 	static std::vector<std::string> GetActions();
 
-	// 添加resourcePaths并识别其中包含的layout/job/character文件路径并写入配置文件
+	// 添加resourcePaths并识别其中包含的layout/job/character文件路径
 	static void AddResourcePath(const std::string& path);
 
-	// 移除resourcePaths及对应的layout/job/character文件路径并写入配置文件
+	// 移除resourcePaths及对应的layout/job/character文件路径
 	static void RemoveResourcePath(const std::string& path);
 
 	// 获取主剧情路径
-	static std::string GetScript();
+	static std::unordered_set<std::string> GetScripts();
 
-	// 设置主剧情路径并写入配置文件
-	static void SetScript(const std::string& path);
+	// 添加主剧情路径
+	static void AddScript(const std::string& path);
+
+	// 删除主剧情路径
+	static void RemoveScript(const std::string& path);
 
 private:
 	// config path -> [dll paths]
@@ -86,6 +89,6 @@ private:
 	static std::unordered_map<std::string, std::vector<std::string>> actionPaths;
 
 	// script path
-	static std::string scriptPath;
+	static std::unordered_set<std::string> scriptPaths;
 };
 

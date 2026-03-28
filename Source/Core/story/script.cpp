@@ -116,6 +116,12 @@ void Script::ReadMilestones(const std::string& path) {
         THROW_EXCEPTION(RuntimeException, "Read script failed: " + path + "\n");
     }
 
+    actives.clear();
+    for (auto milestone : milestones) {
+        milestone.second.subsequents.clear();
+        milestone.second.premise = 0;
+    }
+
     for (auto milestone : caches[path].second) {
         milestones[milestone.first] = MilestoneNode(milestone.second);
     }
