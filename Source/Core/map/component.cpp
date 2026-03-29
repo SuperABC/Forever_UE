@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Component::Component(ComponentFactory* factory, const string& Component) :
-	mod(factory->CreateComponent(Component)),
+Component::Component(ComponentFactory* factory, const string& component) :
+	mod(factory->CreateComponent(component)),
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),
