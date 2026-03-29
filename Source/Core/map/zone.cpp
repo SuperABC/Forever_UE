@@ -67,7 +67,7 @@ string Zone::GetAddress() {
 	return address.data();
 }
 
-std::pair<std::string, std::string> Zone::GetScriptSetup() {
+std::pair<std::string, std::vector<std::string>> Zone::GetScriptSetup() {
 	return mod->script;
 }
 
@@ -88,7 +88,7 @@ void Zone::GetPosition(float& x, float& y) const {
 	}
 }
 
-void Zone::LayoutZone(Lot* block, BuildingFactory* factory) {
+void Zone::LayoutZone(const Lot* block, BuildingFactory* factory) {
 	mod->LayoutZone(block);
 	SetAcreage(mod->acreage);
 
@@ -355,10 +355,10 @@ const char* EmptyZone::GetName() {
 	return name.data();
 }
 
-void EmptyZone::LayoutZone(Lot* lot) {
+void EmptyZone::LayoutZone(const Lot* lot) {
 
 }
 
-function<int(Lot*)> EmptyZone::ZoneAssigner = [](Lot* lot) {
+function<int(const Lot*)> EmptyZone::ZoneAssigner = [](const Lot* lot) -> int {
 	return 0;
 	};

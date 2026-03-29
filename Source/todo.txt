@@ -21,11 +21,9 @@
 公交通勤
 
 6. 剧情
-ReadMilestones中name和path保留一个
 trigger添加正则匹配
-milestone指针手动清理
+milestone缓存清理
 change移动到dialog之后执行
-dialog变量复制优化
 当前任务查看
 对话历史记录
 dialog实时表达式计算

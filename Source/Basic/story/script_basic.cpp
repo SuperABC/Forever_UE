@@ -34,10 +34,10 @@ void NPCScript::SetScript() {
 
 }
 
-void NPCScript::PreTrigger(Event* event) {
+void NPCScript::PreTrigger(const Event* event) {
 
 }
 
-void NPCScript::PostTrigger(Event* event) {
+void NPCScript::PostTrigger(const Event* event) {
 
 }

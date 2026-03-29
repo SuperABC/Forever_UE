@@ -139,6 +139,8 @@ void ABuildingBase::EnterBuilding(FString building) {
 			getValues.pop_back();
 		}
 	}
+
+	delete event;
 }
 
 void ABuildingBase::LeaveBuilding(FString building) {
@@ -179,6 +181,8 @@ void ABuildingBase::LeaveBuilding(FString building) {
 			getValues.pop_back();
 		}
 	}
+
+	delete event;
 }
 
 float ABuildingBase::GetRotation(FACE_DIRECTION direction) {

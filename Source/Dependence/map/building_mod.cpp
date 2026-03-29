@@ -13,7 +13,7 @@ BuildingMod::BuildingMod() :
 	templates(),
 	singles(),
 	rows(),
-	script({ "empty", "" }) {
+	script({ "empty", {} }) {
 
 }
 
@@ -65,7 +65,7 @@ void BuildingMod::ArrangeRow(int level, int slot, string room, float acreage, st
 }
 
 void BuildingFactory::RegisterBuilding(const string& id,
-	const vector<float>& power, function<int(Lot*)> assigner,
+	const vector<float>& power, function<int(const Lot*)> assigner,
 	function<BuildingMod* ()> creator, function<void(BuildingMod*)> deleter) {
 	registries[id] = { creator, deleter };
 	powers[id] = power;
@@ -119,7 +119,7 @@ unordered_map<string, vector<float>> BuildingFactory::GetPowers() const {
 	return result;
 }
 
-vector<string> BuildingFactory::CreateBuildings(const string& type, Lot* lot) const {
+vector<string> BuildingFactory::CreateBuildings(const string& type, const Lot* lot) const {
 	vector<string> buildings;
 	auto config = configs.find(type);
 	if (config == configs.end() || !config->second) {

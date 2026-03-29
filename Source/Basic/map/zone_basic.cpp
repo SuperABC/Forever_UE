@@ -26,13 +26,13 @@ const char* ResidentialZone::GetName() {
 	return name.data();
 }
 
-void ResidentialZone::LayoutZone(Lot* lot) {
+void ResidentialZone::LayoutZone(const Lot* lot) {
 	acreage = 10000.f;
 	buildings = { {"residential", 1.f}, {"residential", 1.f} };
-	script = { "empty", "basic_zone" };
+	script = { "empty", { "basic_zone" } };
 }
 
-function<int(Lot*)> ResidentialZone::ZoneAssigner = [](Lot* lot) {
+function<int(const Lot*)> ResidentialZone::ZoneAssigner = [](const Lot* lot) -> int {
 	return 1;
 };
 

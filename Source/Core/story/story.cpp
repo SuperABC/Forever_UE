@@ -16,7 +16,7 @@ Story::Story() :
 }
 
 Story::~Story() {
-
+	delete script;
 }
 
 void Story::LoadConfigs() const {
@@ -83,13 +83,17 @@ void Story::Init(Map* map) {
 	for (auto [name, zone] : map->GetZones()) {
 		auto setup = zone->GetScriptSetup();
 		auto script = new Script(scriptFactory, setup.first);
-		script->ReadMilestones(Config::GetScript(setup.second));
+		for (auto s : setup.second) {
+			script->ReadMilestones(Config::GetScript(s));
+		}
 		script->SetValue("self.name", name);
 		zone->SetScript(script);
 		for (auto [name, building] : zone->GetBuildings()) {
 			auto setup = building->GetScriptSetup();
 			auto script = new Script(scriptFactory, setup.first);
-			script->ReadMilestones(Config::GetScript(setup.second));
+			for (auto s : setup.second) {
+				script->ReadMilestones(Config::GetScript(s));
+			}
 			script->SetValue("self.name", name);
 			building->SetScript(script);
 		}
@@ -97,7 +101,9 @@ void Story::Init(Map* map) {
 	for (auto [name, building] : map->GetBuildings()) {
 		auto setup = building->GetScriptSetup();
 		auto script = new Script(scriptFactory, setup.first);
-		script->ReadMilestones(Config::GetScript(setup.second));
+		for (auto s : setup.second) {
+			script->ReadMilestones(Config::GetScript(s));
+		}
 		script->SetValue("self.name", name);
 		building->SetScript(script);
 	}

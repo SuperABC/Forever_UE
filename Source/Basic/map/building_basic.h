@@ -15,7 +15,7 @@ public:
 
 	static std::vector<float> GetPowers();
 
-	static std::function<int(Lot*)> BuildingAssigner;
+	static std::function<int(const Lot*)> BuildingAssigner;
 
 	virtual float RandomAcreage();
 	virtual void LayoutBuilding(const Quad* quad);

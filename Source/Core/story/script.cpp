@@ -862,10 +862,10 @@ void EmptyScript::SetScript() {
 
 }
 
-void EmptyScript::PreTrigger(Event* event) {
+void EmptyScript::PreTrigger(const Event* event) {
 
 }
 
-void EmptyScript::PostTrigger(Event* event) {
+void EmptyScript::PostTrigger(const Event* event) {
 
 }

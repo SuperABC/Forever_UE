@@ -39,10 +39,10 @@ public:
 	std::string scriptPath;
 
 	// 脚本前逻辑
-	COMSTOM_RUNTIME virtual void PreTrigger(Event* event) = 0;
+	COMSTOM_RUNTIME virtual void PreTrigger(const Event* event) = 0;
 		
 	// 脚本后逻辑
-	COMSTOM_RUNTIME virtual void PostTrigger(Event* event) = 0;
+	COMSTOM_RUNTIME virtual void PostTrigger(const Event* event) = 0;
 	
 	// 脚本前逻辑+脚本逻辑+脚本后逻辑
 	std::queue<Action> actionQueue;

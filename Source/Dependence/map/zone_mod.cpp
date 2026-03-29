@@ -6,7 +6,7 @@ using namespace std;
 ZoneMod::ZoneMod() :
 	acreage(0.f),
 	buildings(),
-	script({ "empty", "" }) {
+	script({ "empty", {} }) {
 
 }
 
@@ -14,7 +14,7 @@ ZoneMod::~ZoneMod() {
 
 }
 
-void ZoneFactory::RegisterZone(const string& id, std::function<int(Lot*)> assigner,
+void ZoneFactory::RegisterZone(const string& id, std::function<int(const Lot*)> assigner,
 	function<ZoneMod* ()> creator, function<void(ZoneMod*)> deleter) {
 	registries[id] = { creator, deleter };
 	assigners[id] = assigner;
@@ -65,7 +65,7 @@ vector<string> ZoneFactory::GetTypes() const {
 	return types;
 }
 
-vector<ZoneMod*> ZoneFactory::CreateZones(const string& type, Lot* lot) const {
+vector<ZoneMod*> ZoneFactory::CreateZones(const string& type, const Lot* lot) const {
 	vector<ZoneMod*> zoneMods;
 	auto config = configs.find(type);
 	if (config == configs.end() || !config->second) {

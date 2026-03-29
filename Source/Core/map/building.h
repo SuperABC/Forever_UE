@@ -219,7 +219,7 @@ public:
 	Floor* GetFloor(int level) const;
 
 	// 获取剧情与脚本
-	std::pair<std::string, std::string> GetScriptSetup();
+	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
 
 	// 获取剧情
 	Script* GetScript();
@@ -327,7 +327,7 @@ public:
 
 	static std::vector<float> GetPowers();
 
-	static std::function<int(Lot*)> BuildingAssigner;
+	static std::function<int(const Lot*)> BuildingAssigner;
 
 	virtual float RandomAcreage();
 	virtual void LayoutBuilding(const Quad* quad);

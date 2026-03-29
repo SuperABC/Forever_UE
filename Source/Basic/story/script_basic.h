@@ -17,9 +17,9 @@ public:
 
 	virtual void SetScript();
 
-	virtual void PreTrigger(Event* event);
+	virtual void PreTrigger(const Event* event);
 
-	virtual void PostTrigger(Event* event);
+	virtual void PostTrigger(const Event* event);
 
 private:
 	static int count;

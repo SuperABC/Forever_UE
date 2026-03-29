@@ -13,9 +13,9 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
-	static std::function<int(Lot*)> ZoneAssigner;
+	static std::function<int(const Lot*)> ZoneAssigner;
 
-	virtual void LayoutZone(Lot* lot);
+	virtual void LayoutZone(const Lot* lot);
 
 private:
 	static int count;

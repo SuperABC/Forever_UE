@@ -47,7 +47,7 @@ public:
 	const std::unordered_map<std::string, Building*>& GetBuildings();
 
 	// 获取剧情与脚本
-	std::pair<std::string, std::string> GetScriptSetup();
+	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
 
 	// 获取剧情
 	Script* GetScript();
@@ -59,7 +59,7 @@ public:
 	void GetPosition(float& x, float& y) const;
 
 	// 设计园区
-	void LayoutZone(Lot* block, BuildingFactory* factory);
+	void LayoutZone(const Lot* block, BuildingFactory* factory);
 
 	// 自动分布建筑
 	void ArrangeBuildings();
@@ -103,9 +103,9 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
-	static std::function<int(Lot*)> ZoneAssigner;
+	static std::function<int(const Lot*)> ZoneAssigner;
 
-	virtual void LayoutZone(Lot* block);
+	virtual void LayoutZone(const Lot* block);
 
 private:
 	static int count;

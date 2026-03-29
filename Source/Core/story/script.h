@@ -86,7 +86,7 @@ private:
 	std::string name;
 
 	// 脚本缓存
-	static std::unordered_map<std::string, std::pair<std::vector<std::string>, std::unordered_map<std::string, Milestone*>>> caches;
+	OBJECT_HOLDER static std::unordered_map<std::string, std::pair<std::vector<std::string>, std::unordered_map<std::string, Milestone*>>> caches;
 
 	// 里程碑列表
 	std::unordered_map<std::string, MilestoneNode> milestones;
@@ -113,9 +113,9 @@ public:
 
 	virtual void SetScript();
 
-	virtual void PreTrigger(Event* event);
+	virtual void PreTrigger(const Event* event);
 	
-	virtual void PostTrigger(Event* event);
+	virtual void PostTrigger(const Event* event);
 
 private:
 	static int count;

@@ -23,10 +23,10 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 指定园区数量
-	COMSTOM_INIT static std::function<int(Lot*)> ZoneAssigner;
+	COMSTOM_INIT static std::function<int(const Lot*)> ZoneAssigner;
 
 	// 设计园区
-	COMSTOM_INIT virtual void LayoutZone(Lot* lot) = 0;
+	COMSTOM_INIT virtual void LayoutZone(const Lot* lot) = 0;
 
 	// 园区面积
 	float acreage;
@@ -35,13 +35,13 @@ public:
 	std::vector<std::pair<std::string, float>> buildings;
 
 	// 关联剧情与脚本
-	std::pair<std::string, std::string> script;
+	std::pair<std::string, std::vector<std::string>> script;
 };
 
 class ZoneFactory {
 public:
 	// 注册园区
-	void RegisterZone(const std::string& id, std::function<int(Lot*)> assigner,
+	void RegisterZone(const std::string& id, std::function<int(const Lot*)> assigner,
 		std::function<ZoneMod* ()> creator, std::function<void(ZoneMod*)> deleter);
 
 	// 清空注册
@@ -60,7 +60,7 @@ public:
 	std::vector<std::string> GetTypes() const;
 
 	// 在地块内生成一类园区
-	std::vector<ZoneMod*> CreateZones(const std::string& type, Lot* lot) const;
+	std::vector<ZoneMod*> CreateZones(const std::string& type, const Lot* lot) const;
 
 	// 析构园区
 	void DestroyZone(ZoneMod* zone) const;
@@ -76,6 +76,6 @@ private:
 	std::unordered_map<std::string, bool> configs;
 	
 	// 园区生成器
-	std::unordered_map<std::string, std::function<int(Lot*)>> assigners;
+	std::unordered_map<std::string, std::function<int(const Lot*)>> assigners;
 };
 

@@ -829,7 +829,6 @@ JsonValue::JsonValue(DataType type)
 		break;
 	case DATA_ARRAY:
 	case DATA_OBJECT:
-		// 使用自定义比较函数创建 map
 		valueObject = new map<string, JsonValue, StringCompare>();
 		break;
 	case DATA_BOOL:

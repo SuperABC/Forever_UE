@@ -86,6 +86,8 @@ void ARoomBase::EnterRoom(FString room) {
 		}
 	};
 	storyBase->MatchEvent(event, story->GetScript(), getValues);
+
+	delete event;
 }
 
 void ARoomBase::LeaveRoom(FString room) {
@@ -123,6 +125,8 @@ void ARoomBase::LeaveRoom(FString room) {
 		}
 	};
 	storyBase->MatchEvent(event, story->GetScript(), getValues);
+
+	delete event;
 }
 
 

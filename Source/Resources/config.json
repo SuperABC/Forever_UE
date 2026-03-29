@@ -18,7 +18,7 @@
    "room_mods" : [ "residential" ],
    "route_mods" : [ "empty" ],
    "scheduler_mods" : [ "empty" ],
-   "script_mods" : [ "empty", "npc" ],
+   "script_mods" : [ "empty" ],
    "skill_mods" : [ "empty" ],
    "station_mods" : [ "empty" ],
    "storage_mods" : [ "empty" ],

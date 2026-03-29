@@ -30,7 +30,7 @@ vector<float> ResidentialBuilding::GetPowers() {
 	return vector<float>(AREA_END, 1.f);
 }
 
-function<int(Lot*)> ResidentialBuilding::BuildingAssigner = [](Lot* lot) {
+function<int(const Lot*)> ResidentialBuilding::BuildingAssigner = [](const Lot* lot) {
 	return 1;
 };
 
@@ -84,7 +84,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(i, 1, "residential", 200.f, component, 0);
 	}
 	
-	script = { "empty", "basic_building" };
+	script = { "empty", { "basic_building" } };
 }
 
 void ResidentialBuilding::PlaceConstruction() {

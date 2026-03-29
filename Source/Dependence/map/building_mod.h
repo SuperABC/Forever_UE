@@ -43,7 +43,7 @@ public:
 	COMSTOM_INIT static std::vector<float> GetPowers();
 
 	// 指定地块内建筑数量
-	COMSTOM_INIT static std::function<int(Lot*)> BuildingAssigner;
+	COMSTOM_INIT static std::function<int(const Lot*)> BuildingAssigner;
 
 	// 采样建筑面积
 	COMSTOM_INIT virtual float RandomAcreage() = 0;
@@ -102,14 +102,14 @@ public:
 	std::unordered_map<std::pair<std::string, int>, std::vector<std::vector<std::tuple<int, std::string, float>>>, PairHash> rows;
 	
 	// 关联剧情与脚本
-	std::pair<std::string, std::string> script;
+	std::pair<std::string, std::vector<std::string>> script;
 };
 
 class BuildingFactory {
 public:
 	// 注册建筑
 	void RegisterBuilding(const std::string& id,
-		const std::vector<float>& power, std::function<int(Lot*)> assigner,
+		const std::vector<float>& power, std::function<int(const Lot*)> assigner,
 		std::function<BuildingMod* ()> creator, std::function<void(BuildingMod*)> deleter);
 
 	// 清空注册
@@ -128,7 +128,7 @@ public:
 	std::unordered_map<std::string, std::vector<float>> GetPowers() const;
 
 	// 在地块内生成一类建筑
-	std::vector<std::string> CreateBuildings(const std::string& type, Lot* lot) const;
+	std::vector<std::string> CreateBuildings(const std::string& type, const Lot* lot) const;
 
 	// 析构建筑
 	void DestroyBuilding(BuildingMod* zone) const;
@@ -147,6 +147,6 @@ private:
 	std::unordered_map<std::string, std::vector<float>> powers;
 	
 	// 建筑生成器
-	std::unordered_map<std::string, std::function<int(Lot*)>> assigners;
+	std::unordered_map<std::string, std::function<int(const Lot*)>> assigners;
 };
 

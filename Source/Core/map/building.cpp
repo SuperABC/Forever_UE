@@ -388,7 +388,7 @@ Floor* Building::GetFloor(int level) const {
 	return nullptr;
 }
 
-std::pair<std::string, std::string> Building::GetScriptSetup() {
+std::pair<std::string, std::vector<std::string>> Building::GetScriptSetup() {
 	return mod->script;
 }
 
@@ -897,7 +897,7 @@ vector<float> EmptyBuilding::GetPowers() {
 	return vector<float>(AREA_END, 0.f);
 }
 
-function<int(Lot*)> EmptyBuilding::BuildingAssigner = [](Lot* lot) {
+function<int(const Lot*)> EmptyBuilding::BuildingAssigner = [](const Lot* lot) {
 	return 0;
 	};
 

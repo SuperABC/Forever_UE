@@ -38,13 +38,13 @@ public:
 
 private:
 	std::string name;
-	std::vector<Event*> triggers;
+	OBJECT_HOLDER std::vector<Event*> triggers;
 	bool visible;
 	Condition drop;
 	std::string description;
 	std::string goal;
-	std::vector<Dialog*> dialogs;
-	std::vector<Change*> changes;
+	OBJECT_HOLDER std::vector<Dialog*> dialogs;
+	OBJECT_HOLDER std::vector<Change*> changes;
 	std::vector<std::string> subsequences;
 };
 
