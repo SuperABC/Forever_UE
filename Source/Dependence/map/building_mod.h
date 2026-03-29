@@ -40,19 +40,19 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 建筑生成权重
-	COMSTOM_INIT static std::vector<float> GetPowers();
+	COSTOM_INIT static std::vector<float> GetPowers();
 
 	// 指定地块内建筑数量
-	COMSTOM_INIT static std::function<int(const Lot*)> BuildingAssigner;
+	COSTOM_INIT static std::function<int(const Lot*)> BuildingAssigner;
 
 	// 采样建筑面积
-	COMSTOM_INIT virtual float RandomAcreage() = 0;
+	COSTOM_INIT virtual float RandomAcreage() = 0;
 
 	// 布局建筑内部
-	COMSTOM_INIT virtual void LayoutBuilding(const Quad* quad) = 0;
+	COSTOM_INIT virtual void LayoutBuilding(const Quad* quad) = 0;
 
 	// 放置楼栋
-	COMSTOM_INIT virtual void PlaceConstruction() = 0;
+	COSTOM_INIT virtual void PlaceConstruction() = 0;
 
 	// 根据楼层分配空间
 	void AllocateFloors();

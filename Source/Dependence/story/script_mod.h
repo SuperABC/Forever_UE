@@ -30,19 +30,19 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 是否为主线剧情
-	COMSTOM_INIT static bool MainStory();
+	COSTOM_INIT static bool MainStory();
 
 	// 指定脚本文件
-	COMSTOM_INIT virtual void SetScript() = 0;
+	COSTOM_INIT virtual void SetScript() = 0;
 
 	// 脚本文件
 	std::string scriptPath;
 
 	// 脚本前逻辑
-	COMSTOM_RUNTIME virtual void PreTrigger(const Event* event) = 0;
+	COSTOM_RUNTIME virtual void PreTrigger(const Event* event) = 0;
 		
 	// 脚本后逻辑
-	COMSTOM_RUNTIME virtual void PostTrigger(const Event* event) = 0;
+	COSTOM_RUNTIME virtual void PostTrigger(const Event* event) = 0;
 	
 	// 脚本前逻辑+脚本逻辑+脚本后逻辑
 	std::queue<Action> actionQueue;

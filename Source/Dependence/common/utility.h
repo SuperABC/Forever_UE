@@ -13,8 +13,8 @@
 
 #define REPLACE_PATH(path) (path)
 
-#define COMSTOM_INIT
-#define COMSTOM_RUNTIME
+#define COSTOM_INIT
+#define COSTOM_RUNTIME
 
 #define OBJECT_HOLDER
 

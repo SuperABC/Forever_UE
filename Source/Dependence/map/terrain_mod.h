@@ -21,10 +21,10 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 构建优先级
-	COMSTOM_INIT virtual float GetPriority() const = 0;
+	COSTOM_INIT virtual float GetPriority() const = 0;
 
 	// 构建地形
-	COMSTOM_INIT virtual void DistributeTerrain(int width, int height,
+	COSTOM_INIT virtual void DistributeTerrain(int width, int height,
 		std::function<std::string(int, int)> getTerrain, 
 		std::function<bool(int, int, std::string)> setTerrain,
 		std::function<float(int, int)> getHeight, 

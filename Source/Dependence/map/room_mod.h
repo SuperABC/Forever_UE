@@ -23,7 +23,7 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 配置房间属性
-	COMSTOM_INIT virtual void ConfigRoom() = 0;
+	COSTOM_INIT virtual void ConfigRoom() = 0;
 
 	// 是否可居住
 	bool isResidential;

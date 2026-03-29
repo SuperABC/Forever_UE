@@ -101,6 +101,38 @@ extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
 	);
 }
 
+extern "C" __declspec(dllexport) void* GetModAssets() {
+	static vector<string> mods = { "zone", "building", "room" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModAssets(AssetFactory* factory) {
+	factory->RegisterAsset(ZoneAsset::GetId(),
+		[]() { return new ZoneAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
+	factory->RegisterAsset(BuildingAsset::GetId(),
+		[]() { return new BuildingAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
+	factory->RegisterAsset(RoomAsset::GetId(),
+		[]() { return new RoomAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
+}
+
+extern "C" __declspec(dllexport) void* GetModNames() {
+	static vector<string> mods = { "chinese" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModNames(NameFactory* factory) {
+	factory->RegisterName(ChineseName::GetId(),
+		[]() { return new ChineseName(); },
+		[](NameMod* name) { delete name; }
+	);
+}
+
 extern "C" __declspec(dllexport) void* GetModScripts() {
 	static vector<string> mods = { "npc" };
 	return (void*)&mods;

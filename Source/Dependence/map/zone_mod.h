@@ -23,10 +23,10 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 指定园区数量
-	COMSTOM_INIT static std::function<int(const Lot*)> ZoneAssigner;
+	COSTOM_INIT static std::function<int(const Lot*)> ZoneAssigner;
 
 	// 设计园区
-	COMSTOM_INIT virtual void LayoutZone(const Lot* lot) = 0;
+	COSTOM_INIT virtual void LayoutZone(const Lot* lot) = 0;
 
 	// 园区面积
 	float acreage;

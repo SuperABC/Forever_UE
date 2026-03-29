@@ -23,7 +23,7 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 构建路网
-	COMSTOM_INIT virtual void DistributeRoadnet(int width, int height,
+	COSTOM_INIT virtual void DistributeRoadnet(int width, int height,
 		std::function<std::string(int, int)> get) = 0;
 
 	// 路口
