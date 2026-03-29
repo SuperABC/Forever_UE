@@ -24,6 +24,9 @@ public:
 	// 获取名称
 	std::string GetName() const;
 
+	// 定义资产
+	void DefineAsset();
+
 private:
 	// 模组对象
 	OBJECT_HOLDER AssetMod* mod;
@@ -47,6 +50,8 @@ public:
 	static const char* GetId();
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
+
+	virtual void DefineAsset();
 
 private:
 	static int count;

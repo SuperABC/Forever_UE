@@ -26,6 +26,10 @@ const char* ZoneAsset::GetName() {
 	return name.data();
 }
 
+void ZoneAsset::DefineAsset() {
+
+}
+
 int BuildingAsset::count = 0;
 
 BuildingAsset::BuildingAsset() : id(count++) {
@@ -47,6 +51,10 @@ const char* BuildingAsset::GetName() {
     return name.data();
 }
 
+void BuildingAsset::DefineAsset() {
+
+}
+
 int RoomAsset::count = 0;
 
 RoomAsset::RoomAsset() : id(count++) {
@@ -66,5 +74,9 @@ const char* RoomAsset::GetType() const {
 const char* RoomAsset::GetName() {
     name = "房间资产" + to_string(id);
     return name.data();
+}
+
+void RoomAsset::DefineAsset() {
+
 }
 

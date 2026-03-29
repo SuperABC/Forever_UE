@@ -509,21 +509,12 @@ void Config::AddDllPath(const string& path) {
 					}
 				}
 
-				auto getEventFunc = (GetModFunc)GetProcAddress(modHandle, "GetModEvents");
-				if (getEventFunc) {
+				auto getScriptFunc = (GetModFunc)GetProcAddress(modHandle, "GetModScripts");
+				if (getScriptFunc) {
 					loaded = true;
-					auto events = *(vector<string>*)getEventFunc();
-					for (auto event : events) {
-						modEnables["event"].insert({ event, false });
-					}
-				}
-
-				auto getChangeFunc = (GetModFunc)GetProcAddress(modHandle, "GetModChanges");
-				if (getChangeFunc) {
-					loaded = true;
-					auto changes = *(vector<string>*)getChangeFunc();
-					for (auto change : changes) {
-						modEnables["change"].insert({ change, false });
+					auto scripts = *(vector<string>*)getScriptFunc();
+					for (auto script : scripts) {
+						modEnables["script"].insert({ script, false });
 					}
 				}
 
@@ -723,11 +714,11 @@ void Config::RemoveDllPath(const string& path) {
 							}
 						}
 
-						auto getEventFunc = (GetModFunc)GetProcAddress(modHandle, "GetModEvents");
-						if (getEventFunc) {
-							auto events = *(vector<string>*)getEventFunc();
-							for (auto event : events) {
-								modEnables["event"].erase(event);
+						auto getScriptFunc = (GetModFunc)GetProcAddress(modHandle, "GetModScripts");
+						if (getScriptFunc) {
+							auto scripts = *(vector<string>*)getScriptFunc();
+							for (auto script : scripts) {
+								modEnables["script"].erase(script);
 							}
 						}
 

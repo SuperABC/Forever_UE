@@ -31,10 +31,10 @@ void Name::GetSurname(function<void(const string&)> set,
 }
 
 void Name::GenerateName(function<void(const string&)> set,
-	bool male = true, bool female = true, bool neutral = true) {
+	bool male, bool female, bool neutral) {
 	string name = "";
 	mod->GenerateName([&](const string& n) {name = n; }, male, female, neutral);
-	if (RegisterName) {
+	if (RegisterName(name)) {
 		set(name);
 	}
 	else {
@@ -43,10 +43,10 @@ void Name::GenerateName(function<void(const string&)> set,
 }
 
 void Name::GenerateName(function<void(const string&)> set,
-	const string& surname, bool male = true, bool female = true, bool neutral = true) {
+	const string& surname, bool male, bool female, bool neutral) {
 	string name = "";
 	mod->GenerateName([&](const string& n) {name = n; }, surname, male, female, neutral);
-	if (RegisterName) {
+	if (RegisterName(name)) {
 		set(name);
 	}
 	else {

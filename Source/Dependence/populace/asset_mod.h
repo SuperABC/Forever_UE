@@ -20,6 +20,9 @@ public:
 	virtual const char* GetType() const = 0;
 	virtual const char* GetName() = 0;
 
+	// 定义资产
+	COSTOM_INIT virtual void DefineAsset() = 0;
+
 	// 资产描述
 	std::string asset;
 };

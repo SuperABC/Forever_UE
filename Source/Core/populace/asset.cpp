@@ -23,6 +23,10 @@ string Asset::GetName() const {
 	return name;
 }
 
+void Asset::DefineAsset() {
+	mod->DefineAsset();
+}
+
 int EmptyAsset::count = 0;
 
 EmptyAsset::EmptyAsset() : id(count++) {
@@ -44,5 +48,9 @@ const char* EmptyAsset::GetType() const {
 const char* EmptyAsset::GetName() {
 	name = "空资产" + to_string(id);
 	return name.data();
+}
+
+void EmptyAsset::DefineAsset() {
+
 }
 

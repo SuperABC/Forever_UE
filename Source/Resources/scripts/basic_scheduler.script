@@ -1,0 +1,21 @@
+[
+{
+	"milestone": "game_start",
+	"visible": false,
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "add_option", "name": "$$self.name", "option": "你好"}
+	],
+	"subsequences": ["option_dialog"]
+},
+{
+	"milestone": "option_dialog",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "你好"}],
+	"dialogs": [{"list":[{"content": "你好。"}]}],
+	"changes": [],
+	"subsequences": []
+}
+]

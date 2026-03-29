@@ -133,6 +133,18 @@ extern "C" __declspec(dllexport) void RegisterModNames(NameFactory* factory) {
 	);
 }
 
+extern "C" __declspec(dllexport) void* GetModSchedulers() {
+	static vector<string> mods = { "workonly" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModSchedulers(SchedulerFactory* factory) {
+	factory->RegisterScheduler(WorkonlyScheduler::GetId(), WorkonlyScheduler::GetPower(),
+		[]() { return new WorkonlyScheduler(); },
+		[](SchedulerMod* scheduler) { delete scheduler; }
+	);
+}
+
 extern "C" __declspec(dllexport) void* GetModScripts() {
 	static vector<string> mods = { "npc" };
 	return (void*)&mods;
