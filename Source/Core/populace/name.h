@@ -27,15 +27,15 @@ public:
 	std::string GetName() const;
 
 	// 从姓名中获取姓
-	virtual void GetSurname(std::function<void(const std::string&)> set,
+	void GetSurname(std::function<void(const std::string&)> set,
 		const std::string& name);
 
 	// 全随机生成姓名
-	virtual void GenerateName(std::function<void(const std::string&)> set,
+	void GenerateName(std::function<void(const std::string&)> set,
 		bool male = true, bool female = true, bool neutral = true);
 
 	// 给定姓随机生成名
-	virtual void GenerateName(std::function<void(const std::string&)> set,
+	void GenerateName(std::function<void(const std::string&)> set,
 		const std::string& surname, bool male = true, bool female = true, bool neutral = true);
 
 	// 占用名字

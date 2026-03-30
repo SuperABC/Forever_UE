@@ -6,7 +6,8 @@ using namespace std;
 int ChineseName::count = 0;
 
 ChineseName::ChineseName() : id(count++) {
-
+	InitializeSurnames();
+	InitializeNames();
 }
 
 ChineseName::~ChineseName() {

@@ -29,6 +29,15 @@ public:
 	// 初始化调度
 	void InitScheduler();
 
+	// 获取剧情与脚本
+	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
+
+	// 获取剧本
+	Script* GetScript() const;
+
+	// 设置剧本
+	void SetScript(Script* script);
+
 private:
 	// 模组对象
 	OBJECT_HOLDER SchedulerMod* mod;

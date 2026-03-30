@@ -36,57 +36,46 @@ Building* Room::GetParentBuilding() const {
 	return parentBuilding;
 }
 
-// 设置所在建筑
 void Room::SetParent(Building* building) {
 	parentBuilding = building;
 }
 
-// 获取所在组合
 Component* Room::GetParentComponent() const {
 	return parentComponent;
 }
 
-// 设置所在组合
 void Room::SetParent(Component* component) {
 	parentComponent = component;
 }
 
-// 获取所在楼层
 int Room::GetLayer() const {
 	return layer;
 }
 
-// 设置所在楼层
 void Room::SetLayer(int layer) {
 	this->layer = layer;
 }
 
-// 获取门框
 const Room::WallHole& Room::GetDoors() const {
 	return doors;
 }
 
-// 设置门框
 void Room::SetDoors(const WallHole& doors) {
 	this->doors = doors;
 }
 
-// 获取窗框
 const Room::WallHole& Room::GetWindows() const {
 	return windows;
 }
 
-// 设置窗框
 void Room::SetWindows(const WallHole& windows) {
 	this->windows = windows;
 }
 
-// 获取门牌号
 string Room::GetNumber() const {
 	return number;
 }
 
-// 设置四位门牌号
 void Room::SetNumber(int floor, int number) {
 	ostringstream oss;
 	if (floor < 0) {
@@ -99,12 +88,14 @@ void Room::SetNumber(int floor, int number) {
 	this->number = oss.str();
 }
 
-// 获取完整地址
+void Room::ConfigRoom() {
+	mod->ConfigRoom();
+}
+
 string Room::GetAddress() const {
 	return GetParentBuilding()->GetAddress() + " " + number;
 }
 
-// 获取世界坐标
 std::pair<float, float> Room::GetPosition(float x, float y) const {
 	auto building = GetParentBuilding();
 	auto block = GetParentBuilding()->GetParentBlock();

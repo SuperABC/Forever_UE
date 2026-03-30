@@ -51,6 +51,9 @@ public:
 	// 设置启用配置
 	void SetConfig(const std::string& name, bool config);
 
+	// 获取启用姓名
+	std::string GetName() const;
+
 	// 析构姓名
 	void DestroyName(NameMod* terrain) const;
 

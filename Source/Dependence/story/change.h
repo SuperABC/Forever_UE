@@ -28,7 +28,7 @@ private:
 	Condition condition;
 };
 
-// 全局广播
+// 全局广播（已实现）
 class GlobalMessageChange : public Change {
 public:
 	GlobalMessageChange();
@@ -44,7 +44,7 @@ private:
 	std::string message;
 };
 
-// 变量赋值
+// 变量赋值（已实现）
 class SetValueChange : public Change {
 public:
 	SetValueChange();
@@ -63,7 +63,7 @@ private:
 	std::string value;
 };
 
-// 移除变量
+// 移除变量（已实现）
 class RemoveValueChange : public Change {
 public:
 	RemoveValueChange();
@@ -79,7 +79,7 @@ private:
 	std::string variable;
 };
 
-// 停用里程碑
+// 停用里程碑（已实现）
 class DeactivateMilestoneChange : public Change {
 public:
 	DeactivateMilestoneChange();
@@ -137,18 +137,24 @@ private:
 class SpawnNpcChange : public Change {
 public:
 	SpawnNpcChange();
-	SpawnNpcChange(std::string name, std::string avatar);
+	SpawnNpcChange(std::string name, std::string gender, std::string birthday, std::string avatar);
 	virtual ~SpawnNpcChange();
 
 	virtual std::string GetType() const;
 
 	void SetName(std::string name);
 	std::string GetName() const;
+	void SetGender(std::string gender);
+	std::string GetGender();
+	void SetBirthday(std::string birthday);
+	std::string GetBirthday();
 	void SetAvatar(std::string avatar);
 	std::string GetAvatar() const;
 
 private:
 	std::string name;
+	std::string gender;
+	std::string birthday;
 	std::string avatar;
 };
 

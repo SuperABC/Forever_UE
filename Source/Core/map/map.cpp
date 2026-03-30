@@ -78,6 +78,7 @@ Chunk::~Chunk() {
 			delete elements[j][i];
 		}
 	}
+	elements.clear();
 }
 
 string Chunk::GetTerrain(int x, int y) const {
@@ -182,7 +183,7 @@ Map::Map() :
 }
 
 Map::~Map() {
-
+	Destroy();
 }
 
 void Map::LoadConfigs() const {
@@ -529,9 +530,10 @@ int Map::Init(int chunkX, int chunkY) {
 	for (auto& terrain : terrains) {
 		terrain->DistributeTerrain(width, height, getTerrain, setTerrain, getHeight, setHeight);
 	}
-	for (auto terrain : terrains) {
+	for (auto &terrain : terrains) {
 		delete terrain;
 	}
+	terrains.clear();
 
 	debugf("Log: Generate roadnet.\n");
 	roadnet = new Roadnet(roadnetFactory, roadnetFactory->GetRoadnet()) ;
@@ -712,7 +714,7 @@ int Map::Init(int chunkX, int chunkY) {
 			}
 		}
 	}
-	return 0;
+	return capacity / 2;
 }
 
 void Map::Destroy() {

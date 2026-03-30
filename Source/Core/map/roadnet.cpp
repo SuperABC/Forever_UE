@@ -20,12 +20,15 @@ Roadnet::~Roadnet() {
 	for (auto node : nodes) {
 		delete node;
 	}
+	nodes.clear();
 	for (auto connection : connections) {
 		delete connection;
 	}
+	connections.clear();
 	for (auto block : blocks) {
 		delete block;
 	}
+	blocks.clear();
 }
 
 string Roadnet::GetType() const {

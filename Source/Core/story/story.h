@@ -1,11 +1,15 @@
 ﻿#pragma once
 
 #include "../map/map.h"
+#include "../populace/populace.h"
+#include "../player/player.h"
 
 #include "script.h"
 
 
 class Map;
+class Populace;
+class Player;
 class Story {
 public:
 	// 构造剧情
@@ -22,7 +26,7 @@ public:
 		const std::vector<std::string>& dlls);
 
 	// 初始化剧情
-	void Init(Map* map);
+	void Init(Map* map, Populace* populace, Player* player);
 
 	// 释放空间
 	void Destroy();
@@ -34,10 +38,10 @@ public:
 	// 获取主线剧情
 	Script* GetScript() const;
 
-private:
 	// 统一工厂
 	static ScriptFactory* scriptFactory;
 
+private:
 	// 主线剧情
 	OBJECT_HOLDER Script* script;
 };

@@ -200,8 +200,8 @@ SpawnNpcChange::SpawnNpcChange() {
 
 }
 
-SpawnNpcChange::SpawnNpcChange(string name, string avatar)
-	: name(name), avatar(avatar) {
+SpawnNpcChange::SpawnNpcChange(string name, string gender, string birthday, string avatar)
+	: name(name), gender(gender), birthday(birthday), avatar(avatar) {
 
 }
 
@@ -219,6 +219,22 @@ void SpawnNpcChange::SetName(string name) {
 
 string SpawnNpcChange::GetName() const {
 	return name;
+}
+
+void SpawnNpcChange::SetGender(string gender) {
+	this->gender = gender;
+}
+
+string SpawnNpcChange::GetGender() {
+	return gender;
+}
+
+void SpawnNpcChange::SetBirthday(string birthday) {
+	this->birthday = birthday;
+}
+
+string SpawnNpcChange::GetBirthday() {
+	return birthday;
 }
 
 void SpawnNpcChange::SetAvatar(string avatar) {

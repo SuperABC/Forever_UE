@@ -34,8 +34,7 @@ public:
 
 	void SetGlobal(AActor* g);
 
-	//void TriggerEvent(Event* event);
-	//void SpawnNpc(const FString& name, const FString& avatar, const FVector& position);
+	void SpawnNpc(const FString& name, const FString& avatar, const FVector& position);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdatePopulace(const TArray<FPerson>& adds, const TArray<FString>& removes);
@@ -44,15 +43,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "World")
 	void RemoveInstance(FString name, AActor*& instances);
 
-	UFUNCTION(BlueprintCallable, Category = "Story")
-	TArray<FString> GetOptions(FString name);
-
-
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AActor* global;
 
-	//std::unordered_map<std::string, AActor*> personInstances;
+	std::unordered_map<std::string, AActor*> personInstances;
 };

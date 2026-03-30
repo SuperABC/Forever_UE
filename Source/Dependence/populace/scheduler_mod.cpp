@@ -15,6 +15,7 @@ SchedulerMod::~SchedulerMod() {
 void SchedulerFactory::RegisterScheduler(const string& id, float power,
 	function<SchedulerMod* ()> creator, function<void(SchedulerMod*)> deleter) {
 	registries[id] = { creator, deleter };
+	powers[id] = power;
 }
 
 void SchedulerFactory::RemoveAll() {

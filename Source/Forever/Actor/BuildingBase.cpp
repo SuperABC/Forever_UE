@@ -120,8 +120,8 @@ void ABuildingBase::EnterBuilding(FString building) {
 	};
 	storyBase->MatchEvent(event, story->GetScript(), getValues);
 
-	auto buildings = ((AGlobalBase*)global)->GetMap()->GetBuildings();
-	for (auto [_, b] : buildings) {
+	auto b = ((AGlobalBase*)global)->GetMap()->GetBuilding(TCHAR_TO_UTF8(*building));
+	if (b) {
 		getValues.push_back(
 			[&](string name) -> pair<bool, ValueType> {
 				return b->GetScript()->GetValue(name);
@@ -129,14 +129,17 @@ void ABuildingBase::EnterBuilding(FString building) {
 		storyBase->MatchEvent(event, b->GetScript(), getValues);
 		getValues.pop_back();
 	}
-	for (auto [_, z] : ((AGlobalBase*)global)->GetMap()->GetZones()) {
-		for (auto [__, b] : z->GetBuildings()) {
+	else {
+		for (auto [_, z] : ((AGlobalBase*)global)->GetMap()->GetZones()) {
+			b = z->GetBuilding(TCHAR_TO_UTF8(*building));
+			if (!b)continue;
 			getValues.push_back(
 				[&](string name) -> pair<bool, ValueType> {
 					return b->GetScript()->GetValue(name);
 				});
 			storyBase->MatchEvent(event, b->GetScript(), getValues);
 			getValues.pop_back();
+			break;
 		}
 	}
 
@@ -162,8 +165,8 @@ void ABuildingBase::LeaveBuilding(FString building) {
 	};
 	storyBase->MatchEvent(event, story->GetScript(), getValues);
 
-	auto buildings = ((AGlobalBase*)global)->GetMap()->GetBuildings();
-	for (auto [_, b] : buildings) {
+	auto b = ((AGlobalBase*)global)->GetMap()->GetBuilding(TCHAR_TO_UTF8(*building));
+	if (b) {
 		getValues.push_back(
 			[&](string name) -> pair<bool, ValueType> {
 				return b->GetScript()->GetValue(name);
@@ -171,14 +174,17 @@ void ABuildingBase::LeaveBuilding(FString building) {
 		storyBase->MatchEvent(event, b->GetScript(), getValues);
 		getValues.pop_back();
 	}
-	for (auto [_, z] : ((AGlobalBase*)global)->GetMap()->GetZones()) {
-		for (auto [__, b] : z->GetBuildings()) {
+	else {
+		for (auto [_, z] : ((AGlobalBase*)global)->GetMap()->GetZones()) {
+			b = z->GetBuilding(TCHAR_TO_UTF8(*building));
+			if (!b)continue;
 			getValues.push_back(
 				[&](string name) -> pair<bool, ValueType> {
 					return b->GetScript()->GetValue(name);
 				});
 			storyBase->MatchEvent(event, b->GetScript(), getValues);
 			getValues.pop_back();
+			break;
 		}
 	}
 

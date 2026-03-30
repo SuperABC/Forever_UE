@@ -16,7 +16,7 @@ Story::Story() :
 }
 
 Story::~Story() {
-	delete script;
+	Destroy();
 }
 
 void Story::LoadConfigs() const {
@@ -72,13 +72,14 @@ void Story::InitScripts(unordered_map<string, HMODULE>& modHandles,
 #endif
 }
 
-void Story::Init(Map* map) {
+void Story::Init(Map* map, Populace* populace, Player* player) {
 	Destroy();
 
 	script = new Script(scriptFactory, scriptFactory->GetMain());
 	for (auto story : Config::GetStories()) {
 		script->ReadMilestones(story);
 	}
+	script->SetValue("system.time.year", player->GetTime()->GetYear());
 
 	for (auto [name, zone] : map->GetZones()) {
 		auto setup = zone->GetScriptSetup();
@@ -106,6 +107,15 @@ void Story::Init(Map* map) {
 		}
 		script->SetValue("self.name", name);
 		building->SetScript(script);
+	}
+	for (auto citizen : populace->GetCitizens()) {
+		auto setup = citizen->GetScheduler()->GetScriptSetup();
+		auto script = new Script(scriptFactory, setup.first);
+		for (auto s : setup.second) {
+			script->ReadMilestones(Config::GetScript(s));
+		}
+		script->SetValue("self.name", citizen->GetName());
+		citizen->GetScheduler()->SetScript(script);
 	}
 }
 

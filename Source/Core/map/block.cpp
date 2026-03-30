@@ -20,15 +20,18 @@ Block::Block(Lot lot) :
 }
 
 Block::~Block() {
-	for (auto [road, _] : roads) {
+	for (auto &[road, _] : roads) {
 		delete road;
 	}
-	for (auto [_, zone] : zones) {
+	roads.clear();
+	for (auto &[_, zone] : zones) {
 		delete zone;
 	}
-	for (auto [_, building] : buildings) {
+	zones.clear();
+	for (auto &[_, building] : buildings) {
 		delete building;
 	}
+	buildings.clear();
 }
 
 const vector<pair<Connection*, float>>& Block::GetRoads() const {

@@ -31,7 +31,7 @@ private:
 };
 
 
-// 游戏开始
+// 游戏开始（已实现）
 class GameStartEvent : public Event {
 public:
 	GameStartEvent();
@@ -45,7 +45,7 @@ public:
 private:
 };
 
-// 脚本消息
+// 脚本消息（已实现）
 class ScriptMessageEvent : public Event {
 public:
 	ScriptMessageEvent(std::string message);
@@ -63,7 +63,7 @@ private:
 	std::string message;
 };
 
-// 选项对话
+// 选项对话（已实现）
 class OptionDialogEvent : public Event {
 public:
 	OptionDialogEvent(std::string name, std::string option);
@@ -145,7 +145,7 @@ private:
 	std::string reason;
 };
 
-// 进入园区
+// 进入园区（已实现）
 class EnterZoneEvent : public Event {
 public:
 	EnterZoneEvent(std::string zone);
@@ -163,7 +163,7 @@ private:
 	std::string zone;
 };
 
-// 离开园区
+// 离开园区（已实现）
 class LeaveZoneEvent : public Event {
 public:
 	LeaveZoneEvent(std::string zone);
@@ -181,7 +181,7 @@ private:
 	std::string zone;
 };
 
-// 进入建筑
+// 进入建筑（已实现）
 class EnterBuildingEvent : public Event {
 public:
 	EnterBuildingEvent(std::string zone, std::string building);
@@ -202,7 +202,7 @@ private:
 	std::string building;
 };
 
-// 离开建筑
+// 离开建筑（已实现）
 class LeaveBuildingEvent : public Event {
 public:
 	LeaveBuildingEvent(std::string zone, std::string building);
@@ -223,7 +223,7 @@ private:
 	std::string building;
 };
 
-// 进入房间
+// 进入房间（已实现）
 class EnterRoomEvent : public Event {
 public:
 	EnterRoomEvent(std::string zone, std::string building, std::string room);
@@ -247,7 +247,7 @@ private:
 	std::string room;
 };
 
-// 离开房间
+// 离开房间（已实现）
 class LeaveRoomEvent : public Event {
 public:
 	LeaveRoomEvent(std::string zone, std::string building, std::string room);

@@ -11,15 +11,18 @@ Milestone::Milestone(string name, vector<Event*> triggers, bool visible, Conditi
 }
 
 Milestone::~Milestone() {
-	for(auto trigger : triggers) {
+	for(auto &trigger : triggers) {
 		delete trigger;
 	}
-	for(auto dialog : dialogs) {
+	triggers.clear();
+	for(auto &dialog : dialogs) {
 		delete dialog;
 	}
-	for(auto change : changes) {
+	dialogs.clear();
+	for(auto &change : changes) {
 		delete change;
 	}
+	changes.clear();
 }
 
 vector<Dialog*> Milestone::GetDialogs() {

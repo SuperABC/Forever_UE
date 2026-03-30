@@ -283,17 +283,21 @@ Building::Building(BuildingFactory* factory, const string& building) :
 
 Building::~Building() {
 	factory->DestroyBuilding(mod);
-	for (auto floor : floors) {
+	for (auto &floor : floors) {
 		delete floor;
 	}
-	for (auto component : components) {
+	floors.clear();
+	for (auto &component : components) {
 		delete component;
 	}
-	for (auto room : rooms) {
+	components.clear();
+	for (auto &room : rooms) {
 		delete room;
 	}
+	rooms.clear();
 
 	if(script)delete script;
+	script = nullptr;
 }
 
 string Building::GetType() const {
@@ -392,7 +396,7 @@ std::pair<std::string, std::vector<std::string>> Building::GetScriptSetup() {
 	return mod->script;
 }
 
-Script* Building::GetScript() {
+Script* Building::GetScript() const {
 	return script;
 }
 
@@ -471,6 +475,10 @@ void Building::LayoutBuilding(Layout* layout, ComponentFactory* componentFactory
 				ArrangeRow(i - basements, get<0>(room), get<1>(room), get<2>(room), componentMap[component], roomFactory);
 			}
 		}
+	}
+
+	for (auto room : rooms) {
+		room->ConfigRoom();
 	}
 }
 

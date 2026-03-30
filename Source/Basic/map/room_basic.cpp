@@ -27,5 +27,6 @@ const char* ResidentialRoom::GetName() {
 }
 
 void ResidentialRoom::ConfigRoom() {
-
+	isResidential = true;
+	residentialCapacity = 1;
 }

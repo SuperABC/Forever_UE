@@ -210,6 +210,14 @@ public:
 	// 寻址房间
 	const Room* LocateRoom(const std::string& address) const;
 
+	// 统一工厂
+	static TerrainFactory* terrainFactory;
+	static RoadnetFactory* roadnetFactory;
+	static ZoneFactory* zoneFactory;
+	static BuildingFactory* buildingFactory;
+	static ComponentFactory* componentFactory;
+	static RoomFactory* roomFactory;
+
 private:
 	// 检查全局坐标是否在地图内
 	bool CheckXY(int x, int y) const;
@@ -219,14 +227,6 @@ private:
 
 	// 清理空园区建筑
 	void ClearZero();
-
-	// 统一工厂
-	static TerrainFactory* terrainFactory;
-	static RoadnetFactory* roadnetFactory;
-	static ZoneFactory* zoneFactory;
-	static BuildingFactory* buildingFactory;
-	static ComponentFactory* componentFactory;
-	static RoomFactory* roomFactory;
 
 	// 地图信息
 	int width;

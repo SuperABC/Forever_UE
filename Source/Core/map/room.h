@@ -72,6 +72,9 @@ public:
 	// 设置门牌号
 	void SetNumber(int floor, int number);
 
+	// 读取房间配置
+	void ConfigRoom();
+
 	// 获取完整地址
 	std::string GetAddress() const;
 

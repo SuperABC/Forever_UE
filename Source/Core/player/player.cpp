@@ -4,12 +4,13 @@
 
 using namespace std;
 
-Player::Player() {
-
+Player::Player() :
+	time(nullptr) {
+	time = new Time();
 }
 
 Player::~Player() {
-
+	delete time;
 }
 
 void Player::LoadConfigs() const {
@@ -24,4 +25,8 @@ void Player::LoadConfigs() const {
 void Player::ApplyChange(Change* change,
 	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
 
+}
+
+Time* Player::GetTime() {
+	return time;
 }

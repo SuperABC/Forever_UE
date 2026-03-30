@@ -267,8 +267,8 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 			if (option.IsNull()) {
 				THROW_EXCEPTION(RuntimeException, "Missing option for option_dialog event.\n");
 			}
-			if (id.AsInt() == -1) {
-				event = new OptionDialogEvent(obj["name"].AsString(), obj["option"].AsString());
+			if (id.IsNull()) {
+				event = new OptionDialogEvent(name.AsString(), obj["option"].AsString());
 			}
 			else {
 				event = new OptionDialogEvent(id.AsInt(), obj["option"].AsString());
@@ -279,7 +279,7 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 			if (npc.IsNull()) {
 				THROW_EXCEPTION(RuntimeException, "Missing npc for npc_meet event.\n");
 			}
-			event = new NPCMeetEvent(obj["npc"].AsString());
+			event = new NPCMeetEvent(npc.AsString());
 		}
 		else if (type == "citizen_born") {
 			auto name = obj["name"];
@@ -599,8 +599,16 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			if (name.IsNull()) {
 				THROW_EXCEPTION(RuntimeException, "Missing name for spawn_npc change.\n");
 			}
+			auto gender = obj["gender"];
+			if (gender.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing gender for spawn_npc change.\n");
+			}
+			auto birthday = obj["birthday"];
+			if (birthday.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing birthday for spawn_npc change.\n");
+			}
 			string avatar = obj["avatar"].IsNull() ? "" : obj["avatar"].AsString();
-			change = new SpawnNpcChange(name.AsString(), avatar);
+			change = new SpawnNpcChange(name.AsString(), gender.AsString(), birthday.AsString(), avatar);
 		}
 		else if (type == "remove_npc") {
 			auto name = obj["name"];

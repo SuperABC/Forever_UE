@@ -27,7 +27,7 @@ const char* WorkonlyScheduler::GetName() {
 }
 
 float WorkonlyScheduler::GetPower() {
-	return 0.f;
+	return 1.f;
 }
 
 void WorkonlyScheduler::InitScheduler() {

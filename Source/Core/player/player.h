@@ -15,6 +15,11 @@ public:
 	void ApplyChange(Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
+	// 获取时钟
+	Time* GetTime();
+
 private:
+	// 时钟
+	OBJECT_HOLDER Time* time;
 };
 

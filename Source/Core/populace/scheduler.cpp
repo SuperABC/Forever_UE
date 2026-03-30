@@ -16,6 +16,7 @@ Scheduler::~Scheduler() {
 	factory->DestroyScheduler(mod);
 
 	if (script)delete script;
+	script = nullptr;
 }
 
 string Scheduler::GetType() const {
@@ -28,6 +29,18 @@ string Scheduler::GetName() const {
 
 void Scheduler::InitScheduler() {
 	mod->InitScheduler();
+}
+
+std::pair<std::string, std::vector<std::string>> Scheduler::GetScriptSetup() {
+	return mod->script;
+}
+
+Script* Scheduler::GetScript() const {
+	return script;
+}
+
+void Scheduler::SetScript(Script* script) {
+	this->script = script;
 }
 
 int EmptyScheduler::count = 0;

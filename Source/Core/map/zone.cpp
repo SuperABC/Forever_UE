@@ -22,11 +22,13 @@ Zone::Zone(ZoneFactory* factory, const string& zone) :
 Zone::~Zone() {
 	factory->DestroyZone(mod);
 
-	for (auto [_, building] : buildings) {
+	for (auto &[_, building] : buildings) {
 		delete building;
 	}
+	buildings.clear();
 
 	if(script)delete script;
+	script = nullptr;
 }
 
 string Zone::GetType() const {
@@ -71,7 +73,7 @@ std::pair<std::string, std::vector<std::string>> Zone::GetScriptSetup() {
 	return mod->script;
 }
 
-Script* Zone::GetScript() {
+Script* Zone::GetScript() const {
 	return script;
 }
 

@@ -89,15 +89,13 @@ void AZoneBase::EnterZone(FString zone) {
 	};
 	storyBase->MatchEvent(event, story->GetScript(), getValues);
 
-	auto zones = ((AGlobalBase*)global)->GetMap()->GetZones();
-	for (auto [_, z] : zones) {
-		getValues.push_back(
-			[&](string name) -> pair<bool, ValueType> {
-				return z->GetScript()->GetValue(name);
-			});
-		storyBase->MatchEvent(event, z->GetScript(), getValues);
-		getValues.pop_back();
-	}
+	auto z = ((AGlobalBase*)global)->GetMap()->GetZone(TCHAR_TO_UTF8(*zone));
+	getValues.push_back(
+		[&](string name) -> pair<bool, ValueType> {
+			return z->GetScript()->GetValue(name);
+		});
+	storyBase->MatchEvent(event, z->GetScript(), getValues);
+	getValues.pop_back();
 	
 	delete event;
 }

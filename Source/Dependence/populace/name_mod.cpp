@@ -53,6 +53,15 @@ void NameFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
 }
 
+string NameFactory::GetName() const {
+	for (auto [name, enabled] : configs) {
+		if (enabled) {
+			return name;
+		}
+	}
+	return "";
+}
+
 void NameFactory::DestroyName(NameMod* Name) const {
 	if (!Name) {
 		debugf("Warning: Name is null when deleting.\n");

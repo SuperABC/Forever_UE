@@ -369,9 +369,9 @@ int main() {
 
 	// 读取Populace相关类及Mod
 	populace->LoadConfigs();
-	//populace->InitAssets(modHandles, mods);
-	//populace->InitNames(modHandles, mods);
-	//populace->InitSchedulers(modHandles, mods);
+	populace->InitAssets(modHandles, mods);
+	populace->InitNames(modHandles, mods);
+	populace->InitSchedulers(modHandles, mods);
 
 	// 读取Society相关类及Mod
 	society->LoadConfigs();
@@ -426,10 +426,10 @@ int main() {
 				int size = atoi(parser.GetOption("--block").data());
 
 				int accomodation = ::map->Init(size, size);
-				//populace->Init(accomodation, story->ReadNames("ys", Config::GetScript()), player->GetTime());
+				populace->Init(accomodation, player->GetTime());
 				//::map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
 				//society->Init(::map, populace, player->GetTime());
-				story->Init(::map);
+				story->Init(::map, populace, player);
 				//populace->Schedule();
 				//populace->Workload(story);
 				//populace->Characterize(story);

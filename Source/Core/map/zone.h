@@ -50,7 +50,7 @@ public:
 	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
 
 	// 获取剧情
-	Script* GetScript();
+	Script* GetScript() const;
 
 	// 设置剧情
 	void SetScript(Script* script);
