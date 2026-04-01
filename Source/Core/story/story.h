@@ -5,7 +5,14 @@
 #include "../player/player.h"
 
 #include "script.h"
+#include "condition.h"
+#include "utility.h"
+#include "error.h"
+#include "config.h"
 
+#include <string>
+#include <vector>
+#include <functional>
 
 class Map;
 class Populace;

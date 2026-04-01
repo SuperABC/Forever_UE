@@ -392,6 +392,22 @@ Floor* Building::GetFloor(int level) const {
 	return nullptr;
 }
 
+bool Building::GetStated() const {
+    return stated;
+}
+
+void Building::SetStated(bool stated) {
+    this->stated = stated;
+}
+
+Person* Building::GetOwner() const {
+    return owner;
+}
+
+void Building::SetOwner(Person* owner) {
+    this->owner = owner;
+}
+
 std::pair<std::string, std::vector<std::string>> Building::GetScriptSetup() {
 	return mod->script;
 }

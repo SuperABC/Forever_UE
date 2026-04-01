@@ -103,8 +103,8 @@ void AGlobalBase::BeginPlay() {
 
 		//story->Init();
 		int accomodation = map->Init(size, size);
-		populace->Init(accomodation, player->GetTime());
-		//map->Checkin(populace->GetCitizens(), player->GetTime(), populace->GetAssetFactory());
+		populace->Init(accomodation, player);
+		map->Checkin(populace, player);
 		//society->Init(map, populace, player->GetTime());
 		story->Init(map, populace, player);
 		//populace->Schedule();

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "story/script.h"
+#include "populace/person.h"
 
 #include "zone_mod.h"
 
@@ -12,6 +13,7 @@ typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
 
 // 园区实体
 class Block;
+class Person;
 class Building;
 class BuildingFactory;
 class Zone : public Quad {
@@ -45,6 +47,18 @@ public:
 
 	// 获取园区内所有建筑
 	const std::unordered_map<std::string, Building*>& GetBuildings();
+
+    // 获取是否由政府拥有
+    bool GetStated() const;
+
+    // 设置是否由政府拥有
+    void SetStated(bool state);
+
+    // 获取私人房东
+    Person* GetOwner() const;
+
+    // 设置私人房东
+    void SetOwner(Person* owner);
 
 	// 获取剧情与脚本
 	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
@@ -88,6 +102,12 @@ private:
 
 	// 内部建筑
 	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
+
+    // 是否由政府拥有
+    bool stated;
+
+    // 私人房东
+    Person* owner;
 
 	// 关联剧情
 	OBJECT_HOLDER Script* script;

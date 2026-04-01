@@ -8,6 +8,14 @@
 #include "building.h"
 #include "component.h"
 #include "room.h"
+#include "condition.h"
+#include "utility.h"
+#include "error.h"
+#include "config.h"
+
+#include <string>
+#include <vector>
+#include <functional>
 
 #define CHUNK_SIZE 256
 
@@ -106,6 +114,8 @@ private:
 	OBJECT_HOLDER std::vector<std::vector<Element*>> elements;
 };
 
+class Populace;
+class Player;
 class Map {
 public:
 	// 构造地图
@@ -133,6 +143,9 @@ public:
 
 	// 初始化地图
 	int Init(int chunkX, int chunkY);
+
+	// 市民入驻
+	void Checkin(Populace* populace, Player* player) const;
 
 	// 释放空间
 	void Destroy();

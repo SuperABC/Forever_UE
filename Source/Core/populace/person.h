@@ -42,6 +42,7 @@ enum RELATIVE_TYPE : int {
 	RELATIVE_DAUGHTER // 女儿
 };
 
+class Room;
 class Person {
 public:
 	// 构造空人物

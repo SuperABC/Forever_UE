@@ -27,6 +27,12 @@ public:
 	// 定义资产
 	void DefineAsset();
 
+	// 获取资产描述
+	std::string GetAsset();
+
+	// 设置资产描述
+	void SetAsset(const std::string& asset);
+
 private:
 	// 模组对象
 	OBJECT_HOLDER AssetMod* mod;
@@ -39,6 +45,9 @@ private:
 
 	// 资产名称
 	std::string name;
+	
+	// 资产描述
+	std::string asset;
 };
 
 // 空资产

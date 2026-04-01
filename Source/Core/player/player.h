@@ -2,7 +2,17 @@
 
 #include "story/story.h"
 
+#include "condition.h"
+#include "utility.h"
+#include "error.h"
+#include "config.h"
 
+#include <string>
+#include <vector>
+#include <functional>
+
+
+class Change;
 class Player {
 public:
 	Player();

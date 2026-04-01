@@ -25,6 +25,15 @@ string Asset::GetName() const {
 
 void Asset::DefineAsset() {
 	mod->DefineAsset();
+	asset = mod->asset;
+}
+
+string Asset::GetAsset() {
+	return asset;
+}
+
+void Asset::SetAsset(const string& asset) {
+	this->asset = asset;
 }
 
 int EmptyAsset::count = 0;

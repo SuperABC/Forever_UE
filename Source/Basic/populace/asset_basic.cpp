@@ -27,7 +27,7 @@ const char* ZoneAsset::GetName() {
 }
 
 void ZoneAsset::DefineAsset() {
-
+    
 }
 
 int BuildingAsset::count = 0;

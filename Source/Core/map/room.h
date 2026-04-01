@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "populace/person.h"
+
 #include "room_mod.h"
 
 #include "building.h"
@@ -13,6 +15,7 @@ typedef void (*RegisterModRoomsFunc)(RoomFactory* factory);
 enum FACE_DIRECTION : int;
 class Building;
 class Component;
+class Person;
 class Room : public Quad {
 public:
 	// 门窗类
@@ -105,6 +108,18 @@ public:
 	// 作为工坊包含生产线种类
 	std::vector<std::string> ManufactureTypes() const;
 
+    // 获取是否由政府拥有
+    bool GetStated() const;
+
+    // 设置是否由政府拥有
+    void SetStated(bool state);
+
+    // 获取私人房东
+    Person* GetOwner() const;
+
+    // 设置私人房东
+    void SetOwner(Person* owner);
+
 private:
 	// 模组对象
 	RoomMod* mod;
@@ -135,6 +150,13 @@ private:
 
 	// 门牌号
 	std::string number;
+	
+    // 是否由政府拥有
+    bool stated;
+
+    // 私人房东
+    Person* owner;
+
 };
 
 // 空房间

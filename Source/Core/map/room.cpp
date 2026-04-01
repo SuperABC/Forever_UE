@@ -155,6 +155,22 @@ vector<string> Room::ManufactureTypes() const {
 	return mod->manufactureTypes;
 }
 
+bool Room::GetStated() const {
+    return stated;
+}
+
+void Room::SetStated(bool stated) {
+    this->stated = stated;
+}
+
+Person* Room::GetOwner() const {
+    return owner;
+}
+
+void Room::SetOwner(Person* owner) {
+    this->owner = owner;
+}
+
 int EmptyRoom::count = 0;
 
 EmptyRoom::EmptyRoom() : id(count++) {

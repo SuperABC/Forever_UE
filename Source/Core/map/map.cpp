@@ -1,7 +1,4 @@
 ﻿#include "map.h"
-#include "utility.h"
-#include "error.h"
-#include "config.h"
 
 #include <algorithm>
 
@@ -715,6 +712,176 @@ int Map::Init(int chunkX, int chunkY) {
 		}
 	}
 	return capacity / 2;
+}
+
+void Map::Checkin(Populace* populace, Player* player) const {
+	auto citizens = populace->GetCitizens();
+	auto time = player->GetTime();
+
+	// 筛选成年市民
+	vector<Person*> adults;
+	adults.reserve(citizens.size());
+	for (auto citizen : citizens) {
+		if (citizen && citizen->GetAge(time) >= 18) {
+			adults.push_back(citizen);
+		}
+	}
+	if (adults.empty()) return;
+
+	// 为房产分配房东
+	vector<pair<Room*, int>> residences;
+	for (auto& zonePair : zones) {
+		Zone* zone = zonePair.second;
+		if (!zone) continue;
+		if (zone->GetStated()) {
+			for (auto& buildingPair : zone->GetBuildings()) {
+				Building* building = buildingPair.second;
+				if (!building) continue;
+				building->SetStated(true);
+				for (auto room : building->GetRooms()) {
+					if (!room) continue;
+					room->SetStated(true);
+					if (room->IsResidential()) {
+						residences.emplace_back(room, 0);
+					}
+				}
+			}
+			continue;
+		}
+
+		if (GetRandom(100) < 2) {
+			int index = GetRandom(int(adults.size()));
+			zone->SetOwner(adults[index]);
+			auto asset = new Asset(Populace::assetFactory, "zone");
+			if (asset) {
+				asset->SetAsset(zone->GetAddress());
+				adults[index]->AddAsset(asset);
+			}
+			for (auto& buildingPair : zone->GetBuildings()) {
+				Building* building = buildingPair.second;
+				if (!building) continue;
+				building->SetOwner(adults[index]);
+				for (auto room : building->GetRooms()) {
+					if (!room) continue;
+					room->SetOwner(adults[index]);
+					if (room->IsResidential()) {
+						residences.emplace_back(room, 0);
+					}
+				}
+			}
+		}
+		else {
+			for (auto& buildingPair : zone->GetBuildings()) {
+				Building* building = buildingPair.second;
+				if (!building) continue;
+				if (GetRandom(100) < 5) {
+					int index = GetRandom(int(adults.size()));
+					building->SetOwner(adults[index]);
+					auto asset = new Asset(Populace::assetFactory, "building");
+					if (asset) {
+						asset->SetAsset(building->GetAddress());
+						adults[index]->AddAsset(asset);
+					}
+					for (auto room : building->GetRooms()) {
+						if (!room) continue;
+						room->SetOwner(adults[index]);
+						if (room->IsResidential()) {
+							residences.emplace_back(room, 0);
+						}
+					}
+				}
+				else {
+					for (auto room : building->GetRooms()) {
+						if (!room) continue;
+						int index = GetRandom(int(adults.size()));
+						room->SetOwner(adults[index]);
+						auto asset = new Asset(Populace::assetFactory, "room");
+						if (asset) {
+							asset->SetAsset(room->GetAddress());
+							adults[index]->AddAsset(asset);
+						}
+						if (room->IsResidential()) {
+							residences.emplace_back(room, 0);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for (auto& [name, building] : buildings) {
+		if (!building) continue;
+		if (building->GetStated()) {
+			for (auto room : building->GetRooms()) {
+				if (!room) continue;
+				room->SetStated(true);
+				if (room->IsResidential()) {
+					residences.emplace_back(room, 0);
+				}
+			}
+			continue;
+		}
+
+		if (GetRandom(100) < 5) {
+			int index = GetRandom(int(adults.size()));
+			building->SetOwner(adults[index]);
+			auto asset = new Asset(Populace::assetFactory, "building");
+			if (asset) {
+				asset->SetAsset(building->GetAddress());
+				adults[index]->AddAsset(asset);
+			}
+			for (auto room : building->GetRooms()) {
+				if (!room) continue;
+				room->SetOwner(adults[index]);
+				if (room->IsResidential()) {
+					residences.emplace_back(room, 0);
+				}
+			}
+		}
+		else {
+			for (auto room : building->GetRooms()) {
+				if (!room) continue;
+				int index = GetRandom(int(adults.size()));
+				room->SetOwner(adults[index]);
+				auto asset = new Asset(Populace::assetFactory, "room");
+				if (asset) {
+					asset->SetAsset(room->GetAddress());
+					adults[index]->AddAsset(asset);
+				}
+				if (room->IsResidential()) {
+					residences.emplace_back(room, 0);
+				}
+			}
+		}
+	}
+
+	// 分配市民住所
+	for (auto adult : adults) {
+		if (!adult) continue;
+		if (adult->GetHome()) continue;
+		if (residences.empty()) break;
+
+		int index = GetRandom((int)residences.size());
+		auto& [room, count] = residences[index];
+
+		int num = 1;
+		adult->SetHome(room);
+		if (adult->GetSpouse() && adult->GetSpouse()->GetHome() == nullptr) {
+			if (GetRandom(10) > 0) {
+				adult->GetSpouse()->SetHome(room);
+				++num;
+				for (auto child : adult->GetChilds()) {
+					if (child && child->GetAge(time) < 18) {
+						child->SetHome(room);
+						++num;
+					}
+				}
+			}
+		}
+
+		residences[index] = residences.back();
+		residences.pop_back();
+	}
 }
 
 void Map::Destroy() {

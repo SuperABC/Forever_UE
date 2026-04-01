@@ -1,7 +1,4 @@
 ﻿#include "story.h"
-#include "utility.h"
-#include "error.h"
-#include "config.h"
 
 
 using namespace std;

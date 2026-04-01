@@ -1,14 +1,24 @@
 ﻿#pragma once
 
 #include "story/story.h"
+#include "player/player.h"
 
 #include "person.h"
 #include "asset.h"
 #include "name.h"
 #include "scheduler.h"
+#include "condition.h"
+#include "utility.h"
+#include "error.h"
+#include "config.h"
+
+#include <string>
+#include <vector>
+#include <functional>
 
 
 class Person;
+class Player;
 class Populace {
 public:
 	Populace();
@@ -26,7 +36,7 @@ public:
 		const std::vector<std::string>& dlls);
 
 	// 初始化人口
-	void Init(int accomodation, Time* time);
+	void Init(int accomodation, Player* player);
 
 	// 释放空间
 	void Destroy();

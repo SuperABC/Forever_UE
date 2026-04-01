@@ -69,6 +69,22 @@ string Zone::GetAddress() {
 	return address.data();
 }
 
+bool Zone::GetStated() const {
+    return stated;
+}
+
+void Zone::SetStated(bool stated) {
+    this->stated = stated;
+}
+
+Person* Zone::GetOwner() const {
+    return owner;
+}
+
+void Zone::SetOwner(Person* owner) {
+    this->owner = owner;
+}
+
 std::pair<std::string, std::vector<std::string>> Zone::GetScriptSetup() {
 	return mod->script;
 }

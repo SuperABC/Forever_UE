@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "story/script.h"
+#include "populace/person.h"
 
 #include "building_mod.h"
 
@@ -153,6 +154,7 @@ public:
 // 建筑实体
 class Block;
 class Zone;
+class Person;
 class Building : public Quad {
 public:
 	// 禁止默认构造
@@ -217,6 +219,18 @@ public:
 
 	// 获取楼层
 	Floor* GetFloor(int level) const;
+
+    // 获取是否由政府拥有
+    bool GetStated() const;
+
+    // 设置是否由政府拥有
+    void SetStated(bool state);
+
+    // 获取私人房东
+    Person* GetOwner() const;
+
+    // 设置私人房东
+    void SetOwner(Person* owner);
 
 	// 获取剧情与脚本
 	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
@@ -311,6 +325,12 @@ private:
 	// 房间
 	OBJECT_HOLDER std::vector<Room*> rooms;
 	
+    // 是否由政府拥有
+    bool stated;
+
+    // 私人房东
+    Person* owner;
+
 	// 关联剧情
 	OBJECT_HOLDER Script* script;
 };
