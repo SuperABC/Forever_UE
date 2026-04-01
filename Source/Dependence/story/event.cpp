@@ -78,7 +78,7 @@ bool ScriptMessageEvent::Match(Event* e,
 	return result;
 }
 
-void ScriptMessageEvent::SetMessage(std::string message) {
+void ScriptMessageEvent::SetMessage(string message) {
 	this->message = message;
 }
 

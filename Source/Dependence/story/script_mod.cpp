@@ -61,7 +61,7 @@ void ScriptFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
 }
 
-std::string ScriptFactory::GetMain() {
+string ScriptFactory::GetMain() {
 	return main;
 }
 

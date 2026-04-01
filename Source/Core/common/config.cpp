@@ -839,7 +839,7 @@ unordered_map<string, string> Config::GetScripts() {
 	return scripts;
 }
 
-std::string Config::GetScript(const std::string& name) {
+string Config::GetScript(const string& name) {
 	for (auto& scriptPath : scriptPaths) {
 		if (scriptPath.second.find(name) != scriptPath.second.end()) {
 			return scriptPath.second[name];
@@ -921,11 +921,11 @@ unordered_set<string> Config::GetStories() {
 	return storyPaths;
 }
 
-void Config::AddScript(const std::string& path) {
+void Config::AddScript(const string& path) {
 	storyPaths.insert(path);
 }
 
-void Config::RemoveScript(const std::string& path) {
+void Config::RemoveScript(const string& path) {
 	storyPaths.erase(path);
 }
 

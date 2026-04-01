@@ -107,7 +107,7 @@ void ABuildingBase::EnterBuilding(FString building) {
 	auto zone = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.zone").second;
 	Event* event;
 	if (holds_alternative<string>(zone)) {
-		event = new EnterBuildingEvent(TCHAR_TO_UTF8(get<std::string>(zone).data()), TCHAR_TO_UTF8(*building));
+		event = new EnterBuildingEvent(TCHAR_TO_UTF8(get<string>(zone).data()), TCHAR_TO_UTF8(*building));
 	}
 	else {
 		event = new EnterBuildingEvent("", TCHAR_TO_UTF8(*building));
@@ -152,7 +152,7 @@ void ABuildingBase::LeaveBuilding(FString building) {
 	auto zone = ((AGlobalBase*)global)->GetStory()->GetScript()->GetValue("player.zone").second;
 	Event* event;
 	if (holds_alternative<string>(zone)) {
-		event = new LeaveBuildingEvent(TCHAR_TO_UTF8(get<std::string>(zone).data()), TCHAR_TO_UTF8(*building));
+		event = new LeaveBuildingEvent(TCHAR_TO_UTF8(get<string>(zone).data()), TCHAR_TO_UTF8(*building));
 	}
 	else {
 		event = new LeaveBuildingEvent("", TCHAR_TO_UTF8(*building));

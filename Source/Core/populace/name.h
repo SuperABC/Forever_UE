@@ -9,6 +9,8 @@
 typedef void (*RegisterModNamesFunc)(NameFactory* factory);
 
 // 姓名实体
+class NameMod;
+class NameFactory;
 class Name {
 public:
 	// 禁止默认构造
@@ -75,13 +77,13 @@ public:
 	virtual const char* GetName() override;
 
 	virtual void GetSurname(std::function<void(const std::string&)> set,
-		const std::string& name);
+		const std::string& name) override;
 
 	virtual void GenerateName(std::function<void(const std::string&)> set,
-		bool male = true, bool female = true, bool neutral = true);
+		bool male = true, bool female = true, bool neutral = true) override;
 
 	virtual void GenerateName(std::function<void(const std::string&)> set,
-		const std::string& surname, bool male = true, bool female = true, bool neutral = true);
+		const std::string& surname, bool male = true, bool female = true, bool neutral = true) override;
 private:
 	static int count;
 

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "story/script.h"
+#include "story/story.h"
 #include "populace/person.h"
 
 #include "zone_mod.h"
@@ -12,9 +12,14 @@
 typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
 
 // 园区实体
+class ZoneMod;
+class Quad;
+class Lot;
 class Block;
-class Person;
 class Building;
+class Person;
+class Script;
+class ZoneFactory;
 class BuildingFactory;
 class Zone : public Quad {
 public:
@@ -60,20 +65,14 @@ public:
     // 设置私人房东
     void SetOwner(Person* owner);
 
-	// 获取剧情与脚本
-	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
-
 	// 获取剧情
 	Script* GetScript() const;
-
-	// 设置剧情
-	void SetScript(Script* script);
 
 	// 获取园区中心世界位置
 	void GetPosition(float& x, float& y) const;
 
 	// 设计园区
-	void LayoutZone(const Lot* block, BuildingFactory* factory);
+	void LayoutZone(const Lot* block);
 
 	// 自动分布建筑
 	void ArrangeBuildings();
@@ -125,7 +124,7 @@ public:
 
 	static std::function<int(const Lot*)> ZoneAssigner;
 
-	virtual void LayoutZone(const Lot* block);
+	virtual void LayoutZone(const Lot* block) override;
 
 private:
 	static int count;

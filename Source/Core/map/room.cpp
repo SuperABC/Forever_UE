@@ -96,7 +96,7 @@ string Room::GetAddress() const {
 	return GetParentBuilding()->GetAddress() + " " + number;
 }
 
-std::pair<float, float> Room::GetPosition(float x, float y) const {
+pair<float, float> Room::GetPosition(float x, float y) const {
 	auto building = GetParentBuilding();
 	auto block = GetParentBuilding()->GetParentBlock();
 	auto zone = building->GetParentZone();

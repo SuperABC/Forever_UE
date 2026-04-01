@@ -9,8 +9,10 @@
 typedef void (*RegisterModComponentsFunc)(ComponentFactory* factory);
 
 // 组合实体
+class ComponentMod;
 class Building;
 class Room;
+class ComponentFactory;
 class Component {
 public:
 	// 禁止默认构造

@@ -27,8 +27,8 @@ const char* ChineseName::GetName() {
 	return name.data();
 }
 
-void ChineseName::GetSurname(std::function<void(const std::string&)> set,
-	const std::string& name) {
+void ChineseName::GetSurname(function<void(const string&)> set,
+	const string& name) {
 	if (name.empty()) return;
 
 	const unsigned char* s = reinterpret_cast<const unsigned char*>(name.data());
@@ -56,7 +56,7 @@ void ChineseName::GetSurname(std::function<void(const std::string&)> set,
 	set(name.substr(0, charLen));
 }
 
-void ChineseName::GenerateName(std::function<void(const std::string&)> set,
+void ChineseName::GenerateName(function<void(const string&)> set,
 	bool male, bool female, bool neutral) {
 	int randVal = GetRandom((int)(surnames.size() * surnames.size()));
 	int idx = (int)sqrt(randVal);
@@ -66,8 +66,8 @@ void ChineseName::GenerateName(std::function<void(const std::string&)> set,
 	GenerateName(set, surname, male, female, neutral);
 }
 
-void ChineseName::GenerateName(std::function<void(const std::string&)> set,
-	const std::string& surname, bool male, bool female, bool neutral) {
+void ChineseName::GenerateName(function<void(const string&)> set,
+	const string& surname, bool male, bool female, bool neutral) {
 	vector<int> nameList;
 
 	nameList.push_back(male ? (int)maleNames.size() : 0);

@@ -375,8 +375,8 @@ int main() {
 
 	// 读取Society相关类及Mod
 	society->LoadConfigs();
-	//society->InitJobs(modHandles, mods);
 	society->InitCalendars(modHandles, mods);
+	society->InitJobs(modHandles, mods);
 	//society->InitOrganizations(modHandles, mods);
 
 	// 读取Story相关类及Mod
@@ -462,7 +462,7 @@ int main() {
 					}
 				};
 				
-				std::vector<Action> actions;
+				vector<Action> actions;
 				auto pres = story->GetScript()->PreTrigger(event);
 				actions.insert(actions.end(), pres.begin(), pres.end());
 				auto matches = story->GetScript()->MatchEvent(event, getValues);
@@ -470,14 +470,14 @@ int main() {
 				auto posts = story->GetScript()->PostTrigger(event);
 				actions.insert(actions.end(), posts.begin(), posts.end());
 				for (auto action : actions) {
-					std::visit([&](auto* ptr) {
-						if constexpr (std::is_same_v<decltype(ptr), Dialog*>) {
+					visit([&](auto* ptr) {
+						if constexpr (is_same_v<decltype(ptr), Dialog*>) {
 							auto* dialog = dynamic_cast<Dialog*>(ptr);
 							if (dialog->GetCondition().EvaluateBool(getValues)) {
 								PrintDialog(dialog, getValues);
 							}
 						}
-						else if constexpr (std::is_same_v<decltype(ptr), Change*>) {
+						else if constexpr (is_same_v<decltype(ptr), Change*>) {
 							auto* change = dynamic_cast<Change*>(ptr);
 							if (change->GetCondition().EvaluateBool(getValues)) {
 								::map->ApplyChange(change, getValues);

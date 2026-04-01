@@ -161,6 +161,18 @@ extern "C" __declspec(dllexport) void RegisterModCalendars(CalendarFactory* fact
 	);
 }
 
+extern "C" __declspec(dllexport) void* GetModJobs() {
+	static vector<string> mods = { "shop_saler" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModJobs(JobFactory* factory) {
+	factory->RegisterJob(ShopSalerJob::GetId(),
+		[]() { return new ShopSalerJob(); },
+		[](JobMod* job) { delete job; }
+	);
+}
+
 extern "C" __declspec(dllexport) void* GetModScripts() {
 	static vector<string> mods = { "npc" };
 	return (void*)&mods;

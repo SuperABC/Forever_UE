@@ -32,7 +32,7 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
-	virtual void DefineAsset();
+	virtual void DefineAsset() override;
 
 private:
 	static int count;

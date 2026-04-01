@@ -26,6 +26,8 @@ public:
 	// 读取 Mods
 	void InitCalendars(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+	void InitJobs(std::unordered_map<std::string, HMODULE>& modHandles,
+		const std::vector<std::string>& dlls);
 
 	// 初始化社区
 	void Init();
@@ -39,6 +41,7 @@ public:
 
 	// 统一工厂
 	static CalendarFactory* calendarFactory;
+	static JobFactory* jobFactory;
 
 private:
 

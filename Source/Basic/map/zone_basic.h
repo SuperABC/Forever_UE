@@ -15,7 +15,7 @@ public:
 
 	static std::function<int(const Lot*)> ZoneAssigner;
 
-	virtual void LayoutZone(const Lot* lot);
+	virtual void LayoutZone(const Lot* lot) override;
 
 private:
 	static int count;

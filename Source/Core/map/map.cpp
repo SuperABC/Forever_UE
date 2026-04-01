@@ -467,7 +467,7 @@ int Map::Init(int chunkX, int chunkY) {
 			}
 		}
 		for (auto zone : zones) {
-			zone->LayoutZone(block, buildingFactory);
+			zone->LayoutZone(block);
 			string name = zone->GetName();
 			block->AddZone(name, zone);
 		}
@@ -597,7 +597,7 @@ int Map::Init(int chunkX, int chunkY) {
 	for (auto& [name, building] : buildings) {
 		if (!building) continue;
 		building->PlaceConstruction();
-		building->LayoutBuilding(layout, componentFactory, roomFactory);
+		building->LayoutBuilding(layout);
 		for (auto component : building->GetComponents()) {
 			if (!component) continue;
 			component->SetParent(building);
@@ -614,7 +614,7 @@ int Map::Init(int chunkX, int chunkY) {
 		for (auto& [name, building] : zone->GetBuildings()) {
 			if (!building) continue;
 			building->PlaceConstruction();
-			building->LayoutBuilding(layout, componentFactory, roomFactory);
+			building->LayoutBuilding(layout);
 			for (auto component : building->GetComponents()) {
 				if (!component) continue;
 				component->SetParent(building);
@@ -819,7 +819,7 @@ void Map::Destroy() {
 }
 
 void Map::ApplyChange(Change* change,
-	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 
 }
 

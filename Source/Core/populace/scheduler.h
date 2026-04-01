@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "story/script.h"
+#include "story/story.h"
 
 #include "scheduler_mod.h"
 
@@ -9,6 +9,9 @@
 typedef void (*RegisterModSchedulersFunc)(SchedulerFactory* factory);
 
 // 调度实体
+class SchedulerMod;
+class Script;
+class SchedulerFactory;
 class Scheduler {
 public:
 	// 禁止默认构造
@@ -27,16 +30,10 @@ public:
 	std::string GetName() const;
 
 	// 初始化调度
-	void InitScheduler();
-
-	// 获取剧情与脚本
-	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
+	void InitScheduler(std::string name);
 
 	// 获取剧本
 	Script* GetScript() const;
-
-	// 设置剧本
-	void SetScript(Script* script);
 
 private:
 	// 模组对象
@@ -67,7 +64,7 @@ public:
 
 	static float GetPower();
 
-	virtual void InitScheduler();
+	virtual void InitScheduler() override;
 
 private:
 	static int count;

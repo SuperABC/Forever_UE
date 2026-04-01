@@ -93,18 +93,18 @@ const char* EmptyName::GetName() {
 	return name.data();
 }
 
-void EmptyName::GetSurname(std::function<void(const std::string&)> set,
-	const std::string& name) {
+void EmptyName::GetSurname(function<void(const string&)> set,
+	const string& name) {
 
 }
 
-void EmptyName::GenerateName(std::function<void(const std::string&)> set,
+void EmptyName::GenerateName(function<void(const string&)> set,
 	bool male, bool female, bool neutral) {
 
 }
 
-void EmptyName::GenerateName(std::function<void(const std::string&)> set,
-	const std::string& surname, bool male, bool female, bool neutral) {
+void EmptyName::GenerateName(function<void(const string&)> set,
+	const string& surname, bool male, bool female, bool neutral) {
 
 }
 

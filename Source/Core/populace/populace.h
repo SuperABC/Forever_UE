@@ -16,9 +16,16 @@
 #include <vector>
 #include <functional>
 
-
 class Person;
+class Change;
 class Player;
+class Time;
+class Asset;
+class Name;
+class Scheduler;
+class AssetFactory;
+class NameFactory;
+class SchedulerFactory;
 class Populace {
 public:
 	Populace();

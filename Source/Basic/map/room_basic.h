@@ -13,7 +13,7 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
-	virtual void ConfigRoom();
+	virtual void ConfigRoom() override;
 
 private:
 	static int count;

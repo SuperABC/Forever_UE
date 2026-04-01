@@ -24,7 +24,7 @@ void ARoomBase::SetGlobal(AActor* g) {
 	this->global = g;
 }
 
-void ARoomBase::AddBuilding(std::string name, Building* building) {
+void ARoomBase::AddBuilding(string name, Building* building) {
 	auto construction = building->GetConstruction();
 	TArray<FRoom> rooms;
 	for (auto room : building->GetRooms()) {
@@ -39,7 +39,7 @@ void ARoomBase::AddBuilding(std::string name, Building* building) {
 	UpdateRoom(UTF8_TO_TCHAR(name.data()), rooms, {});
 }
 
-void ARoomBase::RemoveBuilding(std::string name) {
+void ARoomBase::RemoveBuilding(string name) {
 	UpdateRoom(UTF8_TO_TCHAR(name.data()), {}, roomInstances[name]);
 }
 
@@ -60,19 +60,19 @@ void ARoomBase::EnterRoom(FString room) {
 	if (holds_alternative<string>(zone)) {
 		if (holds_alternative<string>(building)) {
 			event = new EnterRoomEvent(
-				TCHAR_TO_UTF8(*get<std::string>(zone).data()),
-				TCHAR_TO_UTF8(*get<std::string>(building).data()),
+				TCHAR_TO_UTF8(*get<string>(zone).data()),
+				TCHAR_TO_UTF8(*get<string>(building).data()),
 				TCHAR_TO_UTF8(*room));
 		}
 		else {
 			event = new EnterRoomEvent(
-				TCHAR_TO_UTF8(*get<std::string>(zone).data()), "", TCHAR_TO_UTF8(*room));
+				TCHAR_TO_UTF8(*get<string>(zone).data()), "", TCHAR_TO_UTF8(*room));
 		}
 	}
 	else {
 		if (holds_alternative<string>(building)) {
 			event = new EnterRoomEvent(
-				"", TCHAR_TO_UTF8(*get<std::string>(building).data()), TCHAR_TO_UTF8(*room));
+				"", TCHAR_TO_UTF8(*get<string>(building).data()), TCHAR_TO_UTF8(*room));
 		}
 		else {
 			event = new EnterRoomEvent(
@@ -99,19 +99,19 @@ void ARoomBase::LeaveRoom(FString room) {
 	if (holds_alternative<string>(zone)) {
 		if (holds_alternative<string>(building)) {
 			event = new LeaveRoomEvent(
-				TCHAR_TO_UTF8(*get<std::string>(zone).data()),
-				TCHAR_TO_UTF8(*get<std::string>(building).data()),
+				TCHAR_TO_UTF8(*get<string>(zone).data()),
+				TCHAR_TO_UTF8(*get<string>(building).data()),
 				TCHAR_TO_UTF8(*room));
 		}
 		else {
 			event = new LeaveRoomEvent(
-				TCHAR_TO_UTF8(*get<std::string>(zone).data()), "", TCHAR_TO_UTF8(*room));
+				TCHAR_TO_UTF8(*get<string>(zone).data()), "", TCHAR_TO_UTF8(*room));
 		}
 	}
 	else {
 		if (holds_alternative<string>(building)) {
 			event = new LeaveRoomEvent(
-				"", TCHAR_TO_UTF8(*get<std::string>(building).data()), TCHAR_TO_UTF8(*room));
+				"", TCHAR_TO_UTF8(*get<string>(building).data()), TCHAR_TO_UTF8(*room));
 		}
 		else {
 			event = new LeaveRoomEvent(

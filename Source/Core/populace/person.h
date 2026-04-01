@@ -2,7 +2,7 @@
 
 #include "../map/room.h"
 #include "../society/job.h"
-#include "../story/script.h"
+#include "../story/story.h"
 
 #include "asset.h"
 #include "scheduler.h"
@@ -21,13 +21,6 @@
 #undef AddJob
 
 
-class Script;
-class Story;
-class Event;
-class EducationExperience;
-class EmotionExperience;
-class JobExperience;
-
 enum GENDER_TYPE : int {
 	GENDER_FEMALE, // 女性
 	GENDER_MALE // 男性
@@ -42,7 +35,20 @@ enum RELATIVE_TYPE : int {
 	RELATIVE_DAUGHTER // 女儿
 };
 
+class EducationExperience;
+class EmotionExperience;
+class JobExperience;
+class Block;
+class Connection;
+class Zone;
+class Building;
 class Room;
+class Asset;
+class Scheduler;
+class Event;
+class Script;
+class Story;
+class Time;
 class Person {
 public:
 	// 构造空人物

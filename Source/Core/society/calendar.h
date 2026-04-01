@@ -7,6 +7,8 @@
 typedef void (*RegisterModCalendarsFunc)(CalendarFactory* factory);
 
 // 日程实体
+class CalendarMod;
+class CalendarFactory;
 class Calendar {
 public:
 	// 禁止默认构造

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "story/script.h"
+#include "story/story.h"
 #include "populace/person.h"
 
 #include "building_mod.h"
@@ -152,9 +152,16 @@ public:
 };
 
 // 建筑实体
+class BuildingMod;
+class Quad;
 class Block;
 class Zone;
+class Component;
+class Room;
 class Person;
+class Script;
+class BuildingFactory;
+class RoomFactory;
 class Building : public Quad {
 public:
 	// 禁止默认构造
@@ -232,14 +239,8 @@ public:
     // 设置私人房东
     void SetOwner(Person* owner);
 
-	// 获取剧情与脚本
-	std::pair<std::string, std::vector<std::string>> GetScriptSetup();
-
 	// 获取剧情
 	Script* GetScript() const;
-
-	// 设置剧情
-	void SetScript(Script* script);
 
 	// 采样面积
 	float RandomAcreage();
@@ -254,7 +255,7 @@ public:
 	void GetPosition(float& x, float& y) const;
 
 	// 布局内部对象
-	void LayoutBuilding(Layout* layout, ComponentFactory* componentFactory, RoomFactory* roomFactory);
+	void LayoutBuilding(Layout* layout);
 
 	// 读取所有布局模板
 	static Layout* ReadTemplates(const std::vector<std::string>& paths);
@@ -349,9 +350,9 @@ public:
 
 	static std::function<int(const Lot*)> BuildingAssigner;
 
-	virtual float RandomAcreage();
-	virtual void LayoutBuilding(const Quad* quad);
-	virtual void PlaceConstruction();
+	virtual float RandomAcreage() override;
+	virtual void LayoutBuilding(const Quad* quad) override;
+	virtual void PlaceConstruction() override;
 
 private:
 	static int count;

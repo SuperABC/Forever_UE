@@ -13,7 +13,7 @@ public:
 
 	static float GetPower();
 
-	virtual void InitScheduler();
+	virtual void InitScheduler() override;
 
 private:
 	static int count;

@@ -7,6 +7,8 @@
 typedef void (*RegisterModAssetsFunc)(AssetFactory* factory);
 
 // 资产实体
+class AssetMod;
+class AssetFactory;
 class Asset {
 public:
 	// 禁止默认构造
@@ -60,7 +62,7 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
-	virtual void DefineAsset();
+	virtual void DefineAsset() override;
 
 private:
 	static int count;

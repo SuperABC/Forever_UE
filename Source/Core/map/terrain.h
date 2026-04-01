@@ -7,6 +7,8 @@
 typedef void (*RegisterModTerrainsFunc)(TerrainFactory* factory);
 
 // 地形实体
+class TerrainMod;
+class TerrainFactory;
 class Terrain {
 public:
 	// 禁止默认构造

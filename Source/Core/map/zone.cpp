@@ -1,5 +1,6 @@
 ﻿#include "common/config.h"
 
+#include "map.h"
 #include "zone.h"
 
 #include <algorithm>
@@ -85,16 +86,8 @@ void Zone::SetOwner(Person* owner) {
     this->owner = owner;
 }
 
-std::pair<std::string, std::vector<std::string>> Zone::GetScriptSetup() {
-	return mod->script;
-}
-
 Script* Zone::GetScript() const {
 	return script;
-}
-
-void Zone::SetScript(Script* script) {
-	this->script = script;
 }
 
 void Zone::GetPosition(float& x, float& y) const {
@@ -106,7 +99,7 @@ void Zone::GetPosition(float& x, float& y) const {
 	}
 }
 
-void Zone::LayoutZone(const Lot* block, BuildingFactory* factory) {
+void Zone::LayoutZone(const Lot* block) {
 	mod->LayoutZone(block);
 	SetAcreage(mod->acreage);
 
@@ -118,7 +111,7 @@ void Zone::LayoutZone(const Lot* block, BuildingFactory* factory) {
 		}
 
 		const auto& [buildingType, ratio] = mod->buildings[i];
-		Building* building = new Building(factory, buildingType);
+		Building* building = new Building(Map::buildingFactory, buildingType);
 		if (!building) {
 			attempt++;
 			i--;
@@ -144,6 +137,12 @@ void Zone::LayoutZone(const Lot* block, BuildingFactory* factory) {
 		}
 		buildings[building->GetName()] = building;
 	}
+
+	script = new Script(Story::scriptFactory, mod->script.first);
+	for (auto s : mod->script.second) {
+		script->ReadMilestones(Config::GetScript(s));
+	}
+	script->SetValue("self.name", name);
 }
 
 void Zone::ArrangeBuildings() {

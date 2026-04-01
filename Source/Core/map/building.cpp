@@ -1,5 +1,6 @@
 ﻿#include "common/config.h"
 
+#include "map.h"
 #include "building.h"
 #include "json.h"
 
@@ -408,16 +409,8 @@ void Building::SetOwner(Person* owner) {
     this->owner = owner;
 }
 
-std::pair<std::string, std::vector<std::string>> Building::GetScriptSetup() {
-	return mod->script;
-}
-
 Script* Building::GetScript() const {
 	return script;
-}
-
-void Building::SetScript(Script* script) {
-	this->script = script;
 }
 
 float Building::RandomAcreage() {
@@ -452,23 +445,23 @@ void Building::GetPosition(float& x, float& y) const {
 	}
 }
 
-void Building::LayoutBuilding(Layout* layout, ComponentFactory* componentFactory, RoomFactory* roomFactory) {
+void Building::LayoutBuilding(Layout* layout) {
 	mod->LayoutBuilding(this);
 	basements = mod->basements;
 	layers = mod->layers;
 	height = mod->height;
 
-	std::unordered_map<std::pair<std::string, int>, Component*, PairHash> componentMap;
+	unordered_map<pair<string, int>, Component*, PairHash> componentMap;
 	for (auto single : mod->singles) {
 		if (componentMap.find(single.first) == componentMap.end()) {
-			auto component = new Component(componentFactory, single.first.first);
+			auto component = new Component(Map::componentFactory, single.first.first);
 			componentMap[single.first] = component;
 			components.push_back(component);
 		}
 	}
 	for (auto row : mod->rows) {
 		if (componentMap.find(row.first) == componentMap.end()) {
-			auto component = new Component(componentFactory, row.first.first);
+			auto component = new Component(Map::componentFactory, row.first.first);
 			componentMap[row.first] = component;
 			components.push_back(component);
 		}
@@ -481,14 +474,14 @@ void Building::LayoutBuilding(Layout* layout, ComponentFactory* componentFactory
 	
 	for (auto [component, singles] : mod->singles) {
 		for (auto single : singles) {
-			AssignRoom(get<0>(single), get<1>(single), get<2>(single), componentMap[component], roomFactory);
+			AssignRoom(get<0>(single), get<1>(single), get<2>(single), componentMap[component], Map::roomFactory);
 		}
 	}
 
 	for (auto [component, rows] : mod->rows) {
 		for (int i = 0; i < basements + layers; i++) {
 			for (auto room : rows[i]) {
-				ArrangeRow(i - basements, get<0>(room), get<1>(room), get<2>(room), componentMap[component], roomFactory);
+				ArrangeRow(i - basements, get<0>(room), get<1>(room), get<2>(room), componentMap[component], Map::roomFactory);
 			}
 		}
 	}
@@ -496,6 +489,12 @@ void Building::LayoutBuilding(Layout* layout, ComponentFactory* componentFactory
 	for (auto room : rooms) {
 		room->ConfigRoom();
 	}
+
+	script = new Script(Story::scriptFactory, mod->script.first);
+	for (auto s : mod->script.second) {
+		script->ReadMilestones(Config::GetScript(s));
+	}
+	script->SetValue("self.name", name);
 }
 
 Layout* Building::ReadTemplates(const vector<string>& paths) {

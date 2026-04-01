@@ -114,8 +114,23 @@ private:
 	OBJECT_HOLDER std::vector<std::vector<Element*>> elements;
 };
 
+class Block;
+class Layout;
 class Populace;
+class Change;
 class Player;
+class Terrain;
+class Roadnet;
+class Zone;
+class Building;
+class Component;
+class Room;
+class TerrainFactory;
+class RoadnetFactory;
+class ZoneFactory;
+class BuildingFactory;
+class ComponentFactory;
+class RoomFactory;
 class Map {
 public:
 	// 构造地图

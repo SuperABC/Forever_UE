@@ -14,7 +14,7 @@ ZoneMod::~ZoneMod() {
 
 }
 
-void ZoneFactory::RegisterZone(const string& id, std::function<int(const Lot*)> assigner,
+void ZoneFactory::RegisterZone(const string& id, function<int(const Lot*)> assigner,
 	function<ZoneMod* ()> creator, function<void(ZoneMod*)> deleter) {
 	registries[id] = { creator, deleter };
 	assigners[id] = assigner;

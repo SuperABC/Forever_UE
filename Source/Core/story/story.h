@@ -16,7 +16,10 @@
 
 class Map;
 class Populace;
+class Change;
 class Player;
+class Script;
+class ScriptFactory;
 class Story {
 public:
 	// 构造剧情

@@ -1,4 +1,6 @@
-﻿#include "scheduler.h"
+﻿#include "story/story.h"
+
+#include "scheduler.h"
 
 
 using namespace std;
@@ -27,20 +29,18 @@ string Scheduler::GetName() const {
 	return name;
 }
 
-void Scheduler::InitScheduler() {
+void Scheduler::InitScheduler(string name) {
 	mod->InitScheduler();
-}
 
-std::pair<std::string, std::vector<std::string>> Scheduler::GetScriptSetup() {
-	return mod->script;
+	script = new Script(Story::scriptFactory, mod->script.first);
+	for (auto s : mod->script.second) {
+		script->ReadMilestones(Config::GetScript(s));
+	}
+	script->SetValue("self.name", name);
 }
 
 Script* Scheduler::GetScript() const {
 	return script;
-}
-
-void Scheduler::SetScript(Script* script) {
-	this->script = script;
 }
 
 int EmptyScheduler::count = 0;

@@ -52,8 +52,8 @@ void Populace::LoadConfigs() const {
 	}
 }
 
-void Populace::InitAssets(std::unordered_map<std::string, HMODULE>& modHandles,
-    const std::vector<std::string>& dlls) {
+void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles,
+    const vector<string>& dlls) {
 
     assetFactory->RegisterAsset(EmptyAsset::GetId(),
         []() { return new EmptyAsset(); },
@@ -85,8 +85,8 @@ void Populace::InitAssets(std::unordered_map<std::string, HMODULE>& modHandles,
     }
 }
 
-void Populace::InitNames(std::unordered_map<std::string, HMODULE>& modHandles,
-    const std::vector<std::string>& dlls) {
+void Populace::InitNames(unordered_map<string, HMODULE>& modHandles,
+    const vector<string>& dlls) {
 
     nameFactory->RegisterName(EmptyName::GetId(),
         []() { return new EmptyName(); },
@@ -118,8 +118,8 @@ void Populace::InitNames(std::unordered_map<std::string, HMODULE>& modHandles,
     }
 }
 
-void Populace::InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles,
-    const std::vector<std::string>& dlls) {
+void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles,
+    const vector<string>& dlls) {
 
     schedulerFactory->RegisterScheduler(EmptyScheduler::GetId(), EmptyScheduler::GetPower(),
         []() { return new EmptyScheduler(); },
@@ -239,16 +239,8 @@ void Populace::ApplyChange(Change* change,
 		person->SetBirthday(Time(ToString(condition.EvaluateValue(getValues))));
 
 		person->SetScheduler(new Scheduler(schedulerFactory, "empty"));
-		person->GetScheduler()->InitScheduler();
+		person->GetScheduler()->InitScheduler(person->GetName());
 		
-		auto setup = person->GetScheduler()->GetScriptSetup();
-		auto script = new Script(Story::scriptFactory, setup.first);
-		for (auto s : setup.second) {
-			script->ReadMilestones(Config::GetScript(s));
-		}
-		script->SetValue("self.name", name);
-		person->GetScheduler()->SetScript(script);		
-
 		citizens.push_back(person);
 		ids[person->GetName()] = person->GetId();
 	}
@@ -626,7 +618,7 @@ void Populace::GenerateCitizens(int num, Time* time) {
 				selectedScheduler.data(), citizen->GetName().data());
 			continue;
 		}
-		scheduler->InitScheduler();
+		scheduler->InitScheduler(citizen->GetName());
 		citizen->SetScheduler(scheduler);
 	}
 

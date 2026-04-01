@@ -13,9 +13,12 @@ typedef void (*RegisterModRoomsFunc)(RoomFactory* factory);
 
 // 房间实体
 enum FACE_DIRECTION : int;
+class RoomMod;
+class Quad;
 class Building;
 class Component;
 class Person;
+class RoomFactory;
 class Room : public Quad {
 public:
 	// 门窗类
@@ -169,7 +172,7 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
-	virtual void ConfigRoom();
+	virtual void ConfigRoom() override;
 
 private:
 	static int count;

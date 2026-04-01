@@ -63,43 +63,6 @@ void Story::Init(Map* map, Populace* populace, Player* player) {
 		script->ReadMilestones(story);
 	}
 	script->SetValue("system.time.year", player->GetTime()->GetYear());
-
-	for (auto [name, zone] : map->GetZones()) {
-		auto setup = zone->GetScriptSetup();
-		auto script = new Script(scriptFactory, setup.first);
-		for (auto s : setup.second) {
-			script->ReadMilestones(Config::GetScript(s));
-		}
-		script->SetValue("self.name", name);
-		zone->SetScript(script);
-		for (auto [name, building] : zone->GetBuildings()) {
-			auto setup = building->GetScriptSetup();
-			auto script = new Script(scriptFactory, setup.first);
-			for (auto s : setup.second) {
-				script->ReadMilestones(Config::GetScript(s));
-			}
-			script->SetValue("self.name", name);
-			building->SetScript(script);
-		}
-	}
-	for (auto [name, building] : map->GetBuildings()) {
-		auto setup = building->GetScriptSetup();
-		auto script = new Script(scriptFactory, setup.first);
-		for (auto s : setup.second) {
-			script->ReadMilestones(Config::GetScript(s));
-		}
-		script->SetValue("self.name", name);
-		building->SetScript(script);
-	}
-	for (auto citizen : populace->GetCitizens()) {
-		auto setup = citizen->GetScheduler()->GetScriptSetup();
-		auto script = new Script(scriptFactory, setup.first);
-		for (auto s : setup.second) {
-			script->ReadMilestones(Config::GetScript(s));
-		}
-		script->SetValue("self.name", citizen->GetName());
-		citizen->GetScheduler()->SetScript(script);
-	}
 }
 
 void Story::Destroy() {
@@ -108,7 +71,7 @@ void Story::Destroy() {
 }
 
 void Story::ApplyChange(Change* change,
-	std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) {
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 	if (change == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
 	}
