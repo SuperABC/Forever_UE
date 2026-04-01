@@ -53,20 +53,6 @@ void Story::InitScripts(unordered_map<string, HMODULE>& modHandles,
 			debugf("Warning: Failed to load %s.\n", dll.data());
 		}
 	}
-
-#ifdef MOD_TEST
-	auto scriptList = { "mod" };
-	for (const auto& scriptId : scriptList) {
-		if (scriptFactory->CheckRegistered(scriptId)) {
-			auto script = scriptFactory->CreateScript(scriptId);
-			debugf("Log: Created test script %s.\n", scriptId);
-			scriptFactory->DestroyScript(script);
-		}
-		else {
-			debugf("Warning: Script %s not registered.\n", scriptId);
-		}
-	}
-#endif
 }
 
 void Story::Init(Map* map, Populace* populace, Player* player) {

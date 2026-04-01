@@ -76,7 +76,7 @@ void AGlobalBase::BeginPlay() {
 		// 读取Society相关类及Mod
 		society->LoadConfigs();
 		//society->InitJobs(modHandles, mods);
-		//society->InitCalendars(modHandles, mods);
+		society->InitCalendars(modHandles, mods);
 		//society->InitOrganizations(modHandles, mods);
 
 		// 读取Story相关类及Mod

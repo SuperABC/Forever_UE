@@ -145,6 +145,22 @@ extern "C" __declspec(dllexport) void RegisterModSchedulers(SchedulerFactory* fa
 	);
 }
 
+extern "C" __declspec(dllexport) void* GetModCalendars() {
+	static vector<string> mods = { "standard", "full"};
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModCalendars(CalendarFactory* factory) {
+	factory->RegisterCalendar(StandardCalendar::GetId(),
+		[]() { return new StandardCalendar(); },
+		[](CalendarMod* calendar) { delete calendar; }
+	);
+	factory->RegisterCalendar(FullCalendar::GetId(),
+		[]() { return new FullCalendar(); },
+		[](CalendarMod* calendar) { delete calendar; }
+	);
+}
+
 extern "C" __declspec(dllexport) void* GetModScripts() {
 	static vector<string> mods = { "npc" };
 	return (void*)&mods;

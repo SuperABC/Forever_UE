@@ -246,20 +246,6 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
 			debugf("Warning: Failed to load %s.\n", dll.data());
 		}
 	}
-
-#ifdef MOD_TEST
-	auto terrainList = { "mod" };
-	for (const auto& terrainId : terrainList) {
-		if (terrainFactory->CheckRegistered(terrainId)) {
-			auto terrain = terrainFactory->CreateTerrain(terrainId);
-			debugf("Log: Created test terrain %s.\n", terrainId);
-			terrainFactory->DestroyTerrain(terrain);
-		}
-		else {
-			debugf("Warning: Terrain %s not registered.\n", terrainId);
-		}
-	}
-#endif
 }
 
 void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
@@ -289,20 +275,6 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
 			debugf("Warning: Failed to load %s.\n", dll.data());
 		}
 	}
-
-#ifdef MOD_TEST
-	auto roadnetList = { "mod" };
-	for (const auto& roadnetId : roadnetList) {
-		if (roadnetFactory->CheckRegistered(roadnetId)) {
-			auto roadnet = roadnetFactory->CreateRoadnet(roadnetId);
-			debugf("Log: Created test roadnet %s.\n", roadnetId);
-			roadnetFactory->DestroyRoadnet(roadnet);
-		}
-		else {
-			debugf("Warning: Roadnet %s not registered.\n", roadnetId);
-		}
-	}
-#endif
 }
 
 void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
@@ -333,20 +305,6 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
 			debugf("Warning: Failed to load %s.\n", dll.data());
 		}
 	}
-
-#ifdef MOD_TEST
-	auto zoneList = { "mod" };
-	for (const auto& zoneId : zoneList) {
-		if (zoneFactory->CheckRegistered(zoneId)) {
-			auto zone = zoneFactory->CreateZone(zoneId);
-			debugf("Log: Created test zone %s.\n", zoneId);
-			zoneFactory->DestroyZone(zone);
-		}
-		else {
-			debugf("Warning: Zone %s not registered.\n", zoneId);
-		}
-	}
-#endif
 }
 
 void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
@@ -378,20 +336,6 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
 			debugf("Warning: Failed to load %s.\n", dll.data());
 		}
 	}
-
-#ifdef MOD_TEST
-	auto buildingList = { "mod" };
-	for (const auto& buildingId : buildingList) {
-		if (buildingFactory->CheckRegistered(buildingId)) {
-			auto building = buildingFactory->CreateBuilding(buildingId);
-			debugf("Log: Created test building %s.\n", buildingId);
-			buildingFactory->DestroyBuilding(building);
-		}
-		else {
-			debugf("Warning: Building %s not registered.\n", buildingId);
-		}
-	}
-#endif
 }
 
 void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
@@ -422,20 +366,6 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
 			debugf("Warning: Failed to load %s.\n", dll.data());
 		}
 	}
-
-#ifdef MOD_TEST
-	auto componentList = { "mod" };
-	for (const auto& componentId : componentList) {
-		if (componentFactory->CheckRegistered(componentId)) {
-			auto component = componentFactory->CreateComponent(componentId);
-			debugf("Log: Created test component %s.\n", componentId);
-			componentFactory->DestroyComponent(component);
-		}
-		else {
-			debugf("Warning: Component %s not registered.\n", componentId);
-		}
-	}
-#endif
 }
 
 void Map::InitRooms(unordered_map<string, HMODULE>& modHandles,
@@ -466,20 +396,6 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles,
 			debugf("Warning: Failed to load %s.\n", dll.data());
 		}
 	}
-
-#ifdef MOD_TEST
-	auto roomList = { "mod" };
-	for (const auto& roomId : roomList) {
-		if (roomFactory->CheckRegistered(roomId)) {
-			auto room = roomFactory->CreateRoom(roomId);
-			debugf("Log: Created test room %s.\n", roomId);
-			roomFactory->DestroyRoom(room);
-		}
-		else {
-			debugf("Warning: Room %s not registered.\n", roomId);
-		}
-	}
-#endif
 }
 
 int Map::Init(int chunkX, int chunkY) {

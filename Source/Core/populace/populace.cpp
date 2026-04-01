@@ -83,20 +83,6 @@ void Populace::InitAssets(std::unordered_map<std::string, HMODULE>& modHandles,
             debugf("Warning: Failed to load %s.\n", dll.data());
         }
     }
-
-#ifdef MOD_TEST
-    auto assetList = { "mod" };
-    for (const auto& assetId : assetList) {
-        if (assetFactory->CheckRegistered(assetId)) {
-            auto asset = assetFactory->CreateAsset(assetId);
-            debugf("Log: Created test asset %s.\n", assetId);
-            assetFactory->DestroyAsset(asset);
-        }
-        else {
-            debugf("Warning: Asset %s not registered.\n", assetId);
-        }
-    }
-#endif
 }
 
 void Populace::InitNames(std::unordered_map<std::string, HMODULE>& modHandles,
@@ -130,20 +116,6 @@ void Populace::InitNames(std::unordered_map<std::string, HMODULE>& modHandles,
             debugf("Warning: Failed to load %s.\n", dll.data());
         }
     }
-
-#ifdef MOD_TEST
-    auto nameList = { "mod" };
-    for (const auto& nameId : nameList) {
-        if (nameFactory->CheckRegistered(nameId)) {
-            auto name = nameFactory->CreateName(nameId);
-            debugf("Log: Created test name %s.\n", nameId);
-            nameFactory->DestroyName(name);
-        }
-        else {
-            debugf("Warning: Name %s not registered.\n", nameId);
-        }
-    }
-#endif
 }
 
 void Populace::InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles,
@@ -177,20 +149,6 @@ void Populace::InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandl
             debugf("Warning: Failed to load %s.\n", dll.data());
         }
     }
-
-#ifdef MOD_TEST
-    auto schedulerList = { "mod" };
-    for (const auto& schedulerId : schedulerList) {
-        if (schedulerFactory->CheckRegistered(schedulerId)) {
-            auto scheduler = schedulerFactory->CreateScheduler(schedulerId);
-            debugf("Log: Created test scheduler %s.\n", schedulerId);
-            schedulerFactory->DestroyScheduler(scheduler);
-        }
-        else {
-            debugf("Warning: Scheduler %s not registered.\n", schedulerId);
-        }
-    }
-#endif
 }
 
 void Populace::Init(int accomodation, Player* player) {
