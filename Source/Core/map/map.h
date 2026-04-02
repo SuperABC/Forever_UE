@@ -1,21 +1,9 @@
 ﻿#pragma once
 
-#include "story/story.h"
-
-#include "terrain.h"
-#include "roadnet.h"
-#include "zone.h"
-#include "building.h"
-#include "component.h"
-#include "room.h"
-#include "condition.h"
+#include "class.h"
 #include "utility.h"
 #include "error.h"
 #include "config.h"
-
-#include <string>
-#include <vector>
-#include <functional>
 
 #define CHUNK_SIZE 256
 
@@ -114,23 +102,6 @@ private:
 	OBJECT_HOLDER std::vector<std::vector<Element*>> elements;
 };
 
-class Block;
-class Layout;
-class Populace;
-class Change;
-class Player;
-class Terrain;
-class Roadnet;
-class Zone;
-class Building;
-class Component;
-class Room;
-class TerrainFactory;
-class RoadnetFactory;
-class ZoneFactory;
-class BuildingFactory;
-class ComponentFactory;
-class RoomFactory;
 class Map {
 public:
 	// 构造地图

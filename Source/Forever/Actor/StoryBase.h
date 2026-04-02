@@ -7,6 +7,8 @@
 
 #include "story/story.h"
 
+#include "dialog.h"
+
 #include <deque>
 
 #include "StoryBase.generated.h"

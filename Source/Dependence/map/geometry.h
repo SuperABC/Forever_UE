@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "../common/utility.h"
+#include "../common/error.h"
 
 #include <vector>
 

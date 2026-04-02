@@ -1,6 +1,8 @@
 #include "Actor/RoadnetBase.h"
 #include "Actor/GlobalBase.h"
 
+#include "map/roadnet.h"
+
 
 using namespace std;
 

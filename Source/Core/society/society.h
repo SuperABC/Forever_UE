@@ -1,18 +1,9 @@
 ﻿#pragma once
 
-#include "story/story.h"
-
-#include "calendar.h"
-#include "job.h"
-#include "organization.h"
-#include "condition.h"
+#include "class.h"
 #include "utility.h"
 #include "error.h"
 #include "config.h"
-
-#include <string>
-#include <vector>
-#include <functional>
 
 
 class Society {

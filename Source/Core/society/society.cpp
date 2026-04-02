@@ -1,5 +1,9 @@
 ﻿#include "society.h"
 
+#include "calendar.h"
+#include "job.h"
+#include "organization.h"
+
 
 using namespace std;
 

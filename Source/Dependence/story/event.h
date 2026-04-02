@@ -2,6 +2,9 @@
 
 #include "condition.h"
 
+#include "../common/utility.h"
+#include "../common/error.h"
+
 #include <string>
 
 #undef GetMessage

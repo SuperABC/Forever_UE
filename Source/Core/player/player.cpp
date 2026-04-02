@@ -1,5 +1,7 @@
 ﻿#include "player.h"
 
+#include "skill.h"
+
 using namespace std;
 
 Player::Player() :

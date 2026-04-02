@@ -1,12 +1,12 @@
 ﻿#pragma once
 
-#include "../common/utility.h"
-#include "../common/error.h"
-#include "../common/json.h"
-
 #include "event.h"
 #include "dialog.h"
 #include "change.h"
+
+#include "../common/utility.h"
+#include "../common/error.h"
+#include "../common/json.h"
 
 #include <string>
 #include <queue>

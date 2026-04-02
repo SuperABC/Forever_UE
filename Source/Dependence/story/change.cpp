@@ -1,7 +1,4 @@
-﻿#include "../common/utility.h"
-#include "../common/error.h"
-
-#include "change.h"
+﻿#include "change.h"
 
 
 using namespace std;

@@ -227,5 +227,8 @@
     <ClInclude Include="common\config.h">
       <Filter>common</Filter>
     </ClInclude>
+    <ClInclude Include="common\class.h">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

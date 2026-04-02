@@ -11,8 +11,6 @@
 #include <windows.h>
 #include <strsafe.h>
 
-#define REPLACE_PATH(path) (path)
-
 #define COSTOM_INIT
 #define COSTOM_RUNTIME
 

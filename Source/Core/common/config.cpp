@@ -1,4 +1,5 @@
 ﻿#include "config.h"
+
 #include "utility.h"
 #include "error.h"
 #include "json.h"

@@ -1,7 +1,4 @@
-﻿#include "../common/utility.h"
-#include "../common/error.h"
-
-#include "geometry.h"
+﻿#include "geometry.h"
 
 #include <cmath>
 #include <string>

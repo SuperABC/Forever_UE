@@ -1,25 +1,11 @@
 ﻿#pragma once
 
-#include "../map/map.h"
-#include "../populace/populace.h"
-#include "../player/player.h"
-
-#include "script.h"
-#include "condition.h"
+#include "class.h"
 #include "utility.h"
 #include "error.h"
 #include "config.h"
 
-#include <string>
-#include <vector>
-#include <functional>
 
-class Map;
-class Populace;
-class Change;
-class Player;
-class Script;
-class ScriptFactory;
 class Story {
 public:
 	// 构造剧情

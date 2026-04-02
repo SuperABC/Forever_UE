@@ -1,7 +1,4 @@
-﻿#include "../common/utility.h"
-#include "../common/error.h"
-
-#include "condition.h"
+﻿#include "condition.h"
 
 #include <iostream>
 #include <vector>

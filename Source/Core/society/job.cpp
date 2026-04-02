@@ -1,4 +1,6 @@
-﻿#include "society.h"
+﻿#include "story/script.h"
+
+#include "society.h"
 #include "job.h"
 
 

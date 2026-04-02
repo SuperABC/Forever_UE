@@ -1,6 +1,8 @@
 #include "Actor/TerrainBase.h"
 #include "Actor/GlobalBase.h"
 
+#include "map/terrain.h"
+
 
 using namespace std;
 

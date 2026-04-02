@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "../common/utility.h"
+#include "../common/error.h"
+
 #include <string>
 #include <memory>
 #include <functional>

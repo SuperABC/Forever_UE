@@ -1,4 +1,5 @@
 ﻿#include "common/config.h"
+#include "story/script.h"
 
 #include "map.h"
 #include "zone.h"
@@ -212,15 +213,15 @@ void Zone::ArrangeBuildings() {
 		elements[0]->SetPosition(container.GetPosX(), container.GetPosY(), container.GetSizeX(), container.GetSizeY());
 	}
 	else {
-		class Chunk : public Quad {
+		class Space : public Quad {
 		public:
-			Chunk(Quad* r1, Quad* r2) : r1(r1), r2(r2) {
+			Space(Quad* r1, Quad* r2) : r1(r1), r2(r2) {
 				acreage = r1->GetAcreage() + r2->GetAcreage();
 			}
 			Quad* r1, * r2;
 		};
 		while (elements.size() > 2) {
-			Chunk* tmp = new Chunk(elements[elements.size() - 1], elements[elements.size() - 2]);
+			Space* tmp = new Space(elements[elements.size() - 1], elements[elements.size() - 2]);
 			elements.pop_back();
 			int i = (int)elements.size() - 2;
 			for (; i >= 0; i--) {
@@ -277,7 +278,7 @@ void Zone::ArrangeBuildings() {
 		while (!elements.empty()) {
 			auto tmp = elements.back();
 			elements.pop_back();
-			if (auto chunk = dynamic_cast<Chunk*>(tmp)) {
+			if (auto chunk = dynamic_cast<Space*>(tmp)) {
 				Quad* rect1 = chunk->r1;
 				Quad* rect2 = chunk->r2;
 
@@ -318,10 +319,10 @@ void Zone::ArrangeBuildings() {
 							rect1->SetVertices(tmp->GetLeft(), (float)divY, tmp->GetRight(), tmp->GetTop());
 						}
 					}
-					if (dynamic_cast<Chunk*>(rect1)) {
+					if (dynamic_cast<Space*>(rect1)) {
 						elements.push_back(rect1);
 					}
-					if (dynamic_cast<Chunk*>(rect2)) {
+					if (dynamic_cast<Space*>(rect2)) {
 						elements.push_back(rect2);
 					}
 				}

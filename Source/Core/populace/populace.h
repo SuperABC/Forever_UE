@@ -1,31 +1,11 @@
 ﻿#pragma once
 
-#include "story/story.h"
-#include "player/player.h"
-
-#include "person.h"
-#include "asset.h"
-#include "name.h"
-#include "scheduler.h"
-#include "condition.h"
+#include "class.h"
 #include "utility.h"
 #include "error.h"
 #include "config.h"
 
-#include <string>
-#include <vector>
-#include <functional>
 
-class Person;
-class Change;
-class Player;
-class Time;
-class Asset;
-class Name;
-class Scheduler;
-class AssetFactory;
-class NameFactory;
-class SchedulerFactory;
 class Populace {
 public:
 	Populace();

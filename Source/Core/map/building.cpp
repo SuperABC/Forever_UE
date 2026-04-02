@@ -1,4 +1,5 @@
 ﻿#include "common/config.h"
+#include "story/script.h"
 
 #include "map.h"
 #include "building.h"
@@ -501,7 +502,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 	auto layout = new Layout();
 
 	for (auto path : paths) {
-		if (!filesystem::exists(REPLACE_PATH(path))) {
+		if (!filesystem::exists(path)) {
 			THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
 		}
 

@@ -1,8 +1,10 @@
 #include "Actor/BuildingBase.h"
 #include "Actor/GlobalBase.h"
 
-#include "utility.h"
-#include "error.h"
+#include "map/roadnet.h"
+#include "map/zone.h"
+#include "map/building.h"
+#include "story/script.h"
 
 
 using namespace std;

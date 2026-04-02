@@ -1,5 +1,14 @@
 ﻿#include "populace.h"
 
+#include "person.h"
+#include "asset.h"
+#include "name.h"
+#include "scheduler.h"
+#include "change.h"
+
+#include "story/script.h"
+#include "player/player.h"
+
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
@@ -154,7 +163,7 @@ void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles,
 void Populace::Init(int accomodation, Player* player) {
     Destroy();
 
-    if (!time) {
+    if (!player->GetTime()) {
         THROW_EXCEPTION(NullPointerException, "Time pointer is null during initialization.\n");
     }
     GenerateCitizens(static_cast<int>(accomodation *exp(GetRandom(1000) / 1000.0f - 0.5f)), player->GetTime());

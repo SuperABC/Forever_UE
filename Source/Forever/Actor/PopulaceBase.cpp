@@ -1,6 +1,8 @@
 #include "Actor/PopulaceBase.h"
 #include "Actor/GlobalBase.h"
 
+#include "populace/person.h"
+
 
 using namespace std;
 

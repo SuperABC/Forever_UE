@@ -1,12 +1,18 @@
 ﻿#include "industry.h"
 
+#include "product.h"
+#include "storage.h"
+#include "manufacture.h"
+
 
 using namespace std;
 
 Industry::Industry() {
+
 }
 
 Industry::~Industry() {
+
 }
 
 void Industry::LoadConfigs() const {

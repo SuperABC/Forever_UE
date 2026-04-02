@@ -1,4 +1,5 @@
 ﻿#include "story/story.h"
+#include "story/script.h"
 
 #include "scheduler.h"
 

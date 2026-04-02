@@ -1,6 +1,7 @@
 ﻿#include "map/map.h"
 #include "populace/populace.h"
 #include "society/society.h"
+#include "story/script.h"
 #include "story/story.h"
 #include "industry/industry.h"
 #include "traffic/traffic.h"
@@ -10,6 +11,9 @@
 #include "error.h"
 #include "parser.h"
 #include "config.h"
+#include "event.h"
+#include "dialog.h"
+#include "change.h"
 
 #include <iostream>
 #include <memory>

@@ -3,6 +3,9 @@
 #include "condition.h"
 #include "change.h"
 
+#include "../common/utility.h"
+#include "../common/error.h"
+
 #include <vector>
 #include <string>
 

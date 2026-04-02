@@ -1,5 +1,9 @@
 ﻿#include "story.h"
 
+#include "script.h"
+
+#include "player/player.h"
+
 
 using namespace std;
 

@@ -1,6 +1,9 @@
 #include "Actor/RoomBase.h"
 #include "Actor/GlobalBase.h"
 
+#include "map/building.h"
+#include "story/script.h"
+
 
 using namespace std;
 

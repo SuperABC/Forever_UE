@@ -171,6 +171,7 @@
     <ClCompile Include="traffic\vehicle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\class.h" />
     <ClInclude Include="common\config.h" />
     <ClInclude Include="industry\industry.h" />
     <ClInclude Include="industry\manufacture.h" />

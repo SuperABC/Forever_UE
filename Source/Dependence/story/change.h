@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include "../common/utility.h"
-
 #include "condition.h"
+
+#include "../common/utility.h"
+#include "../common/error.h"
 
 #include <string>
 
