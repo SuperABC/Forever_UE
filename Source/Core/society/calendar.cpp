@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Calendar::Calendar(CalendarFactory* factory, const string& component) :
-	mod(factory->CreateCalendar(component)),
+Calendar::Calendar(CalendarFactory* factory, const string& calendar) :
+	mod(factory->CreateCalendar(calendar)),
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()) {

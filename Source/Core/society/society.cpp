@@ -303,7 +303,10 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 }
 
 void Society::Destroy() {
-
+	for (auto organization : organizations) {
+		if (organization)delete organization;
+	}
+	organizations.clear();
 }
 
 void Society::ApplyChange(Change* change,

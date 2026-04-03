@@ -81,9 +81,9 @@ void AGlobalBase::BeginPlay() {
 
 		// 读取Industry相关类及Mod
 		industry->LoadConfigs();
-		//industry->InitManufactures(modHandles, mods);
+		industry->InitProducts(modHandles, mods);
 		//industry->InitStorages(modHandles, mods);
-		//industry->InitProducts(modHandles, mods);
+		//industry->InitManufactures(modHandles, mods);
 
 		// 读取Traffic相关类及Mod
 		traffic->LoadConfigs();

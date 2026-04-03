@@ -6,8 +6,8 @@
 
 using namespace std;
 
-Job::Job(JobFactory* factory, const string& component) :
-	mod(factory->CreateJob(component)),
+Job::Job(JobFactory* factory, const string& job) :
+	mod(factory->CreateJob(job)),
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),

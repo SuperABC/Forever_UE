@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Organization::Organization(OrganizationFactory* factory, const string& component) :
-	mod(factory->CreateOrganization(component)),
+Organization::Organization(OrganizationFactory* factory, const string& organization) :
+	mod(factory->CreateOrganization(organization)),
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),

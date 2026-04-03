@@ -6,8 +6,8 @@
 
 using namespace std;
 
-Scheduler::Scheduler(SchedulerFactory* factory, const string& component) :
-	mod(factory->CreateScheduler(component)),
+Scheduler::Scheduler(SchedulerFactory* factory, const string& scheduler) :
+	mod(factory->CreateScheduler(scheduler)),
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),
