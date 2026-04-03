@@ -73,7 +73,7 @@ void AGlobalBase::BeginPlay() {
 		society->LoadConfigs();
 		society->InitCalendars(modHandles, mods);
 		society->InitJobs(modHandles, mods);
-		//society->InitOrganizations(modHandles, mods);
+		society->InitOrganizations(modHandles, mods);
 
 		// 读取Story相关类及Mod
 		story->LoadConfigs();
@@ -101,11 +101,8 @@ void AGlobalBase::BeginPlay() {
 		int accomodation = map->Init(size, size);
 		populace->Init(accomodation, player);
 		map->Checkin(populace, player);
-		//society->Init(map, populace, player->GetTime());
+		society->Init(map, populace, player);
 		story->Init(map, populace, player);
-		//populace->Schedule();
-		//populace->Workload(story);
-		//populace->Characterize(story);
 		//industry->Init(map);
 		//traffic->Init(map);
 		//player->Init();

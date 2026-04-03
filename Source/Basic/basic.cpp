@@ -173,6 +173,18 @@ extern "C" __declspec(dllexport) void RegisterModJobs(JobFactory* factory) {
 	);
 }
 
+extern "C" __declspec(dllexport) void* GetModOrganizations() {
+	static vector<string> mods = { "shop" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModOrganizations(OrganizationFactory* factory) {
+	factory->RegisterOrganization(ShopOrganization::GetId(), ShopOrganization::GetPower(),
+		[]() { return new ShopOrganization(); },
+		[](OrganizationMod* organization) { delete organization; }
+	);
+}
+
 extern "C" __declspec(dllexport) void* GetModScripts() {
 	static vector<string> mods = { "npc" };
 	return (void*)&mods;

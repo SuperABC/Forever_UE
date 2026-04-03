@@ -1,13 +1,13 @@
 {
    "asset_mods" : [ "zone", "building", "room" ],
    "building_mods" : [ "residential" ],
-   "calendar_mods" : [ "empty" ],
+   "calendar_mods" : [ "standard", "full" ],
    "component_mods" : [ "residential" ],
    "dll_paths" : [ "C:/Workspace/UE5/Projects/Forever_UE/x64/Release" ],
-   "job_mods" : [ "empty" ],
+   "job_mods" : [ "shop_saler" ],
    "manufacture_mods" : [ "empty" ],
    "name_mod" : "chinese",
-   "organization_mods" : [ "empty" ],
+   "organization_mods" : [ "shop" ],
    "product_mods" : [ "empty" ],
    "resource_paths" : [
       "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",

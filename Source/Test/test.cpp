@@ -1,4 +1,5 @@
 ﻿#include "map/map.h"
+#include "populace/person.h"
 #include "populace/populace.h"
 #include "society/society.h"
 #include "story/script.h"
@@ -381,7 +382,7 @@ int main() {
 	society->LoadConfigs();
 	society->InitCalendars(modHandles, mods);
 	society->InitJobs(modHandles, mods);
-	//society->InitOrganizations(modHandles, mods);
+	society->InitOrganizations(modHandles, mods);
 
 	// 读取Story相关类及Mod
 	story->LoadConfigs();
@@ -432,11 +433,8 @@ int main() {
 				int accomodation = ::map->Init(size, size);
 				populace->Init(accomodation, player);
 				::map->Checkin(populace, player);
-				//society->Init(::map, populace, player->GetTime());
+				society->Init(::map, populace, player);
 				story->Init(::map, populace, player);
-				//populace->Schedule();
-				//populace->Workload(story);
-				//populace->Characterize(story);
 				//industry->Init(::map);
 				//traffic->Init(::map);
 				//player->Init();
@@ -451,7 +449,7 @@ int main() {
 
 				parser.AddOption("--message", 0, "Event target message.", true, "");
 				parser.AddOption("--id", 0, "Event target id.", true, "");
-				parser.AddOption("--target", 0, "Event target name.", true, "");
+				parser.AddOption("--name", 0, "Event target name.", true, "");
 				parser.AddOption("--option", 0, "Event option.", true, "");
 
 				parser.ParseCmd(cmd);
@@ -504,40 +502,40 @@ int main() {
 				parser.AddOption("--name", 0, "Lookup citizen by name.", true, "");
 				parser.ParseCmd(cmd);
 
-				//if (parser.HasOption("--id")) { // 按ID查找
-				//	int id = atoi(parser.GetOption("--id").data());
-				//	if (id < 0 || id >= populace->GetCitizens().size()) {
-				//		THROW_EXCEPTION(CommandException, "Wrong input citizen ID.");
-				//	}
-				//	auto citizen = populace->GetCitizens()[id];
-				//
-				//	cout << "Citizen ID: " << citizen->GetId() << endl;
-				//	cout << "Gender: " << (citizen->GetGender() == GENDER_FEMALE ? "female" : "male") << endl;
-				//	cout << "Name: " << Utf8ToAnsi(citizen->GetName()) << endl;
-				//	cout << "Age: " << citizen->GetAge(player->GetTime()) << endl;
-				//	cout << "Options: " << endl;
-				//	for (auto option : citizen->GetOptions()) {
-				//		cout << "--" << Utf8ToAnsi(option) << endl;
-				//	}
-				//}
-				//else if (parser.HasOption("--name")) { // 按名字查找
-				//	string name = parser.GetOption("--name");
-				//	if (name.size() == 0) {
-				//		THROW_EXCEPTION(CommandException, "Wrong input citizen name.");
-				//	}
-				//	for (auto citizen : populace->GetCitizens()) {
-				//		if (citizen->GetName() == name) {
-				//			cout << "Citizen ID: " << citizen->GetId() << endl;
-				//			cout << "Name: " << Utf8ToAnsi(citizen->GetName()) << endl;
-				//			cout << "Age: " << player->GetTime()->GetYear() - citizen->GetBirthday().GetYear() << endl;
-				//			cout << "Options: " << endl;
-				//			for (auto option : citizen->GetOptions()) {
-				//				cout << "--" << Utf8ToAnsi(option) << endl;
-				//			}
-				//			break;
-				//		}
-				//	}
-				//}
+				if (parser.HasOption("--id")) { // 按ID查找
+					int id = atoi(parser.GetOption("--id").data());
+					if (id < 0 || id >= populace->GetCitizens().size()) {
+						THROW_EXCEPTION(CommandException, "Wrong input citizen ID.");
+					}
+					auto citizen = populace->GetCitizens()[id];
+				
+					cout << "Citizen ID: " << citizen->GetId() << endl;
+					cout << "Gender: " << (citizen->GetGender() == GENDER_FEMALE ? "female" : "male") << endl;
+					cout << "Name: " << Utf8ToAnsi(citizen->GetName()) << endl;
+					cout << "Age: " << citizen->GetAge(player->GetTime()) << endl;
+					cout << "Options: " << endl;
+					for (auto option : citizen->GetOptions()) {
+						cout << "--" << Utf8ToAnsi(option) << endl;
+					}
+				}
+				else if (parser.HasOption("--name")) { // 按名字查找
+					string name = parser.GetOption("--name");
+					if (name.size() == 0) {
+						THROW_EXCEPTION(CommandException, "Wrong input citizen name.");
+					}
+					for (auto citizen : populace->GetCitizens()) {
+						if (citizen->GetName() == name) {
+							cout << "Citizen ID: " << citizen->GetId() << endl;
+							cout << "Name: " << Utf8ToAnsi(citizen->GetName()) << endl;
+							cout << "Age: " << player->GetTime()->GetYear() - citizen->GetBirthday().GetYear() << endl;
+							cout << "Options: " << endl;
+							for (auto option : citizen->GetOptions()) {
+								cout << "--" << Utf8ToAnsi(option) << endl;
+							}
+							break;
+						}
+					}
+				}
 				break;
 			}
 			case CMD_PRINT: { // 输出当前状态

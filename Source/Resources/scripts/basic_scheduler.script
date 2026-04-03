@@ -7,10 +7,10 @@
 	"changes": [
 		{"type": "add_option", "name": "$$self.name", "option": "你好"}
 	],
-	"subsequences": ["option_dialog"]
+	"subsequences": ["default_hello"]
 },
 {
-	"milestone": "option_dialog",
+	"milestone": "default_hello",
 	"visible": false,
 	"drop": "false",
 	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "你好"}],

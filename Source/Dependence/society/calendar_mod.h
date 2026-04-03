@@ -21,10 +21,10 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 上班时间
-	virtual Time SigninTime(const Time& date) const = 0;
+	COSTOM_RUNTIME virtual Time SigninTime(const Time& date) const = 0;
 
 	// 下班时间
-	virtual Time SignoutTime(const Time& date) const = 0;
+	COSTOM_RUNTIME virtual Time SignoutTime(const Time& date) const = 0;
 
 };
 

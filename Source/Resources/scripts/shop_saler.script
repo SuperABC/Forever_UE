@@ -1,0 +1,21 @@
+[
+{
+	"milestone": "game_start",
+	"visible": false,
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "add_option", "name": "$$self.name", "option": "购物"}
+	],
+	"subsequences": ["buy_item"]
+},
+{
+	"milestone": "buy_item",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "购物"}],
+	"dialogs": [{"list":[{"content": "暂无商品。"}]}],
+	"changes": [],
+	"subsequences": []
+}
+]

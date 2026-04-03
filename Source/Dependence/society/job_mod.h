@@ -21,10 +21,7 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 初始化职业
-	virtual void InitJob() = 0;
-
-	// 工作日程
-	std::string calendar;
+	COSTOM_INIT virtual void InitJob() = 0;
 
 	// 关联剧情与脚本
 	std::pair<std::string, std::vector<std::string>> script;

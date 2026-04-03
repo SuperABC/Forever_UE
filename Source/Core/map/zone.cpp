@@ -113,11 +113,6 @@ void Zone::LayoutZone(const Lot* block) {
 
 		const auto& [buildingType, ratio] = mod->buildings[i];
 		Building* building = new Building(Map::buildingFactory, buildingType);
-		if (!building) {
-			attempt++;
-			i--;
-			continue;
-		}
 
 		float acreageBuilding = building->RandomAcreage() * ratio;
 		float acreageMin = building->GetAcreageMin() * ratio;
@@ -125,6 +120,7 @@ void Zone::LayoutZone(const Lot* block) {
 		if (mod->acreage - acreageTmp < acreageMin) {
 			attempt++;
 			i--;
+			delete building;
 			continue;
 		}
 		else if (mod->acreage - acreageTmp < acreageBuilding) {

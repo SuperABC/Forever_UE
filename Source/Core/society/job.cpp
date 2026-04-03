@@ -37,9 +37,12 @@ Calendar* Job::GetCalendar() const {
 	return calendar;
 }
 
-void Job::InitJob() {
-	calendar = new Calendar(Society::calendarFactory, mod->calendar);
+void Job::SetCalendar(Calendar* calendar) {
+	this->calendar = calendar;
+}
 
+void Job::InitJob(string name) {
+	mod->InitJob();
 	script = new Script(Story::scriptFactory, mod->script.first);
 	for (auto s : mod->script.second) {
 		script->ReadMilestones(Config::GetScript(s));
@@ -49,6 +52,14 @@ void Job::InitJob() {
 
 Script* Job::GetScript() const {
 	return script;
+}
+
+Room* Job::GetPosition() const {
+    return position;
+}
+
+void Job::SetPosition(Room* room) {
+    position = room;
 }
 
 int EmptyJob::count = 0;

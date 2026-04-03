@@ -561,6 +561,7 @@ int Map::Init(int chunkX, int chunkY) {
 			float acreageMax = building->GetAcreageMax();
 			if (acreageBlock - acreageTmp < acreageMin) {
 				++attempt;
+				delete building;
 				continue;
 			}
 			else if (acreageBlock - acreageTmp < acreageBuilding) {

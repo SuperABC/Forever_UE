@@ -17,8 +17,8 @@ Person::Person() :
 	relatives(),
 	acquaintances(),
 	assets(),
-	//jobs(),
-	//working(-1),
+	jobs(),
+	working(-1),
 	home(nullptr),
 	scheduler(nullptr),
 	educationExperiences(),
@@ -38,6 +38,11 @@ Person::~Person() {
 		if (asset)delete asset;
 	}
 	assets.clear();
+
+	for (auto& job : jobs) {
+		if (job)delete job;
+	}
+	jobs.clear();
 
 	if (scheduler)delete scheduler;
 	scheduler = nullptr;
@@ -204,49 +209,50 @@ Asset* Person::GetAsset(const string& name) const {
 	return nullptr;
 }
 
-//vector<Job*> Person::GetJobs() const {
-//	return jobs;
-//}
-//
-//void Person::AddJob(Job* job) {
-//	if (job == nullptr) {
-//		THROW_EXCEPTION(NullPointerException, "Job is null.\n");
-//	}
-//	jobs.push_back(job);
-//}
-//
-//void Person::RemoveJob(Job* job) {
-//	if (job == nullptr) {
-//		THROW_EXCEPTION(NullPointerException, "Job is null.\n");
-//	}
-//	for (auto it = jobs.begin(); it != jobs.end(); ++it) {
-//		if (*it == job) {
-//			auto index = it - jobs.begin();
-//			if (working == index) {
-//				working = -1;
-//			}
-//			else if (working > index) {
-//				--working;
-//			}
-//			jobs.erase(it);
-//			break;
-//		}
-//	}
-//}
-//
-//void Person::SetWork(int job) {
-//	if (job < 0 || job >= static_cast<int>(jobs.size())) {
-//		THROW_EXCEPTION(OutOfRangeException, "Job index out of range.\n");
-//	}
-//	working = job;
-//}
-//
-//Job* Person::GetWork() const {
-//	if (working < 0 || working >= static_cast<int>(jobs.size())) {
-//		THROW_EXCEPTION(OutOfRangeException, "Working index out of range.\n");
-//	}
-//	return jobs[working];
-//}
+vector<Job*> Person::GetJobs() const {
+	return jobs;
+}
+
+void Person::AddJob(Job* job) {
+	if (job == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Job is null.\n");
+	}
+	jobs.push_back(job);
+}
+
+void Person::RemoveJob(Job* job) {
+	if (job == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Job is null.\n");
+	}
+	for (auto it = jobs.begin(); it != jobs.end(); ++it) {
+		if (*it == job) {
+			auto index = it - jobs.begin();
+			if (working == index) {
+				working = -1;
+			}
+			else if (working > index) {
+				--working;
+			}
+			delete *it;
+			jobs.erase(it);
+			break;
+		}
+	}
+}
+
+void Person::SetWork(int job) {
+	if (job < 0 || job >= static_cast<int>(jobs.size())) {
+		THROW_EXCEPTION(OutOfRangeException, "Job index out of range.\n");
+	}
+	working = job;
+}
+
+Job* Person::GetWork() const {
+	if (working < 0 || working >= static_cast<int>(jobs.size())) {
+		THROW_EXCEPTION(OutOfRangeException, "Working index out of range.\n");
+	}
+	return jobs[working];
+}
 
 Room* Person::GetHome() const {
 	return home;

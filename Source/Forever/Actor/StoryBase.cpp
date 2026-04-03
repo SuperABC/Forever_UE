@@ -228,6 +228,14 @@ void AStoryBase::GameStart() {
 			});
 		MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
 		getValues.pop_back();
+		for (auto job : citizen->GetJobs()) {
+			getValues.push_back(
+				[&](string name) -> pair<bool, ValueType> {
+					return job->GetScript()->GetValue(name);
+				});
+			MatchEvent(event, job->GetScript(), getValues);
+			getValues.pop_back();
+		}
 	}
 
 	delete event;
@@ -280,6 +288,14 @@ void AStoryBase::ScriptMessage(FString message) {
 			});
 		MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
 		getValues.pop_back();
+		for (auto job : citizen->GetJobs()) {
+			getValues.push_back(
+				[&](string name) -> pair<bool, ValueType> {
+					return job->GetScript()->GetValue(name);
+				});
+			MatchEvent(event, job->GetScript(), getValues);
+			getValues.pop_back();
+		}
 	}
 
 	delete event;
@@ -303,6 +319,14 @@ void AStoryBase::OptionDialog(FString name, FString option) {
 		});
 	MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
 	getValues.pop_back();
+	for (auto job : citizen->GetJobs()) {
+		getValues.push_back(
+			[&](string name) -> pair<bool, ValueType> {
+				return job->GetScript()->GetValue(name);
+			});
+		MatchEvent(event, job->GetScript(), getValues);
+		getValues.pop_back();
+	}
 
 	delete event;
 }

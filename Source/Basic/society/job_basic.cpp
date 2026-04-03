@@ -27,6 +27,5 @@ const char* ShopSalerJob::GetName() {
 }
 
 void ShopSalerJob::InitJob() {
-	calendar = "standard";
 	script = { "empty", {"shop_saler"} };
 }

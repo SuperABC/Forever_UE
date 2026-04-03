@@ -148,19 +148,19 @@ public:
 	Asset* GetAsset(const std::string& name) const;
 
 	// 获取全部工作
-	//std::vector<Job*> GetJobs() const;
+	std::vector<Job*> GetJobs() const;
 
 	// 添加工作
-	//void AddJob(Job* job);
+	void AddJob(Job* job);
 
 	// 移除工作
-	//void RemoveJob(Job* job);
+	void RemoveJob(Job* job);
 
 	// 获取正在工作
-	//Job* GetWork() const;
+	Job* GetWork() const;
 
 	// 设置正在工作
-	//void SetWork(int job);
+	void SetWork(int job);
 
 	// 获取居住房间
 	Room* GetHome() const;
@@ -251,8 +251,8 @@ private:
 
 	OBJECT_HOLDER std::vector<Asset*> assets;
 
-	//OBJECT_HOLDER std::vector<Job*> jobs;
-	//int working;
+	OBJECT_HOLDER std::vector<Job*> jobs;
+	int working;
 
 	Room* home;
 	OBJECT_HOLDER Scheduler* scheduler;
