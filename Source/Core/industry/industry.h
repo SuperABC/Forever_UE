@@ -20,6 +20,10 @@ public:
 	// 读取 Mods
 	void InitProducts(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+	void InitStorages(std::unordered_map<std::string, HMODULE>& modHandles,
+		const std::vector<std::string>& dlls);
+	void InitManufactures(std::unordered_map<std::string, HMODULE>& modHandles,
+		const std::vector<std::string>& dlls);
 
 	// 初始化工业
 	void Init(Map* map);
@@ -33,6 +37,8 @@ public:
 
 	// 统一工厂
 	static ProductFactory* productFactory;
+	static StorageFactory* storageFactory;
+	static ManufactureFactory* manufactureFactory;
 
 private:
 

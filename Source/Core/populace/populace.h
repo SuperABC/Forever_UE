@@ -8,7 +8,10 @@
 
 class Populace {
 public:
+	// 构造人口
 	Populace();
+
+	// 析构人口
 	~Populace();
 
 	// 读取配置文件

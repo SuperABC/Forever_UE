@@ -391,8 +391,8 @@ int main() {
 	// 读取Industry相关类及Mod
 	industry->LoadConfigs();
 	industry->InitProducts(modHandles, mods);
-	//industry->InitStorages(modHandles, mods);
-	//industry->InitManufactures(modHandles, mods);
+	industry->InitStorages(modHandles, mods);
+	industry->InitManufactures(modHandles, mods);
 
 	// 读取Traffic相关类及Mod
 	traffic->LoadConfigs();
@@ -435,7 +435,7 @@ int main() {
 				::map->Checkin(populace, player);
 				society->Init(::map, populace, player);
 				story->Init(::map, populace, player);
-				//industry->Init(::map);
+				industry->Init(::map);
 				//traffic->Init(::map);
 				//player->Init();
 

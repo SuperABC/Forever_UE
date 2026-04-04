@@ -8,7 +8,10 @@
 
 class Traffic {
 public:
+	// 构造交通
 	Traffic();
+
+	// 析构交通
 	~Traffic();
 
 	// 读取配置文件

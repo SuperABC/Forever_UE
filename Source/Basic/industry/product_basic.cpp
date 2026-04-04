@@ -14,11 +14,11 @@ ExperienceProduct::~ExperienceProduct() {
 }
 
 const char* ExperienceProduct::GetId() {
-	return "workonly";
+	return "experience";
 }
 
 const char* ExperienceProduct::GetType() const {
-	return "workonly";
+	return "experience";
 }
 
 const char* ExperienceProduct::GetName() {
@@ -28,4 +28,5 @@ const char* ExperienceProduct::GetName() {
 
 void ExperienceProduct::SetProperty() {
 	catagories = { "empty" };
+	price = 1.f;
 }

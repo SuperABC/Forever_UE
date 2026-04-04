@@ -36,6 +36,26 @@ void Product::SetProperty() {
 	byproducts = mod->byproducts;
 }
 
+vector<string> Product::GetCategories() const {
+	return catagories;
+}
+
+float Product::GetPrice() const {
+	return price;
+}
+
+void Product::SetPrice(float price) {
+	this->price = price;
+}
+
+unordered_map<string, float> Product::GetIngredients() const {
+	return ingredients;
+}
+
+unordered_map<string, float> Product::GetByproducts() const {
+	return byproducts;
+}
+
 float Product::GetAmount() const {
 	return amount;
 }
@@ -50,14 +70,6 @@ void Product::IncreaseAmount(float amount) {
 
 void Product::DecreaseAmount(float amount) {
 	this->amount -= amount;
-}
-
-float Product::GetPrice() const {
-	return price;
-}
-
-void Product::SetPrice(float price) {
-	this->price = price;
 }
 
 int EmptyProduct::count = 0;

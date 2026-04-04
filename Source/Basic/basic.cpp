@@ -48,7 +48,7 @@ extern "C" __declspec(dllexport) void* GetModRoadnets() {
 extern "C" __declspec(dllexport) void RegisterModRoadnets(RoadnetFactory* factory) {
 	factory->RegisterRoadnet(JingRoadnet::GetId(),
 		[]() { return new JingRoadnet(); },
-		[](RoadnetMod* terrain) { delete terrain; }
+		[](RoadnetMod* roadnet) { delete roadnet; }
 	);
 }
 
@@ -65,7 +65,7 @@ extern "C" __declspec(dllexport) void RegisterModZones(ZoneFactory* factory) {
 }
 
 extern "C" __declspec(dllexport) void* GetModBuildings() {
-	static vector<string> mods = { "residential" };
+	static vector<string> mods = { "residential", "shop", "factory" };
 	return (void*)&mods;
 }
 
@@ -73,31 +73,61 @@ extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* fact
 	factory->RegisterBuilding(ResidentialBuilding::GetId(),
 		ResidentialBuilding::GetPowers(), ResidentialBuilding::BuildingAssigner,
 		[]() { return new ResidentialBuilding(); },
-		[](BuildingMod* zone) { delete zone; }
+		[](BuildingMod* building) { delete building; }
+	);
+	factory->RegisterBuilding(ShopBuilding::GetId(),
+		ShopBuilding::GetPowers(), ShopBuilding::BuildingAssigner,
+		[]() { return new ShopBuilding(); },
+		[](BuildingMod* building) { delete building; }
+	);
+	factory->RegisterBuilding(FactoryBuilding::GetId(),
+		FactoryBuilding::GetPowers(), FactoryBuilding::BuildingAssigner,
+		[]() { return new FactoryBuilding(); },
+		[](BuildingMod* building) { delete building; }
 	);
 }
 
 extern "C" __declspec(dllexport) void* GetModComponents() {
-	static vector<string> mods = { "residential" };
+	static vector<string> mods = { "residential", "shop", "factory" };
 	return (void*)&mods;
 }
 
 extern "C" __declspec(dllexport) void RegisterModComponents(ComponentFactory* factory) {
 	factory->RegisterComponent(ResidentialComponent::GetId(),
 		[]() { return new ResidentialComponent(); },
-		[](ComponentMod* zone) { delete zone; }
+		[](ComponentMod* component) { delete component; }
+	);
+	factory->RegisterComponent(ShopComponent::GetId(),
+		[]() { return new ShopComponent(); },
+		[](ComponentMod* component) { delete component; }
+	);
+	factory->RegisterComponent(FactoryComponent::GetId(),
+		[]() { return new FactoryComponent(); },
+		[](ComponentMod* component) { delete component; }
 	);
 }
 
 extern "C" __declspec(dllexport) void* GetModRooms() {
-	static vector<string> mods = { "residential" };
+	static vector<string> mods = { "residential", "shop", "warehouse", "factory" };
 	return (void*)&mods;
 }
 
 extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
 	factory->RegisterRoom(ResidentialRoom::GetId(),
 		[]() { return new ResidentialRoom(); },
-		[](RoomMod* zone) { delete zone; }
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(ShopRoom::GetId(),
+		[]() { return new ShopRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(WarehouseRoom::GetId(),
+		[]() { return new WarehouseRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(FactoryRoom::GetId(),
+		[]() { return new FactoryRoom(); },
+		[](RoomMod* room) { delete room; }
 	);
 }
 
@@ -196,3 +226,40 @@ extern "C" __declspec(dllexport) void RegisterModScripts(ScriptFactory* factory)
 		[](ScriptMod* script) { delete script; }
 	);
 }
+
+extern "C" __declspec(dllexport) void* GetModProducts() {
+	static vector<string> mods = { "experience" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModProducts(ProductFactory* factory) {
+	factory->RegisterProduct(ExperienceProduct::GetId(),
+		[]() { return new ExperienceProduct(); },
+		[](ProductMod* product) { delete product; }
+	);
+}
+
+extern "C" __declspec(dllexport) void* GetModStorages() {
+	static vector<string> mods = { "shop" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModStorages(StorageFactory* factory) {
+	factory->RegisterStorage(ShopStorage::GetId(),
+		[]() { return new ShopStorage(); },
+		[](StorageMod* storage) { delete storage; }
+	);
+}
+
+extern "C" __declspec(dllexport) void* GetModManufactures() {
+	static vector<string> mods = { "experience" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModManufactures(ManufactureFactory* factory) {
+	factory->RegisterManufacture(ExperienceManufacture::GetId(),
+		[]() { return new ExperienceManufacture(); },
+		[](ManufactureMod* manufacture) { delete manufacture; }
+	);
+}
+

@@ -27,6 +27,21 @@ public:
 	// 设置参数
 	void SetProperty();
 
+	// 获取产品类型
+	std::vector<std::string> GetCategories() const;
+
+	// 获取单价
+	float GetPrice() const;
+
+	// 设置单价
+	void SetPrice(float price);
+
+	// 材料列表
+	std::unordered_map<std::string, float> GetIngredients() const;
+
+	// 副产物列表
+	std::unordered_map<std::string, float> GetByproducts() const;
+
 	// 获取数量
 	float GetAmount() const;
 
@@ -38,12 +53,6 @@ public:
 
 	// 减少数量
 	void DecreaseAmount(float amount);
-
-	// 获取单价
-	float GetPrice() const;
-
-	// 设置单价
-	void SetPrice(float price);
 
 private:
 	// 模组对象

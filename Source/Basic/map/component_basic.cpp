@@ -25,3 +25,49 @@ const char* ResidentialComponent::GetName() {
 	name = "住宅组合" + to_string(id);
 	return name.data();
 }
+
+int ShopComponent::count = 0;
+
+ShopComponent::ShopComponent() : id(count++) {
+
+}
+
+ShopComponent::~ShopComponent() {
+
+}
+
+const char* ShopComponent::GetId() {
+	return "shop";
+}
+
+const char* ShopComponent::GetType() const {
+	return "shop";
+}
+
+const char* ShopComponent::GetName() {
+	name = "商店组合" + to_string(id);
+	return name.data();
+}
+
+int FactoryComponent::count = 0;
+
+FactoryComponent::FactoryComponent() : id(count++) {
+
+}
+
+FactoryComponent::~FactoryComponent() {
+
+}
+
+const char* FactoryComponent::GetId() {
+	return "factory";
+}
+
+const char* FactoryComponent::GetType() const {
+	return "factory";
+}
+
+const char* FactoryComponent::GetName() {
+	name = "工厂组合" + to_string(id);
+	return name.data();
+}

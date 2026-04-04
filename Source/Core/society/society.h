@@ -8,7 +8,10 @@
 
 class Society {
 public:
+	// 构造社会
 	Society();
+
+	// 析构社会
 	~Society();
 
 	// 读取配置文件
@@ -38,6 +41,7 @@ public:
 	static OrganizationFactory* organizationFactory;
 
 private:
+	// 全部组织
 	OBJECT_HOLDER std::vector<Organization*> organizations;
 
 };

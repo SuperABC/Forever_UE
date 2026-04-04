@@ -1,8 +1,8 @@
 {
    "asset_mods" : [ "zone", "building", "room" ],
-   "building_mods" : [ "residential" ],
+   "building_mods" : [ "factory", "residential", "shop" ],
    "calendar_mods" : [ "standard", "full" ],
-   "component_mods" : [ "residential" ],
+   "component_mods" : [ "factory", "residential", "shop" ],
    "dll_paths" : [ "C:/Workspace/UE5/Projects/Forever_UE/x64/Release" ],
    "job_mods" : [ "shop_saler" ],
    "manufacture_mods" : [ "empty" ],
@@ -15,7 +15,7 @@
       "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
    ],
    "roadnet_mod" : "jing",
-   "room_mods" : [ "residential" ],
+   "room_mods" : [ "factory", "residential", "shop", "warehouse" ],
    "route_mods" : [ "empty" ],
    "scheduler_mods" : [ "workonly", "empty" ],
    "script_mods" : [ "npc", "empty" ],
