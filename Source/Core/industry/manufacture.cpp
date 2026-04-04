@@ -12,8 +12,8 @@ Manufacture::Manufacture(ManufactureFactory* factory, const string& component) :
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),
-	inputs(),
-	outputs(),
+	inputCache(nullptr),
+	outputCache(nullptr),
 	ingredients(),
 	targets(),
 	byproducts(),
@@ -24,16 +24,8 @@ Manufacture::Manufacture(ManufactureFactory* factory, const string& component) :
 Manufacture::~Manufacture() {
 	factory->DestroyManufacture(mod);
 
-    for (auto& [type, storage] : inputs) {
-        if (storage)delete storage;
-        storage = nullptr;
-    }
-    inputs.clear();
-    for (auto& [type, storage] : outputs) {
-        if (storage)delete storage;
-        storage = nullptr;
-    }
-    outputs.clear();
+    if (inputCache)delete inputCache;
+    if (outputCache)delete outputCache;
 }
 
 string Manufacture::GetType() const {
@@ -44,7 +36,7 @@ string Manufacture::GetName() const {
 	return name;
 }
 
-void Manufacture::CalculateTargets() {
+void Manufacture::SetProperty() {
     mod->SetTargets();
 
     if (mod->targets.empty()) {
@@ -54,58 +46,55 @@ void Manufacture::CalculateTargets() {
         return;
     }
 
+    inputCache = new Storage(Industry::storageFactory, "empty");
+    inputCache->SetProperty(0.f);
+    outputCache = new Storage(Industry::storageFactory, "empty");
+    outputCache->SetProperty(0.f);
+
     targets = mod->targets;
+    float inputSize = 0.f, outputSize = 0.f;
     for (auto& [target, scalar] : mod->targets) {
+        outputSize += scalar;
+        outputCache->InputProduct(target, 0.f);
         Product tmp(Industry::productFactory, target);
         for (auto& [ingredient, amount] : tmp.GetIngredients()) {
+            inputSize += amount * scalar;
+            inputCache->InputProduct(target, 0.f);
             ingredients[ingredient] += amount * scalar;
         }
         for (auto& [byproduct, amount] : tmp.GetByproducts()) {
+            outputSize += amount * scalar;
+            outputCache->InputProduct(target, 0.f);
             byproducts[byproduct] += amount * scalar;
         }
     }
+
+    inputCache->SetVolume(inputSize);
+    outputCache->SetVolume(outputSize);
 }
 
-unordered_map<string, Storage*> Manufacture::GetInputs() const {
-    return inputs;
+Storage* Manufacture::GetInput() const {
+    return inputCache;
 }
 
-void Manufacture::SetInput(const string& product, Storage* input) {
-    input->InputProduct(product, 0.f);
-    inputs[product] = input;
-}
-
-unordered_map<string, Storage*> Manufacture::GetOutputs() const {
-    return outputs;
-}
-
-void Manufacture::SetOutput(const string& product, Storage* output) {
-    output->InputProduct(product, 0.f);
-    outputs[product] = output;
+Storage* Manufacture::GetOutput() const {
+    return outputCache;
 }
 
 unordered_map<string, Storage*> Manufacture::GetUpstreams() const {
-    unordered_map<string, Storage*> upstreams;
-    for (auto& [type, storage] : inputs) {
-        upstreams[type] = storage->GetUpstreams()[type];
-    }
-    return upstreams;
+    return inputCache->GetUpstreams();
 }
 
 void Manufacture::ConnectUpstream(string type, Storage* storage) {
-    inputs[type]->ConnectUpstream(type, storage);
+    inputCache->ConnectUpstream(type, storage);
 }
 
 unordered_map<string, Storage*> Manufacture::GetDownstreams() const {
-    unordered_map<string, Storage*> downstreams;
-    for (auto& [type, storage] : inputs) {
-        downstreams[type] = storage->GetDownstreams()[type];
-    }
-    return downstreams;
+    return outputCache->GetDownstreams();
 }
 
 void Manufacture::ConnectDownstream(string type, Storage* storage) {
-    outputs[type]->ConnectUpstream(type, storage);
+    outputCache->ConnectUpstream(type, storage);
 }
 
 unordered_map<string, float> Manufacture::GetIngredients() const {
@@ -122,33 +111,24 @@ unordered_map<string, float> Manufacture::GetByproducts() const {
 
 void Manufacture::StartProduce() {
     float efficiency = 1.f;
+
     for (auto& [type, standard] : ingredients) {
-        auto input = inputs[type]->GetProduct(type)->GetAmount();
+        auto input = inputCache->GetProduct(type)->GetAmount();
         if (input < standard && efficiency > input / standard) {
             efficiency = input / standard;
         }
     }
-    unordered_map<Storage*, float> capacities;
-    unordered_map<Storage*, float> standards;
-    for (auto& [type, standard] : targets) {
-        capacities[outputs[type]] = outputs[type]->GetSpace();
+
+    float capacity = outputCache->GetSpace();
+    float standard = 0.f;
+    for (auto& [type, amount] : targets) {
+        standard += amount;
     }
-    for (auto& [type, standard] : byproducts) {
-        capacities[outputs[type]] = outputs[type]->GetSpace();
+    for (auto& [type, amount] : byproducts) {
+        standard += amount;
     }
-    for (auto& [type, standard] : targets) {
-        auto output = outputs[type]->GetProduct(type)->GetAmount();
-        standards[outputs[type]] += output;
-    }
-    for (auto& [type, standard] : byproducts) {
-        auto output = outputs[type]->GetProduct(type)->GetAmount();
-        standards[outputs[type]] += output;
-    }
-    for (auto& [storage, standard] : standards) {
-        auto capacity = capacities[storage];
-        if (capacity < standard && efficiency > capacity / standard) {
-            efficiency = capacity / standard;
-        }
+    if (capacity < standard && efficiency > capacity / standard) {
+        efficiency = capacity / standard;
     }
     currentWorkload = efficiency;
 }

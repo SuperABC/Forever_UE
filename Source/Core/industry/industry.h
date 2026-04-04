@@ -41,6 +41,11 @@ public:
 	static ManufactureFactory* manufactureFactory;
 
 private:
+	// 全部仓库
+	std::vector<Storage*> storages;
+
+	// 全部工坊
+	std::vector<Manufacture*> manufactures;
 
 };
 

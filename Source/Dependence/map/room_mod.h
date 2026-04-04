@@ -44,7 +44,7 @@ public:
 	int workspaceCapacity;
 
 	// 仓库属性
-	std::pair<std::string, float> storageConfig;
+	std::unordered_map<std::string, float> storageConfig;
 
 	// 工坊类型
 	std::vector<std::string> manufactureTypes;

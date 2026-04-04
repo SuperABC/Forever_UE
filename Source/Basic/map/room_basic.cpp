@@ -84,7 +84,7 @@ const char* WarehouseRoom::GetName() {
 
 void WarehouseRoom::ConfigRoom() {
 	isStorage = true;
-	storageConfig = { "empty", 100.f };
+	storageConfig = { {"empty", 100.f} };
 }
 
 int FactoryRoom::count = 0;

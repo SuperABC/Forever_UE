@@ -27,6 +27,6 @@ const char* ExperienceProduct::GetName() {
 }
 
 void ExperienceProduct::SetProperty() {
-	catagories = { "empty" };
+	catagories = { "all" };
 	price = 1.f;
 }

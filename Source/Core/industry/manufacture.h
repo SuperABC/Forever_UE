@@ -27,20 +27,14 @@ public:
 	// 获取名称
 	std::string GetName() const;
 
-	// 计算全部输入输出
-	void CalculateTargets();
+	// 设置参数
+	void SetProperty();
 
-	// 获取输入
-	std::unordered_map<std::string, Storage*> GetInputs() const;
+	// 获取输入暂存仓库
+	OBJECT_HOLDER Storage* GetInput() const;
 
-	// 设置输入
-	void SetInput(const std::string& product, Storage* input);
-
-	// 获取输出
-	std::unordered_map<std::string, Storage*> GetOutputs() const;
-
-	// 设置输出
-	void SetOutput(const std::string& product, Storage* output);
+	// 获取输出暂存仓库
+	OBJECT_HOLDER Storage* GetOutput() const;
 
 	// 获取上游仓库
 	std::unordered_map<std::string, Storage*> GetUpstreams() const;
@@ -83,10 +77,10 @@ private:
 	std::string name;
 
 	// 内置输入暂存仓库
-	OBJECT_HOLDER std::unordered_map<std::string, Storage*> inputs;
+	OBJECT_HOLDER Storage* inputCache;
 
 	// 内置输出暂存仓库
-	OBJECT_HOLDER std::unordered_map<std::string, Storage*> outputs;
+	OBJECT_HOLDER Storage* outputCache;
 
 	// 日原料消耗量
 	std::unordered_map<std::string, float> ingredients;

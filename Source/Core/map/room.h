@@ -105,8 +105,8 @@ public:
 	// 作为工位容纳人数
 	int WorkspaceCapacity() const;
 
-	// 作为仓库各类产品容量
-	std::pair<std::string, float> StorageConfig() const;
+	// 作为仓库各分区容量
+	std::unordered_map<std::string, float> StorageConfig() const;
 
 	// 作为工坊包含生产线种类
 	std::vector<std::string> ManufactureTypes() const;
@@ -122,6 +122,42 @@ public:
 
     // 设置私人房东
     void SetOwner(Person* owner);
+
+	// 获取住户
+	const std::vector<Person*>& GetTenants() const;
+
+	// 添加住户
+	void AddTenant(Person* person);
+
+	// 移除住户
+	bool RemoveTenant(const std::string& name);
+
+	// 获取工人
+	const std::vector<Person*>& GetWorkers() const;
+
+	// 添加工人
+	void AddWorker(Person* person);
+
+	// 移除工人
+	bool RemoveWorker(const std::string& name);
+
+	// 获取仓库
+	std::vector<Storage*> GetStorage() const;
+
+	// 添加仓库
+	void AddStorage(Storage* storage);
+
+	// 清空仓库
+	void ClearStorages();
+
+	// 获取工坊
+	std::vector<Manufacture*> GetManufactures() const;
+
+	// 添加工坊
+	void AddManufacture(Manufacture* manufacture);
+
+	// 清空工坊
+	void ClearManufactures();
 
 private:
 	// 模组对象
@@ -160,6 +196,17 @@ private:
     // 私人房东
     Person* owner;
 
+	// 屋内住户
+	std::vector<Person*> tenants;
+
+	// 屋内工人
+	std::vector<Person*> workers;
+
+	// 屋内仓库
+	OBJECT_HOLDER std::vector<Storage*> storages;
+
+	// 屋内工坊
+	OBJECT_HOLDER std::vector<Manufacture*> manufactures;
 };
 
 // 空房间

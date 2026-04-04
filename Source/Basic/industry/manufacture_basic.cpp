@@ -27,6 +27,6 @@ const char* ExperienceManufacture::GetName() {
 }
 
 void ExperienceManufacture::SetTargets() {
-	targets["targets"] = 1.f;
+	targets["experience"] = 1.f;
 }
 

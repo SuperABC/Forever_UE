@@ -87,8 +87,10 @@ float Storage::InputProduct(const string& type, float amount) {
     }
 
     auto product = new Product(Industry::productFactory, type);
+    product->SetProperty();
     product->SetAmount(amount);
     products[type] = product;
+    return amount;
 }
 
 float Storage::OutputProduct(const string& type, float amount) {
@@ -161,5 +163,5 @@ const char* EmptyStorage::GetName() {
 }
 
 void EmptyStorage::SetProperty() {
-
+    catagories = { "all" };
 }

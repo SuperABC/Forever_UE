@@ -1,5 +1,8 @@
 ﻿#include "room.h"
 
+#include "industry/storage.h"
+#include "industry/manufacture.h"
+
 #include <sstream>
 #include <iomanip>
 
@@ -16,12 +19,27 @@ Room::Room(RoomFactory* factory, const string& room) :
 	layer(0),
 	doors(),
 	windows(),
-	number("") {
+	number(""),
+	stated(false),
+	owner(nullptr),
+	tenants(),
+	workers(),
+	storages(),
+	manufactures() {
 
 }
 
 Room::~Room() {
 	factory->DestroyRoom(mod);
+
+	for(auto &storage : storages) {
+		if(storage)delete storage;
+		storage = nullptr;
+	}
+	for(auto &manufacture : manufactures) {
+		if(manufacture)delete manufacture;
+		manufacture = nullptr;
+	}
 }
 
 string Room::GetType() const {
@@ -147,7 +165,7 @@ int Room::WorkspaceCapacity() const {
 	return mod->workspaceCapacity;
 }
 
-pair<string, float> Room::StorageConfig() const {
+unordered_map<string, float> Room::StorageConfig() const {
 	return mod->storageConfig;
 }
 
@@ -169,6 +187,74 @@ Person* Room::GetOwner() const {
 
 void Room::SetOwner(Person* owner) {
     this->owner = owner;
+}
+
+const vector<Person*>& Room::GetTenants() const {
+	return tenants;
+}
+
+void Room::AddTenant(Person* person) {
+	tenants.push_back(person);
+}
+
+bool Room::RemoveTenant(const string& name) {
+	for (auto it = tenants.begin(); it != tenants.end(); ++it) {
+		if ((*it)->GetName() == name) {
+			tenants.erase(it);
+			return true;
+		}
+	}
+	return false;
+}
+
+const vector<Person*>& Room::GetWorkers() const {
+	return workers;
+}
+
+void Room::AddWorker(Person* person) {
+	workers.push_back(person);
+}
+
+bool Room::RemoveWorker(const string& name) {
+	for (auto it = workers.begin(); it != workers.end(); ++it) {
+		if ((*it)->GetName() == name) {
+			workers.erase(it);
+			return true;
+		}
+	}
+	return false;
+}
+
+vector<Storage*> Room::GetStorage() const {
+	return storages;
+}
+
+void Room::AddStorage(Storage* storage) {
+	storages.push_back(storage);
+}
+
+void Room::ClearStorages() {
+	for (auto &storage : storages) {
+		if(storage)delete storage;
+		storage = nullptr;
+	}
+	storages.clear();
+}
+
+vector<Manufacture*> Room::GetManufactures() const {
+	return manufactures;
+}
+
+void Room::AddManufacture(Manufacture* manufacture) {
+	manufactures.push_back(manufacture);
+}
+
+void Room::ClearManufactures() {
+	for (auto &manufacture : manufactures) {
+		if(manufacture)delete manufacture;
+		manufacture = nullptr;
+	}
+	manufactures.clear();
 }
 
 int EmptyRoom::count = 0;
