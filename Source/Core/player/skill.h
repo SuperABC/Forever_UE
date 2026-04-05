@@ -13,7 +13,7 @@ public:
 	Skill() = delete;
 
 	// 通过类型从工厂构造
-	Skill(SkillFactory* factory, const std::string& component);
+	Skill(SkillFactory* factory, const std::string& skill);
 
 	// 析构技能
 	~Skill();

@@ -20,7 +20,7 @@ public:
 	Job() = delete;
 
 	// 通过类型从工厂构造
-	Job(JobFactory* factory, const std::string& component);
+	Job(JobFactory* factory, const std::string& job);
 
 	// 析构职业
 	~Job();

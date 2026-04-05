@@ -831,6 +831,10 @@ void Map::Destroy() {
 	layout = nullptr;
 }
 
+void Map::Tick() {
+
+}
+
 void Map::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 

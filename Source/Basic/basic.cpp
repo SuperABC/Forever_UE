@@ -263,6 +263,42 @@ extern "C" __declspec(dllexport) void RegisterModManufactures(ManufactureFactory
 	);
 }
 
+extern "C" __declspec(dllexport) void* GetModVehicles() {
+	static vector<string> mods = { "plane" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModVehicles(VehicleFactory* factory) {
+	factory->RegisterVehicle(PlaneVehicle::GetId(),
+		[]() { return new PlaneVehicle(); },
+		[](VehicleMod* vehicle) { delete vehicle; }
+	);
+}
+
+extern "C" __declspec(dllexport) void* GetModStations() {
+	static vector<string> mods = { "airport" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModStations(StationFactory* factory) {
+	factory->RegisterStation(AirportStation::GetId(),
+		[]() { return new AirportStation(); },
+		[](StationMod* station) { delete station; }
+	);
+}
+
+extern "C" __declspec(dllexport) void* GetModRoutes() {
+	static vector<string> mods = { "air" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModRoutes(RouteFactory* factory) {
+	factory->RegisterRoute(AirRoute::GetId(),
+		[]() { return new AirRoute(); },
+		[](RouteMod* station) { delete station; }
+	);
+}
+
 extern "C" __declspec(dllexport) void* GetModSkills() {
 	static vector<string> mods = { "information" };
 	return (void*)&mods;

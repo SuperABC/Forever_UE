@@ -74,6 +74,10 @@ void Story::Destroy() {
 	script = nullptr;
 }
 
+void Story::Tick() {
+
+}
+
 void Story::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 	if (change == nullptr) {

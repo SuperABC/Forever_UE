@@ -87,25 +87,24 @@ void AGlobalBase::BeginPlay() {
 
 		// 读取Traffic相关类及Mod
 		traffic->LoadConfigs();
-		//traffic->InitRoutes(modHandles, mods);
-		//traffic->InitStations(modHandles, mods);
-		//traffic->InitVehicles(modHandles, mods);
+		traffic->InitRoutes(modHandles, mods);
+		traffic->InitStations(modHandles, mods);
+		traffic->InitVehicles(modHandles, mods);
 
 		// 读取Player相关类及Mod
 		player->LoadConfigs();
-		//player->InitSkills(modHandles, mods);
+		player->InitSkills(modHandles, mods);
 
 		int size = 4;
 
-		//story->Init();
+		player->Init();
 		int accomodation = map->Init(size, size);
 		populace->Init(accomodation, player);
 		map->Checkin(populace, player);
 		society->Init(map, populace, player);
 		story->Init(map, populace, player);
 		industry->Init(map);
-		//traffic->Init(map);
-		//player->Init();
+		traffic->Init(map);
 
 		FVector Location(0.0f, 0.0f, 0.0f);
 		FRotator Rotation(0.0f, 0.0f, 0.0f);

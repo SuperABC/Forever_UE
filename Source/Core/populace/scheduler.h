@@ -18,7 +18,7 @@ public:
 	Scheduler() = delete;
 
 	// 通过类型从工厂构造
-	Scheduler(SchedulerFactory* factory, const std::string& component);
+	Scheduler(SchedulerFactory* factory, const std::string& scheduler);
 
 	// 析构调度
 	~Scheduler();

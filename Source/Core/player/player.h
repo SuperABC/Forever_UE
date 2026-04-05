@@ -9,7 +9,10 @@
 class Change;
 class Player {
 public:
+	// 构造玩家
 	Player();
+
+	// 析构玩家
 	~Player();
 
 	// 读取配置文件
@@ -20,10 +23,13 @@ public:
 		const std::vector<std::string>& dlls);
 
 	// 初始化工业
-	void Init(Map* map);
+	void Init();
 
 	// 释放空间
 	void Destroy();
+
+	// 时钟周期
+	void Tick();
 
 	// 应用剧情变化
 	void ApplyChange(Change* change,

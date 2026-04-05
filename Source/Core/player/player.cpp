@@ -60,11 +60,19 @@ void Player::InitSkills(unordered_map<string, HMODULE>& modHandles,
 	}
 }
 
-void Player::Init(Map* map) {
+void Player::Init() {
 	Destroy();
 }
 
 void Player::Destroy() {
+	for (auto& skill : skills) {
+		if (skill)delete skill;
+		skill = nullptr;
+	}
+	skills.clear();
+}
+
+void Player::Tick() {
 
 }
 

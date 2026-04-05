@@ -225,6 +225,10 @@ void Industry::Destroy() {
 
 }
 
+void Industry::Tick() {
+
+}
+
 void Industry::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 

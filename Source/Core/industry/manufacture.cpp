@@ -7,8 +7,8 @@
 
 using namespace std;
 
-Manufacture::Manufacture(ManufactureFactory* factory, const string& component) :
-	mod(factory->CreateManufacture(component)),
+Manufacture::Manufacture(ManufactureFactory* factory, const string& manufacture) :
+	mod(factory->CreateManufacture(manufacture)),
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),

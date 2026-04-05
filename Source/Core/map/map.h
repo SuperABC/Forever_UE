@@ -136,6 +136,9 @@ public:
 	// 释放空间
 	void Destroy();
 
+	// 时钟周期
+	void Tick();
+
 	// 应用剧情变化
 	void ApplyChange(Change* change,
 		std::vector < std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);

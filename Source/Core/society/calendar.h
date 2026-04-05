@@ -15,7 +15,7 @@ public:
 	Calendar() = delete;
 
 	// 通过类型从工厂构造
-	Calendar(CalendarFactory* factory, const std::string& component);
+	Calendar(CalendarFactory* factory, const std::string& calendar);
 
 	// 析构日程
 	~Calendar();

@@ -15,7 +15,7 @@ public:
 	Asset() = delete;
 
 	// 通过类型从工厂构造
-	Asset(AssetFactory* factory, const std::string& component);
+	Asset(AssetFactory* factory, const std::string& asset);
 
 	// 析构资产
 	~Asset();

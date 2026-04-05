@@ -396,13 +396,13 @@ int main() {
 
 	// 读取Traffic相关类及Mod
 	traffic->LoadConfigs();
-	//traffic->InitRoutes(modHandles, mods);
-	//traffic->InitStations(modHandles, mods);
-	//traffic->InitVehicles(modHandles, mods);
+	traffic->InitRoutes(modHandles, mods);
+	traffic->InitStations(modHandles, mods);
+	traffic->InitVehicles(modHandles, mods);
 
 	// 读取Player相关类及Mod
 	player->LoadConfigs();
-	//player->InitSkills(modHandles, mods);
+	player->InitSkills(modHandles, mods);
 
 	// 读取命令行
 	string cmd;
@@ -430,14 +430,14 @@ int main() {
 
 				int size = atoi(parser.GetOption("--block").data());
 
+				player->Init();
 				int accomodation = ::map->Init(size, size);
 				populace->Init(accomodation, player);
 				::map->Checkin(populace, player);
 				society->Init(::map, populace, player);
 				story->Init(::map, populace, player);
 				industry->Init(::map);
-				//traffic->Init(::map);
-				//player->Init();
+				traffic->Init(::map);
 
 				break;
 			}

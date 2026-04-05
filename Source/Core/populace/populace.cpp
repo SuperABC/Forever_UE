@@ -180,6 +180,10 @@ void Populace::Destroy() {
     citizens.clear();
 }
 
+void Populace::Tick() {
+
+}
+
 void Populace::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 	if (!change) {

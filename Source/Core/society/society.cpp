@@ -309,6 +309,10 @@ void Society::Destroy() {
 	organizations.clear();
 }
 
+void Society::Tick() {
+
+}
+
 void Society::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 

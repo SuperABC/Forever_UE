@@ -5,8 +5,8 @@
 
 using namespace std;
 
-Storage::Storage(StorageFactory* factory, const string& component) :
-	mod(factory->CreateStorage(component)),
+Storage::Storage(StorageFactory* factory, const string& storage) :
+	mod(factory->CreateStorage(storage)),
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),

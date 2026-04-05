@@ -13,7 +13,7 @@ public:
 	Product() = delete;
 
 	// 通过类型从工厂构造
-	Product(ProductFactory* factory, const std::string& component);
+	Product(ProductFactory* factory, const std::string& product);
 
 	// 析构产品
 	~Product();

@@ -19,10 +19,10 @@
 	"product_mods": ["empty", "experience"],
 	"storage_mods": ["empty", "shop"],
 	"manufacture_mods": ["empty", "experience"],
-	"route_mods": ["empty"],
-	"station_mods": ["empty"],
-	"vehicle_mods": ["empty"],
-	"skill_mods": ["empty"],
+	"route_mods": ["empty", "air"],
+	"station_mods": ["empty", "airport"],
+	"vehicle_mods": ["empty", "plane"],
+	"skill_mods": ["empty", "information"],
 	
 	"resource_paths": [
 		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",

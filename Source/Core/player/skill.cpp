@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Skill::Skill(SkillFactory* factory, const string& component) :
-	mod(factory->CreateSkill(component)),
+Skill::Skill(SkillFactory* factory, const string& skill) :
+	mod(factory->CreateSkill(skill)),
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()) {

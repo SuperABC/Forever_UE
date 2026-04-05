@@ -16,7 +16,7 @@ public:
 	Manufacture() = delete;
 
 	// 通过类型从工厂构造
-	Manufacture(ManufactureFactory* factory, const std::string& component);
+	Manufacture(ManufactureFactory* factory, const std::string& manufacture);
 
 	// 析构工坊
 	~Manufacture();

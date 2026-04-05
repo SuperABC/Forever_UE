@@ -16,7 +16,7 @@ public:
 	Storage() = delete;
 
 	// 通过类型从工厂构造
-	Storage(StorageFactory* factory, const std::string& component);
+	Storage(StorageFactory* factory, const std::string& storage);
 
 	// 析构仓库
 	~Storage();

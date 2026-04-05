@@ -17,7 +17,7 @@ public:
 	Name() = delete;
 
 	// 通过类型从工厂构造
-	Name(NameFactory* factory, const std::string& component);
+	Name(NameFactory* factory, const std::string& name);
 
 	// 析构姓名
 	~Name();
