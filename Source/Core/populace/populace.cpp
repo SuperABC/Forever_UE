@@ -180,7 +180,7 @@ void Populace::Destroy() {
     citizens.clear();
 }
 
-void Populace::Tick() {
+void Populace::Tick(Player* player) {
 
 }
 

@@ -309,7 +309,7 @@ void Society::Destroy() {
 	organizations.clear();
 }
 
-void Society::Tick() {
+void Society::Tick(Player* player) {
 
 }
 

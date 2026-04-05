@@ -74,7 +74,7 @@ void Story::Destroy() {
 	script = nullptr;
 }
 
-void Story::Tick() {
+void Story::Tick(Player* player) {
 
 }
 

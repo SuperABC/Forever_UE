@@ -831,7 +831,7 @@ void Map::Destroy() {
 	layout = nullptr;
 }
 
-void Map::Tick() {
+void Map::Tick(Player* player) {
 
 }
 

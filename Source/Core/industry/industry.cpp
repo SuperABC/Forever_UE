@@ -225,7 +225,7 @@ void Industry::Destroy() {
 
 }
 
-void Industry::Tick() {
+void Industry::Tick(Player* player) {
 
 }
 

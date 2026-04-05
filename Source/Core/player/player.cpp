@@ -72,8 +72,8 @@ void Player::Destroy() {
 	skills.clear();
 }
 
-void Player::Tick() {
-
+void Player::Tick(float delta) {
+	time->AddMilliseconds((int)(delta * 60 * 1000));
 }
 
 void Player::ApplyChange(Change* change,

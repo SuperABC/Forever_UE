@@ -29,7 +29,7 @@ public:
 	void Destroy();
 
 	// 时钟周期
-	void Tick();
+	void Tick(float delta);
 
 	// 应用剧情变化
 	void ApplyChange(Change* change,

@@ -154,7 +154,7 @@ void Traffic::Destroy() {
 	routes.clear();
 }
 
-void Traffic::Tick() {
+void Traffic::Tick(Player* player) {
 
 }
 

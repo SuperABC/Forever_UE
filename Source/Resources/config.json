@@ -1,36 +1,31 @@
 {
-	"dll_paths": [
-		"C:/Workspace/UE5/Projects/Forever_UE/x64/Release"
-	],
-	
-	"terrain_mods": ["ocean", "mountain"],
-	"roadnet_mod": "jing",
-	"zone_mods": ["residential"],
-	"building_mods": ["residential", "shop", "factory"],
-	"component_mods": ["residential", "shop", "factory"],
-	"room_mods": ["residential", "shop", "warehouse", "factory"],
-	"asset_mods": ["zone", "building", "room"],
-	"name_mod": "chinese",
-	"scheduler_mods": ["workonly", "empty"],
-	"calendar_mods": ["standard", "full"],
-	"job_mods": ["shop_saler"],
-	"organization_mods": ["shop"],
-	"script_mods": ["npc", "empty"],
-	"product_mods": ["empty", "experience"],
-	"storage_mods": ["empty", "shop"],
-	"manufacture_mods": ["empty", "experience"],
-	"route_mods": ["empty", "air"],
-	"station_mods": ["empty", "airport"],
-	"vehicle_mods": ["empty", "plane"],
-	"skill_mods": ["empty", "information"],
-	
-	"resource_paths": [
-		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
-		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
-		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
-	],
-	
-	"story_paths": [
-		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/ys.json"
-	]
+   "asset_mods" : [ "zone", "building", "room" ],
+   "building_mods" : [ "factory", "residential", "shop" ],
+   "calendar_mods" : [ "standard", "full" ],
+   "component_mods" : [ "factory", "residential", "shop" ],
+   "dll_paths" : [ "C:/Workspace/UE5/Projects/Forever_UE/x64/Release" ],
+   "job_mods" : [ "shop_saler" ],
+   "manufacture_mods" : [ "experience", "empty" ],
+   "name_mod" : "chinese",
+   "organization_mods" : [ "shop" ],
+   "product_mods" : [ "experience", "empty" ],
+   "resource_paths" : [
+      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
+      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
+      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
+   ],
+   "roadnet_mod" : "jing",
+   "room_mods" : [ "factory", "residential", "shop", "warehouse" ],
+   "route_mods" : [ "air", "empty" ],
+   "scheduler_mods" : [ "workonly", "empty" ],
+   "script_mods" : [ "npc", "empty" ],
+   "skill_mods" : [ "information", "empty" ],
+   "station_mods" : [ "airport", "empty" ],
+   "storage_mods" : [ "shop", "empty" ],
+   "story_paths" : [
+      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/ys.json"
+   ],
+   "terrain_mods" : [ "ocean", "mountain" ],
+   "vehicle_mods" : [ "plane", "empty" ],
+   "zone_mods" : [ "residential" ]
 }

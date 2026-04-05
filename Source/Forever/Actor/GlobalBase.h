@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 
 #define NOMINMAX
@@ -30,6 +31,14 @@
 #include "GlobalBase.generated.h"
 
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FStatus {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Global")
+	FString time;
+};
+
 UCLASS()
 class FOREVER_API AGlobalBase : public AActor {
 	GENERATED_BODY()
@@ -57,12 +66,6 @@ public:
 	APopulaceBase* GetPopulaceActor();
 	AStoryBase* GetStoryActor();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "World")
-	void GetLocation(FVector& location);
-	UFUNCTION(BlueprintImplementableEvent, Category = "World")
-	void SetLocation(FVector location);
-
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> TerrainClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
@@ -79,6 +82,17 @@ public:
 	TSubclassOf<AActor> PopulaceClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> StoryClass;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "World")
+	void GetLocation(FVector& location);
+	UFUNCTION(BlueprintImplementableEvent, Category = "World")
+	void SetLocation(FVector location);
+	UFUNCTION(BlueprintCallable, Category = "World")
+	void GlobalPause();
+	UFUNCTION(BlueprintCallable, Category = "World")
+	void GlobalResume();
+	UFUNCTION(BlueprintCallable, Category = "World")
+	FStatus GetStatus();
 
 protected:
 	virtual void BeginPlay() override;

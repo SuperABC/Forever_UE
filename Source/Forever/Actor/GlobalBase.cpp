@@ -137,6 +137,14 @@ void AGlobalBase::BeginPlay() {
 
 void AGlobalBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+
+	player->Tick(DeltaTime);
+	map->Tick(player);
+	populace->Tick(player);
+	society->Tick(player);
+	story->Tick(player);
+	industry->Tick(player);
+	traffic->Tick(player);
 }
 
 Map* AGlobalBase::GetMap() {
@@ -199,4 +207,17 @@ AStoryBase* AGlobalBase::GetStoryActor() {
 	return storyActor;
 }
 
+void AGlobalBase::GlobalPause() {
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.0f);
+}
 
+void AGlobalBase::GlobalResume() {
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+}
+
+FStatus AGlobalBase::GetStatus() {
+	auto time = player->GetTime();
+	string timeStr = to_string(time->GetYear()) + "-" + to_string(time->GetMonth()) + "-" + to_string(time->GetDay()) + " " +
+		to_string(time->GetHour()) + ":" + to_string(time->GetMinute()) + ":" + to_string(time->GetSecond());
+	return FStatus(FString(UTF8_TO_TCHAR(timeStr.data())));
+}
