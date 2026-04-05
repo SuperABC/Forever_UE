@@ -263,3 +263,15 @@ extern "C" __declspec(dllexport) void RegisterModManufactures(ManufactureFactory
 	);
 }
 
+extern "C" __declspec(dllexport) void* GetModSkills() {
+	static vector<string> mods = { "information" };
+	return (void*)&mods;
+}
+
+extern "C" __declspec(dllexport) void RegisterModSkills(SkillFactory* factory) {
+	factory->RegisterSkill(InfomationSkill::GetId(),
+		[]() { return new InfomationSkill(); },
+		[](SkillMod* manufacture) { delete manufacture; }
+	);
+}
+
