@@ -1,5 +1,5 @@
-#include "Actor/RoadnetBase.h"
-#include "Actor/GlobalBase.h"
+#include "RoadnetBase.h"
+#include "GlobalBase.h"
 
 #include "map/roadnet.h"
 

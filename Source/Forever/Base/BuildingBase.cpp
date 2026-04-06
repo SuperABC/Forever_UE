@@ -1,5 +1,5 @@
-#include "Actor/BuildingBase.h"
-#include "Actor/GlobalBase.h"
+#include "BuildingBase.h"
+#include "GlobalBase.h"
 
 #include "map/roadnet.h"
 #include "map/zone.h"

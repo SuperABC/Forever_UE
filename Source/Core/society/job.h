@@ -40,11 +40,11 @@ public:
 	// 获取剧本
 	Script* GetScript() const;
 
-    // 获取工作房间
-    Room* GetPosition() const;
+	// 获取工作房间
+	Room* GetPosition() const;
 
-    // 设置工作房间
-    void SetPosition(Room* room);
+	// 设置工作房间
+	void SetPosition(Room* room);
 
 	// 初始化职业
 	void InitJob(std::string name);
@@ -68,8 +68,8 @@ private:
 	// 关联剧情
 	OBJECT_HOLDER Script* script;
 	
-    // 工作房间
-    Room* position;
+	// 工作房间
+	Room* position;
 };
 
 // 空职业

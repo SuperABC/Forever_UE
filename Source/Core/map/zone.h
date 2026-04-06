@@ -53,17 +53,17 @@ public:
 	// 获取园区内所有建筑
 	const std::unordered_map<std::string, Building*>& GetBuildings();
 
-    // 获取是否由政府拥有
-    bool GetStated() const;
+	// 获取是否由政府拥有
+	bool GetStated() const;
 
-    // 设置是否由政府拥有
-    void SetStated(bool state);
+	// 设置是否由政府拥有
+	void SetStated(bool state);
 
-    // 获取私人房东
-    Person* GetOwner() const;
+	// 获取私人房东
+	Person* GetOwner() const;
 
-    // 设置私人房东
-    void SetOwner(Person* owner);
+	// 设置私人房东
+	void SetOwner(Person* owner);
 
 	// 获取剧情
 	Script* GetScript() const;
@@ -102,11 +102,11 @@ private:
 	// 内部建筑
 	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
 
-    // 是否由政府拥有
-    bool stated;
+	// 是否由政府拥有
+	bool stated;
 
-    // 私人房东
-    Person* owner;
+	// 私人房东
+	Person* owner;
 
 	// 关联剧情
 	OBJECT_HOLDER Script* script;

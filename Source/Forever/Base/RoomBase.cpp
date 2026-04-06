@@ -1,5 +1,5 @@
-#include "Actor/RoomBase.h"
-#include "Actor/GlobalBase.h"
+#include "RoomBase.h"
+#include "GlobalBase.h"
 
 #include "map/building.h"
 #include "story/script.h"

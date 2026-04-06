@@ -16,18 +16,18 @@ Storage::Storage(StorageFactory* factory, const string& storage) :
 	products(),
 	upstreams(),
 	downstreams(),
-    volume(1.f) {
+	volume(1.f) {
 
 }
 
 Storage::~Storage() {
 	factory->DestroyStorage(mod);
 
-    for (auto &[name, product] : products) {
-        if (product)delete product;
-        product = nullptr;
-    }
-    products.clear();
+	for (auto &[name, product] : products) {
+		if (product)delete product;
+		product = nullptr;
+	}
+	products.clear();
 }
 
 string Storage::GetType() const {
@@ -39,11 +39,11 @@ string Storage::GetName() const {
 }
 
 void Storage::SetProperty(float acreage) {
-    mod->SetProperty();
-    catagories = mod->catagories;
-    accept = mod->accept;
-    provide = mod->provide;
-    volume = mod->density * acreage;
+	mod->SetProperty();
+	catagories = mod->catagories;
+	accept = mod->accept;
+	provide = mod->provide;
+	volume = mod->density * acreage;
 }
 
 vector<string> Storage::GetCategories() const {
@@ -51,92 +51,92 @@ vector<string> Storage::GetCategories() const {
 }
 
 bool Storage::GetAccept() const {
-    return accept;
+	return accept;
 }
 
 void Storage::SetAccept(bool accept) {
-    this->accept = accept;
+	this->accept = accept;
 }
 
 bool Storage::GetProvide() const {
-    return provide;
+	return provide;
 }
 
 void Storage::SetProvide(bool provide) {
-    this->provide = provide;
+	this->provide = provide;
 }
 
 Product* Storage::GetProduct(const string& type) const {
-    for (auto [name, product] : products) {
-        if (name == type) {
-            return product;
-        }
-    }
-    return nullptr;
+	for (auto [name, product] : products) {
+		if (name == type) {
+			return product;
+		}
+	}
+	return nullptr;
 }
 
 unordered_map<string, Product*> Storage::GetProducts() const {
-    return products;
+	return products;
 }
 
 float Storage::InputProduct(const string& type, float amount) {
-    auto it = products.find(type);
-    if (it != products.end()) {
-        products[type]->IncreaseAmount(amount);
-        return amount;
-    }
+	auto it = products.find(type);
+	if (it != products.end()) {
+		products[type]->IncreaseAmount(amount);
+		return amount;
+	}
 
-    auto product = new Product(Industry::productFactory, type);
-    product->SetProperty();
-    product->SetAmount(amount);
-    products[type] = product;
-    return amount;
+	auto product = new Product(Industry::productFactory, type);
+	product->SetProperty();
+	product->SetAmount(amount);
+	products[type] = product;
+	return amount;
 }
 
 float Storage::OutputProduct(const string& type, float amount) {
-    auto it = products.find(type);
-    if (it != products.end()) {
-        products[type]->DecreaseAmount(amount);
-        return amount;
-    }
+	auto it = products.find(type);
+	if (it != products.end()) {
+		products[type]->DecreaseAmount(amount);
+		return amount;
+	}
 
-    return 0.f;
+	return 0.f;
 }
 
 unordered_map<string, Storage*> Storage::GetUpstreams() const {
-    return upstreams;
+	return upstreams;
 }
 
 void Storage::ConnectUpstream(string type, Storage* storage) {
-    upstreams[type] = storage;
+	upstreams[type] = storage;
 }
 
 unordered_map<string, Storage*> Storage::GetDownstreams() const {
-    return downstreams;
+	return downstreams;
 }
 
 void Storage::ConnectDownstream(string type, Storage* storage) {
-    downstreams[type] = storage;
+	downstreams[type] = storage;
 }
 
 float Storage::GetVolume() const {
-    return volume;
+	return volume;
 }
 
 void Storage::SetVolume(float volume) {
-    this->volume = volume;
+	this->volume = volume;
 }
 
 float Storage::GetSpace() const {
-    return volume - GetOccupied();
+	return volume - GetOccupied();
 }
 
 float Storage::GetOccupied() const {
-    float occupied = 0.f;
-    for (auto& [type, product] : products) {
-        occupied += product->GetAmount();
-    }
-    return occupied;
+	float occupied = 0.f;
+	for (auto& [type, product] : products) {
+		occupied += product->GetAmount();
+	}
+	return occupied;
 }
 
 int EmptyStorage::count = 0;
@@ -163,5 +163,5 @@ const char* EmptyStorage::GetName() {
 }
 
 void EmptyStorage::SetProperty() {
-    catagories = { "all" };
+	catagories = { "all" };
 }

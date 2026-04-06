@@ -174,19 +174,19 @@ vector<string> Room::ManufactureTypes() const {
 }
 
 bool Room::GetStated() const {
-    return stated;
+	return stated;
 }
 
 void Room::SetStated(bool stated) {
-    this->stated = stated;
+	this->stated = stated;
 }
 
 Person* Room::GetOwner() const {
-    return owner;
+	return owner;
 }
 
 void Room::SetOwner(Person* owner) {
-    this->owner = owner;
+	this->owner = owner;
 }
 
 const vector<Person*>& Room::GetTenants() const {

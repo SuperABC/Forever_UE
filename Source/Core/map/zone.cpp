@@ -72,19 +72,19 @@ string Zone::GetAddress() {
 }
 
 bool Zone::GetStated() const {
-    return stated;
+	return stated;
 }
 
 void Zone::SetStated(bool stated) {
-    this->stated = stated;
+	this->stated = stated;
 }
 
 Person* Zone::GetOwner() const {
-    return owner;
+	return owner;
 }
 
 void Zone::SetOwner(Person* owner) {
-    this->owner = owner;
+	this->owner = owner;
 }
 
 Script* Zone::GetScript() const {

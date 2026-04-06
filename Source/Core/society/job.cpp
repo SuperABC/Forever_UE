@@ -55,11 +55,11 @@ Script* Job::GetScript() const {
 }
 
 Room* Job::GetPosition() const {
-    return position;
+	return position;
 }
 
 void Job::SetPosition(Room* room) {
-    position = room;
+	position = room;
 }
 
 int EmptyJob::count = 0;

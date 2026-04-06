@@ -395,19 +395,19 @@ Floor* Building::GetFloor(int level) const {
 }
 
 bool Building::GetStated() const {
-    return stated;
+	return stated;
 }
 
 void Building::SetStated(bool stated) {
-    this->stated = stated;
+	this->stated = stated;
 }
 
 Person* Building::GetOwner() const {
-    return owner;
+	return owner;
 }
 
 void Building::SetOwner(Person* owner) {
-    this->owner = owner;
+	this->owner = owner;
 }
 
 Script* Building::GetScript() const {

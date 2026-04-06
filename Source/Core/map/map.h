@@ -11,47 +11,47 @@
 // 10m*10m地图元素，用于地图可视化
 class Element {
 public:
-	// 构造元素
+	// 构造地图元素
 	Element();
 
-	// 析构元素
+	// 析构地图元素
 	~Element();
 
-	// 获取元素地形名称
+	// 获取地图元素地形名称
 	std::string GetTerrain() const;
 
-	// 设置元素地形名称
+	// 设置地图元素地形名称
 	bool SetTerrain(const std::string& terrain);
 
-	// 获取元素高度
+	// 获取地图元素地形高度
 	float GetHeight() const;
 
-	// 设置元素高度
+	// 设置地图元素地形高度
 	bool SetHeight(float height);
 
-	// 获取园区
+	// 获取地图元素所在园区名称
 	std::string GetZone() const;
 
-	// 设置园区
+	// 设置地图元素所在园区名称
 	bool SetZone(const std::string& zone);
 
-	// 获取建筑
+	// 获取地图元素所在建筑名称
 	std::string GetBuilding() const;
 
-	// 设置建筑
+	// 设置地图元素所在建筑名称
 	bool SetBuilding(const std::string& building);
 
 private:
-	// 所在地形类型
+	// 地图元素所在地形类型
 	std::string terrain;
 
-	// 所在地形高度
+	// 地图元素所在地形高度
 	float height;
 
-	// 所在园区名称
+	// 地图元素所在园区名称
 	std::string zone;
 
-	// 所在建筑名称
+	// 地图元素所在建筑名称
 	std::string building;
 };
 
@@ -61,34 +61,34 @@ public:
 	// 禁止空构造
 	Chunk() = delete;
 
-	// 按照排列位置构造区块
+	// 按照地图区块排列位置构造区块
 	Chunk(int x, int y);
 
-	// 析构区块
+	// 析构地图区块
 	~Chunk();
 
-	// 获取某一元素地形类型
+	// 获取地图区块内某一元素地形名称
 	std::string GetTerrain(int x, int y) const;
 
-	// 设置某一元素地形类型
+	// 设置地图区块内某一元素地形名称
 	bool SetTerrain(int x, int y, const std::string& terrain);
 
-	// 获取某一元素地形高度
+	// 获取地图区块内某一元素地形高度
 	float GetHeight(int x, int y) const;
 
-	// 设置某一元素地形高度
+	// 设置地图区块内某一元素地形高度
 	bool SetHeight(int x, int y, float height);
 
-	// 获取某一元素所在园区名称
+	// 获取地图区块内某一元素所在园区名称
 	std::string GetZone(int x, int y) const;
 
-	// 设置某一元素所在园区名称
+	// 设置地图区块内某一元素所在园区名称
 	bool SetZone(int x, int y, const std::string& zone);
 
-	// 获取某一元素所在建筑名称
+	// 获取地图区块内某一元素所在建筑名称
 	std::string GetBuilding(int x, int y) const;
 
-	// 设置某一元素所在建筑名称
+	// 设置地图区块内某一元素所在建筑名称
 	bool SetBuilding(int x, int y, const std::string& zone);
 
 private:
@@ -98,7 +98,7 @@ private:
 	// 地块排列位置
 	int offsetX, offsetY;
 
-	// 地块内元素
+	// 地块内元素矩阵
 	OBJECT_HOLDER std::vector<std::vector<Element*>> elements;
 };
 
@@ -113,17 +113,27 @@ public:
 	// 读取配置文件
 	void LoadConfigs() const;
 	
-	// 读取 Mods
+	// 读取地形模组
 	void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取路网模组
 	void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取园区模组
 	void InitZones(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取建筑模组
 	void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取组合模组
 	void InitComponents(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取房间模组
 	void InitRooms(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
@@ -146,10 +156,10 @@ public:
 	// 获取地图尺寸
 	std::pair<int, int> GetSize() const;
 
-	// 获取某一元素地形类型
+	// 获取某一元素地形名称
 	std::string GetTerrain(int x, int y) const;
 
-	// 设置某一元素地形类型
+	// 设置某一元素地形名称
 	bool SetTerrain(int x, int y, const std::string& terrain);
 
 	// 获取某一元素地形高度
@@ -212,27 +222,38 @@ public:
 	// 寻址房间
 	const Room* LocateRoom(const std::string& address) const;
 
-	// 统一工厂
+	// 地形工厂
 	static TerrainFactory* terrainFactory;
+
+	// 路网工厂
 	static RoadnetFactory* roadnetFactory;
+
+	// 园区工厂
 	static ZoneFactory* zoneFactory;
+
+	// 建筑工厂
 	static BuildingFactory* buildingFactory;
+
+	// 组合工厂
 	static ComponentFactory* componentFactory;
+
+	// 房间工厂
 	static RoomFactory* roomFactory;
 
 private:
 	// 检查全局坐标是否在地图内
 	bool CheckXY(int x, int y) const;
 
-	// 分配地块内布局
+	// 分配所有地块内布局
 	void ArrangeBlocks();
 
-	// 清理空园区建筑
+	// 清理空园区和空建筑
 	void ClearZero();
 
-	// 地图信息
-	int width;
-	int height;
+	// 地图尺寸
+	int width, height;
+
+	// 地图区块矩阵
 	OBJECT_HOLDER std::vector<std::vector<Chunk*>> chunks;
 
 	// 玩家坐标
@@ -241,10 +262,10 @@ private:
 	// 路网
 	OBJECT_HOLDER Roadnet* roadnet;
 
-	// 园区
+	// 所有园区（名称->园区）
 	std::unordered_map<std::string, Zone*> zones;
 
-	// 建筑
+	// 建筑（名称->建筑）
 	std::unordered_map<std::string, Building*> buildings;
 
 	// 预设布局

@@ -1,5 +1,5 @@
-#include "Actor/PopulaceBase.h"
-#include "Actor/GlobalBase.h"
+#include "PopulaceBase.h"
+#include "GlobalBase.h"
 
 #include "populace/person.h"
 

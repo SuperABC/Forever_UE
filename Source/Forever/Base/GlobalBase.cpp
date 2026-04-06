@@ -219,5 +219,7 @@ FStatus AGlobalBase::GetStatus() {
 	auto time = player->GetTime();
 	string timeStr = to_string(time->GetYear()) + "-" + to_string(time->GetMonth()) + "-" + to_string(time->GetDay()) + " " +
 		to_string(time->GetHour()) + ":" + to_string(time->GetMinute()) + ":" + to_string(time->GetSecond());
-	return FStatus(FString(UTF8_TO_TCHAR(timeStr.data())));
+	float chronode = time->GetHour() * 3600.f + time->GetMinute() * 60.f + time->GetSecond() + time->GetMillisecond() / 1000.f;
+	chronode /= 24.f * 3600.f;
+	return FStatus(FString(UTF8_TO_TCHAR(timeStr.data())), chronode);
 }

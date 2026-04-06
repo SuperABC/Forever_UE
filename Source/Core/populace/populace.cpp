@@ -23,22 +23,22 @@ NameFactory* Populace::nameFactory = nullptr;
 SchedulerFactory* Populace::schedulerFactory = nullptr;
 
 Populace::Populace() :
-    name(nullptr),
-    citizens(),
-    ids() {
-    if (!assetFactory) {
-        assetFactory = new AssetFactory();
-    }
-    if (!nameFactory) {
-        nameFactory = new NameFactory();
-    }
-    if (!schedulerFactory) {
-        schedulerFactory = new SchedulerFactory();
-    }
+	name(nullptr),
+	citizens(),
+	ids() {
+	if (!assetFactory) {
+		assetFactory = new AssetFactory();
+	}
+	if (!nameFactory) {
+		nameFactory = new NameFactory();
+	}
+	if (!schedulerFactory) {
+		schedulerFactory = new SchedulerFactory();
+	}
 }
 
 Populace::~Populace() {
-    Destroy();
+	Destroy();
 }
 
 void Populace::LoadConfigs() const {
@@ -62,122 +62,122 @@ void Populace::LoadConfigs() const {
 }
 
 void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles,
-    const vector<string>& dlls) {
+	const vector<string>& dlls) {
 
-    assetFactory->RegisterAsset(EmptyAsset::GetId(),
-        []() { return new EmptyAsset(); },
-        [](AssetMod* asset) { delete asset; }
-    );
+	assetFactory->RegisterAsset(EmptyAsset::GetId(),
+		[]() { return new EmptyAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
 
-    for (auto dll : dlls) {
-        HMODULE modHandle;
-        if (modHandles.find(dll) != modHandles.end()) {
-            modHandle = modHandles[dll];
-        }
-        else {
-            modHandle = LoadLibraryA(dll.data());
-            modHandles[dll] = modHandle;
-        }
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
+		}
+		else {
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
+		}
 
-        if (modHandle) {
-            debugf("Log: %s loaded successfully.\n", dll.data());
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
 
-            auto registerFunc =
-                (RegisterModAssetsFunc)GetProcAddress(modHandle, "RegisterModAssets");
-            if (registerFunc) {
-                registerFunc(assetFactory);
-            }
-        }
-        else {
-            debugf("Warning: Failed to load %s.\n", dll.data());
-        }
-    }
+			auto registerFunc =
+				(RegisterModAssetsFunc)GetProcAddress(modHandle, "RegisterModAssets");
+			if (registerFunc) {
+				registerFunc(assetFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
+	}
 }
 
 void Populace::InitNames(unordered_map<string, HMODULE>& modHandles,
-    const vector<string>& dlls) {
+	const vector<string>& dlls) {
 
-    nameFactory->RegisterName(EmptyName::GetId(),
-        []() { return new EmptyName(); },
-        [](NameMod* name) { delete name; }
-    );
+	nameFactory->RegisterName(EmptyName::GetId(),
+		[]() { return new EmptyName(); },
+		[](NameMod* name) { delete name; }
+	);
 
-    for (auto dll : dlls) {
-        HMODULE modHandle;
-        if (modHandles.find(dll) != modHandles.end()) {
-            modHandle = modHandles[dll];
-        }
-        else {
-            modHandle = LoadLibraryA(dll.data());
-            modHandles[dll] = modHandle;
-        }
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
+		}
+		else {
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
+		}
 
-        if (modHandle) {
-            debugf("Log: %s loaded successfully.\n", dll.data());
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
 
-            auto registerFunc =
-                (RegisterModNamesFunc)GetProcAddress(modHandle, "RegisterModNames");
-            if (registerFunc) {
-                registerFunc(nameFactory);
-            }
-        }
-        else {
-            debugf("Warning: Failed to load %s.\n", dll.data());
-        }
-    }
+			auto registerFunc =
+				(RegisterModNamesFunc)GetProcAddress(modHandle, "RegisterModNames");
+			if (registerFunc) {
+				registerFunc(nameFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
+	}
 }
 
 void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles,
-    const vector<string>& dlls) {
+	const vector<string>& dlls) {
 
-    schedulerFactory->RegisterScheduler(EmptyScheduler::GetId(), EmptyScheduler::GetPower(),
-        []() { return new EmptyScheduler(); },
-        [](SchedulerMod* scheduler) { delete scheduler; }
-    );
+	schedulerFactory->RegisterScheduler(EmptyScheduler::GetId(), EmptyScheduler::GetPower(),
+		[]() { return new EmptyScheduler(); },
+		[](SchedulerMod* scheduler) { delete scheduler; }
+	);
 
-    for (auto dll : dlls) {
-        HMODULE modHandle;
-        if (modHandles.find(dll) != modHandles.end()) {
-            modHandle = modHandles[dll];
-        }
-        else {
-            modHandle = LoadLibraryA(dll.data());
-            modHandles[dll] = modHandle;
-        }
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
+		}
+		else {
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
+		}
 
-        if (modHandle) {
-            debugf("Log: %s loaded successfully.\n", dll.data());
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
 
-            auto registerFunc =
-                (RegisterModSchedulersFunc)GetProcAddress(modHandle, "RegisterModSchedulers");
-            if (registerFunc) {
-                registerFunc(schedulerFactory);
-            }
-        }
-        else {
-            debugf("Warning: Failed to load %s.\n", dll.data());
-        }
-    }
+			auto registerFunc =
+				(RegisterModSchedulersFunc)GetProcAddress(modHandle, "RegisterModSchedulers");
+			if (registerFunc) {
+				registerFunc(schedulerFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
+	}
 }
 
 void Populace::Init(int accomodation, Player* player) {
-    Destroy();
+	Destroy();
 
-    if (!player->GetTime()) {
-        THROW_EXCEPTION(NullPointerException, "Time pointer is null during initialization.\n");
-    }
-    GenerateCitizens(static_cast<int>(accomodation *exp(GetRandom(1000) / 1000.0f - 0.5f)), player->GetTime());
+	if (!player->GetTime()) {
+		THROW_EXCEPTION(NullPointerException, "Time pointer is null during initialization.\n");
+	}
+	GenerateCitizens(static_cast<int>(accomodation *exp(GetRandom(1000) / 1000.0f - 0.5f)), player->GetTime());
 
-    GenerateEducations(player->GetTime());
-    GenerateEmotions(player->GetTime());
-    GenerateJobs();
+	GenerateEducations(player->GetTime());
+	GenerateEmotions(player->GetTime());
+	GenerateJobs();
 }
 
 void Populace::Destroy() {
-    for (auto& citizen : citizens) {
-        delete citizen;
-    }
-    citizens.clear();
+	for (auto& citizen : citizens) {
+		delete citizen;
+	}
+	citizens.clear();
 }
 
 void Populace::Tick(Player* player) {

@@ -37,6 +37,9 @@ struct FStatus {
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Global")
 	FString time;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Global")
+	float chronode;
 };
 
 UCLASS()

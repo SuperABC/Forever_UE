@@ -1,5 +1,5 @@
-#include "Actor/StoryBase.h"
-#include "Actor/GlobalBase.h"
+#include "StoryBase.h"
+#include "GlobalBase.h"
 
 #include "populace/person.h"
 #include "story/script.h"

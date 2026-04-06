@@ -111,17 +111,17 @@ public:
 	// 作为工坊包含生产线种类
 	std::vector<std::string> ManufactureTypes() const;
 
-    // 获取是否由政府拥有
-    bool GetStated() const;
+	// 获取是否由政府拥有
+	bool GetStated() const;
 
-    // 设置是否由政府拥有
-    void SetStated(bool state);
+	// 设置是否由政府拥有
+	void SetStated(bool state);
 
-    // 获取私人房东
-    Person* GetOwner() const;
+	// 获取私人房东
+	Person* GetOwner() const;
 
-    // 设置私人房东
-    void SetOwner(Person* owner);
+	// 设置私人房东
+	void SetOwner(Person* owner);
 
 	// 获取住户
 	const std::vector<Person*>& GetTenants() const;
@@ -190,11 +190,11 @@ private:
 	// 门牌号
 	std::string number;
 	
-    // 是否由政府拥有
-    bool stated;
+	// 是否由政府拥有
+	bool stated;
 
-    // 私人房东
-    Person* owner;
+	// 私人房东
+	Person* owner;
 
 	// 屋内住户
 	std::vector<Person*> tenants;

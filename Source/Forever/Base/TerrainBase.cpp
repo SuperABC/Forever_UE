@@ -1,5 +1,5 @@
-#include "Actor/TerrainBase.h"
-#include "Actor/GlobalBase.h"
+#include "TerrainBase.h"
+#include "GlobalBase.h"
 
 #include "map/terrain.h"
 

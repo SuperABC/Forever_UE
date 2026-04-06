@@ -27,7 +27,7 @@ const char* ZoneAsset::GetName() {
 }
 
 void ZoneAsset::DefineAsset() {
-    
+	
 }
 
 int BuildingAsset::count = 0;
@@ -39,16 +39,16 @@ BuildingAsset::~BuildingAsset() {
 }
 
 const char* BuildingAsset::GetId() {
-    return "building";
+	return "building";
 }
 
 const char* BuildingAsset::GetType() const {
-    return "building";
+	return "building";
 }
 
 const char* BuildingAsset::GetName() {
-    name = "建筑资产" + to_string(id);
-    return name.data();
+	name = "建筑资产" + to_string(id);
+	return name.data();
 }
 
 void BuildingAsset::DefineAsset() {
@@ -64,16 +64,16 @@ RoomAsset::~RoomAsset() {
 }
 
 const char* RoomAsset::GetId() {
-    return "room";
+	return "room";
 }
 
 const char* RoomAsset::GetType() const {
-    return "room";
+	return "room";
 }
 
 const char* RoomAsset::GetName() {
-    name = "房间资产" + to_string(id);
-    return name.data();
+	name = "房间资产" + to_string(id);
+	return name.data();
 }
 
 void RoomAsset::DefineAsset() {
