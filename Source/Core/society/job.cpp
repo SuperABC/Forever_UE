@@ -1,7 +1,9 @@
-﻿#include "story/script.h"
+﻿#include "job.h"
 
-#include "society.h"
-#include "job.h"
+#include "society/society.h"
+#include "society/calendar.h"
+#include "story/story.h"
+#include "story/script.h"
 
 
 using namespace std;

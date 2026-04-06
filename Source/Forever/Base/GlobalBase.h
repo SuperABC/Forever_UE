@@ -7,28 +7,23 @@
 
 #define NOMINMAX
 
-#include "TerrainBase.h"
-#include "RoadnetBase.h"
-#include "ZoneBase.h"
-#include "BuildingBase.h"
-#include "RoomBase.h"
-#include "TrafficBase.h"
-#include "PopulaceBase.h"
-#include "StoryBase.h"
-
-#include "map/map.h"
-#include "populace/populace.h"
-#include "society/society.h"
-#include "story/story.h"
-#include "industry/industry.h"
-#include "traffic/traffic.h"
-#include "player/player.h"
+#include "common/class.h"
 
 #include <string>
 #include <unordered_map>
 #include <windows.h>
 
 #include "GlobalBase.generated.h"
+
+
+class ATerrainBase;
+class ARoadnetBase;
+class AZoneBase;
+class ABuildingBase;
+class ARoomBase;
+class APopulaceBase;
+class AStoryBase;
+class ATrafficBase;
 
 
 USTRUCT(Blueprintable, BlueprintType)
@@ -65,9 +60,9 @@ public:
 	AZoneBase* GetZoneActor();
 	ABuildingBase* GetBuildingActor();
 	ARoomBase* GetRoomActor();
-	ATrafficBase* GetTrafficActor();
 	APopulaceBase* GetPopulaceActor();
 	AStoryBase* GetStoryActor();
+	ATrafficBase* GetTrafficActor();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> TerrainClass;
@@ -80,11 +75,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> RoomClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
-	TSubclassOf<AActor> TrafficClass;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> PopulaceClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> StoryClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> TrafficClass;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void GetLocation(FVector& location);
@@ -115,7 +110,7 @@ protected:
 	AZoneBase* zoneActor = nullptr;
 	ABuildingBase* buildingActor = nullptr;
 	ARoomBase* roomActor = nullptr;
-	ATrafficBase* trafficActor = nullptr;
 	APopulaceBase* populaceActor = nullptr;
 	AStoryBase* storyActor = nullptr;
+	ATrafficBase* trafficActor = nullptr;
 };

@@ -1,15 +1,16 @@
 ﻿#pragma once
 
-#include "zone.h"
-#include "building.h"
-#include "geometry.h"
+#include "class.h"
+#include "utility.h"
+#include "error.h"
+#include "config.h"
+
+#include "map/geometry.h"
 
 #include <vector>
 #include <unordered_map>
 
 
-class Zone;
-class Building;
 class Block : public Lot {
 public:
 	// 构造空街区

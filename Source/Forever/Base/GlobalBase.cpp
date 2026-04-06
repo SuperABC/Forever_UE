@@ -1,5 +1,22 @@
 ﻿#include "GlobalBase.h"
 
+#include "TerrainBase.h"
+#include "RoadnetBase.h"
+#include "ZoneBase.h"
+#include "BuildingBase.h"
+#include "RoomBase.h"
+#include "PopulaceBase.h"
+#include "StoryBase.h"
+#include "TrafficBase.h"
+
+#include "map/map.h"
+#include "populace/populace.h"
+#include "society/society.h"
+#include "story/story.h"
+#include "industry/industry.h"
+#include "traffic/traffic.h"
+#include "player/player.h"
+
 
 using namespace std;
 
@@ -119,12 +136,12 @@ void AGlobalBase::BeginPlay() {
 		buildingActor->SetGlobal(this);
 		roomActor = GetWorld()->SpawnActor<ARoomBase>(RoomClass, Location, Rotation);
 		roomActor->SetGlobal(this);
-		trafficActor = GetWorld()->SpawnActor<ATrafficBase>(TrafficClass, Location, Rotation);
-		trafficActor->SetGlobal(this);
 		populaceActor = GetWorld()->SpawnActor<APopulaceBase>(PopulaceClass, Location, Rotation);
 		populaceActor->SetGlobal(this);
 		storyActor = GetWorld()->SpawnActor<AStoryBase>(StoryClass, Location, Rotation);
 		storyActor->SetGlobal(this);
+		trafficActor = GetWorld()->SpawnActor<ATrafficBase>(TrafficClass, Location, Rotation);
+		trafficActor->SetGlobal(this);
 
 		auto pos = map->GetPlayerPos();
 		SetLocation(FVector(pos.first, pos.second, 0.f));
@@ -195,16 +212,16 @@ ARoomBase* AGlobalBase::GetRoomActor() {
 	return roomActor;
 }
 
-ATrafficBase* AGlobalBase::GetTrafficActor() {
-	return trafficActor;
-}
-
 APopulaceBase* AGlobalBase::GetPopulaceActor() {
 	return populaceActor;
 }
 
 AStoryBase* AGlobalBase::GetStoryActor() {
 	return storyActor;
+}
+
+ATrafficBase* AGlobalBase::GetTrafficActor() {
+	return trafficActor;
 }
 
 void AGlobalBase::GlobalPause() {

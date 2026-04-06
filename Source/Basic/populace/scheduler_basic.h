@@ -1,4 +1,6 @@
-﻿#include "scheduler_mod.h"
+﻿#pragma once
+
+#include "populace/scheduler_mod.h"
 
 
 // 纯工作调度

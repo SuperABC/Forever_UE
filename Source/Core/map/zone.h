@@ -1,26 +1,14 @@
 ﻿#pragma once
 
-#include "story/story.h"
-#include "populace/person.h"
+#include "map/zone_mod.h"
 
-#include "zone_mod.h"
-
-#include "block.h"
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
 
 // 园区实体
-class ZoneMod;
-class Quad;
-class Lot;
-class Block;
-class Building;
-class Person;
-class Script;
-class ZoneFactory;
-class BuildingFactory;
 class Zone : public Quad {
 public:
 	// 禁止默认构造

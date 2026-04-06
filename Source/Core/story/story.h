@@ -17,7 +17,7 @@ public:
 	// 读取配置文件
 	void LoadConfigs() const;
 
-	// 读取 Mods
+	// 读取脚本模组
 	void InitScripts(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
@@ -37,7 +37,7 @@ public:
 	// 获取主线剧情
 	Script* GetScript() const;
 
-	// 统一工厂
+	// 脚本工厂
 	static ScriptFactory* scriptFactory;
 
 private:

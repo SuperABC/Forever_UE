@@ -1,5 +1,11 @@
 ﻿#include "room.h"
 
+#include "map/map.h"
+#include "map/block.h"
+#include "map/zone.h"
+#include "map/building.h"
+#include "map/component.h"
+#include "populace/person.h"
 #include "industry/storage.h"
 #include "industry/manufacture.h"
 

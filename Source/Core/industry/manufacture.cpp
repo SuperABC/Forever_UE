@@ -1,6 +1,8 @@
 ﻿#include "manufacture.h"
 
 #include "industry/industry.h"
+#include "industry/storage.h"
+#include "industry/product.h"
 
 #include <unordered_set>
 

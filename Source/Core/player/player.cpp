@@ -1,6 +1,7 @@
 ﻿#include "player.h"
 
-#include "skill.h"
+#include "player/skill.h"
+
 
 using namespace std;
 

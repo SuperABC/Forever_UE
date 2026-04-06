@@ -5,7 +5,7 @@
 
 #define NOMINMAX
 
-#include "populace/populace.h"
+#include "common/class.h"
 
 #include "PopulaceBase.generated.h"
 

@@ -1,5 +1,7 @@
 #include "TrafficBase.h"
 
+#include "GlobalBase.h"
+
 
 using namespace std;
 

@@ -1,6 +1,8 @@
 ﻿#include "storage.h"
 
 #include "industry/industry.h"
+#include "industry/manufacture.h"
+#include "industry/product.h"
 
 
 using namespace std;

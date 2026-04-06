@@ -1,11 +1,12 @@
 ﻿#include "society.h"
 
-#include "calendar.h"
-#include "job.h"
-#include "organization.h"
-
 #include "map/map.h"
+#include "map/component.h"
 #include "populace/populace.h"
+#include "populace/person.h"
+#include "society/calendar.h"
+#include "society/job.h"
+#include "society/organization.h"
 #include "player/player.h"
 
 

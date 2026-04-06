@@ -1,9 +1,8 @@
 ﻿#pragma once
 
-#include "storage_mod.h"
+#include "industry/storage_mod.h"
 
-#include "product.h"
-#include "manufacture.h"
+#include "class.h"
 
 
 // 子类注册函数

@@ -5,7 +5,7 @@
 
 #define NOMINMAX
 
-#include "traffic/traffic.h"
+#include "common/class.h"
 
 #include "TrafficBase.generated.h"
 

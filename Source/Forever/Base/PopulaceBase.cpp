@@ -1,6 +1,10 @@
 #include "PopulaceBase.h"
+
 #include "GlobalBase.h"
 
+#include "map/building.h"
+#include "map/room.h"
+#include "populace/populace.h"
 #include "populace/person.h"
 
 

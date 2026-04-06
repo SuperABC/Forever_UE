@@ -1,8 +1,9 @@
 ﻿#include "traffic.h"
 
-#include "vehicle.h"
-#include "station.h"
-#include "route.h"
+#include "traffic/vehicle.h"
+#include "traffic/station.h"
+#include "traffic/route.h"
+
 
 using namespace std;
 

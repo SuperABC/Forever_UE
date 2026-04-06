@@ -1,5 +1,7 @@
 ﻿#include "roadnet.h"
 
+#include "map/block.h"
+
 
 using namespace std;
 

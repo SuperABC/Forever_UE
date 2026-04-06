@@ -1,7 +1,7 @@
-﻿#include "story/story.h"
-#include "story/script.h"
+﻿#include "scheduler.h"
 
-#include "scheduler.h"
+#include "story/story.h"
+#include "story/script.h"
 
 
 using namespace std;

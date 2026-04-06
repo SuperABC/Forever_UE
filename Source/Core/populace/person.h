@@ -1,14 +1,9 @@
 ﻿#pragma once
 
-#include "../map/room.h"
-#include "../society/job.h"
-#include "../story/story.h"
-
-#include "asset.h"
-#include "scheduler.h"
-#include "experience.h"
+#include "class.h"
 #include "utility.h"
-#include "commute.h"
+#include "error.h"
+#include "config.h"
 
 #include <memory>
 #include <string>
@@ -35,20 +30,6 @@ enum RELATIVE_TYPE : int {
 	RELATIVE_DAUGHTER // 女儿
 };
 
-class EducationExperience;
-class EmotionExperience;
-class JobExperience;
-class Block;
-class Connection;
-class Zone;
-class Building;
-class Room;
-class Asset;
-class Scheduler;
-class Event;
-class Script;
-class Story;
-class Time;
 class Person {
 public:
 	// 构造空人物

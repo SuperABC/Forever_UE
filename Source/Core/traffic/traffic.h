@@ -17,11 +17,15 @@ public:
 	// 读取配置文件
 	void LoadConfigs() const;
 
-	// 读取 Mods
+	// 读取载具模组
 	void InitVehicles(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取站点模组
 	void InitStations(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取线路模组
 	void InitRoutes(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
@@ -38,9 +42,13 @@ public:
 	void ApplyChange(Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
-	// 统一工厂
+	// 载具工厂
 	static VehicleFactory* vehicleFactory;
+
+	// 站点工厂
 	static StationFactory* stationFactory;
+
+	// 线路工厂
 	static RouteFactory* routeFactory;
 
 private:

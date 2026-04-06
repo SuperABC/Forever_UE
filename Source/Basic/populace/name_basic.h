@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "name_mod.h"
+#include "populace/name_mod.h"
 
 
 // 中文姓名

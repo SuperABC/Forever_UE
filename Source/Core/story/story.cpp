@@ -1,7 +1,6 @@
 ﻿#include "story.h"
 
-#include "script.h"
-
+#include "story/script.h"
 #include "player/player.h"
 
 

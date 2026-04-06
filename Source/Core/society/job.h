@@ -1,19 +1,14 @@
 ﻿#pragma once
 
-#include "story/story.h"
+#include "society/job_mod.h"
 
-#include "job_mod.h"
-
-#include "calendar.h"
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModJobsFunc)(JobFactory* factory);
 
 // 职业实体
-class JobMod;
-class Script;
-class JobFactory;
 class Job {
 public:
 	// 禁止默认构造

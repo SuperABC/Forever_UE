@@ -1,5 +1,11 @@
 ﻿#include "person.h"
 
+#include "populace/asset.h"
+#include "populace/scheduler.h"
+#include "populace/commute.h"
+#include "populace/experience.h"
+#include "society/job.h"
+
 
 using namespace std;
 

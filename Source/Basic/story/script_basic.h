@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "script_mod.h"
+#include "story/script_mod.h"
 
 
 // NPC脚本

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "component_mod.h"
+#include "map/component_mod.h"
 
 
 // 住宅组合

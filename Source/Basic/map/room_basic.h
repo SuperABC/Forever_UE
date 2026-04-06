@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "room_mod.h"
+#include "map/room_mod.h"
 
 
 // 住宅房间

@@ -17,11 +17,15 @@ public:
 	// 读取配置文件
 	void LoadConfigs() const;
 
-	// 读取 Mods
+	// 读取日程模组
 	void InitCalendars(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取职业模组
 	void InitJobs(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取组织模组
 	void InitOrganizations(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
@@ -38,9 +42,13 @@ public:
 	void ApplyChange(Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
-	// 统一工厂
+	// 日程工厂
 	static CalendarFactory* calendarFactory;
+
+	// 职业工厂
 	static JobFactory* jobFactory;
+
+	// 组织工厂
 	static OrganizationFactory* organizationFactory;
 
 private:

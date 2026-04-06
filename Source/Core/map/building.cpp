@@ -1,13 +1,18 @@
-﻿#include "common/config.h"
+﻿#include "building.h"
+
+#include "map/map.h"
+#include "map/block.h"
+#include "map/zone.h"
+#include "map/component.h"
+#include "map/room.h"
+#include "populace/person.h"
+#include "story/story.h"
 #include "story/script.h"
 
-#include "map.h"
-#include "building.h"
 #include "json.h"
 
-#include <filesystem>
 #include <fstream>
-#include <string>
+#include <filesystem>
 
 
 using namespace std;

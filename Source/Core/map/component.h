@@ -1,18 +1,14 @@
 ﻿#pragma once
 
-#include "component_mod.h"
+#include "map/component_mod.h"
 
-#include "building.h"
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModComponentsFunc)(ComponentFactory* factory);
 
 // 组合实体
-class ComponentMod;
-class Building;
-class Room;
-class ComponentFactory;
 class Component {
 public:
 	// 禁止默认构造

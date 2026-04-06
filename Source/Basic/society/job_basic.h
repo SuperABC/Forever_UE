@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "job_mod.h"
+#include "society/job_mod.h"
 
 
 class ShopSalerJob : public JobMod {

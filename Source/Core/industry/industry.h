@@ -17,11 +17,15 @@ public:
 	// 读取配置文件
 	void LoadConfigs() const;
 
-	// 读取 Mods
+	// 读取产品模组
 	void InitProducts(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取仓库模组
 	void InitStorages(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取工坊模组
 	void InitManufactures(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
@@ -38,9 +42,13 @@ public:
 	void ApplyChange(Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
-	// 统一工厂
+	// 产品工厂
 	static ProductFactory* productFactory;
+
+	// 仓库工厂
 	static StorageFactory* storageFactory;
+
+	// 工坊工厂
 	static ManufactureFactory* manufactureFactory;
 
 private:

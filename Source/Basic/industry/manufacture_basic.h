@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "manufacture_mod.h"
+#include "industry/manufacture_mod.h"
 
 
 // 经验工坊

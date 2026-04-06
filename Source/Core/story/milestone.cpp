@@ -1,5 +1,9 @@
 ﻿#include "milestone.h"
 
+#include "story/event.h"
+#include "story/dialog.h"
+#include "story/change.h"
+
 
 using namespace std;
 

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "storage_mod.h"
+#include "industry/storage_mod.h"
 
 
 // 商店仓库

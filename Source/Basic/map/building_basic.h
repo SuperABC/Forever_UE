@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "building_mod.h"
+#include "map/building_mod.h"
 
 
 // 住宅建筑

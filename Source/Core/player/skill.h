@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include "skill_mod.h"
+#include "player/skill_mod.h"
+
+#include "class.h"
 
 
 // 子类注册函数

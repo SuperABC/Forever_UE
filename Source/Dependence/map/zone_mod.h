@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include "geometry.h"
-
 #include "../common/utility.h"
 #include "../common/error.h"
+
+#include "geometry.h"
 
 #include <string>
 #include <functional>

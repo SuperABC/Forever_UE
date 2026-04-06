@@ -1,8 +1,13 @@
 #include "ZoneBase.h"
-#include "GlobalBase.h"
 
+#include "GlobalBase.h"
+#include "StoryBase.h"
+
+#include "map/map.h"
+#include "map/block.h"
 #include "map/roadnet.h"
 #include "map/zone.h"
+#include "story/story.h"
 #include "story/script.h"
 
 

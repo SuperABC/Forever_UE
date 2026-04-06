@@ -1,14 +1,14 @@
 ﻿#pragma once
 
-#include "asset_mod.h"
+#include "populace/asset_mod.h"
+
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModAssetsFunc)(AssetFactory* factory);
 
 // 资产实体
-class AssetMod;
-class AssetFactory;
 class Asset {
 public:
 	// 禁止默认构造

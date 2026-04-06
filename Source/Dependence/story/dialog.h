@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "condition.h"
-#include "change.h"
-
 #include "../common/utility.h"
 #include "../common/error.h"
+
+#include "condition.h"
+#include "change.h"
 
 #include <vector>
 #include <string>

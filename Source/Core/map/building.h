@@ -1,13 +1,8 @@
 ﻿#pragma once
 
-#include "story/story.h"
-#include "populace/person.h"
+#include "map/building_mod.h"
 
-#include "building_mod.h"
-
-#include "component.h"
-#include "room.h"
-#include "block.h"
+#include "class.h"
 
 
 // 子类注册函数
@@ -152,16 +147,6 @@ public:
 };
 
 // 建筑实体
-class BuildingMod;
-class Quad;
-class Block;
-class Zone;
-class Component;
-class Room;
-class Person;
-class Script;
-class BuildingFactory;
-class RoomFactory;
 class Building : public Quad {
 public:
 	// 禁止默认构造

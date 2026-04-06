@@ -1,14 +1,14 @@
 ﻿#pragma once
 
-#include "calendar_mod.h"
+#include "society/calendar_mod.h"
+
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModCalendarsFunc)(CalendarFactory* factory);
 
 // 日程实体
-class CalendarMod;
-class CalendarFactory;
 class Calendar {
 public:
 	// 禁止默认构造

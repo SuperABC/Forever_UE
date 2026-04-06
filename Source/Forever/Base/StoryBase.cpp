@@ -1,8 +1,21 @@
 #include "StoryBase.h"
-#include "GlobalBase.h"
 
+#include "GlobalBase.h"
+#include "PopulaceBase.h"
+
+#include "map/map.h"
+#include "map/zone.h"
+#include "map/building.h"
+#include "populace/populace.h"
 #include "populace/person.h"
+#include "populace/scheduler.h"
+#include "society/society.h"
+#include "society/job.h"
+#include "story/story.h"
 #include "story/script.h"
+#include "industry/industry.h"
+#include "traffic/traffic.h"
+#include "player/player.h"
 
 
 using namespace std;

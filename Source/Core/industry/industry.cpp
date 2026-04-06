@@ -1,11 +1,10 @@
 ﻿#include "industry.h"
 
-#include "product.h"
-#include "storage.h"
-#include "manufacture.h"
-
-#include "map/room.h"
 #include "map/map.h"
+#include "map/room.h"
+#include "industry/manufacture.h"
+#include "industry/storage.h"
+#include "industry/product.h"
 
 
 using namespace std;

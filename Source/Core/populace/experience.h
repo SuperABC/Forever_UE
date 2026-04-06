@@ -1,15 +1,13 @@
 ﻿#pragma once
 
+#include "class.h"
 #include "utility.h"
 #include "error.h"
+#include "config.h"
 
 #include "person.h"
 
-#include <string>
-#include <vector>
 
-
-class Person;
 class Experience {
 public:
 	Experience();

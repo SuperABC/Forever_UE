@@ -1,15 +1,16 @@
 ﻿#include "map.h"
 
-#include "block.h"
-#include "terrain.h"
-#include "roadnet.h"
-#include "zone.h"
-#include "building.h"
-#include "component.h"
-#include "room.h"
-#include "change.h"
-
+#include "map/block.h"
+#include "map/terrain.h"
+#include "map/roadnet.h"
+#include "map/zone.h"
+#include "map/building.h"
+#include "map/component.h"
+#include "map/room.h"
 #include "populace/populace.h"
+#include "populace/person.h"
+#include "populace/asset.h"
+#include "story/change.h"
 #include "player/player.h"
 
 #include <algorithm>

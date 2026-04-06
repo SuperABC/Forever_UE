@@ -1,16 +1,14 @@
 ﻿#pragma once
 
+#include "class.h"
 #include "utility.h"
-#include "event.h"
-#include "dialog.h"
-#include "change.h"
+#include "error.h"
+#include "config.h"
+
+#include "story/condition.h"
 
 #include <string>
 
-
-class Event;
-class Dialog;
-class Change;
 
 class Milestone {
 public:

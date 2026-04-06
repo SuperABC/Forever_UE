@@ -1,6 +1,8 @@
 ﻿#include "block.h"
-#include "utility.h"
-#include "error.h"
+
+#include "map/zone.h"
+#include "map/building.h"
+#include "map/geometry.h"
 
 #include <cmath>
 #include <utility>

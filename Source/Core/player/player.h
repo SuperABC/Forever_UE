@@ -6,7 +6,6 @@
 #include "config.h"
 
 
-class Change;
 class Player {
 public:
 	// 构造玩家
@@ -18,7 +17,7 @@ public:
 	// 读取配置文件
 	void LoadConfigs() const;
 
-	// 读取 Mods
+	// 读取技能模组
 	void InitSkills(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
@@ -38,7 +37,7 @@ public:
 	// 获取时钟
 	Time* GetTime();
 
-	// 统一工厂
+	// 技能工厂
 	static SkillFactory* skillFactory;
 
 private:

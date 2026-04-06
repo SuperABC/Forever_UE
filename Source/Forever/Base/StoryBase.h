@@ -5,9 +5,9 @@
 
 #define NOMINMAX
 
-#include "story/story.h"
+#include "common/class.h"
 
-#include "dialog.h"
+#include "story/dialog.h"
 
 #include <deque>
 

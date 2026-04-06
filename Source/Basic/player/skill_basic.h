@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "skill_mod.h"
+#include "player/skill_mod.h"
 
 
 // 读心技能

@@ -1,15 +1,14 @@
 ﻿#pragma once
 
-#include "manufacture_mod.h"
+#include "industry/manufacture_mod.h"
 
-#include "storage.h"
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModManufacturesFunc)(ManufactureFactory* factory);
 
 // 工坊实体
-class Storage;
 class Manufacture {
 public:
 	// 禁止默认构造

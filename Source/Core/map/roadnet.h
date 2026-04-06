@@ -1,19 +1,14 @@
 ﻿#pragma once
 
-#include "roadnet_mod.h"
+#include "map/roadnet_mod.h"
 
-#include "block.h"
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModRoadnetsFunc)(RoadnetFactory* factory);
 
 // 路网实体
-class RoadnetMod;
-class Node;
-class Connection;
-class Block;
-class RoadnetFactory;
 class Roadnet {
 public:
 	// 禁止默认构造

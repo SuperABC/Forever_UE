@@ -1,6 +1,8 @@
 #include "TerrainBase.h"
+
 #include "GlobalBase.h"
 
+#include "map/map.h"
 #include "map/terrain.h"
 
 

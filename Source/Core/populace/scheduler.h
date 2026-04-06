@@ -1,17 +1,14 @@
 ﻿#pragma once
 
-#include "story/story.h"
+#include "populace/scheduler_mod.h"
 
-#include "scheduler_mod.h"
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModSchedulersFunc)(SchedulerFactory* factory);
 
 // 调度实体
-class SchedulerMod;
-class Script;
-class SchedulerFactory;
 class Scheduler {
 public:
 	// 禁止默认构造

@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include "station_mod.h"
+#include "traffic/station_mod.h"
+
+#include "class.h"
 
 
 // 子类注册函数

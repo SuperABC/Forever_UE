@@ -1,4 +1,6 @@
-﻿#include "product_mod.h"
+﻿#pragma once
+
+#include "industry/product_mod.h"
 
 
 // 经验产品

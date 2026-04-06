@@ -17,11 +17,15 @@ public:
 	// 读取配置文件
 	void LoadConfigs() const;
 
-	// 读取 Mods
+	// 读取资产模组
 	void InitAssets(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取姓名模组
 	void InitNames(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
+
+	// 读取调度模组
 	void InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
@@ -44,9 +48,13 @@ public:
 	// 按姓名查找市民
 	Person* GetCitizen(const std::string& name);
 
-	// 统一工厂
+	// 资产工厂
 	static AssetFactory* assetFactory;
+
+	// 姓名工厂
 	static NameFactory* nameFactory;
+
+	// 调度工厂
 	static SchedulerFactory* schedulerFactory;
 
 private:
@@ -68,6 +76,6 @@ private:
 	// 全部市民
 	OBJECT_HOLDER std::vector<Person*> citizens;
 
-	// 身份证号
+	// 身份证号（姓名->所在citizens索引）
 	std::unordered_map<std::string, int> ids;
 };

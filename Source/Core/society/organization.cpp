@@ -1,5 +1,9 @@
 ﻿#include "organization.h"
 
+#include "map/component.h"
+#include "map/room.h"
+#include "society/job.h"
+
 
 using namespace std;
 

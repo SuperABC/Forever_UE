@@ -1,14 +1,14 @@
 ﻿#pragma once
 
-#include "terrain_mod.h"
+#include "map/terrain_mod.h"
+
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModTerrainsFunc)(TerrainFactory* factory);
 
 // 地形实体
-class TerrainMod;
-class TerrainFactory;
 class Terrain {
 public:
 	// 禁止默认构造

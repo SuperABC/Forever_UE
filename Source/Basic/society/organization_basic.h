@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "organization_mod.h"
+#include "society/organization_mod.h"
 
 
 // 商店组织

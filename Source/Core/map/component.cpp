@@ -1,5 +1,8 @@
 ﻿#include "component.h"
 
+#include "map/building.h"
+#include "map/room.h"
+
 
 using namespace std;
 

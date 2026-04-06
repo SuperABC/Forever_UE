@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include "name_mod.h"
+#include "populace/name_mod.h"
+
+#include "class.h"
 
 #include <unordered_set>
 
@@ -9,8 +11,6 @@
 typedef void (*RegisterModNamesFunc)(NameFactory* factory);
 
 // 姓名实体
-class NameMod;
-class NameFactory;
 class Name {
 public:
 	// 禁止默认构造

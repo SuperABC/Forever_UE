@@ -1,24 +1,14 @@
 ﻿#pragma once
 
-#include "populace/person.h"
+#include "map/room_mod.h"
 
-#include "room_mod.h"
-
-#include "building.h"
-#include "component.h"
+#include "class.h"
 
 
 // 子类注册函数
 typedef void (*RegisterModRoomsFunc)(RoomFactory* factory);
 
 // 房间实体
-enum FACE_DIRECTION : int;
-class RoomMod;
-class Quad;
-class Building;
-class Component;
-class Person;
-class RoomFactory;
 class Room : public Quad {
 public:
 	// 门窗类

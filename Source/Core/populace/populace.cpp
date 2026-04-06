@@ -1,12 +1,13 @@
 ﻿#include "populace.h"
 
-#include "person.h"
-#include "asset.h"
-#include "name.h"
-#include "scheduler.h"
-#include "change.h"
-
+#include "populace/person.h"
+#include "populace/asset.h"
+#include "populace/name.h"
+#include "populace/scheduler.h"
+#include "populace/commute.h"
+#include "populace/experience.h"
 #include "story/script.h"
+#include "story/change.h"
 #include "player/player.h"
 
 #include <fstream>

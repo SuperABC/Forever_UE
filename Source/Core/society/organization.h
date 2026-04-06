@@ -1,10 +1,8 @@
 ﻿#pragma once
 
-#include "organization_mod.h"
+#include "society/organization_mod.h"
 
-#include "job.h"
-
-#include "map/component.h"
+#include "class.h"
 
 
 // 子类注册函数

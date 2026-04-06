@@ -30,13 +30,7 @@ public class Forever : ModuleRules
 		PublicIncludePaths.AddRange(new string[] {
 			"Forever",
             "Dependence/common",
-            "Dependence/map",
-            "Dependence/populace",
-            "Dependence/society",
-            "Dependence/story",
-            "Dependence/industry",
-            "Dependence/traffic",
-            "Dependence/player",
+            "Dependence/",
             "Core/common",
             "Core"
 		});

@@ -1,8 +1,11 @@
-﻿#include "common/config.h"
-#include "story/script.h"
+﻿#include "zone.h"
 
-#include "map.h"
-#include "zone.h"
+#include "map/map.h"
+#include "map/block.h"
+#include "map/building.h"
+#include "populace/person.h"
+#include "story/story.h"
+#include "story/script.h"
 
 #include <algorithm>
 

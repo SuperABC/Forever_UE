@@ -2,10 +2,10 @@
 
 
 UObject* UAssetLoader::LoadAssetFromPath(const FString& Path, TSubclassOf<UObject> TargetClass) {
-	UObject* LoadedAsset = LoadObject<UObject>(nullptr, *Path);
+	UObject* asset = LoadObject<UObject>(nullptr, *Path);
 
-	if (LoadedAsset && TargetClass && LoadedAsset->IsA(TargetClass)) {
-		return LoadedAsset;
+	if (asset && TargetClass && asset->IsA(TargetClass)) {
+		return asset;
 	}
 
 	return nullptr;

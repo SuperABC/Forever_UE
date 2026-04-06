@@ -5,7 +5,7 @@
 
 #define NOMINMAX
 
-#include "map/map.h"
+#include "common/class.h"
 
 #include "RoomBase.generated.h"
 
