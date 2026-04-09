@@ -32,6 +32,12 @@ public:
 	// 获取剧本
 	Script* GetScript() const;
 
+	// 获取预设状态
+	std::string GetStatus() const;
+
+	// 设置预设状态
+	void SetStatus(const std::string& status);
+
 private:
 	// 模组对象
 	OBJECT_HOLDER SchedulerMod* mod;
@@ -47,6 +53,9 @@ private:
 
 	// 关联剧情
 	OBJECT_HOLDER Script* script;
+
+	// 当前预设状态
+	std::string status;
 };
 
 // 空调度

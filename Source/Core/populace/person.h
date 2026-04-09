@@ -189,31 +189,31 @@ public:
 	std::unordered_set<std::string> GetOptions() const;
 
 	// 设置所在园区
-	//void SetStatus(Zone* zone);
+	void SetStatus(Zone* zone);
 
 	// 设置所在建筑
-	//void SetStatus(Building* building);
+	void SetStatus(Building* building);
 
 	// 设置所在房间
-	//void SetStatus(Room* room);
+	void SetStatus(Room* room);
 
 	// 设置通勤
-	//void SetStatus(Room* target, std::vector<Connection> paths, Time time);
+	void SetStatus(Room* target, const std::vector<std::pair<Connection*, std::pair<float, float>>>& paths, const Time& time);
 
 	// 获取所在地块
-	//Block* GetCurrentBlock() const;
+	Block* GetCurrentBlock() const;
 
 	// 获取所在园区
-	//Zone* GetCurrentZone() const;
+	Zone* GetCurrentZone() const;
 
 	// 获取所在建筑
-	//Building* GetCurrentBuilding() const;
+	Building* GetCurrentBuilding() const;
 
 	// 获取所在房间
-	//Room* GetCurrentRoom() const;
+	Room* GetCurrentRoom() const;
 
 	// 获取通勤
-	//Commute GetCurrentCommute() const;
+	Commute* GetCurrentCommute() const;
 
 private:
 	int id;
@@ -232,10 +232,9 @@ private:
 
 	OBJECT_HOLDER std::vector<Asset*> assets;
 
+	Room* home;
 	OBJECT_HOLDER std::vector<Job*> jobs;
 	int working;
-
-	Room* home;
 	OBJECT_HOLDER Scheduler* scheduler;
 
 	std::vector<EducationExperience> educationExperiences;
@@ -244,10 +243,10 @@ private:
 
 	std::unordered_set<std::string> options;
 
-	//Plot* currentPlot;
-	//Zone* currentZone;
-	//Building* currentBuilding;
-	//Room* currentRoom;
-	//Commute commute;
+	Block* currentBlock;
+	Zone* currentZone;
+	Building* currentBuilding;
+	Room* currentRoom;
+	OBJECT_HOLDER Commute* currentCommute;
 };
 

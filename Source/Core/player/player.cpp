@@ -10,6 +10,7 @@ SkillFactory* Player::skillFactory = nullptr;
 Player::Player() :
 	time(nullptr) {
 	time = new Time();
+	time->SetHour(8);
 
 	if (!skillFactory) {
 		skillFactory = new SkillFactory();

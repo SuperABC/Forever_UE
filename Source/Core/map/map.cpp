@@ -1148,7 +1148,7 @@ vector<Room*> Map::GetRooms() const {
 	return rooms;
 }
 
-const Block* Map::LocateBlock(const string& address) const {
+Block* Map::LocateBlock(const string& address) const {
 	istringstream iss(address);
 	string road;
 	int id = -1;
@@ -1157,7 +1157,7 @@ const Block* Map::LocateBlock(const string& address) const {
 	return roadnet->LocateBlock(road, id);
 }
 
-const Zone* Map::LocateZone(const string& address) const {
+Zone* Map::LocateZone(const string& address) const {
 	istringstream iss(address);
 	string road;
 	int id = -1;
@@ -1174,7 +1174,7 @@ const Zone* Map::LocateZone(const string& address) const {
 	return it->second;
 }
 
-const Building* Map::LocateBuilding(const string& address) const {
+Building* Map::LocateBuilding(const string& address) const {
 	istringstream iss(address);
 	string road;
 	int id = -1;
@@ -1205,7 +1205,7 @@ const Building* Map::LocateBuilding(const string& address) const {
 	}
 }
 
-const Room* Map::LocateRoom(const string& address) const {
+Room* Map::LocateRoom(const string& address) const {
 	istringstream iss(address);
 	string road;
 	int id = -1;

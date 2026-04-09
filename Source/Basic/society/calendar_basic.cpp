@@ -6,7 +6,8 @@ using namespace std;
 int StandardCalendar::count = 0;
 
 StandardCalendar::StandardCalendar() : id(count++) {
-
+	on = Time(string("09:00:00"));
+	off = Time(string("17:00:00"));
 }
 
 StandardCalendar::~StandardCalendar() {
@@ -53,7 +54,8 @@ Time StandardCalendar::SignoutTime(const Time& date) const {
 int FullCalendar::count = 0;
 
 FullCalendar::FullCalendar() : id(count++) {
-
+	on = Time(string("09:00:00"));
+	off = Time(string("17:00:00"));
 }
 
 FullCalendar::~FullCalendar() {

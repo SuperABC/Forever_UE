@@ -12,6 +12,8 @@ class Time;
 
 // Map
 
+class Node;
+class Connection;
 class Quad;
 class Lot;
 class Block;

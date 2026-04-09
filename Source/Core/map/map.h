@@ -211,16 +211,16 @@ public:
 	std::vector<Room*> GetRooms() const;
 
 	// 寻址地块
-	const Block* LocateBlock(const std::string& address) const;
+	Block* LocateBlock(const std::string& address) const;
 
 	// 寻址园区
-	const Zone* LocateZone(const std::string& address) const;
+	Zone* LocateZone(const std::string& address) const;
 
 	// 寻址建筑
-	const Building* LocateBuilding(const std::string& address) const;
+	Building* LocateBuilding(const std::string& address) const;
 
 	// 寻址房间
-	const Room* LocateRoom(const std::string& address) const;
+	Room* LocateRoom(const std::string& address) const;
 
 	// 地形工厂
 	static TerrainFactory* terrainFactory;

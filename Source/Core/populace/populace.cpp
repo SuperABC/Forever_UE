@@ -1,11 +1,18 @@
 ﻿#include "populace.h"
 
+#include "map/map.h"
+#include "map/roadnet.h"
+#include "map/block.h"
+#include "map/building.h"
+#include "map/room.h"
 #include "populace/person.h"
 #include "populace/asset.h"
 #include "populace/name.h"
 #include "populace/scheduler.h"
 #include "populace/commute.h"
 #include "populace/experience.h"
+#include "society/calendar.h"
+#include "society/job.h"
 #include "story/script.h"
 #include "story/change.h"
 #include "player/player.h"
@@ -181,8 +188,63 @@ void Populace::Destroy() {
 	citizens.clear();
 }
 
-void Populace::Tick(Player* player) {
+void Populace::Tick(Map* map, Player* player) {
+	static int step = 0;
+	static int stride = 20;
 
+	auto time = player->GetTime();
+
+	for (int i = step; i < citizens.size(); i+= stride) {
+		auto citizen = citizens[i];
+		if (auto commute = citizen->GetCurrentCommute()) {
+			if (commute->GetVisible())continue;
+			auto arrive = commute->Tick(*time);
+			if (arrive) {
+				citizen->SetStatus(map->LocateRoom(commute->GetTarget()));
+				if (citizen->GetScheduler()->GetStatus() == "commute_work") {
+					citizen->GetScheduler()->SetStatus("work_job");
+				}
+				else if(citizen->GetScheduler()->GetStatus() == "commute_home") {
+					citizen->GetScheduler()->SetStatus("idle_home");
+				}
+			}
+			continue;
+		}
+
+		bool idle = true;
+		for (auto job : citizen->GetJobs()) {
+			auto signin = job->GetCalendar()->SigninTime(*time);
+			auto signout = job->GetCalendar()->SignoutTime(*time);
+
+			int i = 0;
+			if (citizen->GetScheduler()->GetStatus() == "idle_home") {
+				if (signin.GetYear() > 0 && time && *time > signin - Time(string("00:30:00"))) {
+					citizen->SetStatus(job->GetPosition(),
+						map->GetRoadnet()->AutoNavigate(citizen->GetHome()->GetParentBuilding()->GetParentBlock(),
+							job->GetPosition()->GetParentBuilding()->GetParentBlock()), signin - Time(string("00:30:00")));
+					citizen->GetScheduler()->SetStatus("commute_work");
+					citizen->SetWork(i);
+					idle = false;
+					break;
+				}
+			}
+			else if (citizen->GetScheduler()->GetStatus() == "work_job") {
+				if (citizen->GetWork() != job)continue;
+				if (signout.GetYear() > 0 && time && *time > signout) {
+					citizen->SetStatus(citizen->GetHome(),
+						map->GetRoadnet()->AutoNavigate(job->GetPosition()->GetParentBuilding()->GetParentBlock(),
+							citizen->GetHome()->GetParentBuilding()->GetParentBlock()), signout);
+					citizen->GetScheduler()->SetStatus("commute_home");
+					citizen->SetWork(-1);
+					idle = false;
+					break;
+				}
+			}
+			i++;
+		}
+	}
+
+	step = (step + 1) % stride;
 }
 
 void Populace::ApplyChange(Change* change,

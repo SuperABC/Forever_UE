@@ -1,5 +1,9 @@
 ﻿#include "person.h"
 
+#include "map/block.h"
+#include "map/zone.h"
+#include "map/building.h"
+#include "map/room.h"
 #include "populace/asset.h"
 #include "populace/scheduler.h"
 #include "populace/commute.h"
@@ -30,12 +34,12 @@ Person::Person() :
 	educationExperiences(),
 	emotionExperiences(),
 	jobExperiences(),
-	options() {
-	//currentPlot(nullptr),
-	//currentZone(nullptr),
-	//currentBuilding(nullptr),
-	//currentRoom(nullptr),
-	//commute() {
+	options(),
+	currentBlock(nullptr),
+	currentZone(nullptr),
+	currentBuilding(nullptr),
+	currentRoom(nullptr),
+	currentCommute(nullptr) {
 
 }
 
@@ -52,6 +56,9 @@ Person::~Person() {
 
 	if (scheduler)delete scheduler;
 	scheduler = nullptr;
+
+	if (currentCommute)delete currentCommute;
+	currentCommute = nullptr;
 }
 
 int Person::GetId() const {
@@ -346,69 +353,73 @@ unordered_set<string> Person::GetOptions() const {
 	return options;
 }
 
-//void Person::SetStatus(Zone* zone) {
-//	if (zone == nullptr) {
-//		THROW_EXCEPTION(NullPointerException, "Zone is null.\n");
-//	}
-//	currentPlot = zone->GetParent();
-//	currentZone = zone;
-//	currentBuilding = nullptr;
-//	currentRoom = nullptr;
-//	commute.SetNull();
-//}
-//
-//void Person::SetStatus(Building* building) {
-//	if (building == nullptr) {
-//		THROW_EXCEPTION(NullPointerException, "Building is null.\n");
-//	}
-//	currentPlot = building->GetParentPlot();
-//	currentZone = building->GetParentZone();
-//	currentBuilding = building;
-//	currentRoom = nullptr;
-//	commute.SetNull();
-//}
-//
-//void Person::SetStatus(Room* room) {
-//	if (room == nullptr) {
-//		THROW_EXCEPTION(NullPointerException, "Room is null.\n");
-//	}
-//	currentPlot = room->GetParentBuilding()->GetParentPlot();
-//	currentZone = room->GetParentBuilding()->GetParentZone();
-//	currentBuilding = room->GetParentBuilding();
-//	currentRoom = room;
-//	commute.SetNull();
-//}
-//
-//void Person::SetStatus(Room* target, vector<Connection> paths, Time time) {
-//	if (target == nullptr) {
-//		THROW_EXCEPTION(NullPointerException, "Target room is null.\n");
-//	}
-//	currentPlot = nullptr;
-//	currentZone = nullptr;
-//	currentBuilding = nullptr;
-//	currentRoom = nullptr;
-//	commute.SetTarget(target);
-//	commute.SetPaths(paths);
-//	commute.StartCommute(time);
-//}
-//
-//Plot* Person::GetCurrentPlot() const {
-//	return currentPlot;
-//}
-//
-//Zone* Person::GetCurrentZone() const {
-//	return currentZone;
-//}
-//
-//Building* Person::GetCurrentBuilding() const {
-//	return currentBuilding;
-//}
-//
-//Room* Person::GetCurrentRoom() const {
-//	return currentRoom;
-//}
-//
-//Commute Person::GetCurrentCommute() const {
-//	return commute;
-//}
+void Person::SetStatus(Zone* zone) {
+	if (zone == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Zone is null.\n");
+	}
+	currentBlock = zone->GetParent();
+	currentZone = zone;
+	currentBuilding = nullptr;
+	currentRoom = nullptr;
+	if (currentCommute)delete currentCommute;
+	currentCommute = nullptr;
+}
+
+void Person::SetStatus(Building* building) {
+	if (building == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Building is null.\n");
+	}
+	currentBlock = building->GetParentBlock();
+	currentZone = building->GetParentZone();
+	currentBuilding = building;
+	currentRoom = nullptr;
+	if (currentCommute)delete currentCommute;
+	currentCommute = nullptr;
+}
+
+void Person::SetStatus(Room* room) {
+	if (room == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Room is null.\n");
+	}
+	currentBlock = room->GetParentBuilding()->GetParentBlock();
+	currentZone = room->GetParentBuilding()->GetParentZone();
+	currentBuilding = room->GetParentBuilding();
+	currentRoom = room;
+	if (currentCommute)delete currentCommute;
+	currentCommute = nullptr;
+}
+
+void Person::SetStatus(Room* target, const vector<pair<Connection*, pair<float, float>>>& paths, const Time& time) {
+	if (target == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Target room is null.\n");
+	}
+	currentBlock = nullptr;
+	currentZone = nullptr;
+	currentBuilding = nullptr;
+	currentRoom = nullptr;
+	currentCommute = new Commute();
+	currentCommute->SetTarget(target->GetAddress());
+	currentCommute->SetPaths(paths);
+	currentCommute->SetTime(time);
+}
+
+Block* Person::GetCurrentBlock() const {
+	return currentBlock;
+}
+
+Zone* Person::GetCurrentZone() const {
+	return currentZone;
+}
+
+Building* Person::GetCurrentBuilding() const {
+	return currentBuilding;
+}
+
+Room* Person::GetCurrentRoom() const {
+	return currentRoom;
+}
+
+Commute* Person::GetCurrentCommute() const {
+	return currentCommute;
+}
 

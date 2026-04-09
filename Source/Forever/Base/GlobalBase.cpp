@@ -157,7 +157,7 @@ void AGlobalBase::Tick(float DeltaTime) {
 
 	player->Tick(DeltaTime);
 	map->Tick(player);
-	populace->Tick(player);
+	populace->Tick(map, player);
 	society->Tick(player);
 	story->Tick(player);
 	industry->Tick(player);

@@ -203,6 +203,9 @@ int Time::GetMinute() const {
 int Time::GetSecond() const {
 	return second;
 }
+float Time::GetOnlySecond() const {
+	return hour * 3600.f + minute * 60.f + second + millisecond / 1000.f;
+}
 int Time::GetMillisecond() const {
 	return millisecond;
 }

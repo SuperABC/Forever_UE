@@ -11,7 +11,8 @@ Scheduler::Scheduler(SchedulerFactory* factory, const string& scheduler) :
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),
-	script(nullptr) {
+	script(nullptr),
+	status("idle_home") {
 
 }
 
@@ -42,6 +43,14 @@ void Scheduler::InitScheduler(string name) {
 
 Script* Scheduler::GetScript() const {
 	return script;
+}
+
+std::string Scheduler::GetStatus() const {
+    return status;
+}
+
+void Scheduler::SetStatus(const std::string &status) {
+	this->status = status;
 }
 
 int EmptyScheduler::count = 0;

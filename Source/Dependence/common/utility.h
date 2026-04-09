@@ -44,6 +44,7 @@ public:
 	int GetHour() const;
 	int GetMinute() const;
 	int GetSecond() const;
+	float GetOnlySecond() const;
 	int GetMillisecond() const;
 	void SetYear(int y);
 	void SetMonth(int m);

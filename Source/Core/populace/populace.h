@@ -36,7 +36,7 @@ public:
 	void Destroy();
 
 	// 时钟周期
-	void Tick(Player* player);
+	void Tick(Map* map, Player* player);
 
 	// 应用剧情变化
 	void ApplyChange(Change* change,

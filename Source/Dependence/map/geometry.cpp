@@ -64,7 +64,7 @@ static double bernstein(int n, int i, double t) {
 
 Connection::Connection(string name, Node n1, Node n2, float radius, float begin, float end)
 	: name(name), radius(radius), begin(begin), end(end),
-	beginVertex(new Node(n1)), endVertex(new Node(n2)) {
+	beginVertex(new Node(n1)), endVertex(new Node(n2)), controlVertices() {
 
 }
 
@@ -75,6 +75,9 @@ Connection::Connection(const Connection& other) {
 	end = other.end;
 	beginVertex = new Node(*other.beginVertex);
 	endVertex = new Node(*other.endVertex);
+	for(auto & p : other.controlVertices) {
+		controlVertices.emplace_back(new Node(*p.first), p.second);
+	}
 }
 
 Connection& Connection::operator=(const Connection& other) {
@@ -85,6 +88,9 @@ Connection& Connection::operator=(const Connection& other) {
 		end = other.end;
 		beginVertex = new Node(*other.beginVertex);
 		endVertex = new Node(*other.endVertex);
+		for (auto& p : other.controlVertices) {
+			controlVertices.emplace_back(new Node(*p.first), p.second);
+		}
 	}
 	return *this;
 }
