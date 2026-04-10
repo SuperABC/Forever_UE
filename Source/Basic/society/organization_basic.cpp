@@ -31,7 +31,7 @@ float ShopOrganization::GetPower() {
 }
 
 void ShopOrganization::ComponentRequirements() {
-	requirements["residential"] = make_pair(1, 1);
+	requirements["shop"] = make_pair(1, 1);
 }
 
 void ShopOrganization::ArrageVacancies(const unordered_map<string, int>& components) {

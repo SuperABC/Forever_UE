@@ -120,11 +120,11 @@ string Connection::GetName() const {
 }
 
 Node Connection::GetStart() const {
-	return GetPoint(begin);
+	return *beginVertex;
 }
 
 Node Connection::GetEnd() const {
-	return GetPoint(end);
+	return *endVertex;
 }
 
 Node Connection::GetPoint(float f) const {

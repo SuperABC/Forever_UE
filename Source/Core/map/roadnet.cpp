@@ -96,7 +96,7 @@ void Roadnet::AllocateAddress() {
 		auto roads = block->GetRoads();
 		for (const auto& road : roads) {
 			addresses[road.first->GetName()].push_back(block);
-			block->SetAddress(road.first->GetName(), (int)addresses[road.first->GetName()].size());
+			block->SetAddress(road.first->GetName(), (int)addresses[road.first->GetName()].size() - 1);
 		}
 	}
 }
@@ -116,7 +116,10 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
     const vector<pair<Connection*, float>>& startRoads,
     const vector<pair<Connection*, float>>& endRoads) const {
 
-    if (startRoads.empty() || endRoads.empty()) return {};
+    if (startRoads.empty() || endRoads.empty()) {
+        debugf("Warning: no start or end roads when navigating.\n");
+        return {};
+    };
 
     // 检查是否在同一条道路上
     for (auto& startRoad : startRoads) {
@@ -127,31 +130,29 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
         }
     }
 
-    // 构建图结构
+    // 构建图结构 - 确保双向边
     unordered_map<int, vector<pair<int, float>>> graph;
     unordered_map<pair<int, int>, Connection*, pair_hash> connectionMap;
-    unordered_map<int, unordered_map<int, Connection*>> connectionIndexMap;
 
-    // 添加已有道路到图
-    for (auto* connection : connections) {
-        int v1 = connection->GetStart().GetId();
-        int v2 = connection->GetEnd().GetId();
-        float dist = connection->CalcDistance();
+    // 添加已有道路到图 - 明确添加双向边
+    for (auto* conn : connections) {
+        int v1 = conn->GetStart().GetId();
+        int v2 = conn->GetEnd().GetId();
+        float dist = conn->CalcDistance(0.0f, 1.0f);  // 整条道路的距离
 
+        // 双向边
         graph[v1].push_back({ v2, dist });
         graph[v2].push_back({ v1, dist });
 
-        connectionMap[{v1, v2}] = connection;
-        connectionMap[{v2, v1}] = connection;
-
-        connectionIndexMap[v1][v2] = connection;
-        connectionIndexMap[v2][v1] = connection;
+        // 双向映射
+        connectionMap[{v1, v2}] = conn;
+        connectionMap[{v2, v1}] = conn;
     }
 
     const int START_VIRTUAL = -1;
     const int END_VIRTUAL = -2;
 
-    // 添加起点到节点的虚拟道路到图
+    // 添加起点到节点的虚拟道路到图 - 双向
     for (const auto& road : startRoads) {
         Connection* connection = road.first;
         float position = road.second;
@@ -159,16 +160,18 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
         int v1 = connection->GetStart().GetId();
         int v2 = connection->GetEnd().GetId();
 
-        float dist_v1 = position * connection->CalcDistance();
-        float dist_v2 = (1.0f - position) * connection->CalcDistance();
+        // 从起点位置到两个端点的距离
+        float dist_v1 = connection->CalcDistance(position, 0.0f);
+        float dist_v2 = connection->CalcDistance(position, 1.0f);
 
+        // 双向添加虚拟边
         graph[START_VIRTUAL].push_back({ v1, dist_v1 });
         graph[START_VIRTUAL].push_back({ v2, dist_v2 });
         graph[v1].push_back({ START_VIRTUAL, dist_v1 });
         graph[v2].push_back({ START_VIRTUAL, dist_v2 });
     }
 
-    // 添加终点到节点的虚拟道路到图
+    // 添加终点到节点的虚拟道路到图 - 双向
     for (const auto& road : endRoads) {
         Connection* connection = road.first;
         float position = road.second;
@@ -176,9 +179,11 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
         int v1 = connection->GetStart().GetId();
         int v2 = connection->GetEnd().GetId();
 
-        float dist_v1 = position * connection->CalcDistance();
-        float dist_v2 = (1.0f - position) * connection->CalcDistance();
+        // 从两个端点到终点位置的距离
+        float dist_v1 = connection->CalcDistance(0.0f, position);
+        float dist_v2 = connection->CalcDistance(1.0f, position);
 
+        // 双向添加虚拟边
         graph[v1].push_back({ END_VIRTUAL, dist_v1 });
         graph[v2].push_back({ END_VIRTUAL, dist_v2 });
         graph[END_VIRTUAL].push_back({ v1, dist_v1 });
@@ -188,8 +193,9 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
     // Dijkstra算法
     unordered_map<int, float> dist;
     unordered_map<int, int> prev;
-    unordered_map<int, Connection*> prevConnection;
+    unordered_map<pair<int, int>, Connection*, pair_hash> prevConnection;
 
+    // 初始化所有节点的距离为无穷大
     for (const auto& node : graph) {
         dist[node.first] = numeric_limits<float>::max();
     }
@@ -207,8 +213,11 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
             continue;
         }
 
-        if (currentNode == END_VIRTUAL) break;
+        if (currentNode == END_VIRTUAL) {
+            break;
+        }
 
+        // 遍历所有邻居
         for (const auto& neighbor : graph[currentNode]) {
             int neighborId = neighbor.first;
             float weight = neighbor.second;
@@ -219,10 +228,11 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
                 dist[neighborId] = newDist;
                 prev[neighborId] = currentNode;
 
-                if (currentNode != START_VIRTUAL && neighborId != END_VIRTUAL) {
-                    auto it = connectionIndexMap[currentNode].find(neighborId);
-                    if (it != connectionIndexMap[currentNode].end()) {
-                        prevConnection[neighborId] = it->second;
+                // 记录连接关系（如果是真实道路连接）
+                if (currentNode >= 0 && neighborId >= 0) {  // 两个都是真实节点
+                    auto it = connectionMap.find({ currentNode, neighborId });
+                    if (it != connectionMap.end()) {
+                        prevConnection[{currentNode, neighborId}] = it->second;
                     }
                 }
 
@@ -231,7 +241,11 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
         }
     }
 
-    if (dist[END_VIRTUAL] == numeric_limits<float>::max()) return {};
+    // 检查是否找到路径
+    if (dist[END_VIRTUAL] == numeric_limits<float>::max()) {
+        debugf("Warning: navigation failed because no connection found in between.\n");
+        return {};
+    }
 
     // 提取路线节点路径
     vector<int> nodePath;
@@ -244,6 +258,7 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
     reverse(nodePath.begin(), nodePath.end());
 
     if (nodePath.size() < 3) {
+        debugf("Warning: navigation failed because of node num < 3.\n");
         return {};  // 寻路失败
     }
 
@@ -270,10 +285,11 @@ vector<pair<Connection*, pair<float, float>>> Roadnet::AutoNavigate(
         int from = nodePath[i - 1];
         int to = nodePath[i];
 
+        // 查找连接这两个节点的道路
         auto it = connectionMap.find({ from, to });
         if (it != connectionMap.end()) {
-            Connection* original = it->second;
-            path.push_back({ original, { 0.0f, 1.0f } });
+            Connection* conn = it->second;
+            path.push_back({ conn, { 0.0f, 1.0f } });
         }
     }
 

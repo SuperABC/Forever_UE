@@ -39,7 +39,8 @@ Person::Person() :
 	currentZone(nullptr),
 	currentBuilding(nullptr),
 	currentRoom(nullptr),
-	currentCommute(nullptr) {
+	currentCommute(nullptr),
+	statusChanged(false) {
 
 }
 
@@ -363,6 +364,8 @@ void Person::SetStatus(Zone* zone) {
 	currentRoom = nullptr;
 	if (currentCommute)delete currentCommute;
 	currentCommute = nullptr;
+	
+	statusChanged = true;
 }
 
 void Person::SetStatus(Building* building) {
@@ -375,6 +378,8 @@ void Person::SetStatus(Building* building) {
 	currentRoom = nullptr;
 	if (currentCommute)delete currentCommute;
 	currentCommute = nullptr;
+
+	statusChanged = true;
 }
 
 void Person::SetStatus(Room* room) {
@@ -387,6 +392,8 @@ void Person::SetStatus(Room* room) {
 	currentRoom = room;
 	if (currentCommute)delete currentCommute;
 	currentCommute = nullptr;
+
+	statusChanged = true;
 }
 
 void Person::SetStatus(Room* target, const vector<pair<Connection*, pair<float, float>>>& paths, const Time& time) {
@@ -401,6 +408,8 @@ void Person::SetStatus(Room* target, const vector<pair<Connection*, pair<float, 
 	currentCommute->SetTarget(target->GetAddress());
 	currentCommute->SetPaths(paths);
 	currentCommute->SetTime(time);
+
+	statusChanged = true;
 }
 
 Block* Person::GetCurrentBlock() const {
@@ -421,5 +430,11 @@ Room* Person::GetCurrentRoom() const {
 
 Commute* Person::GetCurrentCommute() const {
 	return currentCommute;
+}
+
+bool Person::PopChange() {
+	bool change = statusChanged;
+	statusChanged = false;
+	return change;
 }
 

@@ -51,35 +51,35 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	float s = northEast.GetY() - northWest.GetY();
 	float c = northEast.GetX() - northWest.GetX();
 
-	for (float x = northWest.GetX(), y = northWest.GetY(); string(get((int)x, (int)y)) != ""; x -= c, y -= s) {
+	for (float x = northWest.GetX() - c, y = northWest.GetY() - s; string(get((int)x, (int)y)) != ""; x -= c, y -= s) {
 		nodes.emplace_back(x, y);
 		horizontalNode1w.emplace_back(nodes.back(), (int)nodes.size() - 1);
 	}
-	for (float x = northEast.GetX(), y = northEast.GetY(); string(get((int)x, (int)y)) != ""; x += c, y += s) {
+	for (float x = northEast.GetX() + c, y = northEast.GetY() + s; string(get((int)x, (int)y)) != ""; x += c, y += s) {
 		nodes.emplace_back(x, y);
 		horizontalNode1e.emplace_back(nodes.back(), (int)nodes.size() - 1);
 	}
-	for (float x = southWest.GetX(), y = southWest.GetY(); string(get((int)x, (int)y)) != ""; x -= c, y -= s) {
+	for (float x = southWest.GetX() - c, y = southWest.GetY() - s; string(get((int)x, (int)y)) != ""; x -= c, y -= s) {
 		nodes.emplace_back(x, y);
 		horizontalNode2w.emplace_back(nodes.back(), (int)nodes.size() - 1);
 	}
-	for (float x = southEast.GetX(), y = southEast.GetY(); string(get((int)x, (int)y)) != ""; x += c, y += s) {
+	for (float x = southEast.GetX() + c, y = southEast.GetY() + s; string(get((int)x, (int)y)) != ""; x += c, y += s) {
 		nodes.emplace_back(x, y);
 		horizontalNode2e.emplace_back(nodes.back(), (int)nodes.size() - 1);
 	}
-	for (float x = northWest.GetX(), y = northWest.GetY(); string(get((int)x, (int)y)) != ""; x += s, y -= c) {
+	for (float x = northWest.GetX() + s, y = northWest.GetY() - c; string(get((int)x, (int)y)) != ""; x += s, y -= c) {
 		nodes.emplace_back(x, y);
 		verticalNode1n.emplace_back(nodes.back(), (int)nodes.size() - 1);
 	}
-	for (float x = southWest.GetX(), y = southWest.GetY(); string(get((int)x, (int)y)) != ""; x -= s, y += c) {
+	for (float x = southWest.GetX() - s, y = southWest.GetY() + c; string(get((int)x, (int)y)) != ""; x -= s, y += c) {
 		nodes.emplace_back(x, y);
 		verticalNode1s.emplace_back(nodes.back(), (int)nodes.size() - 1);
 	}
-	for (float x = northEast.GetX(), y = northEast.GetY(); string(get((int)x, (int)y)) != ""; x += s, y -= c) {
+	for (float x = northEast.GetX() + s, y = northEast.GetY() - c; string(get((int)x, (int)y)) != ""; x += s, y -= c) {
 		nodes.emplace_back(x, y);
 		verticalNode2n.emplace_back(nodes.back(), (int)nodes.size() - 1);
 	}
-	for (float x = southEast.GetX(), y = southEast.GetY(); string(get((int)x, (int)y)) != ""; x -= s, y += c) {
+	for (float x = southEast.GetX() - s, y = southEast.GetY() + c; string(get((int)x, (int)y)) != ""; x -= s, y += c) {
 		nodes.emplace_back(x, y);
 		verticalNode2s.emplace_back(nodes.back(), (int)nodes.size() - 1);
 	}
@@ -89,40 +89,64 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	connections.emplace_back("中山南路", nodes[3], nodes[2]);
 	connections.emplace_back("中山西路", nodes[2], nodes[0]);
 
+	if (horizontalNode1w.size() > 0) {
+		connections.emplace_back("城西北路", nodes[0], nodes[horizontalNode1w[0].second]);
+	}
 	for (size_t i = 1; i < horizontalNode1w.size(); i++) {
 		const auto& [node1, idx1] = horizontalNode1w[i];
 		const auto& [node2, idx2] = horizontalNode1w[i - 1];
 		connections.emplace_back("城西北路", nodes[idx1], nodes[idx2]);
+	}
+	if (horizontalNode1e.size() > 0) {
+		connections.emplace_back("城东北路", nodes[1], nodes[horizontalNode1e[0].second]);
 	}
 	for (size_t i = 1; i < horizontalNode1e.size(); i++) {
 		const auto& [node1, idx1] = horizontalNode1e[i];
 		const auto& [node2, idx2] = horizontalNode1e[i - 1];
 		connections.emplace_back("城东北路", nodes[idx1], nodes[idx2]);
 	}
+	if (horizontalNode2w.size() > 0) {
+		connections.emplace_back("城西南路", nodes[2], nodes[horizontalNode2w[0].second]);
+	}
 	for (size_t i = 1; i < horizontalNode2w.size(); i++) {
 		const auto& [node1, idx1] = horizontalNode2w[i];
 		const auto& [node2, idx2] = horizontalNode2w[i - 1];
 		connections.emplace_back("城西南路", nodes[idx1], nodes[idx2]);
+	}
+	if (horizontalNode2e.size() > 0) {
+		connections.emplace_back("城东南路", nodes[3], nodes[horizontalNode2e[0].second]);
 	}
 	for (size_t i = 1; i < horizontalNode2e.size(); i++) {
 		const auto& [node1, idx1] = horizontalNode2e[i];
 		const auto& [node2, idx2] = horizontalNode2e[i - 1];
 		connections.emplace_back("城东南路", nodes[idx1], nodes[idx2]);
 	}
+	if (verticalNode1n.size() > 0) {
+		connections.emplace_back("城北西路", nodes[0], nodes[verticalNode1n[0].second]);
+	}
 	for (size_t i = 1; i < verticalNode1n.size(); i++) {
 		const auto& [node1, idx1] = verticalNode1n[i];
 		const auto& [node2, idx2] = verticalNode1n[i - 1];
 		connections.emplace_back("城北西路", nodes[idx1], nodes[idx2]);
+	}
+	if (verticalNode1s.size() > 0) {
+		connections.emplace_back("城南西路", nodes[2], nodes[verticalNode1s[0].second]);
 	}
 	for (size_t i = 1; i < verticalNode1s.size(); i++) {
 		const auto& [node1, idx1] = verticalNode1s[i];
 		const auto& [node2, idx2] = verticalNode1s[i - 1];
 		connections.emplace_back("城南西路", nodes[idx1], nodes[idx2]);
 	}
+	if (verticalNode2n.size() > 0) {
+		connections.emplace_back("城北东路", nodes[1], nodes[verticalNode2n[0].second]);
+	}
 	for (size_t i = 1; i < verticalNode2n.size(); i++) {
 		const auto& [node1, idx1] = verticalNode2n[i];
 		const auto& [node2, idx2] = verticalNode2n[i - 1];
 		connections.emplace_back("城北东路", nodes[idx1], nodes[idx2]);
+	}
+	if (verticalNode2s.size() > 0) {
+		connections.emplace_back("城南东路", nodes[3], nodes[verticalNode2s[0].second]);
 	}
 	for (size_t i = 1; i < verticalNode2s.size(); i++) {
 		const auto& [node1, idx1] = verticalNode2s[i];

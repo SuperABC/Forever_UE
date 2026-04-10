@@ -796,13 +796,19 @@ void Map::Checkin(Populace* populace, Player* player) const {
 
 		int num = 1;
 		adult->SetHome(room);
+		adult->SetStatus(room);
+		room->AddTenant(adult);
 		if (adult->GetSpouse() && adult->GetSpouse()->GetHome() == nullptr) {
 			if (GetRandom(10) > 0) {
 				adult->GetSpouse()->SetHome(room);
+				adult->GetSpouse()->SetStatus(room);
+				room->AddTenant(adult->GetSpouse());
 				++num;
 				for (auto child : adult->GetChilds()) {
 					if (child && child->GetAge(time) < 18) {
 						child->SetHome(room);
+						child->SetStatus(room);
+						room->AddTenant(child);
 						++num;
 					}
 				}

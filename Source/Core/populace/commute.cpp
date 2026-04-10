@@ -8,7 +8,7 @@ Commute::Commute() :
 	visible(false),
 	targetAddress(),
 	currentPaths(),
-	currentIdx(-1),
+	currentIdx(0),
 	currentEnd() {
 
 }
@@ -37,7 +37,8 @@ void Commute::SetTime(const Time& start) {
 
 	float dist = currentPaths[0].first->CalcDistance() *
 		abs(currentPaths[0].second.first - currentPaths[0].second.second);
-	currentEnd = start + Time(0, 0, 0, 0, 0, (int)(dist * 10));
+	int seconds = (int)(dist * 10);
+	currentEnd = start + Time(0, 1, 1, seconds / 3600, (seconds / 60) % 60, seconds % 60);
 }
 
 bool Commute::GetSimulate() {
@@ -73,7 +74,8 @@ bool Commute::Tick(const Time& time) {
 
 		float dist = currentPaths[currentIdx].first->CalcDistance() *
 			abs(currentPaths[currentIdx].second.first - currentPaths[currentIdx].second.second);
-		currentEnd = currentEnd + Time(0, 0, 0, 0, 0, (int)(dist * 10));
+		int seconds = (int)(dist * 10);
+		currentEnd = currentEnd + Time(0, 1, 1, seconds / 3600, (seconds / 60) % 60, seconds % 60);
 	}
 
 	return false;
@@ -87,7 +89,8 @@ pair<Connection*, pair<float, float>> Commute::NextConnection(const Time& time) 
 
 	float dist = currentPaths[currentIdx].first->CalcDistance() *
 		abs(currentPaths[currentIdx].second.first - currentPaths[currentIdx].second.second);
-	currentEnd = time + Time(0, 0, 0, 0, 0, (int)(dist * 10));
+	int seconds = (int)(dist * 10);
+	currentEnd = time + Time(0, 1, 1, seconds / 3600, (seconds / 60) % 60, seconds % 60);
 
 	return currentPaths[currentIdx];
 }

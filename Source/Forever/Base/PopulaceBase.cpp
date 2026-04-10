@@ -35,12 +35,13 @@ void APopulaceBase::Tick(float DeltaTime) {
 		if (personInstances.find(citizen->GetName()) != personInstances.end()) {
 			continue;
 		}
+		citizen->PopChange();
 		FPerson citizenInfo;
 		citizenInfo.name = UTF8_TO_TCHAR(citizen->GetName().data());
-		if (!citizen->GetHome())continue;
-		auto home = citizen->GetHome();
-		auto pos = citizen->GetHome()->GetPosition(home->GetSizeX() / 2.f, home->GetSizeY() / 2.f);
-		citizenInfo.pos = FVector(pos.first, pos.second, home->GetLayer() * home->GetParentBuilding()->GetHeight());
+		if (!citizen->GetCurrentRoom())continue;
+		auto room = citizen->GetCurrentRoom();
+		auto pos = room->GetPosition(room->GetSizeX() / 2.f, room->GetSizeY() / 2.f);
+		citizenInfo.pos = FVector(pos.first, pos.second, room->GetLayer() * room->GetParentBuilding()->GetHeight());
 		if ((location - citizenInfo.pos).Size() > 8.f) {
 			continue;
 		}
@@ -49,7 +50,8 @@ void APopulaceBase::Tick(float DeltaTime) {
 
 	TArray<FString> removes;
 	for(auto &[name, instance] : personInstances) {
-		if((instance->GetActorLocation() / 1000.f - location).Size() > 16.f) {
+		auto change = populace->GetCitizen(name)->PopChange();
+		if(change || (instance->GetActorLocation() / 1000.f - location).Size() > 16.f) {
 			removes.Add(UTF8_TO_TCHAR(name.data()));
 		}
 	}

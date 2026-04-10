@@ -2,6 +2,7 @@
 
 #include "map/map.h"
 #include "map/component.h"
+#include "map/room.h"
 #include "populace/populace.h"
 #include "populace/person.h"
 #include "society/calendar.h"
@@ -292,6 +293,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 		if (!jobs.empty()) {
 			jobs[0]->InitJob(adults[i]->GetName());
 			adults[i]->AddJob(jobs[0]);
+			jobs[0]->GetPosition()->AddWorker(adults[i]);
 		}
 		else {
 			temps[r] = temps.back();

@@ -215,6 +215,9 @@ public:
 	// 获取通勤
 	Commute* GetCurrentCommute() const;
 
+	// 读取并重置状态变化
+	bool PopChange();
+
 private:
 	int id;
 	std::string name;
@@ -248,5 +251,6 @@ private:
 	Building* currentBuilding;
 	Room* currentRoom;
 	OBJECT_HOLDER Commute* currentCommute;
+	bool statusChanged;
 };
 

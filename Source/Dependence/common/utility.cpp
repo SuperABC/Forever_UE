@@ -365,8 +365,8 @@ bool Time::operator!=(const Time& other) const { return !(*this == other); }
 Time Time::operator+(const Time& other) const {
 	Time result = *this;
 	result.AddYears(other.year);
-	result.AddMonths(other.month);
-	result.AddDays(other.day);
+	result.AddMonths(other.month - 1);
+	result.AddDays(other.day - 1);
 	result.AddHours(other.hour);
 	result.AddMinutes(other.minute);
 	result.AddSeconds(other.second);
