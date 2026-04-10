@@ -55,24 +55,34 @@ void Manufacture::SetProperty() {
 
 	targets = mod->targets;
 	float inputSize = 0.f, outputSize = 0.f;
+	unordered_map<string, float> inputAmount, outputAmount;
 	for (auto& [target, scalar] : mod->targets) {
 		outputSize += scalar;
 		outputCache->InputProduct(target, 0.f);
+		outputAmount[target] += scalar;
 		Product tmp(Industry::productFactory, target);
 		for (auto& [ingredient, amount] : tmp.GetIngredients()) {
 			inputSize += amount * scalar;
 			inputCache->InputProduct(target, 0.f);
+			inputAmount[ingredient] += amount * scalar;
 			ingredients[ingredient] += amount * scalar;
 		}
 		for (auto& [byproduct, amount] : tmp.GetByproducts()) {
 			outputSize += amount * scalar;
 			outputCache->InputProduct(target, 0.f);
+			outputAmount[byproduct] += amount * scalar;
 			byproducts[byproduct] += amount * scalar;
 		}
 	}
 
 	inputCache->SetVolume(inputSize);
 	outputCache->SetVolume(outputSize);
+	for (auto [input, amount] : inputAmount) {
+		inputCache->InputProduct(input, amount);
+	}
+	for (auto [output, amount] : outputAmount) {
+		outputCache->OutputProduct(output, amount);
+	}
 }
 
 Storage* Manufacture::GetInput() const {
@@ -111,6 +121,20 @@ unordered_map<string, float> Manufacture::GetByproducts() const {
 	return byproducts;
 }
 
+void Manufacture::InitDelivery() {
+	for (auto [output, storage] : outputCache->GetDownstreams()) {
+		float amount = outputCache->GetProduct(output)->GetAmount();
+		outputCache->OutputProduct(output, amount);
+		storage->InputProduct(output, amount);
+	}
+
+	for (auto [input, storage] : inputCache->GetUpstreams()) {
+		float amount = min(storage->GetProduct(input)->GetAmount(), ingredients[input]);
+		storage->OutputProduct(input, amount);
+		inputCache->InputProduct(input, amount);
+	}
+}
+
 void Manufacture::StartProduce() {
 	float efficiency = 1.f;
 
@@ -133,10 +157,6 @@ void Manufacture::StartProduce() {
 		efficiency = capacity / standard;
 	}
 	currentWorkload = efficiency;
-}
-
-void Manufacture::FinishProduce() {
-
 }
 
 int EmptyManufacture::count = 0;

@@ -1230,10 +1230,12 @@ Room* Map::LocateRoom(const string& address) const {
 		if (bit == blockBuildings.end()) return nullptr;
 		Building* building = bit->second;
 		if (!building) return nullptr;
-		int roomId = -1;
+		string roomId;
 		iss >> roomId;
-		if (roomId < 0 || roomId >= (int)building->GetRooms().size()) return nullptr;
-		return building->GetRooms()[roomId];
+		for (auto& room : building->GetRooms()) {
+			if (room->GetNumber() == roomId)return room;
+		}
+		return nullptr;
 	}
 	else {
 		Zone* zone = it->second;
@@ -1245,10 +1247,12 @@ Room* Map::LocateRoom(const string& address) const {
 		if (bit == zoneBuildings.end()) return nullptr;
 		Building* bld = bit->second;
 		if (!bld) return nullptr;
-		int roomId = -1;
+		string roomId;
 		iss >> roomId;
-		if (roomId < 0 || roomId >= (int)bld->GetRooms().size()) return nullptr;
-		return bld->GetRooms()[roomId];
+		for (auto& room : bld->GetRooms()) {
+			if (room->GetNumber() == roomId)return room;
+		}
+		return nullptr;
 	}
 }
 

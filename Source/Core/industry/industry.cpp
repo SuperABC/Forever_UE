@@ -5,6 +5,7 @@
 #include "industry/manufacture.h"
 #include "industry/storage.h"
 #include "industry/product.h"
+#include "player/player.h"
 
 
 using namespace std;
@@ -15,7 +16,8 @@ ManufactureFactory* Industry::manufactureFactory = nullptr;
 
 Industry::Industry() :
 	storages(),
-	manufactures() {
+	manufactures(),
+	lastTick() {
 	if (!productFactory) {
 		productFactory = new ProductFactory();
 	}
@@ -225,7 +227,28 @@ void Industry::Destroy() {
 }
 
 void Industry::Tick(Player* player) {
+	auto time = player->GetTime();
 
+	bool update = false;
+	if (time->GetDay() != lastTick.GetDay()) {
+		update = true;
+	}
+	if (time->GetMonth() != lastTick.GetMonth()) {
+		update = true;
+	}
+	if(time->GetYear() != lastTick.GetYear()) {
+		update = true;
+	}
+	lastTick = *time;
+
+	if (update) {
+		for (auto manufacture : manufactures) {
+			manufacture->InitDelivery();
+		}
+		for (auto manufacture : manufactures) {
+			manufacture->StartProduce();
+		}
+	}
 }
 
 void Industry::ApplyChange(Change* change,

@@ -75,7 +75,7 @@ void Player::Destroy() {
 }
 
 void Player::Tick(float delta) {
-	time->AddMilliseconds((int)(delta * 60 * 1000));
+	time->AddMilliseconds((int)(delta * 60 * 1000 * 60));
 }
 
 void Player::ApplyChange(Change* change,

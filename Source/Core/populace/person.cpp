@@ -255,7 +255,7 @@ void Person::RemoveJob(Job* job) {
 }
 
 void Person::SetWork(int job) {
-	if (job < 0 || job >= static_cast<int>(jobs.size())) {
+	if (job >= static_cast<int>(jobs.size())) {
 		THROW_EXCEPTION(OutOfRangeException, "Job index out of range.\n");
 	}
 	working = job;
