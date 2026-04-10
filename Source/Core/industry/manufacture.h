@@ -30,10 +30,10 @@ public:
 	void SetProperty();
 
 	// 获取输入暂存仓库
-	OBJECT_HOLDER Storage* GetInput() const;
+	Storage* GetInput() const;
 
 	// 获取输出暂存仓库
-	OBJECT_HOLDER Storage* GetOutput() const;
+	Storage* GetOutput() const;
 
 	// 获取上游仓库
 	std::unordered_map<std::string, Storage*> GetUpstreams() const;
@@ -56,11 +56,11 @@ public:
 	// 获取日副产物产量
 	std::unordered_map<std::string, float> GetByproducts() const;
 
+	// 每日生产前物流
+	void InitDelivery();
+
 	// 每日启动生产
 	void StartProduce();
-
-	// 每日完成生产
-	void FinishProduce();
 
 private:
 	// 模组对象

@@ -50,10 +50,10 @@ public:
 	// 获取全部提供产品
 	std::unordered_map<std::string, Product*> GetProducts() const;
 
-	// 输入产品种类
+	// 输入产品
 	float InputProduct(const std::string& product, float amount);
 
-	// 输入产品种类
+	// 输入产品
 	float OutputProduct(const std::string& product, float amount);
 
 	// 获取上游仓库
