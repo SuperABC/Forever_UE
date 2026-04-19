@@ -358,6 +358,31 @@ string TeleportPlayerChange::GetDestination() const {
 	return destination;
 }
 
+OpenShopChange::OpenShopChange() {
+
+}
+
+OpenShopChange::OpenShopChange(string saler)
+	: saler(saler) {
+
+}
+
+OpenShopChange::~OpenShopChange() {
+
+}
+
+string OpenShopChange::GetType() const {
+	return "open_shop";
+}
+
+void OpenShopChange::SetSaler(string saler) {
+	this->saler = saler;
+}
+
+string OpenShopChange::GetSaler() const {
+	return saler;
+}
+
 BankTransactionChange::BankTransactionChange() {
 
 }
@@ -379,8 +404,8 @@ void BankTransactionChange::SetAmount(int amount) {
 	this->amount = amount;
 }
 
-string BankTransactionChange::GetAmount() const {
-	return to_string(amount);
+int BankTransactionChange::GetAmount() const {
+	return amount;
 }
 
 CashTransactionChange::CashTransactionChange() {
@@ -404,8 +429,8 @@ void CashTransactionChange::SetAmount(int amount) {
 	this->amount = amount;
 }
 
-string CashTransactionChange::GetAmount() const {
-	return to_string(amount);
+int CashTransactionChange::GetAmount() const {
+	return amount;
 }
 
 GiveItemChange::GiveItemChange() {

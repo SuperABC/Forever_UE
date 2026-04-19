@@ -157,13 +157,14 @@ void Industry::Init(Map* map) {
 				auto storage = new Storage(storageFactory, type);
 				storage->SetProperty(room->GetAcreage());
 				room->AddStorage(storage);
+				storage->SetRoom(room);
 				storages.push_back(storage);
 			}
 		}
 		else if (room->IsManufacture()) {
 			for (const auto& type : room->ManufactureTypes()) {
 				auto manufacture = new Manufacture(manufactureFactory, type);
-				manufacture->SetProperty();
+				manufacture->SetProperty(room);
 				room->AddManufacture(manufacture);
 				manufactures.push_back(manufacture);
 			}
@@ -242,6 +243,9 @@ void Industry::Tick(Player* player) {
 	lastTick = *time;
 
 	if (update) {
+		for (auto manufacture : manufactures) {
+			manufacture->WorkAccount();
+		}
 		for (auto manufacture : manufactures) {
 			manufacture->InitDelivery();
 		}

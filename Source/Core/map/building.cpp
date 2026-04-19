@@ -461,6 +461,7 @@ void Building::LayoutBuilding(Layout* layout) {
 	for (auto single : mod->singles) {
 		if (componentMap.find(single.first) == componentMap.end()) {
 			auto component = new Component(Map::componentFactory, single.first.first);
+			component->InitComponent();
 			componentMap[single.first] = component;
 			components.push_back(component);
 		}
@@ -468,6 +469,7 @@ void Building::LayoutBuilding(Layout* layout) {
 	for (auto row : mod->rows) {
 		if (componentMap.find(row.first) == componentMap.end()) {
 			auto component = new Component(Map::componentFactory, row.first.first);
+			component->InitComponent();
 			componentMap[row.first] = component;
 			components.push_back(component);
 		}

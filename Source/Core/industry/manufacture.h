@@ -27,7 +27,7 @@ public:
 	std::string GetName() const;
 
 	// 设置参数
-	void SetProperty();
+	void SetProperty(Room* room);
 
 	// 获取输入暂存仓库
 	Storage* GetInput() const;
@@ -55,6 +55,9 @@ public:
 
 	// 获取日副产物产量
 	std::unordered_map<std::string, float> GetByproducts() const;
+
+	// 前一日生产结算
+	void WorkAccount();
 
 	// 每日生产前物流
 	void InitDelivery();

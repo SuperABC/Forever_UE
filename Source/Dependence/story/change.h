@@ -29,7 +29,7 @@ private:
 	Condition condition;
 };
 
-// 全局广播（已实现）
+// 全局广播
 class GlobalMessageChange : public Change {
 public:
 	GlobalMessageChange();
@@ -96,7 +96,7 @@ private:
 	std::string milestone;
 };
 
-// 添加选项
+// 添加选项（已实现）
 class AddOptionChange : public Change {
 public:
 	AddOptionChange();
@@ -115,7 +115,7 @@ private:
 	std::string option;
 };
 
-// 移除选项
+// 移除选项（已实现）
 class RemoveOptionChange : public Change {
 public:
 	RemoveOptionChange();
@@ -134,7 +134,7 @@ private:
 	std::string option;
 };
 
-// 生成NPC
+// 生成NPC（已实现）
 class SpawnNpcChange : public Change {
 public:
 	SpawnNpcChange();
@@ -159,7 +159,7 @@ private:
 	std::string avatar;
 };
 
-// 移除NPC
+// 移除NPC（已实现）
 class RemoveNpcChange : public Change {
 public:
 	RemoveNpcChange();
@@ -229,6 +229,22 @@ private:
 	std::string destination;
 };
 
+// 打开商店
+class OpenShopChange : public Change {
+public:
+	OpenShopChange();
+	OpenShopChange(std::string saler);
+	virtual ~OpenShopChange();
+
+	virtual std::string GetType() const;
+
+	void SetSaler(std::string saler);
+	std::string GetSaler() const;
+
+private:
+	std::string saler;
+};
+
 // 存款收支
 class BankTransactionChange : public Change {
 public:
@@ -239,7 +255,7 @@ public:
 	virtual std::string GetType() const;
 
 	void SetAmount(int amount);
-	std::string GetAmount() const;
+	int GetAmount() const;
 
 private:
 	int amount;
@@ -255,7 +271,7 @@ public:
 	virtual std::string GetType() const;
 
 	void SetAmount(int amount);
-	std::string GetAmount() const;
+	int GetAmount() const;
 
 private:
 	int amount;

@@ -133,6 +133,14 @@ void AStoryBase::ApplyChange(Change* change,
 		location += FVector(1.f, 1.f, 0.f);
 		((AGlobalBase*)global)->GetPopulaceActor()->SpawnNpc(name, avatar, location);
 	}
+	else if (type == "open_shop") {
+		auto obj = dynamic_cast<OpenShopChange*>(change);
+
+		Condition condition;
+		condition.ParseCondition(obj->GetSaler());
+		FString name = UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data());
+		OpenShop(name);
+	}
 }
 
 void AStoryBase::FinishSection() {
@@ -343,5 +351,4 @@ void AStoryBase::OptionDialog(FString name, FString option) {
 
 	delete event;
 }
-
 

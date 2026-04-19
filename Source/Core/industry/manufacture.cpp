@@ -38,7 +38,7 @@ string Manufacture::GetName() const {
 	return name;
 }
 
-void Manufacture::SetProperty() {
+void Manufacture::SetProperty(Room* room) {
 	mod->SetTargets();
 
 	if (mod->targets.empty()) {
@@ -50,8 +50,10 @@ void Manufacture::SetProperty() {
 
 	inputCache = new Storage(Industry::storageFactory, "empty");
 	inputCache->SetProperty(0.f);
+	inputCache->SetRoom(room);
 	outputCache = new Storage(Industry::storageFactory, "empty");
 	outputCache->SetProperty(0.f);
+	outputCache->SetRoom(room);
 
 	targets = mod->targets;
 	float inputSize = 0.f, outputSize = 0.f;
@@ -81,7 +83,7 @@ void Manufacture::SetProperty() {
 		inputCache->InputProduct(input, amount);
 	}
 	for (auto [output, amount] : outputAmount) {
-		outputCache->OutputProduct(output, amount);
+		outputCache->InputProduct(output, amount);
 	}
 }
 
@@ -106,7 +108,7 @@ unordered_map<string, Storage*> Manufacture::GetDownstreams() const {
 }
 
 void Manufacture::ConnectDownstream(string type, Storage* storage) {
-	outputCache->ConnectUpstream(type, storage);
+	outputCache->ConnectDownstream(type, storage);
 }
 
 unordered_map<string, float> Manufacture::GetIngredients() const {
@@ -119,6 +121,15 @@ unordered_map<string, float> Manufacture::GetTargets() const {
 
 unordered_map<string, float> Manufacture::GetByproducts() const {
 	return byproducts;
+}
+
+void Manufacture::WorkAccount() {
+	for (auto& [type, amount] : targets) {
+		outputCache->GetProduct(type)->IncreaseAmount(amount * currentWorkload);
+	}
+	for (auto& [type, amount] : byproducts) {
+		outputCache->GetProduct(type)->IncreaseAmount(amount * currentWorkload);
+	}
 }
 
 void Manufacture::InitDelivery() {
@@ -157,6 +168,10 @@ void Manufacture::StartProduce() {
 		efficiency = capacity / standard;
 	}
 	currentWorkload = efficiency;
+
+	for (auto& [type, standard] : ingredients) {
+		inputCache->GetProduct(type)->DecreaseAmount(standard * efficiency);
+	}
 }
 
 int EmptyManufacture::count = 0;

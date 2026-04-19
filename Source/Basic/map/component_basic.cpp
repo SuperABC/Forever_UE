@@ -26,6 +26,10 @@ const char* ResidentialComponent::GetName() {
 	return name.data();
 }
 
+void ResidentialComponent::InitComponent() {
+
+}
+
 int ShopComponent::count = 0;
 
 ShopComponent::ShopComponent() : id(count++) {
@@ -49,6 +53,10 @@ const char* ShopComponent::GetName() {
 	return name.data();
 }
 
+void ShopComponent::InitComponent() {
+
+}
+
 int FactoryComponent::count = 0;
 
 FactoryComponent::FactoryComponent() : id(count++) {
@@ -70,4 +78,8 @@ const char* FactoryComponent::GetType() const {
 const char* FactoryComponent::GetName() {
 	name = "工厂组合" + to_string(id);
 	return name.data();
+}
+
+void FactoryComponent::InitComponent() {
+
 }

@@ -26,6 +26,12 @@ public:
 	// 获取名称
 	std::string GetName() const;
 
+	// 获取所在房间
+	Room* GetRoom() const;
+
+	// 设置所在房间
+	void SetRoom(Room* room);
+
 	// 设置参数
 	void SetProperty(float acreage);
 
@@ -92,6 +98,9 @@ private:
 
 	// 仓库名称
 	std::string name;
+
+	// 所在房间
+	Room* room;
 
 	// 支持产品类型
 	std::vector<std::string> catagories;

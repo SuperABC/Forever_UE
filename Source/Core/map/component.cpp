@@ -2,6 +2,8 @@
 
 #include "map/building.h"
 #include "map/room.h"
+#include "story/story.h"
+#include "story/script.h"
 
 
 using namespace std;
@@ -12,12 +14,16 @@ Component::Component(ComponentFactory* factory, const string& component) :
 	type(mod->GetType()),
 	name(mod->GetName()),
 	parentBuilding(nullptr),
-	rooms() {
+	rooms(),
+	script(nullptr) {
 
 }
 
 Component::~Component() {
 	factory->DestroyComponent(mod);
+
+	if (script)delete script;
+	script = nullptr;
 }
 
 string Component::GetType() const {
@@ -47,6 +53,18 @@ void Component::AddRoom(Room* room) {
 	rooms.push_back(room);
 }
 
+Script* Component::GetScript() const {
+	return script;
+}
+
+void Component::InitComponent() {
+	script = new Script(Story::scriptFactory, mod->script.first);
+	for (auto s : mod->script.second) {
+		script->ReadMilestones(Config::GetScript(s));
+	}
+	script->SetValue("self.name", name);
+}
+
 int EmptyComponent::count = 0;
 
 EmptyComponent::EmptyComponent() : id(count++) {
@@ -68,6 +86,10 @@ const char* EmptyComponent::GetType() const {
 const char* EmptyComponent::GetName() {
 	name = "空组合" + to_string(id);
 	return name.data();
+}
+
+void EmptyComponent::InitComponent() {
+
 }
 
 

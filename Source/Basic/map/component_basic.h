@@ -13,6 +13,8 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
+	virtual void InitComponent();
+
 private:
 	static int count;
 
@@ -30,6 +32,8 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
+	virtual void InitComponent();
+
 private:
 	static int count;
 
@@ -46,6 +50,8 @@ public:
 	static const char* GetId();
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
+
+	virtual void InitComponent();
 
 private:
 	static int count;

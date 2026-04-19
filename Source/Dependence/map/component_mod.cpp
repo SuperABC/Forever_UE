@@ -3,7 +3,8 @@
 
 using namespace std;
 
-ComponentMod::ComponentMod() {
+ComponentMod::ComponentMod() :
+	script({ "empty", {} }) {
 
 }
 

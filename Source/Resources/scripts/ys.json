@@ -16,12 +16,12 @@
 			[
 				{
 					"option": "作为空",
-					"dialogs":[{"list":[{"content": "现在你是空，快来体验和提瓦特女孩们性交的乐趣把！"}]}],
+					"dialogs":[{"list":[{"content": "现在你是空，快来体验和提瓦特女孩们玩耍的乐趣把！"}]}],
 					"changes":[{"type": "set_value", "variable": "control_person", "value": "空"}]
 				},
 				{
 					"option": "作为荧",
-					"dialogs":[{"list":[{"content": "现在你是荧，快来体验和提瓦特男孩们性交的乐趣把！"}]}],
+					"dialogs":[{"list":[{"content": "现在你是荧，快来体验和提瓦特男孩们玩耍的乐趣把！"}]}],
 					"changes":[{"type": "set_value", "variable": "control_person", "value": "荧"}]
 				}
 			]

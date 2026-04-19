@@ -19,6 +19,12 @@ public:
 	static const char* GetId();
 	virtual const char* GetType() const = 0;
 	virtual const char* GetName() = 0;
+
+	// 初始化组合
+	COSTOM_INIT virtual void InitComponent() = 0;
+
+	// 关联剧情与脚本
+	std::pair<std::string, std::vector<std::string>> script;
 };
 
 class ComponentFactory {

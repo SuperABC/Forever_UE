@@ -1,5 +1,8 @@
 ﻿#include "storage.h"
 
+#include "map/room.h"
+#include "map/component.h"
+#include "story/script.h"
 #include "industry/industry.h"
 #include "industry/manufacture.h"
 #include "industry/product.h"
@@ -12,6 +15,7 @@ Storage::Storage(StorageFactory* factory, const string& storage) :
 	factory(factory),
 	type(mod->GetType()),
 	name(mod->GetName()),
+	room(nullptr),
 	catagories(),
 	accept(true),
 	provide(true),
@@ -38,6 +42,14 @@ string Storage::GetType() const {
 
 string Storage::GetName() const {
 	return name;
+}
+
+Room* Storage::GetRoom() const {
+	return room;
+}
+
+void Storage::SetRoom(Room* room) {
+	this->room = room;
 }
 
 void Storage::SetProperty(float acreage) {
@@ -85,6 +97,10 @@ float Storage::InputProduct(const string& type, float amount) {
 	auto it = products.find(type);
 	if (it != products.end()) {
 		products[type]->IncreaseAmount(amount);
+		auto [find, temp] = room->GetParentComponent()->GetScript()->GetValue("system.storage." + type);
+		if (find) {
+			room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, get<double>(temp) + amount);
+		}
 		return amount;
 	}
 
@@ -92,6 +108,7 @@ float Storage::InputProduct(const string& type, float amount) {
 	product->SetProperty();
 	product->SetAmount(amount);
 	products[type] = product;
+	room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, amount);
 	return amount;
 }
 
@@ -99,6 +116,10 @@ float Storage::OutputProduct(const string& type, float amount) {
 	auto it = products.find(type);
 	if (it != products.end()) {
 		products[type]->DecreaseAmount(amount);
+		auto [find, temp] = room->GetParentComponent()->GetScript()->GetValue("system.storage." + type);
+		if (find) {
+			room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, get<double>(temp) - amount);
+		}
 		return amount;
 	}
 

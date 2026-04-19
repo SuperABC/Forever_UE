@@ -38,6 +38,12 @@ public:
 	// 添加房间
 	void AddRoom(Room* room);
 
+	// 获取剧情
+	Script* GetScript() const;
+
+	// 初始化组合
+	void InitComponent();
+
 private:
 	// 模组对象
 	OBJECT_HOLDER ComponentMod* mod;
@@ -56,6 +62,9 @@ private:
 
 	// 包含房间
 	std::vector<Room*> rooms;
+
+	// 关联剧情
+	OBJECT_HOLDER Script* script;
 };
 
 // 空组合
@@ -67,6 +76,8 @@ public:
 	static const char* GetId();
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
+
+	virtual void InitComponent();
 
 private:
 	static int count;

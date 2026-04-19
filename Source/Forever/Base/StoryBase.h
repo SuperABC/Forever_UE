@@ -39,6 +39,8 @@ public:
 	void UpdateDialog(const FString& speaker, const FString& content);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void UpdateDialogBranch(const TArray<FString>& options);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
+	void OpenShop(const FString& saler);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void FinishSection();
 	UFUNCTION(BlueprintCallable, Category = "Story")

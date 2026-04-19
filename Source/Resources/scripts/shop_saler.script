@@ -14,8 +14,10 @@
 	"visible": false,
 	"drop": "false",
 	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "购物"}],
-	"dialogs": [{"list":[{"content": "暂无商品。"}]}],
-	"changes": [],
+	"dialogs": [{"list":[{"content": "请自行选择。"}]}],
+	"changes": [
+		{"type": "open_shop", "saler": "$$self.name"}
+	],
 	"subsequences": []
 }
 ]
