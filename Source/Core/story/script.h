@@ -31,6 +31,9 @@ public:
 	// 获取变量
 	std::pair<bool, ValueType> GetValue(const std::string& name) const;
 
+	// 正则获取变量
+	std::map<std::string, ValueType> GetValues(const std::string& reg) const;
+
 	// 设置变量
 	void SetValue(const std::string& name, ValueType value);
 

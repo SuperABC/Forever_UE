@@ -14,7 +14,7 @@
 	"visible": false,
 	"drop": "false",
 	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "购物"}],
-	"dialogs": [{"list":[{"content": "请自行选择。"}]}],
+	"dialogs": [],
 	"changes": [
 		{"type": "open_shop", "saler": "$$self.name"}
 	],

@@ -6,6 +6,8 @@
 #include "map/map.h"
 #include "map/zone.h"
 #include "map/building.h"
+#include "map/room.h"
+#include "map/component.h"
 #include "populace/populace.h"
 #include "populace/person.h"
 #include "populace/scheduler.h"
@@ -107,7 +109,7 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 						ApplyChange(change, getValues);
 					}
 				}
-				}, action);
+			}, action);
 		}
 	}
 	catch (ExceptionBase& e) {
@@ -138,8 +140,20 @@ void AStoryBase::ApplyChange(Change* change,
 
 		Condition condition;
 		condition.ParseCondition(obj->GetSaler());
-		FString name = UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data());
-		OpenShop(name);
+		string name = ToString(condition.EvaluateValue(getValues));
+		auto saler = ((AGlobalBase*)global)->GetPopulace()->GetCitizen(name);
+		if (saler->GetWork()) {
+			auto component = saler->GetWork()->GetPosition()->GetParentComponent();
+			TArray<FItem> items;
+			auto values = component->GetScript()->GetValues("system\\.storage\\..*");
+			for (auto [product, amount] : values) {
+				items.Add(FItem(UTF8_TO_TCHAR(product.data()), 0.f, get<double>(amount)));
+			}
+			OpenShop(items);
+		}
+		else {
+
+		}
 	}
 }
 

@@ -14,6 +14,18 @@
 #include "StoryBase.generated.h"
 
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FItem {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Industry")
+	FString name;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Industry")
+	float price;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Industry")
+	float amount;
+};
+
 UCLASS()
 class FOREVER_API AStoryBase : public AActor {
 	GENERATED_BODY()
@@ -40,7 +52,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void UpdateDialogBranch(const TArray<FString>& options);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
-	void OpenShop(const FString& saler);
+	void OpenShop(const TArray<FItem>& items);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void FinishSection();
 	UFUNCTION(BlueprintCallable, Category = "Story")

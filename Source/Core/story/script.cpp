@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <filesystem>
+#include <regex>
 
 
 using namespace std;
@@ -36,6 +37,29 @@ pair<bool, ValueType> Script::GetValue(const string& name) const {
 		return { true, it->second };
 	}
 	return { false, 0 };
+}
+
+std::map<std::string, ValueType> Script::GetValues(const std::string& reg) const {
+	std::map<std::string, ValueType> values;
+
+	if (reg.empty()) {
+		return values;
+	}
+
+	try {
+		std::regex pattern(reg);
+
+		for (const auto& pair : variables) {
+			if (std::regex_match(pair.first, pattern)) {
+				values.insert(pair);
+			}
+		}
+	}
+	catch (const std::regex_error& e) {
+		THROW_EXCEPTION(InvalidArgumentException, "Invalid regular expression " + reg + ".\n");
+	}
+
+	return values;
 }
 
 void Script::SetValue(const string& name, ValueType value) {
@@ -639,6 +663,13 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 				THROW_EXCEPTION(RuntimeException, "Missing destination for teleport_player change.\n");
 			}
 			change = new TeleportPlayerChange(destination.AsString());
+		}
+		else if (type == "open_shop") {
+			auto saler = obj["saler"];
+			if (saler.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing saler for open_shop change.\n");
+			}
+			change = new OpenShopChange(saler.AsString());
 		}
 		else if (type == "bank_transaction") {
 			auto amount = obj["amount"];

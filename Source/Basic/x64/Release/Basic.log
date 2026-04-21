@@ -1,2 +1,28 @@
 ﻿  basic.cpp
   manufacture_basic.cpp
+  product_basic.cpp
+  storage_basic.cpp
+  building_basic.cpp
+  component_basic.cpp
+  roadnet_basic.cpp
+  room_basic.cpp
+  terrain_basic.cpp
+  zone_basic.cpp
+  skill_basic.cpp
+  asset_basic.cpp
+  name_basic.cpp
+  scheduler_basic.cpp
+  calendar_basic.cpp
+  job_basic.cpp
+  organization_basic.cpp
+  script_basic.cpp
+  route_basic.cpp
+  station_basic.cpp
+  正在编译...
+  vehicle_basic.cpp
+    正在创建库 C:\Workspace\UE5\Projects\Forever_UE\x64\Release\Basic.lib 和对象 C:\Workspace\UE5\Projects\Forever_UE\x64\Release\Basic.exp
+  正在生成代码
+  Previous IPDB not found, fall back to full compilation.
+  All 7191 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  Basic.vcxproj -> C:\Workspace\UE5\Projects\Forever_UE\x64\Release\Basic.dll
