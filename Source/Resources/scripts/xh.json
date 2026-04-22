@@ -1,9 +1,10 @@
 {
-	"names":["³şÃÎÑş", "³ÂÓêÊæ", "ÌÆÔÏ", "·ëĞ¦Ğ¦", "¹ØÜ°", "ÓêÄı", "ÍÁÈ½È½", "ÍõĞÄåû", "ËÎÁèÉº", "ÓôĞ¡¿É", "ÑîÆßÆß", "Ëï¾²âù", "ĞíÊ«º­", "Áõ¾²º­", "Ó¦è÷è¤", "Ììæ¿"],
+	"names":["³şÃÎÑş", "³ÂÓêÊæ", "ÌÆÔÏ", "·ëĞ¦Ğ¦", "¹ØÜ°", "ÓêÄı", "ÍÁÈ½È½", "ÍõĞÄåû",
+		"ËÎÁèÉº", "ÓôĞ¡¿É", "ÑîÆßÆß", "Ëï¾²âù", "ĞíÊ«º­", "Áõ¾²º­", "Ó¦è÷è¤", "Ììæ¿"],
 	"milestones":
 [
 { //arrive_songshan
-	"milestone": "arrive_songshan",
+	"milestone": "chapter1_arrive_songshan",
 	"visible": false,
 	"triggers": [{"type": "game_start"}],
 	"dialogs": [

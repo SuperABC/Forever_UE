@@ -96,7 +96,7 @@ void AChronodeManager::UpdateHeightFog(float chronode) {
 	UExponentialHeightFogComponent* fogComponent =
 		exponentialHeightFog->GetComponentByClass<UExponentialHeightFogComponent>();
 	if (fogComponent) {
-		float fogDensity = 0.01f + FMath::Pow(1.0f - FMath::Abs(chronode - 0.5f) * 2.0f, 2.0f) * 0.01f;
+		float fogDensity = 0.001f + FMath::Pow(1.0f - FMath::Abs(chronode - 0.5f) * 2.0f, 2.0f) * 0.001f;
 		fogComponent->SetFogDensity(fogDensity);
 	}
 }

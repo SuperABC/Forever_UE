@@ -81,7 +81,7 @@ public:
 	// 地面层数
 	int layers;
 
-	// 地下限制
+	// 地下层数
 	int basements;
 
 	// 层高

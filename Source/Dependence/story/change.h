@@ -29,7 +29,7 @@ private:
 	Condition condition;
 };
 
-// 全局广播
+// 全局广播（已实现）
 class GlobalMessageChange : public Change {
 public:
 	GlobalMessageChange();
@@ -229,7 +229,7 @@ private:
 	std::string destination;
 };
 
-// 打开商店
+// 打开商店（已实现）
 class OpenShopChange : public Change {
 public:
 	OpenShopChange();

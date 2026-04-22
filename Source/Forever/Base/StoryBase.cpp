@@ -121,8 +121,20 @@ void AStoryBase::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	auto type = change->GetType();
 
-	if (type == "spawn_npc") {
+	if (type == "global_message") {
+		auto obj = dynamic_cast<GlobalMessageChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to GlobalMessageChange.\n");
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetMessage());
+		ScriptMessage(UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues))));
+	}
+	else if (type == "spawn_npc") {
 		auto obj = dynamic_cast<SpawnNpcChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to SpawnNpcChange.\n");
+		}
 
 		Condition condition;
 		condition.ParseCondition(obj->GetName());
@@ -137,6 +149,9 @@ void AStoryBase::ApplyChange(Change* change,
 	}
 	else if (type == "open_shop") {
 		auto obj = dynamic_cast<OpenShopChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to OpenShopChange.\n");
+		}
 
 		Condition condition;
 		condition.ParseCondition(obj->GetSaler());
@@ -154,6 +169,9 @@ void AStoryBase::ApplyChange(Change* change,
 		else {
 
 		}
+	}
+	else {
+		debugf("Warning: Unrecognized change type: %s.\n", type.data());
 	}
 }
 
