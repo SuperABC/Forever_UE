@@ -3,7 +3,7 @@
 		"宋凌珊", "郁小可", "杨七七", "孙静怡", "许诗涵", "刘静涵", "应梓瑜", "天婵"],
 	"milestones":
 [
-{ //arrive_songshan
+{ //chapter1_arrive_songshan
 	"milestone": "chapter1_arrive_songshan",
 	"visible": false,
 	"triggers": [{"type": "game_start"}],
@@ -13,44 +13,57 @@
 		]}
 	],
 	"changes": [
-		{"type": "spawn_npc", "target": "楚梦瑶", "gender": "female", "birthday": "$$system.time.year-17+\"年5月21日\""},
-		{"type": "spawn_npc", "target": "陈雨舒", "gender": "female", "birthday": "$$system.time.year-17+\"年8月6日\""},
-		{"type": "spawn_npc", "target": "唐韵", "gender": "female", "birthday": "$$system.time.year-17+\"年6月22日\""},
-		{"type": "spawn_npc", "target": "冯笑笑", "gender": "female", "birthday": "$$system.time.year-16+\"年11月12日\""},
-		{"type": "spawn_npc", "target": "关馨", "gender": "female", "birthday": "$$system.time.year-17+\"年1月8日\""},
-		{"type": "spawn_npc", "target": "雨凝", "gender": "female", "birthday": "$$system.time.year-17+\"年12月1日\""},
-		{"type": "spawn_npc", "target": "土冉冉", "gender": "female", "birthday": "$$system.time.year-16+\"年7月10日\""},
-		{"type": "spawn_npc", "target": "王心妍", "gender": "female", "birthday": "$$system.time.year-18+\"年6月29日\""},
-		{"type": "spawn_npc", "target": "宋凌珊", "gender": "female", "birthday": "$$system.time.year-23+\"年3月6日\""},
-		{"type": "spawn_npc", "target": "郁小可", "gender": "female", "birthday": "$$system.time.year-17+\"年9月15日\""},
-		{"type": "spawn_npc", "target": "杨七七", "gender": "female", "birthday": "$$system.time.year-15+\"年1月20日\""},
-		{"type": "spawn_npc", "target": "孙静怡", "gender": "female", "birthday": "$$system.time.year-31+\"年12月5日\""},
-		{"type": "spawn_npc", "target": "许诗涵", "gender": "female", "birthday": "$$system.time.year-28+\"年3月19日\""},
-		{"type": "spawn_npc", "target": "刘静涵", "gender": "female", "birthday": "$$system.time.year-20+\"年8月2日\""},
-		{"type": "spawn_npc", "target": "应梓瑜", "gender": "female", "birthday": "$$system.time.year-14+\"年10月25日\""},
-		{"type": "spawn_npc", "target": "天婵", "gender": "female", "birthday": "$$system.time.year-19+\"年11月4日\""},
+		{"type": "spawn_npc", "name": "楚梦瑶", "gender": "female", "birthday": "$$system.time.year-17+\"年5月21日\""},
+		{"type": "spawn_npc", "name": "陈雨舒", "gender": "female", "birthday": "$$system.time.year-17+\"年8月6日\""},
+		{"type": "spawn_npc", "name": "唐韵", "gender": "female", "birthday": "$$system.time.year-17+\"年6月22日\""},
+		{"type": "spawn_npc", "name": "冯笑笑", "gender": "female", "birthday": "$$system.time.year-16+\"年11月12日\""},
+		{"type": "spawn_npc", "name": "关馨", "gender": "female", "birthday": "$$system.time.year-17+\"年1月8日\""},
+		{"type": "spawn_npc", "name": "雨凝", "gender": "female", "birthday": "$$system.time.year-17+\"年12月1日\""},
+		{"type": "spawn_npc", "name": "土冉冉", "gender": "female", "birthday": "$$system.time.year-16+\"年7月10日\""},
+		{"type": "spawn_npc", "name": "王心妍", "gender": "female", "birthday": "$$system.time.year-18+\"年6月29日\""},
+		{"type": "spawn_npc", "name": "宋凌珊", "gender": "female", "birthday": "$$system.time.year-23+\"年3月6日\""},
+		{"type": "spawn_npc", "name": "郁小可", "gender": "female", "birthday": "$$system.time.year-17+\"年9月15日\""},
+		{"type": "spawn_npc", "name": "杨七七", "gender": "female", "birthday": "$$system.time.year-15+\"年1月20日\""},
+		{"type": "spawn_npc", "name": "孙静怡", "gender": "female", "birthday": "$$system.time.year-31+\"年12月5日\""},
+		{"type": "spawn_npc", "name": "许诗涵", "gender": "female", "birthday": "$$system.time.year-28+\"年3月19日\""},
+		{"type": "spawn_npc", "name": "刘静涵", "gender": "female", "birthday": "$$system.time.year-20+\"年8月2日\""},
+		{"type": "spawn_npc", "name": "应梓瑜", "gender": "female", "birthday": "$$system.time.year-14+\"年10月25日\""},
+		{"type": "spawn_npc", "name": "天婵", "gender": "female", "birthday": "$$system.time.year-19+\"年11月4日\""},
 		
-		{"type": "spawn_npc", "target": "楚鹏展", "gender": "male", "birthday": "$$system.time.year-46+\"年8月8日\""},
-		{"type": "add_option", "target": "楚鹏展", "option": "你好"},
-		{"type": "set_value", "variable": "plot_step", "value": "before_meet_cpz"}
+		{"type": "spawn_npc", "name": "楚鹏展", "gender": "male", "birthday": "$$system.time.year-46+\"年8月8日\""},
+		{"type": "add_option", "name": "楚鹏展", "option": "你好"},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_arrive_songshan"}
 	],
 	"subsequences": [
-		"meet_cpz[at_plot]"
+		"chapter1_meet_cpz"
 	]
 },
 
-{ //meet_cpz[at_plot]
-	"milestone": "meet_cpz[at_plot]",
+{ //chapter1_meet_cpz
+	"milestone": "chapter1_meet_cpz",
 	"visible": false,
-	"triggers": [{"type": "option_dialog", "target": "楚鹏展", "option": "你好"}],
+	"triggers": [{"type": "option_dialog", "name": "楚鹏展", "option": "你好"}],
 	"dialogs": [
 		{"condition": "$$plot_step==before_meet_cpz", "list": [
-			{"speaker": "林逸", "content": "楚叔叔您好，我是林逸。"}
+			{"speaker": "林逸", "content": "楚叔叔您好，我是林逸。"},
+			{"speaker": "楚鹏展", "content": "你就是林逸？"},
+			{"speaker": "林逸", "content": "是我。"},
+			{"speaker": "李福", "content": "你好！我是楚董事长的秘书，李福，董事长正要我去火车站接您，没想到您已经到了！"},
+			{"speaker": "林逸", "content": "没关系，就当熟悉熟悉路了。"},
+			{"speaker": "楚鹏展", "content": "林先生，那我就开门见山了。我也知道，或许让你屈尊去做这些事情让你有些为难…"},
+			{"speaker": "林逸", "content": "不屈尊，我在家里编草鞋一个月才赚几百块，老头子说这个任务够我吃一辈子了。"},
+			{"speaker": "楚鹏展", "content": "什么？编草鞋？"},
+			{"speaker": "林逸", "content": "是啊，一双草鞋能卖四块钱，一天编个三五双，一个月就是好几百了。"},
+			{"speaker": "楚鹏展", "content": "以后你的工资是每个月三万块，这些钱包含你上学的学费和日常花销，当然，花在我女儿身上的钱，可以额外找李福报销。"},
+			{"speaker": "林逸", "content": "三万？老头子不说几千块么？等等，楚先生，您刚才说什么？上学？学杂费？还有花在您女儿身上的钱？这是什么意思？我有点儿不明白…"},
+			{"speaker": "楚鹏展", "content": "哦？怎么，林老爷子之前没和你说么？请这边来，具体情况，我们去楼上谈吧。"},
 		]}
 	],
 	"changes": [
-		{"type": "remove_option", "target": "楚鹏展", "value": "你好"},
-		{"type": "set_value", "variable": "plot_step", "value": "after_meet_cpz"}
+		{"type": "remove_option", "name": "楚鹏展", "value": "你好"},
+		{"type": "add_option", "name": "楚鹏展", "option": "楚叔叔您说吧"},
+		{"type": "teleport_citizen", "name": "楚鹏展", "destination": "鹏展大厦0 200001"},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_cpz"}
 	],
 	"subsequences": []
 }

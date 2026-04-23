@@ -99,7 +99,7 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 					auto* change = dynamic_cast<Change*>(ptr);
 					if (change->GetCondition().EvaluateBool(getValues)) {
 						((AGlobalBase*)global)->GetMap()->ApplyChange(change, getValues);
-						((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, getValues);
+						((AGlobalBase*)global)->GetPopulace()->ApplyChange(((AGlobalBase*)global)->GetMap(), change, getValues);
 						((AGlobalBase*)global)->GetSociety()->ApplyChange(change, getValues);
 						((AGlobalBase*)global)->GetStory()->ApplyChange(change, getValues);
 						((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, getValues);
@@ -128,24 +128,7 @@ void AStoryBase::ApplyChange(Change* change,
 		}
 		Condition condition;
 		condition.ParseCondition(obj->GetMessage());
-		ScriptMessage(UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues))));
-	}
-	else if (type == "spawn_npc") {
-		auto obj = dynamic_cast<SpawnNpcChange*>(change);
-		if (obj == nullptr) {
-			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to SpawnNpcChange.\n");
-		}
-
-		Condition condition;
-		condition.ParseCondition(obj->GetName());
-		FString name = UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data());
-		condition.ParseCondition(obj->GetAvatar());
-		FString avatar = UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data());
-		FVector location = FVector(0.f, 0.f, 0.f);
-		((AGlobalBase*)global)->GetLocation(location);
-		location /= 1000.f;
-		location += FVector(1.f, 1.f, 0.f);
-		((AGlobalBase*)global)->GetPopulaceActor()->SpawnNpc(name, avatar, location);
+		ScriptMessage(UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data()));
 	}
 	else if (type == "open_shop") {
 		auto obj = dynamic_cast<OpenShopChange*>(change);
@@ -204,7 +187,7 @@ bool AStoryBase::SelectOption(FString selected) {
 			for (auto change : changes) {
 				if (!change->GetCondition().EvaluateBool(getValues))continue;
 				((AGlobalBase*)global)->GetMap()->ApplyChange(change, getValues);
-				((AGlobalBase*)global)->GetPopulace()->ApplyChange(change, getValues);
+				((AGlobalBase*)global)->GetPopulace()->ApplyChange(((AGlobalBase*)global)->GetMap(), change, getValues);
 				((AGlobalBase*)global)->GetSociety()->ApplyChange(change, getValues);
 				((AGlobalBase*)global)->GetStory()->ApplyChange(change, getValues);
 				((AGlobalBase*)global)->GetIndustry()->ApplyChange(change, getValues);

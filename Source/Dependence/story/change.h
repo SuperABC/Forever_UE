@@ -138,25 +138,50 @@ private:
 class SpawnNpcChange : public Change {
 public:
 	SpawnNpcChange();
-	SpawnNpcChange(std::string name, std::string gender, std::string birthday, std::string avatar);
+	SpawnNpcChange(std::string avatar, std::string name, std::string gender, std::string birthday, float height, float weight,
+		std::string nick, int deposit, int phone, std::string home, std::vector<std::string> jobs, std::string scheduler);
 	virtual ~SpawnNpcChange();
 
 	virtual std::string GetType() const;
 
+	void SetAvatar(std::string avatar);
+	std::string GetAvatar() const;
 	void SetName(std::string name);
 	std::string GetName() const;
 	void SetGender(std::string gender);
 	std::string GetGender();
 	void SetBirthday(std::string birthday);
 	std::string GetBirthday();
-	void SetAvatar(std::string avatar);
-	std::string GetAvatar() const;
+	void SetHeight(float height);
+	float GetHeight() const;
+	void SetWeight(float weight);
+	float GetWeight() const;
+	void SetNick(std::string nick);
+	std::string GetNick() const;
+	void SetDeposit(int deposit);
+	int GetDeposit() const;
+	void SetPhone(int phone);
+	int GetPhone() const;
+	void SetHome(std::string home);
+	std::string GetHome() const;
+	void SetJobs(std::vector<std::string> jobs);
+	std::vector<std::string> GetJobs() const;
+	void SetScheduler(std::string scheduler);
+	std::string GetScheduler() const;
 
 private:
+	std::string avatar;
 	std::string name;
 	std::string gender;
 	std::string birthday;
-	std::string avatar;
+	float height;
+	float weight;
+	std::string nick;
+	int deposit;
+	int phone;
+	std::string home;
+	std::vector<std::string> jobs;
+	std::string scheduler;
 };
 
 // 移除NPC（已实现）

@@ -55,7 +55,7 @@ std::map<std::string, ValueType> Script::GetValues(const std::string& reg) const
 			}
 		}
 	}
-	catch (const std::regex_error& e) {
+	catch (const std::regex_error&) {
 		THROW_EXCEPTION(InvalidArgumentException, "Invalid regular expression " + reg + ".\n");
 	}
 
@@ -620,6 +620,7 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 		}
 		else if (type == "spawn_npc") {
 			auto name = obj["name"];
+			string avatar = obj["avatar"].IsNull() ? "" : obj["avatar"].AsString();
 			if (name.IsNull()) {
 				THROW_EXCEPTION(RuntimeException, "Missing name for spawn_npc change.\n");
 			}
@@ -631,8 +632,22 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			if (birthday.IsNull()) {
 				THROW_EXCEPTION(RuntimeException, "Missing birthday for spawn_npc change.\n");
 			}
-			string avatar = obj["avatar"].IsNull() ? "" : obj["avatar"].AsString();
-			change = new SpawnNpcChange(name.AsString(), gender.AsString(), birthday.AsString(), avatar);
+			float height = obj["height"].IsNull() ? 0.0f : obj["height"].AsFloat();
+			float weight = obj["weight"].IsNull() ? 0.0f : obj["weight"].AsFloat();
+			string nick = obj["nick"].IsNull() ? "" : obj["nick"].AsString();
+			int deposit = obj["deposit"].IsNull() ? 0 : obj["deposit"].AsInt();
+			int phone = obj["phone"].IsNull() ? 0 : obj["phone"].AsInt();
+			string home = obj["home"].IsNull() ? "" : obj["home"].AsString();
+			vector<string> jobs;
+			for(auto job : obj["jobs"]) {
+				if (!job.IsString()) {
+					THROW_EXCEPTION(RuntimeException, "Invalid job for spawn_npc change.\n");
+				}
+				jobs.push_back(job.AsString());
+			}
+			string scheduler = obj["scheduler"].IsNull() ? "empty" : obj["scheduler"].AsString();
+			change = new SpawnNpcChange(avatar, name.AsString(), gender.AsString(), birthday.AsString(),
+				height, weight, nick, deposit, phone, home, jobs, scheduler);
 		}
 		else if (type == "remove_npc") {
 			auto name = obj["name"];

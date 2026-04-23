@@ -44,6 +44,12 @@ public:
 	// 设置标识符
 	void SetId(int id);
 
+	// 获取头像
+	const std::string& GetAvatar() const;
+
+	// 设置头像
+	void SetAvatar(const std::string& avatar);
+
 	// 获取姓名
 	const std::string& GetName() const;
 
@@ -220,6 +226,7 @@ public:
 
 private:
 	int id;
+	std::string avatar;
 	std::string name;
 	GENDER_TYPE gender;
 	Time birthday;

@@ -247,7 +247,7 @@ void Populace::Tick(Map* map, Player* player) {
 	step = (step + 1) % stride;
 }
 
-void Populace::ApplyChange(Change* change,
+void Populace::ApplyChange(Map* map, Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
 	if (!change) {
 		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
@@ -304,6 +304,9 @@ void Populace::ApplyChange(Change* change,
 
 		person->SetId(static_cast<int>(citizens.size()));
 
+		condition.ParseCondition(obj->GetAvatar());
+		person->SetAvatar(ToString(condition.EvaluateValue(getValues)));
+
 		condition.ParseCondition(obj->GetName());
 		person->SetName(ToString(condition.EvaluateValue(getValues)));
 
@@ -314,7 +317,32 @@ void Populace::ApplyChange(Change* change,
 		condition.ParseCondition(obj->GetBirthday());
 		person->SetBirthday(Time(ToString(condition.EvaluateValue(getValues))));
 
-		person->SetScheduler(new Scheduler(schedulerFactory, "empty"));
+		person->SetHeight(obj->GetHeight());
+		person->SetWeight(obj->GetWeight());
+
+		condition.ParseCondition(obj->GetNick());
+		person->SetNick(ToString(condition.EvaluateValue(getValues)));
+
+		person->SetDeposit(obj->GetDeposit());
+		person->SetPhone(obj->GetPhone());
+
+		condition.ParseCondition(obj->GetHome());
+		string homeAddress = ToString(condition.EvaluateValue(getValues));
+		if(homeAddress.size() > 0) {
+			auto room = map->LocateRoom(homeAddress);
+			if (!room) {
+				THROW_EXCEPTION(InvalidArgumentException, "Home room not found: " + homeAddress + ".\n");
+			}
+			person->SetHome(room);
+		}
+		else {
+			person->SetHome(nullptr);
+			debugf("Warning: No home specified for spawned NPC %s.\n", person->GetName().data());
+		}
+
+		condition.ParseCondition(obj->GetScheduler());
+		string schedulerType = ToString(condition.EvaluateValue(getValues));
+		person->SetScheduler(new Scheduler(schedulerFactory, schedulerType));
 		person->GetScheduler()->InitScheduler(person->GetName());
 		
 		citizens.push_back(person);

@@ -38,6 +38,7 @@ void APopulaceBase::Tick(float DeltaTime) {
 		citizen->PopChange();
 		FPerson citizenInfo;
 		citizenInfo.name = UTF8_TO_TCHAR(citizen->GetName().data());
+		citizenInfo.avatar = UTF8_TO_TCHAR(citizen->GetAvatar().data());
 		if (!citizen->GetCurrentRoom())continue;
 		auto room = citizen->GetCurrentRoom();
 		auto pos = room->GetPosition(room->GetSizeX() / 2.f, room->GetSizeY() / 2.f);
@@ -60,10 +61,6 @@ void APopulaceBase::Tick(float DeltaTime) {
 
 void APopulaceBase::SetGlobal(AActor* g) {
 	this->global = g;
-}
-
-void APopulaceBase::SpawnNpc(const FString& name, const FString& avatar, const FVector& position) {
-	UpdatePopulace({ FPerson(name, avatar, position) }, { });
 }
 
 void APopulaceBase::AddInstance(FString name, AActor* actor) {

@@ -34,8 +34,6 @@ public:
 
 	void SetGlobal(AActor* g);
 
-	void SpawnNpc(const FString& name, const FString& avatar, const FVector& position);
-
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdatePopulace(const TArray<FPerson>& adds, const TArray<FString>& removes);
 	UFUNCTION(BlueprintCallable, Category = "World")

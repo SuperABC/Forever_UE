@@ -197,8 +197,10 @@ SpawnNpcChange::SpawnNpcChange() {
 
 }
 
-SpawnNpcChange::SpawnNpcChange(string name, string gender, string birthday, string avatar)
-	: name(name), gender(gender), birthday(birthday), avatar(avatar) {
+SpawnNpcChange::SpawnNpcChange(string avatar, string name, string gender, string birthday, float height, float weight,
+	string nick, int deposit, int phone, string home, vector<string> jobs, string scheduler) :
+	avatar(avatar), name(name), gender(gender), birthday(birthday), height(height), weight(weight),
+	nick(nick), deposit(deposit), phone(phone), home(home), jobs(jobs), scheduler(scheduler) {
 
 }
 
@@ -208,6 +210,14 @@ SpawnNpcChange::~SpawnNpcChange() {
 
 string SpawnNpcChange::GetType() const {
 	return "spawn_npc";
+}
+
+void SpawnNpcChange::SetAvatar(string avatar) {
+	this->avatar = avatar;
+}
+
+string SpawnNpcChange::GetAvatar() const {
+	return avatar;
 }
 
 void SpawnNpcChange::SetName(string name) {
@@ -234,12 +244,68 @@ string SpawnNpcChange::GetBirthday() {
 	return birthday;
 }
 
-void SpawnNpcChange::SetAvatar(string avatar) {
-	this->avatar = avatar;
+void SpawnNpcChange::SetHeight(float height) {
+	this->height = height;
 }
 
-string SpawnNpcChange::GetAvatar() const {
-	return avatar;
+float SpawnNpcChange::GetHeight() const {
+	return height;
+}
+
+void SpawnNpcChange::SetWeight(float weight) {
+	this->weight = weight;
+}
+
+float SpawnNpcChange::GetWeight() const {
+	return weight;
+}
+
+void SpawnNpcChange::SetNick(std::string nick) {
+	this->nick = nick;
+}
+
+std::string SpawnNpcChange::GetNick() const {
+	return nick;
+}
+
+void SpawnNpcChange::SetDeposit(int deposit) {
+	this->deposit = deposit;
+}
+
+int SpawnNpcChange::GetDeposit() const {
+	return deposit;
+}
+
+void SpawnNpcChange::SetPhone(int phone) {
+	this->phone = phone;
+}
+
+int SpawnNpcChange::GetPhone() const {
+	return phone;
+}
+
+void SpawnNpcChange::SetHome(std::string home) {
+	this->home = home;
+}
+
+std::string SpawnNpcChange::GetHome() const {
+	return home;
+}
+
+void SpawnNpcChange::SetJobs(std::vector<std::string> jobs) {
+	this->jobs = jobs;
+}
+
+std::vector<std::string> SpawnNpcChange::GetJobs() const {
+	return jobs;
+}
+
+void SpawnNpcChange::SetScheduler(std::string scheduler) {
+	this->scheduler = scheduler;
+}
+
+std::string SpawnNpcChange::GetScheduler() const {
+	return scheduler;
 }
 
 RemoveNpcChange::RemoveNpcChange() {

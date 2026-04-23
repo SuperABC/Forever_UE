@@ -39,7 +39,7 @@ public:
 	void Tick(Map* map, Player* player);
 
 	// 应用剧情变化
-	void ApplyChange(Change* change,
+	void ApplyChange(Map* map, Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
 	// 获取全部市民

@@ -15,6 +15,7 @@ using namespace std;
 
 Person::Person() :
 	id(0), 
+	avatar(),
 	name(),
 	gender(GENDER_FEMALE),
 	birthday(),
@@ -68,6 +69,14 @@ int Person::GetId() const {
 
 void Person::SetId(int id) {
 	this->id = id;
+}
+
+const string& Person::GetAvatar() const {
+	return avatar;
+}
+
+void Person::SetAvatar(const string& avatar) {
+	this->avatar = avatar;
 }
 
 const string& Person::GetName() const {
