@@ -144,7 +144,7 @@ void AGlobalBase::BeginPlay() {
 		trafficActor->SetGlobal(this);
 
 		auto pos = map->GetPlayerPos();
-		SetLocation(FVector(pos.first, pos.second, 0.f));
+		SetLocation(FVector(pos.first, pos.second, 20.f));
 	}
 	catch (ExceptionBase& e) {
 		debugf(e.GetDetailedInfo().data());

@@ -1,31 +1,34 @@
 {
    "asset_mods" : [ "zone", "building", "room" ],
-   "building_mods" : [ "factory", "residential", "shop" ],
+   "building_mods" : [ "yizhong", "factory", "residential", "shop", "pengzhan" ],
    "calendar_mods" : [ "standard", "full" ],
-   "component_mods" : [ "factory", "residential", "shop" ],
-   "dll_paths" : [ "C:/Workspace/UE5/Projects/Forever_UE/x64/Release" ],
+   "component_mods" : [ "factory", "residential", "shop", "empty" ],
+   "dll_paths" : [
+      "C:/Workspace/UE5/Projects/Forever_UE/x64/Release",
+      "C:/Workspace/UE5/Projects/Forever_Mods/x64/Release"
+   ],
    "job_mods" : [ "shop_saler" ],
-   "manufacture_mods" : [ "experience", "empty" ],
+   "manufacture_mods" : [ "experience" ],
    "name_mod" : "chinese",
    "organization_mods" : [ "shop" ],
-   "product_mods" : [ "experience", "empty" ],
+   "product_mods" : [ "experience" ],
    "resource_paths" : [
       "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
       "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
       "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts"
    ],
    "roadnet_mod" : "jing",
-   "room_mods" : [ "factory", "residential", "shop", "warehouse" ],
-   "route_mods" : [ "air", "empty" ],
+   "room_mods" : [ "factory", "residential", "shop", "warehouse", "empty" ],
+   "route_mods" : [ "air" ],
    "scheduler_mods" : [ "workonly", "empty" ],
    "script_mods" : [ "npc", "empty" ],
-   "skill_mods" : [ "information", "empty" ],
-   "station_mods" : [ "airport", "empty" ],
+   "skill_mods" : [ "information" ],
+   "station_mods" : [ "airport" ],
    "storage_mods" : [ "shop", "empty" ],
    "story_paths" : [
-      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/ys.json"
+      "C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/xh.json"
    ],
    "terrain_mods" : [ "ocean", "mountain" ],
-   "vehicle_mods" : [ "plane", "empty" ],
+   "vehicle_mods" : [ "plane" ],
    "zone_mods" : [ "residential" ]
 }

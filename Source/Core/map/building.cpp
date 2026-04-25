@@ -928,9 +928,9 @@ vector<float> EmptyBuilding::GetPowers() {
 	return vector<float>(AREA_END, 0.f);
 }
 
-function<int(const Lot*)> EmptyBuilding::BuildingAssigner = [](const Lot* lot) {
+function<int(const Lot*, int, int)> EmptyBuilding::BuildingAssigner = [](const Lot*, int, int) {
 	return 0;
-	};
+};
 
 float EmptyBuilding::RandomAcreage() {
 	return 0.f;

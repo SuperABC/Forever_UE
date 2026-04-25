@@ -30,7 +30,7 @@ vector<float> ResidentialBuilding::GetPowers() {
 	return vector<float>(AREA_END, 1.f);
 }
 
-function<int(const Lot*)> ResidentialBuilding::BuildingAssigner = [](const Lot* lot) {
+function<int(const Lot*, int, int)> ResidentialBuilding::BuildingAssigner = [](const Lot*, int, int) {
 	return 1;
 };
 
@@ -118,7 +118,7 @@ vector<float> ShopBuilding::GetPowers() {
 	return vector<float>(AREA_END, 1.f);
 }
 
-function<int(const Lot*)> ShopBuilding::BuildingAssigner = [](const Lot* lot) {
+function<int(const Lot*, int, int)> ShopBuilding::BuildingAssigner = [](const Lot*, int, int) {
 	return 0;
 };
 
@@ -196,7 +196,7 @@ vector<float> FactoryBuilding::GetPowers() {
 	return vector<float>(AREA_END, 1.f);
 }
 
-function<int(const Lot*)> FactoryBuilding::BuildingAssigner = [](const Lot* lot) {
+function<int(const Lot*, int, int)> FactoryBuilding::BuildingAssigner = [](const Lot*, int, int) {
 	return 0;
 };
 

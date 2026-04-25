@@ -219,7 +219,7 @@ private:
 	std::string destination;
 };
 
-// 瞬移市民
+// 瞬移市民（已实现）
 class TeleportCitizenChange : public Change {
 public:
 	TeleportCitizenChange();

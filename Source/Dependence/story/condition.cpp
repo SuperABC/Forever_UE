@@ -396,11 +396,26 @@ ValueType Condition::EvaluateValue(vector<function<pair<bool, ValueType>(const s
 	return root->Evaluate(getValues);
 }
 
-vector<string> Condition::Tokenize(const string& expr) {
-	vector<string> tokens;
-	string current;
+static size_t FindMatchingQuote(const std::string& expr, size_t start) {
+	char quote = expr[start];
+	if (quote != '"' && quote != '\'')
+		return std::string::npos;
+	for (size_t i = start + 1; i < expr.length(); ++i) {
+		if (expr[i] == '\\') {
+			++i;
+			continue;
+		}
+		if (expr[i] == quote)
+			return i;
+	}
+	return std::string::npos;
+}
 
-	for (size_t i = 0; i < expr.length(); ++i) {
+std::vector<std::string> Condition::Tokenize(const std::string& expr) {
+	std::vector<std::string> tokens;
+	std::string current;
+	size_t i = 0;
+	while (i < expr.length()) {
 		char c = expr[i];
 
 		if (IsSpaceChar(c)) {
@@ -408,35 +423,49 @@ vector<string> Condition::Tokenize(const string& expr) {
 				tokens.push_back(current);
 				current.clear();
 			}
+			++i;
+		}
+		else if (c == '"' || c == '\'') {
+			if (!current.empty()) {
+				tokens.push_back(current);
+				current.clear();
+			}
+			size_t end = FindMatchingQuote(expr, i);
+			if (end == std::string::npos) {
+				THROW_EXCEPTION(RuntimeException, "Unmatched quote in expression");
+			}
+			std::string quoted = expr.substr(i, end - i + 1);
+			tokens.push_back(quoted);
+			i = end + 1;
 		}
 		else if (IsOperatorChar(c) || c == '(' || c == ')' || c == '[' || c == ']' || c == ',') {
 			if (!current.empty()) {
 				tokens.push_back(current);
 				current.clear();
 			}
-
 			if ((c == '&' && i + 1 < expr.length() && expr[i + 1] == '&') ||
 				(c == '|' && i + 1 < expr.length() && expr[i + 1] == '|') ||
 				(c == '=' && i + 1 < expr.length() && expr[i + 1] == '=') ||
 				(c == '!' && i + 1 < expr.length() && expr[i + 1] == '=') ||
 				(c == '<' && i + 1 < expr.length() && expr[i + 1] == '=') ||
 				(c == '>' && i + 1 < expr.length() && expr[i + 1] == '=')) {
-				tokens.push_back(string(1, c) + string(1, expr[i + 1]));
-				i++;
+				tokens.push_back(std::string(1, c) + std::string(1, expr[i + 1]));
+				i += 2;
 			}
 			else {
-				tokens.push_back(string(1, c));
+				tokens.push_back(std::string(1, c));
+				++i;
 			}
 		}
 		else {
 			current += c;
+			++i;
 		}
 	}
 
 	if (!current.empty()) {
 		tokens.push_back(current);
 	}
-
 	return tokens;
 }
 

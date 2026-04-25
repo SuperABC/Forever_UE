@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 #include <functional>
+#include <unordered_map>
 
 
 // 建筑方向
@@ -43,7 +44,7 @@ public:
 	COSTOM_INIT static std::vector<float> GetPowers();
 
 	// 指定地块内建筑数量
-	COSTOM_INIT static std::function<int(const Lot*)> BuildingAssigner;
+	COSTOM_INIT static std::function<int(const Lot*, int, int)> BuildingAssigner;
 
 	// 采样建筑面积
 	COSTOM_INIT virtual float RandomAcreage() = 0;
@@ -109,7 +110,7 @@ class BuildingFactory {
 public:
 	// 注册建筑
 	void RegisterBuilding(const std::string& id,
-		const std::vector<float>& power, std::function<int(const Lot*)> assigner,
+		const std::vector<float>& power, std::function<int(const Lot*, int, int)> assigner,
 		std::function<BuildingMod* ()> creator, std::function<void(BuildingMod*)> deleter);
 
 	// 清空注册
@@ -128,7 +129,7 @@ public:
 	std::unordered_map<std::string, std::vector<float>> GetPowers() const;
 
 	// 在地块内生成一类建筑
-	std::vector<std::string> CreateBuildings(const std::string& type, const Lot* lot) const;
+	std::vector<std::string> CreateBuildings(const std::string& type, const Lot* lot, int idx, int total) const;
 
 	// 析构建筑
 	void DestroyBuilding(BuildingMod* zone) const;
@@ -147,6 +148,6 @@ private:
 	std::unordered_map<std::string, std::vector<float>> powers;
 	
 	// 建筑生成器
-	std::unordered_map<std::string, std::function<int(const Lot*)>> assigners;
+	std::unordered_map<std::string, std::function<int(const Lot*, int, int)>> assigners;
 };
 

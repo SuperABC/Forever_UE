@@ -149,12 +149,24 @@ void AStoryBase::ApplyChange(Change* change,
 			}
 			OpenShop(items);
 		}
-		else {
-
-		}
 	}
-	else {
-		debugf("Warning: Unrecognized change type: %s.\n", type.data());
+	else if(type == "teleport_player") {
+		auto obj = dynamic_cast<TeleportPlayerChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to TeleportPlayerChange.\n");
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetDestination());
+		string destination = ToString(condition.EvaluateValue(getValues));
+		auto room = ((AGlobalBase*)global)->GetMap()->LocateRoom(destination);
+		if (!room) {
+			debugf("Warning: Destination room %s not found.\n", destination.data());
+		}
+		else {
+			auto pos = room->GetPosition(room->GetSizeX() / 2.f, room->GetSizeY() / 2.f);
+			FVector location(pos.first, pos.second, room->GetLayer() * room->GetParentBuilding()->GetHeight());
+			((AGlobalBase*)global)->SetLocation(location);
+		}
 	}
 }
 

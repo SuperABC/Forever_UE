@@ -333,7 +333,7 @@ public:
 
 	static std::vector<float> GetPowers();
 
-	static std::function<int(const Lot*)> BuildingAssigner;
+	static std::function<int(const Lot*, int, int)> BuildingAssigner;
 
 	virtual float RandomAcreage() override;
 	virtual void LayoutBuilding(const Quad* quad) override;

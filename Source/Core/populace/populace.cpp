@@ -304,8 +304,10 @@ void Populace::ApplyChange(Map* map, Change* change,
 
 		person->SetId(static_cast<int>(citizens.size()));
 
-		condition.ParseCondition(obj->GetAvatar());
-		person->SetAvatar(ToString(condition.EvaluateValue(getValues)));
+		if (obj->GetAvatar() != "") {
+			condition.ParseCondition(obj->GetAvatar());
+			person->SetAvatar(ToString(condition.EvaluateValue(getValues)));
+		}
 
 		condition.ParseCondition(obj->GetName());
 		person->SetName(ToString(condition.EvaluateValue(getValues)));
@@ -320,30 +322,36 @@ void Populace::ApplyChange(Map* map, Change* change,
 		person->SetHeight(obj->GetHeight());
 		person->SetWeight(obj->GetWeight());
 
-		condition.ParseCondition(obj->GetNick());
-		person->SetNick(ToString(condition.EvaluateValue(getValues)));
+		if (obj->GetNick() != "") {
+			condition.ParseCondition(obj->GetNick());
+			person->SetNick(ToString(condition.EvaluateValue(getValues)));
+		}
 
 		person->SetDeposit(obj->GetDeposit());
 		person->SetPhone(obj->GetPhone());
 
-		condition.ParseCondition(obj->GetHome());
-		string homeAddress = ToString(condition.EvaluateValue(getValues));
-		if(homeAddress.size() > 0) {
-			auto room = map->LocateRoom(homeAddress);
-			if (!room) {
-				THROW_EXCEPTION(InvalidArgumentException, "Home room not found: " + homeAddress + ".\n");
+		if (obj->GetHome() != "") {
+			condition.ParseCondition(obj->GetHome());
+			string homeAddress = ToString(condition.EvaluateValue(getValues));
+			if (homeAddress.size() > 0) {
+				auto room = map->LocateRoom(homeAddress);
+				if (!room) {
+					THROW_EXCEPTION(InvalidArgumentException, "Home room not found: " + homeAddress + ".\n");
+				}
+				person->SetHome(room);
 			}
-			person->SetHome(room);
-		}
-		else {
-			person->SetHome(nullptr);
-			debugf("Warning: No home specified for spawned NPC %s.\n", person->GetName().data());
 		}
 
-		condition.ParseCondition(obj->GetScheduler());
-		string schedulerType = ToString(condition.EvaluateValue(getValues));
-		person->SetScheduler(new Scheduler(schedulerFactory, schedulerType));
-		person->GetScheduler()->InitScheduler(person->GetName());
+		if (obj->GetScheduler() != "") {
+			condition.ParseCondition(obj->GetScheduler());
+			string schedulerType = ToString(condition.EvaluateValue(getValues));
+			person->SetScheduler(new Scheduler(schedulerFactory, schedulerType));
+			person->GetScheduler()->InitScheduler(person->GetName());
+		}
+		else {
+			person->SetScheduler(new Scheduler(schedulerFactory, "empty"));
+			person->GetScheduler()->InitScheduler(person->GetName());
+		}
 		
 		citizens.push_back(person);
 		ids[person->GetName()] = person->GetId();
@@ -370,6 +378,28 @@ void Populace::ApplyChange(Map* map, Change* change,
 		delete citizens[id];
 		citizens[id] = nullptr;
 		ids[person->GetName()] = -1;
+	}
+	else if (type == "teleport_citizen") {
+		auto obj = dynamic_cast<TeleportCitizenChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to TeleportCitizenChange.\n");
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetName());
+		string name = ToString(condition.EvaluateValue(getValues));
+		Person* person = GetCitizen(name);
+		if (!person) {
+			debugf("Warning: Target citizen %s not found.\n", name.data());
+		}
+		condition.ParseCondition(obj->GetDestination());
+		string destination = ToString(condition.EvaluateValue(getValues));
+		auto room = map->LocateRoom(destination);
+		if (!room) {
+			debugf("Warning: Destination room %s not found.\n", destination.data());
+		}
+		else {
+			person->SetStatus(room);
+		}
 	}
 }
 

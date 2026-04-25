@@ -16,13 +16,13 @@
 	"job_mods": ["shop_saler"],
 	"organization_mods": ["shop"],
 	"script_mods": ["npc", "empty"],
-	"product_mods": ["empty", "experience"],
-	"storage_mods": ["empty", "shop"],
-	"manufacture_mods": ["empty", "experience"],
-	"route_mods": ["empty", "air"],
-	"station_mods": ["empty", "airport"],
-	"vehicle_mods": ["empty", "plane"],
-	"skill_mods": ["empty", "information"],
+	"product_mods": ["experience"],
+	"storage_mods": ["shop", "empty"],
+	"manufacture_mods": ["experience"],
+	"route_mods": ["air"],
+	"station_mods": ["airport"],
+	"vehicle_mods": ["plane"],
+	"skill_mods": ["information"],
 	
 	"resource_paths": [
 		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
@@ -31,6 +31,6 @@
 	],
 	
 	"story_paths": [
-		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/ys.json"
+		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/xh.json"
 	]
 }

@@ -517,6 +517,7 @@ int Map::Init(int chunkX, int chunkY) {
 			cdf.second /= sum;
 		}
 	}
+	int idx = 0;
 	for (auto block : roadnet->GetBlocks()) {
 		if (!block) continue;
 		float acreageBlock = block->GetAcreage();
@@ -527,7 +528,7 @@ int Map::Init(int chunkX, int chunkY) {
 
 		vector<string> presets;
 		for (auto [type, _] : powers) {
-			auto preset = buildingFactory->CreateBuildings(type, block);
+			auto preset = buildingFactory->CreateBuildings(type, block, idx, roadnet->GetBlocks().size());
 			presets.insert(presets.end(), preset.begin(), preset.end());
 		}
 		float acreageTmp = 0.f;
@@ -578,6 +579,7 @@ int Map::Init(int chunkX, int chunkY) {
 			}
 			buildings[building->GetName()] = building;
 		}
+		idx++;
 	}
 
 	debugf("Log: Arranging zones and buildings.\n");

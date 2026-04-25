@@ -114,9 +114,6 @@ void Story::ApplyChange(Change* change,
 		}
 		script->DeactivateMilestone(obj->GetMilestone());
 	}
-	else {
-		debugf("Warning: Unrecognized change type: %s.\n", type.data());
-	}
 }
 
 Script* Story::GetScript() const {

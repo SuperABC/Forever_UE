@@ -96,7 +96,7 @@ void AChronodeManager::UpdateHeightFog(float chronode) {
 	UExponentialHeightFogComponent* fogComponent =
 		exponentialHeightFog->GetComponentByClass<UExponentialHeightFogComponent>();
 	if (fogComponent) {
-		float fogDensity = 0.001f + FMath::Pow(1.0f - FMath::Abs(chronode - 0.5f) * 2.0f, 2.0f) * 0.001f;
+		float fogDensity = 0.0001f + FMath::Pow(1.0f - FMath::Abs(chronode - 0.5f) * 2.0f, 2.0f) * 0.0001f;
 		fogComponent->SetFogDensity(fogDensity);
 	}
 }
@@ -105,6 +105,6 @@ void AChronodeManager::UpdatePostProcess(float chronode) {
 	if (!postProcess) return;
 
 	float globalIntensity = -FMath::Cos(chronode * PI * 2);
-	postProcess->Settings.AutoExposureBias = globalIntensity * 2;
+	postProcess->Settings.AutoExposureBias = globalIntensity > 0 ? globalIntensity : globalIntensity * 2;
 }
 

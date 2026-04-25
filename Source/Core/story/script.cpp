@@ -645,7 +645,7 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 				}
 				jobs.push_back(job.AsString());
 			}
-			string scheduler = obj["scheduler"].IsNull() ? "empty" : obj["scheduler"].AsString();
+			string scheduler = obj["scheduler"].IsNull() ? "" : obj["scheduler"].AsString();
 			change = new SpawnNpcChange(avatar, name.AsString(), gender.AsString(), birthday.AsString(),
 				height, weight, nick, deposit, phone, home, jobs, scheduler);
 		}
