@@ -29,7 +29,7 @@ vector<Change*> Option::GetChanges() const {
 	return changes;
 }
 
-Section::Section(string speaker, string content) : speaking({speaker, content}) {
+Section::Section(string speaker, string content, string label) : speaking({speaker, content, label}) {
 	branch = false;
 }
 
@@ -45,7 +45,7 @@ bool Section::IsBranch() const {
 	return branch;
 }
 
-pair<string, string> Section::GetSpeaking() const {
+tuple<string, string, string> Section::GetSpeaking() const {
 	return speaking;
 }
 
@@ -61,8 +61,8 @@ Dialog::~Dialog() {
 
 }
 
-void Dialog::AddDialog(string speaker, string content) {
-	list.push_back(Section(speaker, content));
+void Dialog::AddDialog(string speaker, string content, string label) {
+	list.push_back(Section(speaker, content, label));
 }
 
 void Dialog::AddDialog(vector<Option> options) {

@@ -32,19 +32,19 @@ private:
 
 class Section {
 public:
-	Section(std::string speaker, std::string content);
+	Section(std::string speaker, std::string content, std::string label);
 	Section(std::vector<Option> options);
 	~Section();
 
 	bool IsBranch() const;
 
-	std::pair<std::string, std::string> GetSpeaking() const;
+	std::tuple<std::string, std::string, std::string> GetSpeaking() const;
 	std::vector<Option> GetOptions() const;
 
 private:
 	bool branch;
 
-	std::pair<std::string, std::string> speaking;
+	std::tuple<std::string, std::string, std::string> speaking;
 	std::vector<Option> options;
 };
 
@@ -53,7 +53,7 @@ public:
 	Dialog();
 	~Dialog();
 
-	void AddDialog(std::string speaker, std::string content);
+	void AddDialog(std::string speaker, std::string content, std::string label);
 	void AddDialog(std::vector<Option> options);
 	std::vector<Section> GetDialogs();
 

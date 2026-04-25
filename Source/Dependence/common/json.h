@@ -276,6 +276,7 @@ private:
 
 	bool ExpectToken(TokenType type, Token& token, const char* message);
 	bool ReadToken(Token& token);
+	char PeekNextChar();
 	void SkipSpaces();
 	bool Match(const char* pattern, int patternLength);
 	bool ReadComment();

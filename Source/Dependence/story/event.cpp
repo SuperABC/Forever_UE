@@ -165,6 +165,51 @@ string OptionDialogEvent::GetOption() const {
 	return option;
 }
 
+SpeakingFinishEvent::SpeakingFinishEvent(string label) :
+	label(label) {
+
+}
+
+SpeakingFinishEvent::~SpeakingFinishEvent() {
+
+}
+
+string SpeakingFinishEvent::GetType() const {
+	return "speaking_finish";
+}
+
+bool SpeakingFinishEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+	auto other = dynamic_cast<SpeakingFinishEvent*>(e);
+	if (!other) return false;
+	bool result = true;
+	if (label.size() > 0 && other->label.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(label);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto labelValue = get_if<string>(&value)) {
+			result = (result && *labelValue == other->label);
+		}
+		else {
+			result = (result && label == other->label);
+		}
+	}
+	else {
+		result = false;
+	}
+	return result;
+}
+
+void SpeakingFinishEvent::SetLabel(string label) {
+	this->label = label;
+}
+
+string SpeakingFinishEvent::GetLabel() const {
+	return label;
+}
+
 NPCMeetEvent::NPCMeetEvent(string npc) :
 	npc(npc) {
 

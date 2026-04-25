@@ -238,7 +238,7 @@ private:
 	std::string destination;
 };
 
-// 瞬移角色
+// 瞬移角色（已实现）
 class TeleportPlayerChange : public Change {
 public:
 	TeleportPlayerChange();

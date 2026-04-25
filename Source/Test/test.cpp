@@ -342,13 +342,13 @@ bool PrintDialog(Dialog* dialog, vector<function<pair<bool, ValueType>(const str
 		}
 		else { // 如果当前段是对话
 			Condition conditionContent;
-			conditionContent.ParseCondition(section.GetSpeaking().second);
-			if (section.GetSpeaking().first.size() == 0) {
+			conditionContent.ParseCondition(get<1>(section.GetSpeaking()));
+			if (get<0>(section.GetSpeaking()).size() == 0) {
 				cout << Utf8ToAnsi(ToString(conditionContent.EvaluateValue(getValues))) << endl;
 			}
 			else {
 				Condition conditionSpeaker;
-				conditionSpeaker.ParseCondition(section.GetSpeaking().first);
+				conditionSpeaker.ParseCondition(get<0>(section.GetSpeaking()));
 				cout << Utf8ToAnsi(ToString(conditionSpeaker.EvaluateValue(getValues))) << ": " <<
 					Utf8ToAnsi(ToString(conditionContent.EvaluateValue(getValues))) << endl;
 			}

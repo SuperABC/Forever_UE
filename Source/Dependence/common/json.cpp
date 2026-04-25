@@ -280,6 +280,27 @@ bool JsonReader::ReadToken(Token& token) {
 	return true;
 }
 
+char JsonReader::PeekNextChar() {
+	const char* savedCurrent = current;
+	bool savedCollectComments = collectComments;
+	collectComments = false;
+
+	while (true) {
+		SkipSpaces();
+		if (current == end) break;
+		if (*current == '/') {
+			if (!ReadComment()) break;
+		}
+		else {
+			break;
+		}
+	}
+	char result = (current != end) ? *current : 0;
+	current = savedCurrent;
+	collectComments = savedCollectComments;
+	return result;
+}
+
 void JsonReader::SkipSpaces() {
 	while (current != end) {
 		char c = *current;
@@ -376,88 +397,102 @@ bool JsonReader::ReadString() {
 }
 
 bool JsonReader::ReadObject(Token& tokenStart) {
-	Token tokenName;
-	string name;
 	CurrentValue() = JsonValue(DATA_OBJECT);
 	CurrentValue().SetOffsetStart(tokenStart.start - begin);
-	while (ReadToken(tokenName)) {
-		bool initialTokenOk = true;
-		while (tokenName.type == TOKEN_COMMENT && initialTokenOk)
-			initialTokenOk = ReadToken(tokenName);
-		if (!initialTokenOk)
+	SkipSpaces();
+	if (*current == '}') {
+		Token endObject;
+		ReadToken(endObject);
+		return true;
+	}
+	for (;;) {
+		char next = PeekNextChar();
+		if (next == '}') {
+			Token endObject;
+			ReadToken(endObject);
 			break;
-		if (tokenName.type == TOKEN_OBJECT_END && name.empty()) // empty object
-			return true;
-		name = "";
-		if (tokenName.type == TOKEN_STRING) {
-			if (!DecodeString(tokenName, name))
+		}
+		Token tokenName;
+		if (!ReadToken(tokenName)) {
+			return RecoverFromError(TOKEN_OBJECT_END);
+		}
+		while (tokenName.type == TOKEN_COMMENT) {
+			if (!ReadToken(tokenName))
 				return RecoverFromError(TOKEN_OBJECT_END);
 		}
-		else {
-			break; // strict mode doesn't allow numeric keys
+		if (tokenName.type != TOKEN_STRING) {
+			return AddErrorAndRecover("Missing object key (string expected)", tokenName, TOKEN_OBJECT_END);
 		}
+		string name;
+		if (!DecodeString(tokenName, name))
+			return RecoverFromError(TOKEN_OBJECT_END);
 
 		Token colon;
 		if (!ReadToken(colon) || colon.type != TOKEN_MEMBER_SEPARATOR) {
-			return AddErrorAndRecover(
-				"Missing ':' after object member name", colon, TOKEN_OBJECT_END);
+			return AddErrorAndRecover("Missing ':' after object member name", colon, TOKEN_OBJECT_END);
 		}
+
 		JsonValue& value = CurrentValue()[name];
 		nodes.push(&value);
 		bool ok = ReadValue();
 		nodes.pop();
-		if (!ok) // error already set
-			return RecoverFromError(TOKEN_OBJECT_END);
+		if (!ok) return RecoverFromError(TOKEN_OBJECT_END);
 
-		Token comma;
-		if (!ReadToken(comma) ||
-			(comma.type != TOKEN_OBJECT_END && comma.type != TOKEN_ARRAY_SEPARATOR &&
-				comma.type != TOKEN_COMMENT)) {
-			return AddErrorAndRecover(
-				"Missing ',' or '}' in object declaration", comma, TOKEN_OBJECT_END);
+		next = PeekNextChar();
+		if (next == '}') {
+			Token endObject;
+			ReadToken(endObject);
+			break;
 		}
-		bool finalizeTokenOk = true;
-		while (comma.type == TOKEN_COMMENT && finalizeTokenOk)
-			finalizeTokenOk = ReadToken(comma);
-		if (comma.type == TOKEN_OBJECT_END)
-			return true;
+		Token comma;
+		ok = ReadToken(comma);
+		while (comma.type == TOKEN_COMMENT && ok) {
+			ok = ReadToken(comma);
+		}
+		if (!ok || comma.type != TOKEN_ARRAY_SEPARATOR) {
+			return AddErrorAndRecover("Missing ',' or '}' in object declaration", comma, TOKEN_OBJECT_END);
+		}
 	}
-	return AddErrorAndRecover(
-		"Missing '}' or object member name", tokenName, TOKEN_OBJECT_END);
+	return true;
 }
 
 bool JsonReader::ReadArray(Token& tokenStart) {
 	CurrentValue() = JsonValue(DATA_ARRAY);
 	CurrentValue().SetOffsetStart(tokenStart.start - begin);
 	SkipSpaces();
-	if (*current == ']') // empty array
-	{
+	if (*current == ']') {
 		Token endArray;
 		ReadToken(endArray);
 		return true;
 	}
 	int index = 0;
 	for (;;) {
+		char next = PeekNextChar();
+		if (next == ']') {
+			Token endArray;
+			ReadToken(endArray);
+			break;
+		}
 		JsonValue& value = CurrentValue()[index++];
 		nodes.push(&value);
 		bool ok = ReadValue();
 		nodes.pop();
-		if (!ok) // error already set
-			return RecoverFromError(TOKEN_ARRAY_END);
+		if (!ok) return RecoverFromError(TOKEN_ARRAY_END);
 
+		next = PeekNextChar();
+		if (next == ']') {
+			Token endArray;
+			ReadToken(endArray);
+			break;
+		}
 		Token token;
 		ok = ReadToken(token);
 		while (token.type == TOKEN_COMMENT && ok) {
 			ok = ReadToken(token);
 		}
-		bool badTokenType =
-			(token.type != TOKEN_ARRAY_SEPARATOR && token.type != TOKEN_ARRAY_END);
-		if (!ok || badTokenType) {
-			return AddErrorAndRecover(
-				"Missing ',' or ']' in array declaration", token, TOKEN_ARRAY_END);
+		if (!ok || token.type != TOKEN_ARRAY_SEPARATOR) {
+			return AddErrorAndRecover("Missing ',' or ']' in array declaration", token, TOKEN_ARRAY_END);
 		}
-		if (token.type == TOKEN_ARRAY_END)
-			break;
 	}
 	return true;
 }

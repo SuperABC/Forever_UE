@@ -1,6 +1,6 @@
 {
 	"names":["楚梦瑶", "陈雨舒", "唐韵", "冯笑笑", "关馨", "雨凝", "土冉冉", "王心妍",
-		"宋凌珊", "郁小可", "杨七七", "孙静怡", "许诗涵", "刘静涵", "应梓瑜", "天婵"],
+		"宋凌珊", "郁小可", "杨七七", "孙静怡", "许诗涵", "刘静涵", "应梓瑜", "天婵",],
 	"milestones":
 [
 { //chapter1_arrive_songshan
@@ -9,7 +9,7 @@
 	"triggers": [{"type": "game_start"}],
 	"dialogs": [
 		{"list": [
-			{"content": "你是林逸，刚刚坐火车来到了松山市。你的口袋里有一张纸条，上面写着：去鹏展大厦找楚鹏展。"}
+			{"content": "你是林逸，刚刚坐火车来到了松山市。你的口袋里有一张纸条，上面写着：去鹏展大厦找楚鹏展。"},
 		]}
 	],
 	"changes": [
@@ -33,7 +33,7 @@
 		{"type": "spawn_npc", "name": "楚鹏展", "gender": "male", "birthday": "$$system.time.year-46+\"年8月8日\""},
 		{"type": "teleport_citizen", "name": "楚鹏展", "destination": "\"中山北路 0 pengzhan 00000\""},
 		{"type": "add_option", "name": "楚鹏展", "option": "你好"},
-		{"type": "set_value", "variable": "plot_step", "value": "chapter1_arrive_songshan"}
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_arrive_songshan"},
 	],
 	"subsequences": [
 		"chapter1_meet_cpz"
@@ -59,12 +59,12 @@
 			{"speaker": "林逸", "content": "是啊，一双草鞋能卖四块钱，一天编个三五双，一个月就是好几百了。"},
 			{"speaker": "楚鹏展", "content": "以后你的工资是每个月三万块，这些钱包含你上学的学费和日常花销，当然，花在我女儿身上的钱，可以额外找李福报销。"},
 			{"speaker": "林逸", "content": "三万？老头子不说几千块么？等等，楚先生，您刚才说什么？上学？学杂费？还有花在您女儿身上的钱？这是什么意思？我有点儿不明白…"},
-			{"speaker": "楚鹏展", "content": "哦？怎么，林老爷子之前没和你说么？请这边来，具体情况，我们去楼上谈吧。", "label": "chapter1_after_meet_cpz"}
+			{"speaker": "楚鹏展", "content": "哦？怎么，林老爷子之前没和你说么？请这边来，具体情况，我们去楼上谈吧。", "label": "chapter1_after_meet_cpz"},
 		]}
 	],
 	"changes": [
 		{"type": "remove_option", "name": "楚鹏展", "option": "你好"},
-		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_cpz"}
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_cpz"},
 	],
 	"subsequences": [
 		"chapter1_get_mission"
@@ -74,11 +74,11 @@
 { //chapter1_after_meet_cpz
 	"milestone": "chapter1_after_meet_cpz",
 	"visible": false,
-	"triggers": [{"type": "section_finish", "label": "chapter1_after_meet_cpz"}],
+	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_meet_cpz"}],
 	"dialogs": [],
 	"changes": [
 		{"type": "teleport_citizen", "name": "楚鹏展", "destination": "\"中山北路 0 pengzhan 190000\""},
-		{"type": "add_option", "name": "楚鹏展", "option": "楚叔叔您说吧"}
+		{"type": "add_option", "name": "楚鹏展", "option": "楚叔叔您说吧"},
 	],
 	"subsequences": []
 },
@@ -104,13 +104,13 @@
 			{"speaker": "林逸", "content": "好的，我会做好我的本职工作。"},
 			{"speaker": "楚鹏展", "content": "当然，楚梦瑶或许脾气不太好，但是这个孩子本质还是不错的。我相信你这么优秀，一定可以和她相处很融洽的。"},
 			{"speaker": "林逸", "content": "我尽力吧。"},
-			{"speaker": "楚鹏展", "content": "福伯，瑶瑶快放学了，你去接一下，正好带着林先生去熟悉一下环境。", "label": "chapter1_after_get_mission"}
+			{"speaker": "楚鹏展", "content": "福伯，瑶瑶快放学了，你去接一下，正好带着林先生去熟悉一下环境。", "label": "chapter1_after_get_mission"},
 		]}
 	],
 	"changes": [
 		{"type": "remove_option", "name": "楚鹏展", "option": "楚叔叔您说吧"},
 		{"type": "teleport_citizen", "name": "楚梦瑶", "destination": "\"中山北路 0 yizhong 00000\""},
-		{"type": "teleport_citizen", "name": "陈雨舒", "destination": "\"中山北路 0 yizhong 00000\""}
+		{"type": "teleport_citizen", "name": "陈雨舒", "destination": "\"中山北路 0 yizhong 00000\""},
 	],
 	"subsequences": []
 },
@@ -118,13 +118,13 @@
 { //chapter1_after_get_mission
 	"milestone": "chapter1_after_get_mission",
 	"visible": false,
-	"triggers": [{"type": "section_finish", "label": "chapter1_after_get_mission"}],
+	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_get_mission"}],
 	"dialogs": [],
 	"changes": [
-		{"type": "teleport_player", "destination": "\"中山北路 0 yizhong 00000\""}
+		{"type": "teleport_player", "destination": "\"中山北路 0 yizhong 00000\""},
 	],
 	"subsequences": []
-},
+}
 
 ]
 }

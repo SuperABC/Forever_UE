@@ -48,7 +48,7 @@ public:
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
-	void UpdateDialog(const FString& speaker, const FString& content);
+	void UpdateDialog(const FString& speaker, const FString& content, const FString& label);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void UpdateDialogBranch(const TArray<FString>& options);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
@@ -66,6 +66,8 @@ public:
 	void ScriptMessage(FString message);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void OptionDialog(FString name, FString option);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void SpeakingFinish(FString label);
 
 protected:
 	virtual void BeginPlay() override;

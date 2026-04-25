@@ -298,6 +298,13 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 				event = new OptionDialogEvent(id.AsInt(), obj["option"].AsString());
 			}
 		}
+		else if(type == "speaking_finish"){
+			auto label = obj["label"];
+			if (label.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing label for speaking_finish event.\n");
+			}
+			event = new SpeakingFinishEvent(label.AsString());
+		}
 		else if (type == "npc_meet") {
 			auto npc = obj["npc"];
 			if (npc.IsNull()) {
@@ -548,7 +555,13 @@ vector<Dialog*> Script::BuildDialogs(JsonValue root) {
 
 		for (auto section : obj["list"]) {
 			if (section.IsObject()) {
-				dialog->AddDialog(section["speaker"].AsString(), section["content"].AsString());
+				auto label = section["label"];
+				if (label.IsNull()) {
+					dialog->AddDialog(section["speaker"].AsString(), section["content"].AsString(), "");
+				}
+				else {
+					dialog->AddDialog(section["speaker"].AsString(), section["content"].AsString(), label.AsString());
+				}
 			}
 			else if (section.IsArray()) {
 				vector<Option> options;

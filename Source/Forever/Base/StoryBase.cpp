@@ -51,7 +51,10 @@ void AStoryBase::Tick(float DeltaTime) {
 			dialogQueue.pop_front();
 
 			auto speaking = section.GetSpeaking();
-			UpdateDialog(UTF8_TO_TCHAR(speaking.first.data()), UTF8_TO_TCHAR(speaking.second.data()));
+			auto speaker = std::get<0>(speaking);
+			auto content = std::get<1>(speaking);
+			auto label = std::get<2>(speaking);
+			UpdateDialog(UTF8_TO_TCHAR(speaker.data()), UTF8_TO_TCHAR(content.data()), UTF8_TO_TCHAR(label.data()));
 		}
 	}
 }
@@ -374,6 +377,38 @@ void AStoryBase::OptionDialog(FString name, FString option) {
 			});
 		MatchEvent(event, job->GetScript(), getValues);
 		getValues.pop_back();
+	}
+
+	delete event;
+}
+
+void AStoryBase::SpeakingFinish(FString label) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new SpeakingFinishEvent(TCHAR_TO_UTF8(*label));
+
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](string name) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(name);
+		}
+	};
+	MatchEvent(event, story->GetScript(), getValues);
+
+	auto citizens = ((AGlobalBase*)global)->GetPopulace()->GetCitizens();
+	for (auto citizen : citizens) {
+		getValues.push_back(
+			[&](string name) -> pair<bool, ValueType> {
+				return citizen->GetScheduler()->GetScript()->GetValue(name);
+			});
+		MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
+		getValues.pop_back();
+		for (auto job : citizen->GetJobs()) {
+			getValues.push_back(
+				[&](string name) -> pair<bool, ValueType> {
+					return job->GetScript()->GetValue(name);
+				});
+			MatchEvent(event, job->GetScript(), getValues);
+			getValues.pop_back();
+		}
 	}
 
 	delete event;

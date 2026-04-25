@@ -91,6 +91,24 @@ private:
 	std::string option;
 };
 
+// 对话完成
+class SpeakingFinishEvent : public Event {
+public:
+	SpeakingFinishEvent(std::string label);
+	virtual ~SpeakingFinishEvent();
+
+	virtual std::string GetType() const;
+
+	virtual bool Match(Event* e,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
+
+	void SetLabel(std::string label);
+	std::string GetLabel() const;
+
+private:
+	std::string label;
+};
+
 // NPC相遇
 class NPCMeetEvent : public Event {
 public:
