@@ -204,6 +204,8 @@
 	],
 	"subsequences": [
 		"chapter1_after_meet_zpl",
+		"chapter1_battle_lose_zpl",
+		"chapter1_battle_win_zpl",
 	]
 },
 
@@ -215,8 +217,29 @@
 	"changes": [
 		{"type": "enter_battle", "enemy": "钟品亮"},
 	],
-	"subsequences": [
-	]
+	"subsequences": []
+},
+
+{ //chapter1_battle_lose_zpl
+	"milestone": "chapter1_battle_lose_zpl",
+	"visible": false,
+	"triggers": [{"type": "battle_lose", "enemy": "钟品亮"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "game_fail"},
+	],
+	"subsequences": []
+},
+
+{ //chapter1_battle_win_zpl
+	"milestone": "chapter1_battle_win_zpl",
+	"visible": false,
+	"triggers": [{"type": "battle_win", "enemy": "钟品亮"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "deactivate_milestone", "milestone": "chapter1_battle_lose_zpl"},
+	],
+	"subsequences": []
 },
 
 ]

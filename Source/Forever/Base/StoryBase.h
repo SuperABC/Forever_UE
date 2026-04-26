@@ -53,6 +53,8 @@ public:
 	void UpdateDialogBranch(const TArray<FString>& options);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void OpenShop(const TArray<FItem>& items);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
+	void EnterBattle(AStoryBase* story, const FString& enemy);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void FinishSection();
 	UFUNCTION(BlueprintCallable, Category = "Story")
@@ -68,6 +70,10 @@ public:
 	void OptionDialog(FString name, FString option);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void SpeakingFinish(FString label);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void BattleWin(FString enemy);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void BattleLose(FString enemy);
 
 protected:
 	virtual void BeginPlay() override;

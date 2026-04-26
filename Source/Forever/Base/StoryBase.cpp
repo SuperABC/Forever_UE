@@ -171,6 +171,16 @@ void AStoryBase::ApplyChange(Change* change,
 			((AGlobalBase*)global)->SetLocation(location);
 		}
 	}
+	else if(type == "enter_battle") {
+		auto obj = dynamic_cast<EnterBattleChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to EnterBattleChange.\n");
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetEnemy());
+		string enemy = ToString(condition.EvaluateValue(getValues));
+		EnterBattle(this, UTF8_TO_TCHAR(enemy.data()));
+	}
 }
 
 void AStoryBase::FinishSection() {
@@ -385,6 +395,70 @@ void AStoryBase::OptionDialog(FString name, FString option) {
 void AStoryBase::SpeakingFinish(FString label) {
 	auto story = ((AGlobalBase*)global)->GetStory();
 	auto event = new SpeakingFinishEvent(TCHAR_TO_UTF8(*label));
+
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](string name) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(name);
+		}
+	};
+	MatchEvent(event, story->GetScript(), getValues);
+
+	auto citizens = ((AGlobalBase*)global)->GetPopulace()->GetCitizens();
+	for (auto citizen : citizens) {
+		getValues.push_back(
+			[&](string name) -> pair<bool, ValueType> {
+				return citizen->GetScheduler()->GetScript()->GetValue(name);
+			});
+		MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
+		getValues.pop_back();
+		for (auto job : citizen->GetJobs()) {
+			getValues.push_back(
+				[&](string name) -> pair<bool, ValueType> {
+					return job->GetScript()->GetValue(name);
+				});
+			MatchEvent(event, job->GetScript(), getValues);
+			getValues.pop_back();
+		}
+	}
+
+	delete event;
+}
+
+void AStoryBase::BattleWin(FString enemy) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new BattleWinEvent(TCHAR_TO_UTF8(*enemy));
+
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](string name) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(name);
+		}
+	};
+	MatchEvent(event, story->GetScript(), getValues);
+
+	auto citizens = ((AGlobalBase*)global)->GetPopulace()->GetCitizens();
+	for (auto citizen : citizens) {
+		getValues.push_back(
+			[&](string name) -> pair<bool, ValueType> {
+				return citizen->GetScheduler()->GetScript()->GetValue(name);
+			});
+		MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
+		getValues.pop_back();
+		for (auto job : citizen->GetJobs()) {
+			getValues.push_back(
+				[&](string name) -> pair<bool, ValueType> {
+					return job->GetScript()->GetValue(name);
+				});
+			MatchEvent(event, job->GetScript(), getValues);
+			getValues.pop_back();
+		}
+	}
+
+	delete event;
+}
+
+void AStoryBase::BattleLose(FString enemy) {
+	auto story = ((AGlobalBase*)global)->GetStory();
+	auto event = new BattleLoseEvent(TCHAR_TO_UTF8(*enemy));
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](string name) -> pair<bool, ValueType> {
