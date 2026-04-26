@@ -52,6 +52,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 	}
 	basements = 1;
 	height = 0.4f;
+	wallTexture = "/Game/Asset/Textures/Map/Residential.Residential";
 
 	int direction = 0;
 	if (quad->GetSizeX() > quad->GetSizeY()) {
@@ -131,6 +132,7 @@ float ShopBuilding::RandomAcreage() {
 void ShopBuilding::LayoutBuilding(const Quad* quad) {
 	layers = 2;
 	height = 0.5f;
+	wallTexture = "/Game/Asset/Textures/Map/Shop.Shop";
 
 	int direction = 0;
 	if (quad->GetSizeX() > quad->GetSizeY()) {
@@ -208,6 +210,7 @@ float FactoryBuilding::RandomAcreage() {
 
 void FactoryBuilding::LayoutBuilding(const Quad* quad) {
 	height = 0.6f;
+	wallTexture = "/Game/Asset/Textures/Map/Factory.Factory";
 
 	int direction = direction = GetRandom(4);
 	

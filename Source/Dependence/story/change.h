@@ -200,25 +200,6 @@ private:
 	std::string name;
 };
 
-// NPC自动导航
-class NPCNavigateChange : public Change {
-public:
-	NPCNavigateChange();
-	NPCNavigateChange(std::string name, std::string destination);
-	virtual ~NPCNavigateChange();
-
-	virtual std::string GetType() const;
-
-	void SetName(std::string name);
-	std::string GetName() const;
-	void SetDestination(std::string destination);
-	std::string GetDestination() const;
-
-private:
-	std::string name;
-	std::string destination;
-};
-
 // 瞬移市民（已实现）
 class TeleportCitizenChange : public Change {
 public:
@@ -268,6 +249,25 @@ public:
 
 private:
 	std::string saler;
+};
+
+// NPC自动导航
+class NPCNavigateChange : public Change {
+public:
+	NPCNavigateChange();
+	NPCNavigateChange(std::string name, std::string destination);
+	virtual ~NPCNavigateChange();
+
+	virtual std::string GetType() const;
+
+	void SetName(std::string name);
+	std::string GetName() const;
+	void SetDestination(std::string destination);
+	std::string GetDestination() const;
+
+private:
+	std::string name;
+	std::string destination;
 };
 
 // 存款收支
@@ -338,6 +338,22 @@ public:
 private:
 	std::string item;
 	int num;
+};
+
+// 进入战斗
+class EnterBattleChange : public Change {
+public:
+	EnterBattleChange();
+	EnterBattleChange(std::string enemy);
+	virtual ~EnterBattleChange();
+
+	virtual std::string GetType() const;
+
+	void SetEnemy(std::string enemy);
+	std::string GetEnemy() const;
+
+private:
+	std::string enemy;
 };
 
 // 受伤
@@ -558,22 +574,6 @@ public:
 
 private:
 	std::string counter;
-};
-
-// 进入战斗
-class EnterBattleChange : public Change {
-public:
-	EnterBattleChange();
-	EnterBattleChange(std::string enemy);
-	virtual ~EnterBattleChange();
-
-	virtual std::string GetType() const;
-
-	void SetEnemy(std::string enemy);
-	std::string GetEnemy() const;
-
-private:
-	std::string enemy;
 };
 
 // 变化时间

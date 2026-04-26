@@ -18,6 +18,8 @@ struct FWall {
 	FVector center;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
 	FVector size;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FString texture;
 };
 USTRUCT(Blueprintable, BlueprintType)
 
@@ -86,7 +88,8 @@ private:
 	void ConstructBuilding(Building* building, FBuilding& info);
 	TArray<FWall> ConstructQuad(FVector center, FVector size, std::vector<bool> directions,
 		std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors,
-		std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows);
+		std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> windows,
+		FString wallTexture);
 
 	std::unordered_map<std::string, AActor*> buildingInstances;
 };

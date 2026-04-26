@@ -10,6 +10,7 @@ BuildingMod::BuildingMod() :
 	basements(0),
 	height(0.4f),
 	construction(),
+	wallTexture(),
 	templates(),
 	singles(),
 	rows(),

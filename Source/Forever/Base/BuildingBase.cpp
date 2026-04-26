@@ -236,7 +236,8 @@ void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
 		for (auto ceiling : ceilings) {
 			info.walls.Add(
 				FWall(FVector(ceiling.GetPosX(), ceiling.GetPosY(), building->GetHeight() * (i + 1) - 0.01f) + bias,
-					FVector(ceiling.GetSizeX(), ceiling.GetSizeY(), 0.02f)));
+					FVector(ceiling.GetSizeX(), ceiling.GetSizeY(), 0.02f),
+					FString("/Game/Asset/Textures/Map/White.White")));
 		}
 		auto corridors = building->GetFloor(i)->GetCorridors();
 		for (auto corridor : corridors) {
@@ -244,20 +245,23 @@ void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
 				FVector(corridor.GetPosX(), corridor.GetPosY(), (i + 0.5f) * building->GetHeight()) + bias,
 				FVector(corridor.GetSizeX(), corridor.GetSizeY(), building->GetHeight()),
 				{ corridor.GetWall(0), corridor.GetWall(1), corridor.GetWall(2), corridor.GetWall(3) },
-				corridor.GetDoors(), corridor.GetWindows()));
+				corridor.GetDoors(), corridor.GetWindows(),
+				FString(building->GetWallTexture().data())));
 		}
 	}
 	for (auto room : building->GetRooms()) {
 		info.walls.Append(ConstructQuad(
 			FVector(room->GetPosX(), room->GetPosY(), (room->GetLayer() + 0.5f) * building->GetHeight()) + bias,
 			FVector(room->GetSizeX(), room->GetSizeY(), building->GetHeight()), { true, true, true, true },
-			room->GetDoors(), room->GetWindows()));
+			room->GetDoors(), room->GetWindows(),
+			FString(building->GetWallTexture().data())));
 	}
 }
 
 TArray<FWall> ABuildingBase::ConstructQuad(FVector center, FVector size, vector<bool> directions,
 	unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> doors,
-	unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> windows) {
+	unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> windows,
+	FString wallTexture) {
 	TArray<FWall> walls;
 	if (directions[0]) {
 		auto doorsWest = doors[FACE_WEST];
@@ -266,36 +270,40 @@ TArray<FWall> ABuildingBase::ConstructQuad(FVector center, FVector size, vector<
 			auto door = doorsWest[0];
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y - size.Y / 2.f + (door.first[0] * size.Y + door.first[1]) / 2.f, center.Z),
-					FVector(0.01f, door.first[0] * size.Y + door.first[1], size.Z)));
+					FVector(0.01f, door.first[0] * size.Y + door.first[1], size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y - size.Y / 2.f + ((door.first[4] + 1) * size.Y + door.first[5]) / 2.f, center.Z),
-					FVector(0.01f, (1 - door.first[4]) * size.Y - door.first[5], size.Z)));
+					FVector(0.01f, (1 - door.first[4]) * size.Y - door.first[5], size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y, center.Z + size.Z / 2.f - (door.first[2] * size.Z + door.first[3]) / 2.f),
-					FVector(0.01f, (door.first[4] - door.first[0]) * size.Y + door.first[5] - door.first[1], door.first[2] * size.Z + door.first[3])));
+					FVector(0.01f, (door.first[4] - door.first[0]) * size.Y + door.first[5] - door.first[1], door.first[2] * size.Z + door.first[3]),
+					wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y, center.Z + size.Z / 2.f - ((door.first[6] + 1) * size.Z + door.first[7]) / 2.f),
-					FVector(0.01f, (door.first[4] - door.first[0]) * size.Y + door.first[5] - door.first[1], (1 - door.first[6]) * size.Z - door.first[7])));
+					FVector(0.01f, (door.first[4] - door.first[0]) * size.Y + door.first[5] - door.first[1], (1 - door.first[6]) * size.Z - door.first[7]),
+					wallTexture));
 		}
 		else if (windowsWest.size() > 0) {
 			auto window = windowsWest[0];
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y - size.Y / 2.f + (window.first[0] * size.Y + window.first[1]) / 2.f, center.Z),
-					FVector(0.01f, window.first[0] * size.Y + window.first[1], size.Z)));
+					FVector(0.01f, window.first[0] * size.Y + window.first[1], size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y - size.Y / 2.f + ((window.first[4] + 1) * size.Y + window.first[5]) / 2.f, center.Z),
-					FVector(0.01f, (1 - window.first[4]) * size.Y - window.first[5], size.Z)));
+					FVector(0.01f, (1 - window.first[4]) * size.Y - window.first[5], size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y, center.Z + size.Z / 2.f - (window.first[2] * size.Z + window.first[3]) / 2.f),
-					FVector(0.01f, (window.first[4] - window.first[0]) * size.Y + window.first[5] - window.first[1], window.first[2] * size.Z + window.first[3])));
+					FVector(0.01f, (window.first[4] - window.first[0]) * size.Y + window.first[5] - window.first[1], window.first[2] * size.Z + window.first[3]),
+					wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y, center.Z + size.Z / 2.f - ((window.first[6] + 1) * size.Z + window.first[7]) / 2.f),
-					FVector(0.01f, (window.first[4] - window.first[0]) * size.Y + window.first[5] - window.first[1], (1 - window.first[6]) * size.Z - window.first[7])));
+					FVector(0.01f, (window.first[4] - window.first[0]) * size.Y + window.first[5] - window.first[1], (1 - window.first[6]) * size.Z - window.first[7]),
+					wallTexture));
 		}
 		else {
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f, center.Y, center.Z),
-					FVector(0.01f, size.Y, size.Z)));
+					FVector(0.01f, size.Y, size.Z), wallTexture));
 		}
 	}
 	if (directions[1]) {
@@ -305,36 +313,40 @@ TArray<FWall> ABuildingBase::ConstructQuad(FVector center, FVector size, vector<
 			auto door = doorsEast[0];
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y - size.Y / 2.f + (door.first[0] * size.Y + door.first[1]) / 2.f, center.Z),
-					FVector(0.01f, door.first[0] * size.Y + door.first[1], size.Z)));
+					FVector(0.01f, door.first[0] * size.Y + door.first[1], size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y - size.Y / 2.f + ((door.first[4] + 1) * size.Y + door.first[5]) / 2.f, center.Z),
-					FVector(0.01f, (1 - door.first[4]) * size.Y - door.first[5], size.Z)));
+					FVector(0.01f, (1 - door.first[4]) * size.Y - door.first[5], size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y, center.Z + size.Z / 2.f - (door.first[2] * size.Z + door.first[3]) / 2.f),
-					FVector(0.01f, (door.first[4] - door.first[0]) * size.Y + door.first[5] - door.first[1], door.first[2] * size.Z + door.first[3])));
+					FVector(0.01f, (door.first[4] - door.first[0]) * size.Y + door.first[5] - door.first[1], door.first[2] * size.Z + door.first[3]),
+					wallTexture));
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y, center.Z + size.Z / 2.f - ((door.first[6] + 1) * size.Z + door.first[7]) / 2.f),
-					FVector(0.01f, (door.first[4] - door.first[0]) * size.Y + door.first[5] - door.first[1], (1 - door.first[6]) * size.Z - door.first[7])));
+					FVector(0.01f, (door.first[4] - door.first[0]) * size.Y + door.first[5] - door.first[1], (1 - door.first[6]) * size.Z - door.first[7]),
+					wallTexture));
 		}
 		else if (windowsEast.size() > 0) {
 			auto window = windowsEast[0];
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y - size.Y / 2.f + (window.first[0] * size.Y + window.first[1]) / 2.f, center.Z),
-					FVector(0.01f, window.first[0] * size.Y + window.first[1], size.Z)));
+					FVector(0.01f, window.first[0] * size.Y + window.first[1], size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y - size.Y / 2.f + ((window.first[4] + 1) * size.Y + window.first[5]) / 2.f, center.Z),
-					FVector(0.01f, (1 - window.first[4]) * size.Y - window.first[5], size.Z)));
+					FVector(0.01f, (1 - window.first[4]) * size.Y - window.first[5], size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y, center.Z + size.Z / 2.f - (window.first[2] * size.Z + window.first[3]) / 2.f),
-					FVector(0.01f, (window.first[4] - window.first[0]) * size.Y + window.first[5] - window.first[1], window.first[2] * size.Z + window.first[3])));
+					FVector(0.01f, (window.first[4] - window.first[0]) * size.Y + window.first[5] - window.first[1], window.first[2] * size.Z + window.first[3]),
+					wallTexture));
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y, center.Z + size.Z / 2.f - ((window.first[6] + 1) * size.Z + window.first[7]) / 2.f),
-					FVector(0.01f, (window.first[4] - window.first[0]) * size.Y + window.first[5] - window.first[1], (1 - window.first[6]) * size.Z - window.first[7])));
+					FVector(0.01f, (window.first[4] - window.first[0]) * size.Y + window.first[5] - window.first[1], (1 - window.first[6]) * size.Z - window.first[7]),
+					wallTexture));
 		}
 		else {
 			walls.Add(
 				FWall(FVector(center.X + size.X / 2.f, center.Y, center.Z),
-					FVector(0.01f, size.Y, size.Z)));
+					FVector(0.01f, size.Y, size.Z), wallTexture));
 		}
 	}
 	if (directions[2]) {
@@ -344,36 +356,40 @@ TArray<FWall> ABuildingBase::ConstructQuad(FVector center, FVector size, vector<
 			auto door = doorsNorth[0];
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f + (door.first[0] * size.X + door.first[1]) / 2.f, center.Y - size.Y / 2.f, center.Z),
-					FVector(door.first[0] * size.X + door.first[1], 0.01f, size.Z)));
+					FVector(door.first[0] * size.X + door.first[1], 0.01f, size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f + ((door.first[4] + 1) * size.X + door.first[5]) / 2.f, center.Y - size.Y / 2.f, center.Z),
-					FVector((1 - door.first[4]) * size.X - door.first[5], 0.01f, size.Z)));
+					FVector((1 - door.first[4]) * size.X - door.first[5], 0.01f, size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X, center.Y - size.Y / 2.f, center.Z + size.Z / 2.f - (door.first[2] * size.Z + door.first[3]) / 2.f),
-					FVector((door.first[4] - door.first[0]) * size.X + door.first[5] - door.first[1], 0.01f, door.first[2] * size.Z + door.first[3])));
+					FVector((door.first[4] - door.first[0]) * size.X + door.first[5] - door.first[1], 0.01f, door.first[2] * size.Z + door.first[3]),
+					wallTexture));
 			walls.Add(
 				FWall(FVector(center.X, center.Y - size.Y / 2.f, center.Z + size.Z / 2.f - ((door.first[6] + 1) * size.Z + door.first[7]) / 2.f),
-					FVector((door.first[4] - door.first[0]) * size.X + door.first[5] - door.first[1], 0.01f, (1 - door.first[6]) * size.Z - door.first[7])));
+					FVector((door.first[4] - door.first[0]) * size.X + door.first[5] - door.first[1], 0.01f, (1 - door.first[6]) * size.Z - door.first[7]),
+					wallTexture));
 		}
 		else if (windowsNorth.size() > 0) {
 			auto window = windowsNorth[0];
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f + (window.first[0] * size.X + window.first[1]) / 2.f, center.Y - size.Y / 2.f, center.Z),
-					FVector(window.first[0] * size.X + window.first[1], 0.01f, size.Z)));
+					FVector(window.first[0] * size.X + window.first[1], 0.01f, size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f + ((window.first[4] + 1) * size.X + window.first[5]) / 2.f, center.Y - size.Y / 2.f, center.Z),
-					FVector((1 - window.first[4]) * size.X - window.first[5], 0.01f, size.Z)));
+					FVector((1 - window.first[4]) * size.X - window.first[5], 0.01f, size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X, center.Y - size.Y / 2.f, center.Z + size.Z / 2.f - (window.first[2] * size.Z + window.first[3]) / 2.f),
-					FVector((window.first[4] - window.first[0])* size.X + window.first[5] - window.first[1], 0.01f, window.first[2] * size.Z + window.first[3])));
+					FVector((window.first[4] - window.first[0])* size.X + window.first[5] - window.first[1], 0.01f, window.first[2] * size.Z + window.first[3]),
+					wallTexture));
 			walls.Add(
 				FWall(FVector(center.X, center.Y - size.Y / 2.f, center.Z + size.Z / 2.f - ((window.first[6] + 1) * size.Z + window.first[7]) / 2.f),
-					FVector((window.first[4] - window.first[0])* size.X + window.first[5] - window.first[1], 0.01f, (1 - window.first[6])* size.Z - window.first[7])));
+					FVector((window.first[4] - window.first[0])* size.X + window.first[5] - window.first[1], 0.01f, (1 - window.first[6])* size.Z - window.first[7]),
+					wallTexture));
 		}
 		else {
 			walls.Add(
 				FWall(FVector(center.X, center.Y - size.Y / 2.f, center.Z),
-					FVector(size.X, 0.01f, size.Z)));
+					FVector(size.X, 0.01f, size.Z), wallTexture));
 		}
 	}
 	if (directions[3]) {
@@ -383,36 +399,40 @@ TArray<FWall> ABuildingBase::ConstructQuad(FVector center, FVector size, vector<
 			auto door = doorsSouth[0];
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f + (door.first[0] * size.X + door.first[1]) / 2.f, center.Y + size.Y / 2.f, center.Z),
-					FVector(door.first[0] * size.X + door.first[1], 0.01f, size.Z)));
+					FVector(door.first[0] * size.X + door.first[1], 0.01f, size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f + ((door.first[4] + 1) * size.X + door.first[5]) / 2.f, center.Y + size.Y / 2.f, center.Z),
-					FVector((1 - door.first[4]) * size.X - door.first[5], 0.01f, size.Z)));
+					FVector((1 - door.first[4]) * size.X - door.first[5], 0.01f, size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X, center.Y + size.Y / 2.f, center.Z + size.Z / 2.f - (door.first[2] * size.Z + door.first[3]) / 2.f),
-					FVector((door.first[4] - door.first[0])* size.X + door.first[5] - door.first[1], 0.01f, door.first[2] * size.Z + door.first[3])));
+					FVector((door.first[4] - door.first[0])* size.X + door.first[5] - door.first[1], 0.01f, door.first[2] * size.Z + door.first[3]),
+					wallTexture));
 			walls.Add(
 				FWall(FVector(center.X, center.Y + size.Y / 2.f, center.Z + size.Z / 2.f - ((door.first[6] + 1) * size.Z + door.first[7]) / 2.f),
-					FVector((door.first[4] - door.first[0])* size.X + door.first[5] - door.first[1], 0.01f, (1 - door.first[6])* size.Z - door.first[7])));
+					FVector((door.first[4] - door.first[0])* size.X + door.first[5] - door.first[1], 0.01f, (1 - door.first[6])* size.Z - door.first[7]),
+					wallTexture));
 		}
 		else if (windowsSouth.size() > 0) {
 			auto window = windowsSouth[0];
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f + (window.first[0] * size.X + window.first[1]) / 2.f, center.Y + size.Y / 2.f, center.Z),
-					FVector(window.first[0] * size.X + window.first[1], 0.01f, size.Z)));
+					FVector(window.first[0] * size.X + window.first[1], 0.01f, size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X - size.X / 2.f + ((window.first[4] + 1) * size.X + window.first[5]) / 2.f, center.Y + size.Y / 2.f, center.Z),
-					FVector((1 - window.first[4]) * size.X - window.first[5], 0.01f, size.Z)));
+					FVector((1 - window.first[4]) * size.X - window.first[5], 0.01f, size.Z), wallTexture));
 			walls.Add(
 				FWall(FVector(center.X, center.Y + size.Y / 2.f, center.Z + size.Z / 2.f - (window.first[2] * size.Z + window.first[3]) / 2.f),
-					FVector((window.first[4] - window.first[0])* size.X + window.first[5] - window.first[1], 0.01f, window.first[2] * size.Z + window.first[3])));
+					FVector((window.first[4] - window.first[0])* size.X + window.first[5] - window.first[1], 0.01f, window.first[2] * size.Z + window.first[3]),
+					wallTexture));
 			walls.Add(
 				FWall(FVector(center.X, center.Y + size.Y / 2.f, center.Z + size.Z / 2.f - ((window.first[6] + 1) * size.Z + window.first[7]) / 2.f),
-					FVector((window.first[4] - window.first[0])* size.X + window.first[5] - window.first[1], 0.01f, (1 - window.first[6])* size.Z - window.first[7])));
+					FVector((window.first[4] - window.first[0])* size.X + window.first[5] - window.first[1], 0.01f, (1 - window.first[6])* size.Z - window.first[7]),
+					wallTexture));
 		}
 		else {
 			walls.Add(
 				FWall(FVector(center.X, center.Y + size.Y / 2.f, center.Z),
-					FVector(size.X, 0.01f, size.Z)));
+					FVector(size.X, 0.01f, size.Z), wallTexture));
 		}
 	}
 	return walls;

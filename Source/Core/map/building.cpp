@@ -284,6 +284,7 @@ Building::Building(BuildingFactory* factory, const string& building) :
 	basements(0),
 	height(0.4f),
 	construction(),
+	wallTexture(),
 	script(nullptr) {
 
 }
@@ -363,6 +364,10 @@ void Building::PlaceConstruction() {
 	mod->PlaceConstruction();
 	construction = Quad(mod->construction.GetPosX() * GetSizeX(), mod->construction.GetPosY() * GetSizeY(),
 		mod->construction.GetSizeX() * GetSizeX(), mod->construction.GetSizeY() * GetSizeY());
+}
+
+std::string Building::GetWallTexture() const {
+	return wallTexture;
 }
 
 string Building::GetAddress() {
@@ -456,6 +461,7 @@ void Building::LayoutBuilding(Layout* layout) {
 	basements = mod->basements;
 	layers = mod->layers;
 	height = mod->height;
+	wallTexture = mod->wallTexture;
 
 	unordered_map<pair<string, int>, Component*, PairHash> componentMap;
 	for (auto single : mod->singles) {

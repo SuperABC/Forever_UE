@@ -42,6 +42,8 @@ void APopulaceBase::Tick(float DeltaTime) {
 		if (!citizen->GetCurrentRoom())continue;
 		auto room = citizen->GetCurrentRoom();
 		auto pos = room->GetPosition(room->GetSizeX() / 2.f, room->GetSizeY() / 2.f);
+		pos.first += (GetRandom(11) / 10.f - 0.5f) * 0.4f;
+		pos.second += (GetRandom(11) / 10.f - 0.5f) * 0.4f;
 		citizenInfo.pos = FVector(pos.first, pos.second, room->GetLayer() * room->GetParentBuilding()->GetHeight());
 		if ((location - citizenInfo.pos).Size() > 8.f) {
 			continue;

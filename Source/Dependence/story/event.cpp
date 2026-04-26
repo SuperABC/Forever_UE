@@ -210,157 +210,6 @@ string SpeakingFinishEvent::GetLabel() const {
 	return label;
 }
 
-NPCMeetEvent::NPCMeetEvent(string npc) :
-	npc(npc) {
-
-}
-
-NPCMeetEvent::~NPCMeetEvent() {
-
-}
-
-string NPCMeetEvent::GetType() const {
-	return "npc_meet";
-}
-
-bool NPCMeetEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<NPCMeetEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (npc.size() > 0 && other->npc.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(npc);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto npcValue = get_if<string>(&value)) {
-			result = (result && *npcValue == other->npc);
-		}
-		else {
-			result = (result && npc == other->npc);
-		}
-	}
-	return result;
-}
-
-void NPCMeetEvent::SetNPC(string npc) {
-	this->npc = npc;
-}
-
-string NPCMeetEvent::GetNPC() const {
-	return npc;
-}
-
-CitizenBornEvent::CitizenBornEvent(string name)
-	: name(name) {
-
-}
-
-CitizenBornEvent::~CitizenBornEvent() {
-
-}
-
-string CitizenBornEvent::GetType() const {
-	return "citizen_born";
-}
-
-bool CitizenBornEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<CitizenBornEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (name.size() > 0 && other->name.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(name);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto nameValue = get_if<string>(&value)) {
-			result = (result && *nameValue == other->name);
-		}
-		else {
-			result = (result && name == other->name);
-		}
-	}
-	return result;
-}
-
-void CitizenBornEvent::SetName(string name) {
-	this->name = name;
-}
-
-string CitizenBornEvent::GetName() const {
-	return name;
-}
-
-CitizenDeceaseEvent::CitizenDeceaseEvent(string name, string reason)
-	: name(name), reason(reason) {
-
-}
-
-CitizenDeceaseEvent::~CitizenDeceaseEvent() {
-
-}
-
-string CitizenDeceaseEvent::GetType() const {
-	return "citizen_decease";
-}
-
-bool CitizenDeceaseEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<CitizenDeceaseEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (name.size() > 0 && other->name.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(name);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto nameValue = get_if<string>(&value)) {
-			result = (result && *nameValue == other->name);
-		}
-		else {
-			result = (result && name == other->name);
-		}
-	}
-	if (reason.size() > 0 && other->reason.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(reason);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto reasonValue = get_if<string>(&value)) {
-			result = (result && *reasonValue == other->reason);
-		}
-		else {
-			result = (result && reason == other->reason);
-		}
-	}
-	return result;
-}
-
-void CitizenDeceaseEvent::SetName(string name) {
-	this->name = name;
-}
-
-string CitizenDeceaseEvent::GetName() const {
-	return name;
-}
-
-void CitizenDeceaseEvent::SetReason(string reason) {
-	this->reason = reason;
-}
-
-string CitizenDeceaseEvent::GetReason() const {
-	return reason;
-}
-
 EnterZoneEvent::EnterZoneEvent(string zone) :
 	zone(zone) {
 
@@ -738,6 +587,157 @@ void LeaveRoomEvent::SetRoom(string room) {
 
 string LeaveRoomEvent::GetRoom() const {
 	return room;
+}
+
+NPCMeetEvent::NPCMeetEvent(string npc) :
+	npc(npc) {
+
+}
+
+NPCMeetEvent::~NPCMeetEvent() {
+
+}
+
+string NPCMeetEvent::GetType() const {
+	return "npc_meet";
+}
+
+bool NPCMeetEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<NPCMeetEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (npc.size() > 0 && other->npc.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(npc);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto npcValue = get_if<string>(&value)) {
+			result = (result && *npcValue == other->npc);
+		}
+		else {
+			result = (result && npc == other->npc);
+		}
+	}
+	return result;
+}
+
+void NPCMeetEvent::SetNPC(string npc) {
+	this->npc = npc;
+}
+
+string NPCMeetEvent::GetNPC() const {
+	return npc;
+}
+
+CitizenBornEvent::CitizenBornEvent(string name)
+	: name(name) {
+
+}
+
+CitizenBornEvent::~CitizenBornEvent() {
+
+}
+
+string CitizenBornEvent::GetType() const {
+	return "citizen_born";
+}
+
+bool CitizenBornEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<CitizenBornEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto nameValue = get_if<string>(&value)) {
+			result = (result && *nameValue == other->name);
+		}
+		else {
+			result = (result && name == other->name);
+		}
+	}
+	return result;
+}
+
+void CitizenBornEvent::SetName(string name) {
+	this->name = name;
+}
+
+string CitizenBornEvent::GetName() const {
+	return name;
+}
+
+CitizenDeceaseEvent::CitizenDeceaseEvent(string name, string reason)
+	: name(name), reason(reason) {
+
+}
+
+CitizenDeceaseEvent::~CitizenDeceaseEvent() {
+
+}
+
+string CitizenDeceaseEvent::GetType() const {
+	return "citizen_decease";
+}
+
+bool CitizenDeceaseEvent::Match(Event* e,
+	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<CitizenDeceaseEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto nameValue = get_if<string>(&value)) {
+			result = (result && *nameValue == other->name);
+		}
+		else {
+			result = (result && name == other->name);
+		}
+	}
+	if (reason.size() > 0 && other->reason.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(reason);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto reasonValue = get_if<string>(&value)) {
+			result = (result && *reasonValue == other->reason);
+		}
+		else {
+			result = (result && reason == other->reason);
+		}
+	}
+	return result;
+}
+
+void CitizenDeceaseEvent::SetName(string name) {
+	this->name = name;
+}
+
+string CitizenDeceaseEvent::GetName() const {
+	return name;
+}
+
+void CitizenDeceaseEvent::SetReason(string reason) {
+	this->reason = reason;
+}
+
+string CitizenDeceaseEvent::GetReason() const {
+	return reason;
 }
 
 DepositChangeEvent::DepositChangeEvent(int result, int delta)

@@ -200,6 +200,9 @@ public:
 	// 放置建筑楼体
 	void PlaceConstruction();
 
+	// 获取外立面材质
+	std::string GetWallTexture() const;
+
 	// 获取地址
 	std::string GetAddress();
 
@@ -298,6 +301,9 @@ private:
 
 	// 建筑楼体范围
 	Quad construction;
+
+	// 外立面材质
+	std::string wallTexture;
 	
 	// 完整地址
 	std::string address;

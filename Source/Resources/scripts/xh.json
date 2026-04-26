@@ -31,7 +31,9 @@
 		{"type": "spawn_npc", "name": "天婵", "gender": "female", "birthday": "$$system.time.year-19+\"年11月4日\""},
 		
 		{"type": "spawn_npc", "name": "楚鹏展", "gender": "male", "birthday": "$$system.time.year-46+\"年8月8日\""},
+		{"type": "spawn_npc", "name": "李福", "gender": "male", "birthday": "$$system.time.year-42+\"年5月26日\""},
 		{"type": "teleport_citizen", "name": "楚鹏展", "destination": "\"中山北路 0 pengzhan 00000\""},
+		{"type": "teleport_citizen", "name": "李福", "destination": "\"中山北路 0 pengzhan 00000\""},
 		{"type": "add_option", "name": "楚鹏展", "option": "你好"},
 		{"type": "set_value", "variable": "plot_step", "value": "chapter1_arrive_songshan"},
 	],
@@ -67,7 +69,8 @@
 		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_cpz"},
 	],
 	"subsequences": [
-		"chapter1_get_mission"
+		"chapter1_after_meet_cpz",
+		"chapter1_get_mission",
 	]
 },
 
@@ -78,6 +81,7 @@
 	"dialogs": [],
 	"changes": [
 		{"type": "teleport_citizen", "name": "楚鹏展", "destination": "\"中山北路 0 pengzhan 190000\""},
+		{"type": "teleport_citizen", "name": "李福", "destination": "\"中山北路 0 pengzhan 190000\""},
 		{"type": "add_option", "name": "楚鹏展", "option": "楚叔叔您说吧"},
 	],
 	"subsequences": []
@@ -111,8 +115,12 @@
 		{"type": "remove_option", "name": "楚鹏展", "option": "楚叔叔您说吧"},
 		{"type": "teleport_citizen", "name": "楚梦瑶", "destination": "\"中山北路 0 yizhong 00000\""},
 		{"type": "teleport_citizen", "name": "陈雨舒", "destination": "\"中山北路 0 yizhong 00000\""},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_get_mission"},
 	],
-	"subsequences": []
+	"subsequences": [
+		"chapter1_after_get_mission",
+		"chapter1_meet_cmy",
+	]
 },
 
 { //chapter1_after_get_mission
@@ -121,10 +129,95 @@
 	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_get_mission"}],
 	"dialogs": [],
 	"changes": [
+		{"type": "add_option", "name": "楚梦瑶", "option": "你好"},
+		{"type": "teleport_citizen", "name": "李福", "destination": "\"中山北路 0 yizhong 00000\""},
 		{"type": "teleport_player", "destination": "\"中山北路 0 yizhong 00000\""},
 	],
 	"subsequences": []
-}
+},
+
+{ //chapter1_meet_cmy
+	"milestone": "chapter1_meet_cmy",
+	"visible": true,
+	"goal": "接瑶瑶放学",
+	"description": "楚鹏展让你先接瑶瑶放学，并熟悉一下环境。",
+	"triggers": [{"type": "option_dialog", "name": "楚梦瑶", "option": "你好"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_get_mission", "list": [
+			{"speaker": "林逸", "content": "你好，我叫林逸。"},
+			{"speaker": "楚梦瑶", "content": "林逸？福伯，他是干什么的？"},
+			{"speaker": "李福", "content": "楚小姐，这是楚先生给您请来的伴读…"},
+			{"speaker": "楚梦瑶", "content": "伴读？谁要伴读了？我不是说要找一个挡箭牌来么？你看他这样的，能给我挡谁？"},
+			{"speaker": "李福", "content": "小姐，楚先生说了，林逸先生是个复合型人才，能文能武，这个区区挡箭牌自然不在话下…"},
+			{"speaker": "楚梦瑶", "content": "他？"},
+			{"content": "楚梦瑶一旁的那个女孩子却是捂嘴偷笑了起来，因为林逸这打扮，怎么看也不像是能替楚梦瑶做挡箭牌的人。这家伙穿的什么玩意啊？大背心子破裤子，整个一个民工进城的打扮，甚至民工都没有他这么屯的，他以为这是唱二人转呢啊？"},
+			{"speaker": "楚梦瑶", "content": "小舒，你笑什么？"},
+			{"speaker": "楚梦瑶", "content": "福伯，叫他走，我要换人。"},
+			{"speaker": "李福", "content": "小姐，楚先生说了，林逸先生一定可以胜任的，而且已经签署了合同…"},
+			{"speaker": "楚梦瑶", "content": "啊？"},
+			{"speaker": "楚梦瑶", "content": "好吧，刚才那边那个男生钟品亮对我纠缠不放，你帮我处理一下吧，处理的好就算你过关了。", "label": "chapter1_after_meet_cmy"},
+		]}
+	],
+	"changes": [
+		{"type": "remove_option", "name": "楚梦瑶", "option": "你好"},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_cmy"},
+	],
+	"subsequences": [
+		"chapter1_after_meet_cmy",
+		"chapter1_meet_zpl",
+	]
+},
+
+{ //chapter1_after_meet_cmy
+	"milestone": "chapter1_after_meet_cmy",
+	"visible": false,
+	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_meet_cmy"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "spawn_npc", "name": "钟品亮", "gender": "male", "birthday": "$$system.time.year-17+\"年1月2日\""},
+		{"type": "spawn_npc", "name": "高小福", "gender": "male", "birthday": "$$system.time.year-17+\"年4月19日\""},
+		{"type": "spawn_npc", "name": "张乃炮", "gender": "male", "birthday": "$$system.time.year-18+\"年9月30日\""},
+		{"type": "add_option", "name": "钟品亮", "option": "\" \""},
+		{"type": "teleport_citizen", "name": "钟品亮", "destination": "\"中山北路 0 yizhong 00000\""},
+		{"type": "teleport_citizen", "name": "高小福", "destination": "\"中山北路 0 yizhong 00000\""},
+		{"type": "teleport_citizen", "name": "张乃炮", "destination": "\"中山北路 0 yizhong 00000\""},
+	],
+	"subsequences": []
+},
+
+{ //chapter1_meet_zpl
+	"milestone": "chapter1_meet_zpl",
+	"visible": true,
+	"goal": "解决钟品亮这个麻烦",
+	"description": "楚梦瑶让你帮她先解决钟品亮这个麻烦，作为第一个考验。",
+	"triggers": [{"type": "option_dialog", "name": "钟品亮", "option": " "}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_meet_cmy", "list": [
+			{"speaker": "钟品亮", "content": "这个楚梦瑶，每次约她都被拒绝，要是换做别的女人，早就上赶着扑向我的怀抱了！"},
+			{"speaker": "高小福", "content": "钟少，可是这个楚梦瑶不是一般的女人啊，她可是鹏展集团的千金大小姐，有难度也是正常的！"},
+			{"speaker": "钟品亮", "content": "我知道，还用你说？所以要有恒心…你是谁？", "label": "chapter1_after_meet_zpl"},
+		]}
+	],
+	"changes": [
+		{"type": "remove_option", "name": "钟品亮", "option": "\" \""},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_zpl"},
+	],
+	"subsequences": [
+		"chapter1_after_meet_zpl",
+	]
+},
+
+{ //chapter1_after_meet_zpl
+	"milestone": "chapter1_after_meet_zpl",
+	"visible": false,
+	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_meet_zpl"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "enter_battle", "enemy": "钟品亮"},
+	],
+	"subsequences": [
+	]
+},
 
 ]
 }

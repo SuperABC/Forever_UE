@@ -49,7 +49,7 @@ public:
 	// 采样建筑面积
 	COSTOM_INIT virtual float RandomAcreage() = 0;
 
-	// 布局建筑内部
+	// 布局建筑
 	COSTOM_INIT virtual void LayoutBuilding(const Quad* quad) = 0;
 
 	// 放置楼栋
@@ -90,6 +90,9 @@ public:
 
 	// 楼栋位置
 	Quad construction;
+
+	// 外立面材质
+	std::string wallTexture;
 
 	// 所有楼层布局及方向（包含地下及地上）
 	std::vector<std::pair<std::string, int>> templates;

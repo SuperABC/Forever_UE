@@ -23,8 +23,8 @@ GlobalMessageChange::GlobalMessageChange() {
 
 }
 
-GlobalMessageChange::GlobalMessageChange(string message)
-	: message(message) {
+GlobalMessageChange::GlobalMessageChange(string message) :
+	message(message) {
 
 }
 
@@ -48,8 +48,8 @@ SetValueChange::SetValueChange() {
 
 }
 
-SetValueChange::SetValueChange(string variable, string value)
-	: variable(variable), value(value) {
+SetValueChange::SetValueChange(string variable, string value) :
+	variable(variable), value(value) {
 
 }
 
@@ -81,8 +81,8 @@ RemoveValueChange::RemoveValueChange() {
 
 }
 
-RemoveValueChange::RemoveValueChange(string variable)
-	: variable(variable) {
+RemoveValueChange::RemoveValueChange(string variable) :
+	variable(variable) {
 
 }
 
@@ -106,8 +106,8 @@ DeactivateMilestoneChange::DeactivateMilestoneChange() {
 
 }
 
-DeactivateMilestoneChange::DeactivateMilestoneChange(string milestone)
-	: milestone(milestone) {
+DeactivateMilestoneChange::DeactivateMilestoneChange(string milestone) :
+	milestone(milestone) {
 
 }
 
@@ -131,8 +131,8 @@ AddOptionChange::AddOptionChange() {
 
 }
 
-AddOptionChange::AddOptionChange(string name, string option)
-	: name(name), option(option) {
+AddOptionChange::AddOptionChange(string name, string option) :
+	name(name), option(option) {
 
 }
 
@@ -164,8 +164,8 @@ RemoveOptionChange::RemoveOptionChange() {
 
 }
 
-RemoveOptionChange::RemoveOptionChange(string name, string option)
-	: name(name), option(option) {
+RemoveOptionChange::RemoveOptionChange(string name, string option) :
+	name(name), option(option) {
 
 }
 
@@ -312,8 +312,8 @@ RemoveNpcChange::RemoveNpcChange() {
 
 }
 
-RemoveNpcChange::RemoveNpcChange(string name)
-	: name(name) {
+RemoveNpcChange::RemoveNpcChange(string name) :
+	name(name) {
 
 }
 
@@ -333,45 +333,12 @@ string RemoveNpcChange::GetName() const {
 	return name;
 }
 
-NPCNavigateChange::NPCNavigateChange() {
-
-}
-
-NPCNavigateChange::NPCNavigateChange(string name, string destination)
-	: name(name), destination(destination) {
-
-}
-
-NPCNavigateChange::~NPCNavigateChange() {
-
-}
-
-string NPCNavigateChange::GetType() const {
-	return "npc_navigate";
-}
-
-void NPCNavigateChange::SetName(string name) {
-	this->name = name;
-}
-
-string NPCNavigateChange::GetName() const {
-	return name;
-}
-
-void NPCNavigateChange::SetDestination(string destination) {
-	this->destination = destination;
-}
-
-string NPCNavigateChange::GetDestination() const {
-	return destination;
-}
-
 TeleportCitizenChange::TeleportCitizenChange() {
 
 }
 
-TeleportCitizenChange::TeleportCitizenChange(string name, string destination)
-	: name(name), destination(destination) {
+TeleportCitizenChange::TeleportCitizenChange(string name, string destination) :
+	name(name), destination(destination) {
 
 }
 
@@ -403,8 +370,8 @@ TeleportPlayerChange::TeleportPlayerChange() {
 
 }
 
-TeleportPlayerChange::TeleportPlayerChange(string destination)
-	: destination(destination) {
+TeleportPlayerChange::TeleportPlayerChange(string destination) :
+	destination(destination) {
 
 }
 
@@ -428,8 +395,8 @@ OpenShopChange::OpenShopChange() {
 
 }
 
-OpenShopChange::OpenShopChange(string saler)
-	: saler(saler) {
+OpenShopChange::OpenShopChange(string saler) :
+	saler(saler) {
 
 }
 
@@ -449,12 +416,45 @@ string OpenShopChange::GetSaler() const {
 	return saler;
 }
 
+NPCNavigateChange::NPCNavigateChange() {
+
+}
+
+NPCNavigateChange::NPCNavigateChange(string name, string destination) :
+	name(name), destination(destination) {
+
+}
+
+NPCNavigateChange::~NPCNavigateChange() {
+
+}
+
+string NPCNavigateChange::GetType() const {
+	return "npc_navigate";
+}
+
+void NPCNavigateChange::SetName(string name) {
+	this->name = name;
+}
+
+string NPCNavigateChange::GetName() const {
+	return name;
+}
+
+void NPCNavigateChange::SetDestination(string destination) {
+	this->destination = destination;
+}
+
+string NPCNavigateChange::GetDestination() const {
+	return destination;
+}
+
 BankTransactionChange::BankTransactionChange() {
 
 }
 
-BankTransactionChange::BankTransactionChange(int amount)
-	: amount(amount) {
+BankTransactionChange::BankTransactionChange(int amount) :
+	amount(amount) {
 
 }
 
@@ -478,8 +478,8 @@ CashTransactionChange::CashTransactionChange() {
 
 }
 
-CashTransactionChange::CashTransactionChange(int amount)
-	: amount(amount) {
+CashTransactionChange::CashTransactionChange(int amount) :
+	amount(amount) {
 
 }
 
@@ -503,8 +503,8 @@ GiveItemChange::GiveItemChange() {
 
 }
 
-GiveItemChange::GiveItemChange(string item, int num)
-	: item(item), num(num) {
+GiveItemChange::GiveItemChange(string item, int num) :
+	item(item), num(num) {
 
 }
 
@@ -536,8 +536,8 @@ RemoveItemChange::RemoveItemChange() {
 
 }
 
-RemoveItemChange::RemoveItemChange(string item, int num)
-	: item(item), num(num) {
+RemoveItemChange::RemoveItemChange(string item, int num) :
+	item(item), num(num) {
 
 }
 
@@ -565,12 +565,37 @@ int RemoveItemChange::GetNum() {
 	return num;
 }
 
+EnterBattleChange::EnterBattleChange() {
+
+}
+
+EnterBattleChange::EnterBattleChange(string enemy) :
+	enemy(enemy) {
+
+}
+
+EnterBattleChange::~EnterBattleChange() {
+
+}
+
+string EnterBattleChange::GetType() const {
+	return "enter_battle";
+}
+
+void EnterBattleChange::SetEnemy(string enemy) {
+	this->enemy = enemy;
+}
+
+string EnterBattleChange::GetEnemy() const {
+	return enemy;
+}
+
 PlayerInjuredChange::PlayerInjuredChange() {
 
 }
 
-PlayerInjuredChange::PlayerInjuredChange(string wound)
-	: wound(wound) {
+PlayerInjuredChange::PlayerInjuredChange(string wound) :
+	wound(wound) {
 
 }
 
@@ -594,8 +619,8 @@ PlayerCuredChange::PlayerCuredChange() {
 
 }
 
-PlayerCuredChange::PlayerCuredChange(string wound)
-	: wound(wound) {
+PlayerCuredChange::PlayerCuredChange(string wound) :
+	wound(wound) {
 
 }
 
@@ -619,8 +644,8 @@ PlayerIllChange::PlayerIllChange() {
 
 }
 
-PlayerIllChange::PlayerIllChange(string illness)
-	: illness(illness) {
+PlayerIllChange::PlayerIllChange(string illness) :
+	illness(illness) {
 
 }
 
@@ -644,8 +669,8 @@ PlayerRecoverChange::PlayerRecoverChange() {
 
 }
 
-PlayerRecoverChange::PlayerRecoverChange(string illness)
-	: illness(illness) {
+PlayerRecoverChange::PlayerRecoverChange(string illness) :
+	illness(illness) {
 
 }
 
@@ -669,8 +694,8 @@ PlayerSleepChange::PlayerSleepChange() {
 
 }
 
-PlayerSleepChange::PlayerSleepChange(int hour)
-	: hour(hour) {
+PlayerSleepChange::PlayerSleepChange(int hour) :
+	hour(hour) {
 
 }
 
@@ -694,8 +719,8 @@ CreateTimerChange::CreateTimerChange() {
 
 }
 
-CreateTimerChange::CreateTimerChange(string timer, Time duration, int loop)
-	: timer(timer), duration(duration), loop(loop) {
+CreateTimerChange::CreateTimerChange(string timer, Time duration, int loop) :
+	timer(timer), duration(duration), loop(loop) {
 
 }
 
@@ -735,8 +760,8 @@ PauseTimerChange::PauseTimerChange() {
 
 }
 
-PauseTimerChange::PauseTimerChange(string timer)
-	: timer(timer) {
+PauseTimerChange::PauseTimerChange(string timer) :
+	timer(timer) {
 
 }
 
@@ -760,8 +785,8 @@ ResumeTimerChange::ResumeTimerChange() {
 
 }
 
-ResumeTimerChange::ResumeTimerChange(string timer)
-	: timer(timer) {
+ResumeTimerChange::ResumeTimerChange(string timer) :
+	timer(timer) {
 
 }
 
@@ -785,8 +810,8 @@ RemoveTimerChange::RemoveTimerChange() {
 
 }
 
-RemoveTimerChange::RemoveTimerChange(string timer)
-	: timer(timer) {
+RemoveTimerChange::RemoveTimerChange(string timer) :
+	timer(timer) {
 
 }
 
@@ -810,8 +835,8 @@ ResetTimerChange::ResetTimerChange() {
 
 }
 
-ResetTimerChange::ResetTimerChange(string timer)
-	: timer(timer) {
+ResetTimerChange::ResetTimerChange(string timer) :
+	timer(timer) {
 
 }
 
@@ -835,8 +860,8 @@ CreateCounterChange::CreateCounterChange() {
 
 }
 
-CreateCounterChange::CreateCounterChange(string counter, int count)
-	: counter(counter), count(count) {
+CreateCounterChange::CreateCounterChange(string counter, int count) :
+	counter(counter), count(count) {
 
 }
 
@@ -868,8 +893,8 @@ CallCounterChange::CallCounterChange() {
 
 }
 
-CallCounterChange::CallCounterChange(string counter, int delta)
-	: counter(counter), delta(delta) {
+CallCounterChange::CallCounterChange(string counter, int delta) :
+	counter(counter), delta(delta) {
 
 }
 
@@ -901,8 +926,8 @@ RemoveCounterChange::RemoveCounterChange() {
 
 }
 
-RemoveCounterChange::RemoveCounterChange(string counter)
-	: counter(counter) {
+RemoveCounterChange::RemoveCounterChange(string counter) :
+	counter(counter) {
 
 }
 
@@ -922,37 +947,12 @@ string RemoveCounterChange::GetCounter() const {
 	return counter;
 }
 
-EnterBattleChange::EnterBattleChange() {
-
-}
-
-EnterBattleChange::EnterBattleChange(string enemy)
-	: enemy(enemy) {
-
-}
-
-EnterBattleChange::~EnterBattleChange() {
-
-}
-
-string EnterBattleChange::GetType() const {
-	return "enter_battle";
-}
-
-void EnterBattleChange::SetEnemy(string enemy) {
-	this->enemy = enemy;
-}
-
-string EnterBattleChange::GetEnemy() const {
-	return enemy;
-}
-
 ChangeTimeChange::ChangeTimeChange() {
 
 }
 
-ChangeTimeChange::ChangeTimeChange(Time delta)
-	: delta(delta) {
+ChangeTimeChange::ChangeTimeChange(Time delta) :
+	delta(delta) {
 
 }
 
@@ -976,8 +976,8 @@ ChangeCultivationChange::ChangeCultivationChange() {
 
 }
 
-ChangeCultivationChange::ChangeCultivationChange(string method, int level)
-	: method(method), level(level) {
+ChangeCultivationChange::ChangeCultivationChange(string method, int level) :
+	method(method), level(level) {
 
 }
 
@@ -1009,8 +1009,8 @@ ChangeWantedChange::ChangeWantedChange() {
 
 }
 
-ChangeWantedChange::ChangeWantedChange(string reason, int level)
-	: reason(reason), level(level) {
+ChangeWantedChange::ChangeWantedChange(string reason, int level) :
+	reason(reason), level(level) {
 
 }
 
@@ -1067,8 +1067,8 @@ ChangePolicyChange::ChangePolicyChange() {
 
 }
 
-ChangePolicyChange::ChangePolicyChange(string policy)
-	: policy(policy) {
+ChangePolicyChange::ChangePolicyChange(string policy) :
+	policy(policy) {
 
 }
 

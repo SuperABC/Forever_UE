@@ -91,7 +91,7 @@ private:
 	std::string option;
 };
 
-// 对话完成
+// 对话完成（已实现）
 class SpeakingFinishEvent : public Event {
 public:
 	SpeakingFinishEvent(std::string label);
@@ -107,63 +107,6 @@ public:
 
 private:
 	std::string label;
-};
-
-// NPC相遇
-class NPCMeetEvent : public Event {
-public:
-	NPCMeetEvent(std::string npc);
-	virtual ~NPCMeetEvent();
-
-	virtual std::string GetType() const;
-
-	virtual bool Match(Event* e,
-			std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
-
-	void SetNPC(std::string npc);
-	std::string GetNPC() const;
-
-private:
-	std::string npc;
-};
-
-// 市民出生
-class CitizenBornEvent : public Event {
-public:
-	CitizenBornEvent(std::string name);
-	virtual ~CitizenBornEvent();
-
-	virtual std::string GetType() const;
-
-	virtual bool Match(Event* e,
-			std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
-
-	void SetName(std::string name);
-	std::string GetName() const;
-
-private:
-	std::string name;
-};
-
-// 市民死亡
-class CitizenDeceaseEvent : public Event {
-public:
-	CitizenDeceaseEvent(std::string name, std::string reason);
-	virtual ~CitizenDeceaseEvent();
-
-	virtual std::string GetType() const;
-
-	virtual bool Match(Event* e,
-			std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
-
-	void SetName(std::string name);
-	std::string GetName() const;
-	void SetReason(std::string result);
-	std::string GetReason() const;
-
-private:
-	std::string name;
-	std::string reason;
 };
 
 // 进入园区（已实现）
@@ -290,6 +233,63 @@ private:
 	std::string zone;
 	std::string building;
 	std::string room;
+};
+
+// NPC相遇
+class NPCMeetEvent : public Event {
+public:
+	NPCMeetEvent(std::string npc);
+	virtual ~NPCMeetEvent();
+
+	virtual std::string GetType() const;
+
+	virtual bool Match(Event* e,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
+
+	void SetNPC(std::string npc);
+	std::string GetNPC() const;
+
+private:
+	std::string npc;
+};
+
+// 市民出生
+class CitizenBornEvent : public Event {
+public:
+	CitizenBornEvent(std::string name);
+	virtual ~CitizenBornEvent();
+
+	virtual std::string GetType() const;
+
+	virtual bool Match(Event* e,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
+
+	void SetName(std::string name);
+	std::string GetName() const;
+
+private:
+	std::string name;
+};
+
+// 市民死亡
+class CitizenDeceaseEvent : public Event {
+public:
+	CitizenDeceaseEvent(std::string name, std::string reason);
+	virtual ~CitizenDeceaseEvent();
+
+	virtual std::string GetType() const;
+
+	virtual bool Match(Event* e,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
+
+	void SetName(std::string name);
+	std::string GetName() const;
+	void SetReason(std::string result);
+	std::string GetReason() const;
+
+private:
+	std::string name;
+	std::string reason;
 };
 
 // 存款变化
