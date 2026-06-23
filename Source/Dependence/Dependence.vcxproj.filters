@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="map">
+      <UniqueIdentifier>{1978122e-e8e1-49fc-a850-5d1fa99ce133}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="populace">
+      <UniqueIdentifier>{a46b462f-af92-464f-9084-752a77745770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="society">
+      <UniqueIdentifier>{e50c8537-b457-43c5-a527-9bbe3ab61054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="story">
+      <UniqueIdentifier>{3e02b8c6-f879-4a94-858b-952f56603824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="industry">
+      <UniqueIdentifier>{a820ee89-ab99-47fd-8664-dc8edc1b80b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="traffic">
+      <UniqueIdentifier>{453b547a-96f4-491c-a7e4-1ec1399b1c31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="player">
+      <UniqueIdentifier>{37ddbe1a-96da-440d-9a6f-bc4688b1655e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{459b37a9-3e66-4873-a727-d55ede6546da}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="map\terrain_mod.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utility.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\error.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="map\roadnet_mod.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\building_mod.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\zone_mod.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\room_mod.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="map\component_mod.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\name_mod.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\scheduler_mod.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="populace\asset_mod.cpp">
+      <Filter>populace</Filter>
+    </ClCompile>
+    <ClCompile Include="society\organization_mod.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
+    <ClCompile Include="society\calendar_mod.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
+    <ClCompile Include="story\script_mod.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="industry\product_mod.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
+    <ClCompile Include="industry\storage_mod.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
+    <ClCompile Include="industry\manufacture_mod.cpp">
+      <Filter>industry</Filter>
+    </ClCompile>
+    <ClCompile Include="traffic\route_mod.cpp">
+      <Filter>traffic</Filter>
+    </ClCompile>
+    <ClCompile Include="traffic\vehicle_mod.cpp">
+      <Filter>traffic</Filter>
+    </ClCompile>
+    <ClCompile Include="traffic\station_mod.cpp">
+      <Filter>traffic</Filter>
+    </ClCompile>
+    <ClCompile Include="society\job_mod.cpp">
+      <Filter>society</Filter>
+    </ClCompile>
+    <ClCompile Include="common\json.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="story\event.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\change.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="map\geometry.cpp">
+      <Filter>map</Filter>
+    </ClCompile>
+    <ClCompile Include="story\dialog.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="story\condition.cpp">
+      <Filter>story</Filter>
+    </ClCompile>
+    <ClCompile Include="player\app_mod.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="player\canvas.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="player\puzzle_mod.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="map\terrain_mod.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="common\error.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utility.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="map\roadnet_mod.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\building_mod.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\zone_mod.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\component_mod.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="map\room_mod.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\name_mod.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\asset_mod.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="populace\scheduler_mod.h">
+      <Filter>populace</Filter>
+    </ClInclude>
+    <ClInclude Include="society\calendar_mod.h">
+      <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="society\organization_mod.h">
+      <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="story\script_mod.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\product_mod.h">
+      <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\storage_mod.h">
+      <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="industry\manufacture_mod.h">
+      <Filter>industry</Filter>
+    </ClInclude>
+    <ClInclude Include="traffic\route_mod.h">
+      <Filter>traffic</Filter>
+    </ClInclude>
+    <ClInclude Include="traffic\vehicle_mod.h">
+      <Filter>traffic</Filter>
+    </ClInclude>
+    <ClInclude Include="traffic\station_mod.h">
+      <Filter>traffic</Filter>
+    </ClInclude>
+    <ClInclude Include="society\job_mod.h">
+      <Filter>society</Filter>
+    </ClInclude>
+    <ClInclude Include="common\json.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="story\change.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\event.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="map\geometry.h">
+      <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="story\dialog.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="story\condition.h">
+      <Filter>story</Filter>
+    </ClInclude>
+    <ClInclude Include="player\app_mod.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="player\canvas.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="player\puzzle_mod.h">
+      <Filter>player</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

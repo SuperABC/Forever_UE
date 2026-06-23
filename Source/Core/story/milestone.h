@@ -1,0 +1,62 @@
+﻿#pragma once
+
+#include "class.h"
+#include "utility.h"
+#include "error.h"
+#include "config.h"
+
+#include "story/condition.h"
+
+#include <string>
+
+
+class Milestone {
+public:
+	Milestone(std::string name, std::vector<Event*> triggers, bool visible, Condition keep, std::string description,
+		std::string goal, std::vector<Dialog*> dialogs, std::vector<Change*> changes, std::vector<std::string> subsequences);
+	~Milestone();
+
+	// 复合对象类型
+	std::vector<Event*> GetTriggers();
+	std::vector<Dialog*> GetDialogs();
+	std::vector<Change*> GetChanges();
+
+	// 匹配事件
+	bool MatchTrigger(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+
+	// 获取参数
+	std::string GetName();
+	bool IsVisible();
+	Condition DropCondition();
+	bool DropSelf(const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+	std::string GetDescription();
+	std::string GetGoal();
+	std::vector<std::string> GetSubsequences();
+
+private:
+	std::string name;
+	OBJECT_HOLDER std::vector<Event*> triggers;
+	bool visible;
+	Condition drop;
+	std::string description;
+	std::string goal;
+	OBJECT_HOLDER std::vector<Dialog*> dialogs;
+	OBJECT_HOLDER std::vector<Change*> changes;
+	std::vector<std::string> subsequences;
+};
+
+class MilestoneNode {
+public:
+	MilestoneNode();
+	MilestoneNode(Milestone* milestone);
+
+	Milestone* content;
+
+	// 前置数量
+	int premise = 0;
+
+	// 后置里程碑
+	std::vector<MilestoneNode *> subsequents;
+};
+

@@ -1,0 +1,384 @@
+{
+	"names":["楚梦瑶", "陈雨舒", "唐韵", "冯笑笑", "关馨", "雨凝", "土冉冉", "王心妍",
+		"宋凌珊", "郁小可", "杨七七", "孙静怡", "许诗涵", "刘静涵", "应梓瑜", "天婵",],
+	"milestones":
+[
+{ //chapter1_arrive_songshan
+	"milestone": "chapter1_arrive_songshan",
+	"visible": false,
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [
+		{"list": [
+			{"content": "你是林逸，刚刚坐火车来到了松山市。你的口袋里有一张纸条，上面写着：去鹏展大厦找楚鹏展。"},
+		]}
+	],
+	"changes": [
+		{"type": "spawn_npc", "name": "楚梦瑶", "gender": "female", "birthday": "$$system.time.year-17+\"年5月21日\""},
+		{"type": "spawn_npc", "name": "陈雨舒", "gender": "female", "birthday": "$$system.time.year-17+\"年8月6日\""},
+		{"type": "spawn_npc", "name": "唐韵", "gender": "female", "birthday": "$$system.time.year-17+\"年6月22日\""},
+		{"type": "spawn_npc", "name": "冯笑笑", "gender": "female", "birthday": "$$system.time.year-16+\"年11月12日\""},
+		{"type": "spawn_npc", "name": "关馨", "gender": "female", "birthday": "$$system.time.year-17+\"年1月8日\""},
+		{"type": "spawn_npc", "name": "雨凝", "gender": "female", "birthday": "$$system.time.year-17+\"年12月1日\""},
+		{"type": "spawn_npc", "name": "土冉冉", "gender": "female", "birthday": "$$system.time.year-16+\"年7月10日\""},
+		{"type": "spawn_npc", "name": "王心妍", "gender": "female", "birthday": "$$system.time.year-18+\"年6月29日\""},
+		{"type": "spawn_npc", "name": "宋凌珊", "gender": "female", "birthday": "$$system.time.year-23+\"年3月6日\""},
+		{"type": "spawn_npc", "name": "郁小可", "gender": "female", "birthday": "$$system.time.year-17+\"年9月15日\""},
+		{"type": "spawn_npc", "name": "杨七七", "gender": "female", "birthday": "$$system.time.year-15+\"年1月20日\""},
+		{"type": "spawn_npc", "name": "孙静怡", "gender": "female", "birthday": "$$system.time.year-31+\"年12月5日\""},
+		{"type": "spawn_npc", "name": "许诗涵", "gender": "female", "birthday": "$$system.time.year-28+\"年3月19日\""},
+		{"type": "spawn_npc", "name": "刘静涵", "gender": "female", "birthday": "$$system.time.year-20+\"年8月2日\""},
+		{"type": "spawn_npc", "name": "应梓瑜", "gender": "female", "birthday": "$$system.time.year-14+\"年10月25日\""},
+		{"type": "spawn_npc", "name": "天婵", "gender": "female", "birthday": "$$system.time.year-19+\"年11月4日\""},
+		
+		{"type": "spawn_npc", "name": "楚鹏展", "gender": "male", "birthday": "$$system.time.year-46+\"年8月8日\""},
+		{"type": "spawn_npc", "name": "李福", "gender": "male", "birthday": "$$system.time.year-42+\"年5月26日\""},
+		{"type": "teleport_citizen", "name": "楚鹏展", "destination": "\"中山北路 0 pengzhan 00000\""},
+		{"type": "teleport_citizen", "name": "李福", "destination": "\"中山北路 0 pengzhan 00000\""},
+		{"type": "add_option", "name": "楚鹏展", "option": "你好"},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_arrive_songshan"},
+	],
+	"subsequences": [
+		"chapter1_meet_cpz"
+	]
+},
+
+{ //test_message
+	"milestone": "test_message",
+	"visible": false,
+	"drop": false,
+	"triggers": [{"type": "script_message", "message": "test"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_arrive_songshan", "list": [
+			{"speaker": "", "content": "测试成功，你已经开始体验《校花的贴身高手》"}
+		]},
+		{"condition": "$$control_person!=荧&&$$control_person!=空", "list": [
+			{"speaker": "", "content": "测试失败，请检查程序"}
+		]}
+	],
+	"changes": [],
+	"subsequences": []
+},
+
+{ //chapter1_meet_cpz
+	"milestone": "chapter1_meet_cpz",
+	"visible": true,
+	"goal": "找到楚鹏展",
+	"description": "你刚来到松山市，并不知道接下来是什么任务，只知道根据兜里的纸条要先去鹏展大厦找到楚鹏展。",
+	"triggers": [{"type": "option_dialog", "name": "楚鹏展", "option": "你好"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_arrive_songshan", "list": [
+			{"speaker": "林逸", "content": "楚叔叔您好，我是林逸。"},
+			{"speaker": "楚鹏展", "content": "你就是林逸？"},
+			{"speaker": "林逸", "content": "是我。"},
+			{"speaker": "李福", "content": "你好！我是楚董事长的秘书，李福，董事长正要我去火车站接您，没想到您已经到了！"},
+			{"speaker": "林逸", "content": "没关系，就当熟悉熟悉路了。"},
+			{"speaker": "楚鹏展", "content": "林先生，那我就开门见山了。我也知道，或许让你屈尊去做这些事情让你有些为难…"},
+			{"speaker": "林逸", "content": "不屈尊，我在家里编草鞋一个月才赚几百块，老头子说这个任务够我吃一辈子了。"},
+			{"speaker": "楚鹏展", "content": "什么？编草鞋？"},
+			{"speaker": "林逸", "content": "是啊，一双草鞋能卖四块钱，一天编个三五双，一个月就是好几百了。"},
+			{"speaker": "楚鹏展", "content": "以后你的工资是每个月三万块，这些钱包含你上学的学费和日常花销，当然，花在我女儿身上的钱，可以额外找李福报销。"},
+			{"speaker": "林逸", "content": "三万？老头子不说几千块么？等等，楚先生，您刚才说什么？上学？学杂费？还有花在您女儿身上的钱？这是什么意思？我有点儿不明白…"},
+			{"speaker": "楚鹏展", "content": "哦？怎么，林老爷子之前没和你说么？请这边来，具体情况，我们去楼上谈吧。", "label": "chapter1_after_meet_cpz"},
+		]}
+	],
+	"changes": [
+		{"type": "remove_option", "name": "楚鹏展", "option": "你好"},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_cpz"},
+	],
+	"subsequences": [
+		"chapter1_after_meet_cpz",
+		"chapter1_get_mission",
+	]
+},
+
+{ //chapter1_after_meet_cpz
+	"milestone": "chapter1_after_meet_cpz",
+	"visible": false,
+	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_meet_cpz"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "teleport_citizen", "name": "楚鹏展", "destination": "\"中山北路 0 pengzhan 110000\""},
+		{"type": "teleport_citizen", "name": "李福", "destination": "\"中山北路 0 pengzhan 110000\""},
+		{"type": "add_option", "name": "楚鹏展", "option": "楚叔叔您说吧"},
+	],
+	"subsequences": []
+},
+
+{ //chapter1_get_mission
+	"milestone": "chapter1_get_mission",
+	"visible": true,
+	"goal": "到顶楼办公室和楚鹏展继续对话",
+	"description": "你已经见到了楚鹏展，但还需要继续和他对话了解接下来的任务。",
+	"triggers": [{"type": "option_dialog", "name": "楚鹏展", "option": "楚叔叔您说吧"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_meet_cpz", "list": [
+			{"speaker": "楚鹏展", "content": "林先生，从明天开始，福伯会安排你进入松山第一高中的高三五班，成为一名高中生，和小女楚梦瑶一个班级，每天同她一起上学、放学，照顾她的生活，回家后指导她的功课。"},
+			{"speaker": "楚鹏展", "content": "说白了，其实就是和她做个伴儿，我这些年忙于生意，对小女疏于照顾，心存愧疚，我想找个和她谈得来的人，多给她些关怀，这才是我找你来的真正原因。你和她差不多大，都是年轻人，应该有共同话题吧？"},
+			{"speaker": "林逸", "content": "？"},
+			{"speaker": "楚鹏展", "content": "林先生，你怎么了？原本我以为林老爷子已经将这一次你要做的事情告诉了你，但是现在看来，似乎并不是这样？"},
+			{"speaker": "林逸", "content": "楚先生，您还是叫我林逸吧，林先生有些别扭。说实话，之前我真的不知道我要来做什么，老头子只是说这一次是个重要的任务，而且做好了可以吃一辈子的…"},
+			{"speaker": "楚鹏展", "content": "吃一辈子？哈哈哈哈，不错，林老爷子也没骗你，你做好了，所获得的酬劳的确够你吃一辈子了！"},
+			{"speaker": "林逸", "content": "这…可是我的任务究竟是什么？"},
+			{"speaker": "楚鹏展", "content": "之前我已经说过了啊？你陪着我女儿上学放学一起读书，当然，你也要负责保护她的安全，不要让人欺负她。"},
+			{"speaker": "林逸", "content": "伴读？保姆？"},
+			{"speaker": "楚鹏展", "content": "呃，你也可以这么理解，事实上也是这样。这是松山第一中学的资料，你可以先熟悉一下。"},
+			{"speaker": "林逸", "content": "好的，我会做好我的本职工作。"},
+			{"speaker": "楚鹏展", "content": "当然，楚梦瑶或许脾气不太好，但是这个孩子本质还是不错的。我相信你这么优秀，一定可以和她相处很融洽的。"},
+			{"speaker": "林逸", "content": "我尽力吧。"},
+			{"speaker": "楚鹏展", "content": "福伯，瑶瑶快放学了，你去接一下，正好带着林先生去熟悉一下环境。", "label": "chapter1_after_get_mission"},
+		]}
+	],
+	"changes": [
+		{"type": "remove_option", "name": "楚鹏展", "option": "楚叔叔您说吧"},
+		{"type": "teleport_citizen", "name": "楚梦瑶", "destination": "\"中山北路 0 yizhong 00000\""},
+		{"type": "teleport_citizen", "name": "陈雨舒", "destination": "\"中山北路 0 yizhong 00000\""},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_get_mission"},
+	],
+	"subsequences": [
+		"chapter1_after_get_mission",
+		"chapter1_meet_cmy",
+	]
+},
+
+{ //chapter1_after_get_mission
+	"milestone": "chapter1_after_get_mission",
+	"visible": false,
+	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_get_mission"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "add_option", "name": "楚梦瑶", "option": "你好"},
+		{"type": "teleport_citizen", "name": "李福", "destination": "\"中山北路 0 yizhong 00000\""},
+		{"type": "teleport_player", "destination": "\"中山北路 0 yizhong 00000\""},
+	],
+	"subsequences": []
+},
+
+{ //chapter1_meet_cmy
+	"milestone": "chapter1_meet_cmy",
+	"visible": true,
+	"goal": "接瑶瑶放学",
+	"description": "楚鹏展让你先和福伯接瑶瑶放学，并熟悉一下松山的环境。",
+	"triggers": [{"type": "option_dialog", "name": "楚梦瑶", "option": "你好"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_get_mission", "list": [
+			{"speaker": "林逸", "content": "你好，我叫林逸。"},
+			{"speaker": "楚梦瑶", "content": "林逸？福伯，他是干什么的？"},
+			{"speaker": "李福", "content": "楚小姐，这是楚先生给您请来的伴读…"},
+			{"speaker": "楚梦瑶", "content": "伴读？谁要伴读了？我不是说要找一个挡箭牌来么？你看他这样的，能给我挡谁？"},
+			{"speaker": "李福", "content": "小姐，楚先生说了，林逸先生是个复合型人才，能文能武，这个区区挡箭牌自然不在话下…"},
+			{"speaker": "楚梦瑶", "content": "他？"},
+			{"content": "楚梦瑶一旁的那个女孩子却是捂嘴偷笑了起来，因为林逸这打扮，怎么看也不像是能替楚梦瑶做挡箭牌的人。这家伙穿的什么玩意啊？大背心子破裤子，整个一个民工进城的打扮，甚至民工都没有他这么屯的，他以为这是唱二人转呢啊？"},
+			{"speaker": "楚梦瑶", "content": "小舒，你笑什么？"},
+			{"speaker": "楚梦瑶", "content": "福伯，叫他走，我要换人。"},
+			{"speaker": "李福", "content": "小姐，楚先生说了，林逸先生一定可以胜任的，而且已经签署了合同…"},
+			{"speaker": "楚梦瑶", "content": "啊？"},
+			{"speaker": "楚梦瑶", "content": "好吧，刚才那边那个男生钟品亮对我纠缠不放，你帮我处理一下吧，处理的好就算你过关了。", "label": "chapter1_after_meet_cmy"},
+		]}
+	],
+	"changes": [
+		{"type": "remove_option", "name": "楚梦瑶", "option": "你好"},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_cmy"},
+	],
+	"subsequences": [
+		"chapter1_after_meet_cmy",
+		"chapter1_meet_zpl",
+	]
+},
+
+{ //chapter1_after_meet_cmy
+	"milestone": "chapter1_after_meet_cmy",
+	"visible": false,
+	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_meet_cmy"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "spawn_npc", "name": "钟品亮", "gender": "male", "birthday": "$$system.time.year-17+\"年1月2日\""},
+		{"type": "spawn_npc", "name": "高小福", "gender": "male", "birthday": "$$system.time.year-17+\"年4月19日\""},
+		{"type": "spawn_npc", "name": "张乃炮", "gender": "male", "birthday": "$$system.time.year-18+\"年9月30日\""},
+		{"type": "add_option", "name": "钟品亮", "option": ""},
+		{"type": "teleport_citizen", "name": "钟品亮", "destination": "\"中山北路 0 yizhong 00000\""},
+		{"type": "teleport_citizen", "name": "高小福", "destination": "\"中山北路 0 yizhong 00000\""},
+		{"type": "teleport_citizen", "name": "张乃炮", "destination": "\"中山北路 0 yizhong 00000\""},
+	],
+	"subsequences": []
+},
+
+{ //chapter1_meet_zpl
+	"milestone": "chapter1_meet_zpl",
+	"visible": true,
+	"goal": "解决钟品亮这个麻烦",
+	"description": "楚梦瑶让你帮她先解决钟品亮这个麻烦，作为第一个考验。",
+	"triggers": [{"type": "option_dialog", "name": "钟品亮", "option": ""}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_meet_cmy", "list": [
+			{"speaker": "钟品亮", "content": "这个楚梦瑶，每次约她都被拒绝，要是换做别的女人，早就上赶着扑向我的怀抱了！"},
+			{"speaker": "高小福", "content": "钟少，可是这个楚梦瑶不是一般的女人啊，她可是鹏展集团的千金大小姐，有难度也是正常的！"},
+			{"speaker": "钟品亮", "content": "我知道，还用你说？所以要有恒心…你是谁？", "label": "chapter1_after_meet_zpl"},
+		]}
+	],
+	"changes": [
+		{"type": "remove_option", "name": "钟品亮", "option": "\" \""},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_meet_zpl"},
+	],
+	"subsequences": [
+		"chapter1_after_meet_zpl",
+		"chapter1_battle_lose_zpl",
+		"chapter1_battle_win_zpl",
+	]
+},
+
+{ //chapter1_after_meet_zpl
+	"milestone": "chapter1_after_meet_zpl",
+	"visible": false,
+	"triggers": [{"type": "speaking_finish", "label": "chapter1_after_meet_zpl"}],
+	"dialogs": [
+	],
+	"changes": [
+		{"type": "enter_battle", "enemy": "钟品亮"},
+	],
+	"subsequences": []
+},
+
+{ //chapter1_battle_lose_zpl
+	"milestone": "chapter1_battle_lose_zpl",
+	"visible": false,
+	"triggers": [{"type": "battle_lose", "enemy": "钟品亮"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_meet_zpl", "list": [
+			{"speaker": "楚梦瑶", "content": "啊？连钟品亮都对付不了？福伯你确定他能帮我吗？"},
+			{"speaker": "李福", "content": "是我看走眼了，算了，我和你爸爸说去吧。"},
+		]}],
+	"changes": [
+		{"type": "game_end"},
+	],
+	"subsequences": []
+},
+
+{ //chapter1_battle_win_zpl
+	"milestone": "chapter1_battle_win_zpl",
+	"visible": false,
+	"triggers": [{"type": "battle_win", "enemy": "钟品亮"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_meet_zpl", "list": [
+			{"speaker": "陈雨舒", "content": "瑶瑶姐，没看出来，这个林逸挺猛呀，连钟品亮都敢揍？"},
+			{"speaker": "楚梦瑶", "content": "我看他就是个神经病！"},
+			{"speaker": "陈雨舒", "content": "瑶瑶，要不你就留下他吧？"},
+			{"speaker": "楚梦瑶", "content": "小舒，你到底向着谁呀？你该不会是发春了，看上这个民工了吧？"},
+			{"speaker": "陈雨舒", "content": "呸！你才看上他了呢！"},
+			{"speaker": "楚梦瑶", "content": "你没看上他，你让他留下干嘛？留下来丢人？"},
+			{"speaker": "陈雨舒", "content": "不是呀，你想呀，钟品亮在咱们学校称王称霸，都没有人敢惹他，好不容易来了一个不怕他的愣头青，这以后可有的好玩了！"},
+			{"speaker": "陈雨舒", "content": "他们两个打起来，钟品亮不就没有时间缠着你了么？"},
+			{"speaker": "楚梦瑶", "content": "打起来？你以为钟品亮是那么好惹的么？就凭他一个小民工？钟品亮还不打死他？"},
+			{"speaker": "陈雨舒", "content": "瑶瑶，你怎么这么笨呢？打狗还得看主人呢吧？有你在后面撑腰，还怕他钟品亮什么？"},
+			{"speaker": "陈雨舒", "content": "再说了，不是还有我呢么？"},
+			{"speaker": "楚梦瑶", "content": "说得也是，那就留下来看看吧。"},
+			{"speaker": "楚梦瑶", "content": "福伯，你给他买保险了么？万一他出了什么意外的话…"},
+			{"speaker": "李福", "content": "买保险？"},
+			{"content": "福伯大汗，心道，楚先生请来的人，哪里那么容易就会出意外？不过现在还是没法和瑶瑶说实话。"},
+			{"speaker": "李福", "content": "放心吧，都买好了。"},
+		]}
+	],
+	"changes": [
+		{"type": "deactivate_milestone", "milestone": "chapter1_battle_lose_zpl"},
+		{"type": "add_option", "name": "楚梦瑶", "option": "解决了"},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter1_battle_win_zpl"},
+		
+	],
+	"subsequences": [
+		"chapter2_meet_cmy",
+	]
+},
+
+{ //chapter2_meet_cmy
+	"milestone": "chapter2_meet_cmy",
+	"visible": false,
+	"goal": "回去和楚梦瑶交差",
+	"description": "你已经打败了钟品亮，完成了楚梦瑶的任务，回去和楚梦瑶交差。",
+	"triggers": [{"type": "option_dialog", "name": "楚梦瑶", "option": "解决了"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter1_battle_win_zpl", "list": [
+			{"speaker": "林逸", "content": "怎么样？还算可以吧？"},
+			{"speaker": "楚梦瑶", "content": "算你勉强过关吧。"},
+			{"speaker": "林逸", "content": "好的。"},
+			{"speaker": "楚梦瑶", "content": "好的？你怎么不感谢我一下？"},
+			{"speaker": "林逸", "content": "感谢？感谢什么？我帮你解决的那个混混，应该是你感谢我吧？"},
+			{"speaker": "楚梦瑶", "content": "我…你…"},
+			{"speaker": "陈雨舒", "content": "嘻嘻，瑶瑶姐的意思是，她接受了你，你不表示一下感谢么？"},
+			{"speaker": "楚梦瑶", "content": "小舒，你胡说什么？什么我接受他了？"},
+			{"speaker": "陈雨舒", "content": "没什么呀，我说你接受他做你的挡箭牌了嘛！"},
+			{"speaker": "林逸", "content": "哦，谢谢"},
+			{"speaker": "楚梦瑶", "content": "不客气…", "label": "chapter2_after_meet_cmy"},
+		]}
+	],
+	"changes": [
+		{"type": "remove_option", "name": "楚梦瑶", "option": "解决了"},
+		{"type": "set_value", "variable": "plot_step", "value": "chapter2_meet_cmy"},
+	],
+	"subsequences": [
+		"chapter2_after_meet_cmy",
+		"chapter2_enter_bieshu",
+	]
+},
+
+{ //chapter2_after_meet_cmy
+	"milestone": "chapter2_after_meet_cmy",
+	"visible": false,
+	"triggers": [{"type": "speaking_finish", "label": "chapter2_after_meet_cmy"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter2_meet_cmy", "list": [
+			{"speaker": "陈雨舒", "content": "瑶瑶，我走了，明天见呀，还有你，箭牌哥。"},
+			{"content": "箭牌哥？林逸苦笑，这个名称倒是挺别致的，像个网红。"},
+			{"speaker": "楚梦瑶", "content": "明天见啦。"},
+		]}
+	],
+	"changes": [
+		{"type": "teleport_citizen", "name": "楚梦瑶", "destination": "\"中山北路 0 bieshu 00000\""},
+		{"type": "teleport_citizen", "name": "陈雨舒", "destination": "\"中山北路 0 bieshu 00000\""},
+		{"type": "teleport_citizen", "name": "李福", "destination": "\"中山北路 0 bieshu 00000\""},
+		{"type": "teleport_player", "destination": "\"中山北路 0 bieshu 00000\""},
+	],
+	"subsequences": []
+},
+
+{ //chapter2_enter_bieshu
+	"milestone": "chapter2_enter_bieshu",
+	"visible": false,
+	"goal": "进入别墅",
+	"description": "你已经完成了楚梦瑶给的第一个任务，现在可以回别墅休息了。",
+	"triggers": [{"type": "enter_building", "building": "bieshu"}],
+	"dialogs": [
+		{"condition": "$$plot_step==chapter2_meet_cmy", "list": [
+			{"speaker": "楚梦瑶", "content": "你！你进我的别墅做什么？"},
+			{"speaker": "林逸", "content": "难道我不住在这里么？"},
+			{"speaker": "楚梦瑶", "content": "你这个人倒是挺自作多情的，我的小别墅里还没进过男人呢！"},
+			{"speaker": "李福", "content": "呃…"},
+			{"speaker": "楚梦瑶", "content": "我是说没有进过，我家人之外的男人！"},
+			{"speaker": "李福", "content": "小姐，楚先生说了，您可以将林先生当做自己的哥哥一样融洽相处的……所以，林先生从今天开始，就住在别墅里面了。"},
+			{"speaker": "楚梦瑶", "content": "什么！他？我哥哥？开什么玩笑啊！福伯，你把他带走，让他随便住哪里都行！"},
+			{"speaker": "李福", "content": "这个恐怕我没办法做主，小姐，这是楚先生交代的，您看…"},
+			{"speaker": "楚梦瑶", "content": "算了，我亲自和爹地说好了！"},
+			{"content": "林逸则是有些眼馋的看着楚梦瑶掏出了手机，自己是不是也应该买一台手机了呢？不然打电话实在太不方便了。"},
+			{"speaker": "楚梦瑶", "content": "爹地，我是瑶瑶呀！"},
+			{"speaker": "楚鹏展", "content": "是瑶瑶呀，什么事呢？"},
+			{"speaker": "楚梦瑶", "content": "是这样的，老爸，你给我找的这个什么挡箭牌呀？是不是随便从农贸市场雇佣来的？"},
+			{"speaker": "楚鹏展", "content": "你说小逸呀，呵呵，他是爹地特意不远万里，从西星山请来的，不但学识好，而且功夫也好，更难得的是人品更好！"},
+			{"speaker": "楚梦瑶", "content": "什么呀！"},
+			{"speaker": "楚鹏展", "content": "呵呵，怎么样？你对小逸还算满意吧？"},
+			{"speaker": "楚梦瑶", "content": "满意？怎么可能？首先他的相貌就不过关，给我做挡箭牌，总要我看着顺眼吧？"},
+			{"speaker": "楚梦瑶", "content": "还有，爹地，你怎么能叫他和我一起住啊？我一个女孩子，多不安全呀？"},
+			{"speaker": "楚鹏展", "content": "是呀，爹地就是考虑到你的安全，你一个女孩子住在别墅里面，爹地也不放心，所以才要小逸去陪着你的，放心吧，小逸能够保护你的！"},
+			{"speaker": "楚梦瑶", "content": "我…他…"},
+			{"speaker": "楚鹏展", "content": "好了，瑶瑶，爹地正在召开公司中层领导的会议，先不说了。"},
+			{"speaker": "楚梦瑶", "content": "林！逸！"},
+			{"speaker": "楚梦瑶", "content": "你说，你怎么糊弄我爹地的？"},
+			{"speaker": "林逸", "content": "…"},
+			{"speaker": "李福", "content": "小姐，有事的话随时给我打电话，今天还是晚上七点钟来送晚饭，我就先忙别的去了。"},
+		]}
+	],
+	"changes": [
+	
+	],
+	"subsequences": []
+},
+
+]
+}

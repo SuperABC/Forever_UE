@@ -1,0 +1,51 @@
+[
+{
+	"milestone": "game_start",
+	"visible": false,
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "add_option", "name": "$$self.name", "option": "购物"},
+		{"type": "add_option", "name": "$$self.name", "option": "免单挑战"},
+	],
+	"subsequences": ["buy_item", "free_challenge"]
+},
+{
+	"milestone": "buy_item",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "购物"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "open_shop", "saler": "$$self.name"}
+	],
+	"subsequences": []
+},
+{
+	"milestone": "free_challenge",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "免单挑战"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "start_puzzle", "puzzle": "flappy"}
+	],
+	"subsequences": ["challenge_result"]
+},
+{
+	"milestone": "challenge_result",
+	"visible": false,
+	"drop": "true",
+	"triggers": [{"type": "puzzle_result", "result": 0}],
+	"dialogs": [
+		{"condition": "$$local.result < 0", "list": [
+			{"content": "免单失败！"},
+		]},
+		{"condition": "$$local.result > 0", "list": [
+			{"content": "免单成功！"},
+		]}
+	],
+	"changes": [],
+	"subsequences": []
+},
+]

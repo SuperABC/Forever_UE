@@ -1,0 +1,23 @@
+[
+{
+	"milestone": "game_start",
+	"visible": false,
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "add_option", "name": "$$self.name", "option": "上车"}
+	],
+	"subsequences": ["default_enter"]
+},
+{
+	"milestone": "default_enter",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "上车"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "enter_vehicle", "vehicle": "$$self.name"}
+	],
+	"subsequences": []
+}
+]

@@ -1,0 +1,32 @@
+[
+{
+	"milestone": "game_start",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "game_start"}],
+	"dialogs": [],
+	"changes": [
+		{
+			"type": "for_range",
+			"var": "floor",
+			"from": "$$self.min",
+			"to": "$$self.max",
+			"do": [
+				{"type": "add_option", "name": "$$self.parent.name+\" \"+$$self.name", "option": "前往$$(floor)层"}
+			]
+		}
+	],
+	"subsequences": ["use_elevator"]
+},
+{
+	"milestone": "use_elevator",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "name": "$$self.parent.name+\" \"+$$self.name"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "launch_elevator", "building": "$$self.parent.name", "elevator": "$$self.name", "command": "$$local.option"}
+	],
+	"subsequences": []
+}
+]

@@ -1,0 +1,24 @@
+[
+{
+	"milestone": "enter_building",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "enter_building", "building": "$$self.name"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "set_value", "variable": "player.building", "value": "$$self.name"}
+	],
+	"subsequences": []
+},
+{
+	"milestone": "leave_building",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "leave_building", "building": "$$self.name"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "set_value", "variable": "player.building", "value": ""}
+	],
+	"subsequences": []
+}
+]

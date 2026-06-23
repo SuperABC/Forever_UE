@@ -1,0 +1,123 @@
+﻿#pragma once
+
+#include "map/zone_mod.h"
+
+#include "class.h"
+
+
+// 子类注册函数
+typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
+
+// 园区实体
+class Zone : public Quad {
+public:
+	// 禁止默认构造
+	Zone() = delete;
+
+	// 通过类型从工厂构造
+	Zone(ZoneFactory* factory, const std::string& zone);
+	
+	// 析构园区
+	~Zone();
+
+	// 获取类型
+	std::string GetType() const;
+
+	// 获取名称
+	std::string GetName() const;
+
+	// 获取所在地块
+	Block* GetParent() const;
+
+	// 设置所在地块
+	void SetParent(Block* block);
+
+	// 获取地址
+	std::string GetAddress();
+
+	// 获取一栋建筑
+	Building* GetBuilding(const std::string& name);
+
+	// 获取园区内所有建筑
+	const std::unordered_map<std::string, Building*>& GetBuildings();
+
+	// 获取是否由政府拥有
+	bool GetStated() const;
+
+	// 设置是否由政府拥有
+	void SetStated(bool state);
+
+	// 获取私人房东
+	Person* GetOwner() const;
+
+	// 设置私人房东
+	void SetOwner(Person* owner);
+
+	// 获取剧情
+	Script* GetScript() const;
+
+	// 获取园区中心世界位置
+	void GetPosition(float& x, float& y) const;
+
+	// 设计园区
+	void LayoutZone(const Lot* block);
+
+	// 自动分布建筑
+	void ArrangeBuildings();
+
+	// 清理空建筑
+	void ClearZero();
+
+private:
+	// 模组对象
+	OBJECT_HOLDER ZoneMod* mod;
+
+	// 工厂
+	ZoneFactory* factory;
+
+	// 地形类型
+	std::string type;
+
+	// 地形名称
+	std::string name;
+
+	// 所在街区
+	Block* parentBlock;
+	
+	// 完整地址
+	std::string address;
+
+	// 内部建筑
+	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
+
+	// 是否由政府拥有
+	bool stated;
+
+	// 私人房东
+	Person* owner;
+
+	// 关联剧情
+	OBJECT_HOLDER Script* script;
+};
+
+// 空园区
+class EmptyZone : public ZoneMod {
+public:
+	EmptyZone();
+	virtual ~EmptyZone();
+
+	static const char* GetId();
+	virtual const char* GetType() const override;
+	virtual const char* GetName() override;
+
+	static std::function<int(const Lot*)> ZoneAssigner;
+
+	virtual void LayoutZone(const Lot* block) override;
+
+private:
+	static int count;
+
+	int id;
+	std::string name;
+};
+

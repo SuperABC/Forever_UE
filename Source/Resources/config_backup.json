@@ -1,0 +1,38 @@
+{
+	"dll_paths": [
+		"C:/Workspace/UE5/Projects/Forever_UE/x64/Release",
+		"C:/Workspace/UE5/Projects/Forever_Mods/x64/Release",
+	],
+	
+	"terrain_mods": ["ocean", "mountain"],
+	"roadnet_mod": "jing",
+	"zone_mods": ["residential"],
+	"building_mods": ["residential", "shop", "factory", "airport", "pengzhan", "yizhong"],
+	"component_mods": ["residential", "shop", "factory", "empty"],
+	"room_mods": ["residential", "shop", "warehouse", "factory", "empty"],
+	"asset_mods": ["zone", "building", "room"],
+	"name_mod": "chinese",
+	"scheduler_mods": ["workonly"],
+	"calendar_mods": ["standard", "full"],
+	"job_mods": ["shop_saler"],
+	"organization_mods": ["shop"],
+	"script_mods": ["npc", "empty"],
+	"product_mods": ["experience"],
+	"storage_mods": ["shop", "empty"],
+	"manufacture_mods": ["experience"],
+	"route_mods": ["air"],
+	"station_mods": ["airport"],
+	"vehicle_mods": ["plane"],
+	"app_mods" : [ "test" ],
+	"puzzle_mods": ["test"],
+	
+	"resource_paths": [
+		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/actions",
+		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/layouts",
+		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts",
+	],
+	
+	"story_paths": [
+		"C:/Workspace/UE5/Projects/Forever_UE/Source/Resources/scripts/xh.json",
+	]
+}
