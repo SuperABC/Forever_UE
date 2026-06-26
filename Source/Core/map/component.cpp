@@ -22,7 +22,9 @@ Component::Component(ComponentFactory* factory, const string& component) :
 Component::~Component() {
 	factory->DestroyComponent(mod);
 
-	if (script)delete script;
+	if (script) {
+		delete script;
+	}
 	script = nullptr;
 }
 
