@@ -19,6 +19,7 @@
 	}],
 	"singles": [{
 		"rect": [0, 0, 0, 0, 1, 0, 0.2, 0],
+		"direction": 2,
 		"doors": [
 			{
 				"direction": 3,

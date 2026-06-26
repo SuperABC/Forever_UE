@@ -13,12 +13,50 @@ RoomMod::RoomMod() :
 	workspaceCapacity(0),
 	storageConfig(),
 	manufactureTypes(),
-	parkingSpaces() {
+	parkingSpaces(),
+	pivots() {
 
 }
 
 RoomMod::~RoomMod() {
 
+}
+
+void RoomMod::AddPivot(vector<float> point, int face) {
+	if (face < 0 || face >= 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
+	}
+	if (point.size() != 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Pivot must have 4 elements.\n");
+	}
+
+	auto rotated = point;
+	switch (face) {
+	case 0:
+		rotated[0] = 1.f - point[2];
+		rotated[1] = -point[3];
+		rotated[2] = point[0];
+		rotated[3] = point[1];
+		break;
+	case 1:
+		rotated[0] = point[2];
+		rotated[1] = point[3];
+		rotated[2] = 1.f - point[0];
+		rotated[3] = -point[1];
+		break;
+	case 2:
+		break;
+	case 3:
+		rotated[0] = 1.f - point[0];
+		rotated[1] = -point[1];
+		rotated[2] = 1.f - point[2];
+		rotated[3] = -point[3];
+		break;
+	default:
+		break;
+	}
+
+	pivots.push_back(rotated);
 }
 
 void RoomFactory::RegisterRoom(const string& id,

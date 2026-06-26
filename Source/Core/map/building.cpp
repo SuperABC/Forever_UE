@@ -276,6 +276,7 @@ void Hatch::InstanciateQuad(float width, float height) {
 }
 
 Single::Single(vector<float> params) :
+	direction(FACE_WEST),
 	doors(),
 	windows(),
 	params(params) {
@@ -284,6 +285,14 @@ Single::Single(vector<float> params) :
 
 Single::~Single() {
 
+}
+
+FACE_DIRECTION Single::GetDirection() const {
+	return direction;
+}
+
+void Single::SetDirection(FACE_DIRECTION direction) {
+	this->direction = direction;
 }
 
 unordered_map<FACE_DIRECTION, vector<pair<vector<float>, Quad>>> Single::GetDoors() const {
@@ -808,6 +817,7 @@ void Building::LayoutBuilding(Layout* layout) {
 
 	for (auto room : rooms) {
 		room->ConfigRoom();
+		room->PlacePivots(room);
 	}
 
 	script = new Script(Story::scriptFactory, mod->script.first);
@@ -1003,6 +1013,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				}
 				for (int i = 0; i < 4; i++) {
 					Single single(InverseParams(rect, i));
+					single.SetDirection(static_cast<FACE_DIRECTION>(InverseDirection(s["direction"].AsInt(), i)));
 					for (auto door : s["doors"]) {
 						vector<vector<float>> positions;
 						for (auto p : door["positions"]) {
@@ -1203,6 +1214,7 @@ void Building::AssignRoom(int level, int slot, const string& name,
 	room->SetPosition(
 		single.GetPosX(), single.GetPosY(),
 		single.GetSizeX(), single.GetSizeY());
+	room->SetDirection(single.GetDirection());
 	room->SetDoors(single.GetDoors());
 	room->SetWindows(single.GetWindows());
 	room->SetNumber(idx, floors[idx]->AssignNumber());
@@ -1242,6 +1254,7 @@ void Building::ArrangeRow(int level, int slot, const string& name, float acreage
 			room->SetVertices(
 				row.GetLeft(), row.GetBottom() + div * i,
 				row.GetRight(), row.GetBottom() + div * (i + 1));
+			room->SetDirection(row.GetDirection());
 			room->SetDoors(rows[slot].GetDoors());
 			room->SetWindows(rows[slot].GetWindows());
 			room->SetNumber(idx, floors[idx]->AssignNumber());
@@ -1262,6 +1275,7 @@ void Building::ArrangeRow(int level, int slot, const string& name, float acreage
 			room->SetVertices(
 				row.GetLeft() + div * i, row.GetBottom(),
 				row.GetLeft() + div * (i + 1), row.GetTop());
+			room->SetDirection(row.GetDirection());
 			room->SetDoors(rows[slot].GetDoors());
 			room->SetWindows(rows[slot].GetWindows());
 			room->SetNumber(idx, floors[idx]->AssignNumber());

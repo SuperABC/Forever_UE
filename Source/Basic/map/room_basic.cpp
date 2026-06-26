@@ -26,9 +26,13 @@ const char* ResidentialRoom::GetName() {
 	return name.data();
 }
 
-void ResidentialRoom::ConfigRoom(Quad* quad) {
+void ResidentialRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 	isResidential = true;
 	residentialCapacity = 1;
+}
+
+void ResidentialRoom::PlacePivots(Quad* room) {
+
 }
 
 int ShopRoom::count = 0;
@@ -54,9 +58,13 @@ const char* ShopRoom::GetName() {
 	return name.data();
 }
 
-void ShopRoom::ConfigRoom(Quad* quad) {
+void ShopRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 	isWorkspace = true;
 	workspaceCapacity = 100;
+}
+
+void ShopRoom::PlacePivots(Quad* room) {
+
 }
 
 int WarehouseRoom::count = 0;
@@ -82,9 +90,13 @@ const char* WarehouseRoom::GetName() {
 	return name.data();
 }
 
-void WarehouseRoom::ConfigRoom(Quad* quad) {
+void WarehouseRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 	isStorage = true;
 	storageConfig = { {"empty", 100.f} };
+}
+
+void WarehouseRoom::PlacePivots(Quad* room) {
+
 }
 
 int ParkingRoom::count = 0;
@@ -110,9 +122,13 @@ const char* ParkingRoom::GetName() {
 	return name.data();
 }
 
-void ParkingRoom::ConfigRoom(Quad* quad) {
+void ParkingRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 	isParking = true;
 	parkingSpaces = { { 0, 0, 0, 0, 1, 0, 1, 0 } };
+}
+
+void ParkingRoom::PlacePivots(Quad* room) {
+
 }
 
 int FactoryRoom::count = 0;
@@ -138,7 +154,11 @@ const char* FactoryRoom::GetName() {
 	return name.data();
 }
 
-void FactoryRoom::ConfigRoom(Quad* quad) {
+void FactoryRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 	isManufacture = true;
 	manufactureTypes = { "experience" };
+}
+
+void FactoryRoom::PlacePivots(Quad* room) {
+
 }

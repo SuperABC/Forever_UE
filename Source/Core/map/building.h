@@ -330,6 +330,17 @@ public:
 	~Single();
 
 	/*
+	* 获取朝向
+	*/
+	FACE_DIRECTION GetDirection() const;
+
+	/*
+	* 设置朝向
+	* @direction: 朝向
+	*/
+	void SetDirection(FACE_DIRECTION direction);
+
+	/*
 	* 获取所有门
 	*/
 	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> GetDoors() const;
@@ -360,6 +371,9 @@ public:
 	void InstanciateQuad(float width, float height);
 
 private:
+	// 朝向
+	FACE_DIRECTION direction;
+
 	// 各方向的门
 	std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>> doors;
 

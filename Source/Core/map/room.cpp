@@ -23,9 +23,11 @@ Room::Room(RoomFactory* factory, const string& room) :
 	parentBuilding(nullptr),
 	parentComponent(nullptr),
 	layer(0),
+	direction(FACE_WEST),
 	doors(),
 	windows(),
 	number(""),
+	pivots(),
 	stated(false),
 	owner(nullptr),
 	tenants(),
@@ -38,6 +40,11 @@ Room::Room(RoomFactory* factory, const string& room) :
 
 Room::~Room() {
 	factory->DestroyRoom(mod);
+
+	for (auto& pivot : pivots) {
+		delete pivot;
+	}
+	pivots.clear();
 
 	for(auto &storage : storages) {
 		if(storage)delete storage;
@@ -81,6 +88,14 @@ void Room::SetLayer(int layer) {
 	this->layer = layer;
 }
 
+FACE_DIRECTION Room::GetDirection() const {
+	return direction;
+}
+
+void Room::SetDirection(FACE_DIRECTION direction) {
+	this->direction = direction;
+}
+
 const Room::WallHole& Room::GetDoors() const {
 	return doors;
 }
@@ -114,7 +129,7 @@ void Room::SetNumber(int floor, int number) {
 }
 
 void Room::ConfigRoom() {
-	mod->ConfigRoom(this);
+	mod->ConfigRoom(this, direction);
 
 	for(auto parking : mod->parkingSpaces) {
 		if(parking.size() == 8) {
@@ -129,6 +144,18 @@ void Room::ConfigRoom() {
 
 string Room::GetAddress() const {
 	return GetParentBuilding()->GetAddress() + " " + number;
+}
+
+const vector<Node*> Room::GetPivots() {
+	return pivots;
+}
+
+void Room::PlacePivots(Quad* room) {
+	mod->PlacePivots(room);
+
+	for (auto& pivot : mod->pivots) {
+		pivots.push_back(new Node(pivot[0] * room->GetSizeX() + pivot[1], pivot[2] * room->GetSizeY() + pivot[3]));
+	}
 }
 
 pair<float, float> Room::GetPosition(float x, float y) const {
@@ -194,7 +221,7 @@ vector<string> Room::ManufactureTypes() const {
 	return mod->manufactureTypes;
 }
 
-std::vector<std::vector<float>> Room::ParkingSpaces() const {
+vector<vector<float>> Room::ParkingSpaces() const {
 	return mod->parkingSpaces;
 }
 
@@ -330,6 +357,10 @@ const char* EmptyRoom::GetName() {
 	return name.data();
 }
 
-void EmptyRoom::ConfigRoom(Quad* quad) {
+void EmptyRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
+
+}
+
+void EmptyRoom::PlacePivots(Quad* room) {
 
 }

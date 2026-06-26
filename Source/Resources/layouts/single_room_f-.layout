@@ -12,6 +12,7 @@
 	],
 	"singles": [{
 		"rect": [0, 0, 0, 0, 1, 0, 1, 0],
+		"direction": 2,
 		"windows": [
 			{
 				"direction": 0,
