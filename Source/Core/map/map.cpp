@@ -717,6 +717,7 @@ int Map::InitContents() {
 		if (!building) continue;
 		building->PlaceConstruction();
 		building->LayoutBuilding(layout);
+		building->PlacePivots(building);
 		ApplyHatches(building, 0.f, 0.f);
 		for (auto component : building->GetComponents()) {
 			if (!component) continue;
@@ -735,6 +736,7 @@ int Map::InitContents() {
 			if (!building) continue;
 			building->PlaceConstruction();
 			building->LayoutBuilding(layout);
+			building->PlacePivots(building);
 			ApplyHatches(building, zone->GetLeft(), zone->GetBottom());
 			for (auto component : building->GetComponents()) {
 				if (!component) continue;

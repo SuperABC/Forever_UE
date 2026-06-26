@@ -38,6 +38,7 @@ public:
 	virtual float RandomAcreage() override;
 	virtual void LayoutBuilding(const Quad* quad) override;
 	virtual void PlaceConstruction() override;
+	virtual void PlacePivots(Quad* building) override;
 
 private:
 	static int count;

@@ -10,6 +10,7 @@ BuildingMod::BuildingMod() :
 	basements(0),
 	height(0.4f),
 	construction(),
+	pivots(),
 	wallTexture(),
 	ceilingTexture(),
 	groundTexture(),
@@ -78,6 +79,43 @@ void BuildingMod::AddDecoration(string path,
 	decorations.push_back({ path, {px, py, pz, sx, sy, sz, rx, ry, rz} });
 }
 
+void BuildingMod::AddPivot(vector<float> point, int face) {
+	if (face < 0 || face >= 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
+	}
+	if (point.size() != 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Pivot must have 4 elements.\n");
+	}
+
+	auto rotated = point;
+	switch (face) {
+	case 0:
+		rotated[0] = 1.f - point[2];
+		rotated[1] = -point[3];
+		rotated[2] = point[0];
+		rotated[3] = point[1];
+		break;
+	case 1:
+		rotated[0] = point[2];
+		rotated[1] = point[3];
+		rotated[2] = 1.f - point[0];
+		rotated[3] = -point[1];
+		break;
+	case 2:
+		break;
+	case 3:
+		rotated[0] = 1.f - point[0];
+		rotated[1] = -point[1];
+		rotated[2] = 1.f - point[2];
+		rotated[3] = -point[3];
+		break;
+	default:
+		break;
+	}
+
+	pivots.push_back(rotated);
+}
+
 void BuildingFactory::RegisterBuilding(const string& id,
 	const vector<float>& power, function<int(const Lot*, int, int)> assigner,
 	function<BuildingMod* ()> creator, function<void(BuildingMod*)> deleter) {
@@ -143,12 +181,12 @@ vector<string> BuildingFactory::CreateBuildings(const string& type, const Lot* l
 
 	auto assigner = assigners.find(type);
 	if (assigner == assigners.end()) {
-		debugf("Warning: Generator for zone %s not found when creating.\n", type.data());
+		debugf("Warning: Generator for building %s not found when creating.\n", type.data());
 		return buildings;
 	}
 
-	int num = assigner->second(lot, idx, total);
-	for (int i = 0; i < num; i++) {
+	int buildingCount = assigner->second(lot, idx, total);
+	for (int i = 0; i < buildingCount; i++) {
 		buildings.push_back(type);
 	}
 	return buildings;

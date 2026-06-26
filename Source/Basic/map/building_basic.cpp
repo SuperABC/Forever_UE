@@ -92,6 +92,10 @@ void ResidentialBuilding::PlaceConstruction() {
 	construction = Quad(0.5f, 0.5f, 0.6f, 0.6f);
 }
 
+void ResidentialBuilding::PlacePivots(Quad* building) {
+
+}
+
 int ShopBuilding::count = 0;
 
 ShopBuilding::ShopBuilding() : id(count++) {
@@ -171,6 +175,10 @@ void ShopBuilding::PlaceConstruction() {
 	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
 }
 
+void ShopBuilding::PlacePivots(Quad* building) {
+
+}
+
 int FactoryBuilding::count = 0;
 
 FactoryBuilding::FactoryBuilding() : id(count++) {
@@ -213,7 +221,7 @@ void FactoryBuilding::LayoutBuilding(const Quad* quad) {
 	height = 0.6f;
 	wallTexture = "/Game/Asset/Materials/White.White";
 
-	int direction = direction = GetRandom(4);
+	int direction = GetRandom(4);
 	
 	string component = "factory";
 	AssignFloor(-1, direction, "single_room_b+");
@@ -226,4 +234,8 @@ void FactoryBuilding::LayoutBuilding(const Quad* quad) {
 
 void FactoryBuilding::PlaceConstruction() {
 	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
+}
+
+void FactoryBuilding::PlacePivots(Quad* building) {
+
 }

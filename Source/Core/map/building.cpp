@@ -195,10 +195,12 @@ void Ground::InstanciateQuad(float width, float height) {
 }
 
 Corridor::Corridor(vector<float> params) :
-	walls(4, false), doors(), windows(), params(params) {
+	walls(4, false),
+	doors(),
+	windows(),
+	params(params) {
 
 }
-
 
 Corridor::~Corridor() {
 
@@ -274,7 +276,9 @@ void Hatch::InstanciateQuad(float width, float height) {
 }
 
 Single::Single(vector<float> params) :
-	doors(), windows(), params(params) {
+	doors(),
+	windows(),
+	params(params) {
 
 }
 
@@ -315,7 +319,10 @@ void Single::InstanciateQuad(float width, float height) {
 }
 
 Row::Row(vector<float> params) :
-	direction(FACE_WEST), doors(), windows(), params(params) {
+	direction(FACE_WEST),
+	doors(),
+	windows(),
+	params(params) {
 
 }
 
@@ -363,8 +370,9 @@ void Row::InstanciateQuad(float width, float height) {
 	Quad::SetPosition(x, y, w, h);
 }
 
-Floor::Floor(int level, float width, float height)
-	: level(level), number(0) {
+Floor::Floor(int level, float width, float height) :
+	level(level),
+	number(0) {
 	SetVertices(0, 0, width, height);
 }
 
@@ -452,7 +460,7 @@ int Floor::AssignNumber() {
 	return number++;
 }
 
-Cabin::Cabin(std::string name, int temp, int idx, int minFloor, int maxFloor, Script* script) :
+Cabin::Cabin(string name, int temp, int idx, int minFloor, int maxFloor, Script* script) :
 	name(name),
 	temp(temp),
 	idx(idx),
@@ -501,8 +509,8 @@ void Cabin::AddOption(const string& option) {
 }
 
 void Cabin::RemoveOption(const string& option) {
-	for(int i = 0; i < (int)options.size(); i++) {
-		if(options[i] == option) {
+	for (int i = 0; i < static_cast<int>(options.size()); i++) {
+		if (options[i] == option) {
 			options[i] = options.back();
 			options.pop_back();
 			return;
@@ -530,6 +538,7 @@ Building::Building(BuildingFactory* factory, const string& building) :
 	groundTexture(),
 	decorations(),
 	address(),
+	pivots(),
 	stated(),
 	owner(),
 	script(nullptr),
@@ -543,7 +552,12 @@ Building::Building(BuildingFactory* factory, const string& building) :
 Building::~Building() {
 	factory->DestroyBuilding(mod);
 
-	for(auto &cabin : cabins) {
+	for (auto& pivot : pivots) {
+		delete pivot;
+	}
+	pivots.clear();
+
+	for (auto &cabin : cabins) {
 		delete cabin;
 	}
 	cabins.clear();
@@ -560,7 +574,9 @@ Building::~Building() {
 	}
 	rooms.clear();
 
-	if(script)delete script;
+	if (script) {
+		delete script;
+	}
 	script = nullptr;
 }
 
@@ -644,7 +660,7 @@ string Building::GetAddress() {
 	}
 
 	auto zone = GetParentZone();
-	if(zone) {
+	if (zone) {
 		auto zoneAddress = GetParentZone()->GetAddress();
 		address = zoneAddress + " " + GetName();
 		return address;
@@ -654,7 +670,10 @@ string Building::GetAddress() {
 		address = blockAddress + " " + GetName();
 		return address;
 	}
+}
 
+const vector<Node*> Building::GetPivots() {
+	return pivots;
 }
 
 vector<Component*>& Building::GetComponents() {
@@ -710,18 +729,18 @@ float Building::GetAcreageMax() {
 
 void Building::GetPosition(float& x, float& y) const {
 	auto block = GetParentBlock();
-	if(!block) {
+	if (!block) {
 		THROW_EXCEPTION(NullPointerException, "Building parent block is null.\n");
 	}
 
 	auto zone = GetParentZone();
-	if(zone) {
+	if (zone) {
 		auto center = block->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f + GetPosX(),
 			zone->GetPosY() - zone->GetSizeY() / 2.f + GetPosY());
 		x = center.first;
 		y = center.second;
 	}
-	else{
+	else {
 		auto center = block->GetPosition(GetPosX(), GetPosY());
 		x = center.first;
 		y = center.second;
@@ -796,6 +815,14 @@ void Building::LayoutBuilding(Layout* layout) {
 		script->ReadMilestones(Config::GetScript(s));
 	}
 	script->SetValue("self.name", name);
+}
+
+void Building::PlacePivots(Quad* building) {
+	mod->PlacePivots(building);
+
+	for (auto& pivot : mod->pivots) {
+		pivots.push_back(new Node(pivot[0] * building->GetSizeX() + pivot[1], pivot[2] * building->GetSizeY() + pivot[3]));
+	}
 }
 
 Layout* Building::ReadTemplates(const vector<string>& paths) {
@@ -1353,5 +1380,9 @@ void EmptyBuilding::LayoutBuilding(const Quad* quad) {
 }
 
 void EmptyBuilding::PlaceConstruction() {
+
+}
+
+void EmptyBuilding::PlacePivots(Quad* building) {
 
 }

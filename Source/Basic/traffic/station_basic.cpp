@@ -79,3 +79,7 @@ void AirportBuilding::LayoutBuilding(const Quad* quad) {
 void AirportBuilding::PlaceConstruction() {
 	construction = Quad(0.3f, 0.5f, 0.4f, 0.8f);
 }
+
+void AirportBuilding::PlacePivots(Quad* building) {
+
+}
