@@ -11,62 +11,119 @@ typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
 // 园区实体
 class Zone : public Quad {
 public:
-	// 禁止默认构造
+	/*
+	* 禁止默认构造
+	*/
 	Zone() = delete;
 
-	// 通过类型从工厂构造
+	/*
+	* 通过园区静态类型标识从工厂构造园区
+	* @factory: 园区工厂
+	* @zone: 园区静态类型标识
+	*/
 	Zone(ZoneFactory* factory, const std::string& zone);
-	
-	// 析构园区
+
+	/*
+	* 析构园区
+	*/
 	~Zone();
 
-	// 获取类型
+	/*
+	* 获取园区类型
+	*/
 	std::string GetType() const;
 
-	// 获取名称
+	/*
+	* 获取园区名称
+	*/
 	std::string GetName() const;
 
-	// 获取所在地块
+	/*
+	* 获取所在地块
+	*/
 	Block* GetParent() const;
 
-	// 设置所在地块
+	/*
+	* 设置所在地块
+	* @block: 所在地块
+	*/
 	void SetParent(Block* block);
 
-	// 获取地址
+	/*
+	* 获取完整地址
+	*/
 	std::string GetAddress();
 
-	// 获取一栋建筑
+	/*
+	* 获取寻址锚点
+	*/
+	const std::vector<Node*> GetPivots();
+
+	/*
+	* 按名称获取园区内一栋建筑
+	* @name: 建筑名称
+	*/
 	Building* GetBuilding(const std::string& name);
 
-	// 获取园区内所有建筑
+	/*
+	* 获取园区内所有建筑
+	*/
 	const std::unordered_map<std::string, Building*>& GetBuildings();
 
-	// 获取是否由政府拥有
+	/*
+	* 获取是否由政府拥有
+	*/
 	bool GetStated() const;
 
-	// 设置是否由政府拥有
+	/*
+	* 设置是否由政府拥有
+	* @state: 是否由政府拥有
+	*/
 	void SetStated(bool state);
 
-	// 获取私人房东
+	/*
+	* 获取私人房东
+	*/
 	Person* GetOwner() const;
 
-	// 设置私人房东
+	/*
+	* 设置私人房东
+	* @owner: 私人房东
+	*/
 	void SetOwner(Person* owner);
 
-	// 获取剧情
+	/*
+	* 获取关联剧情
+	*/
 	Script* GetScript() const;
 
-	// 获取园区中心世界位置
+	/*
+	* 获取园区中心世界位置
+	* @x, y: 输出的世界坐标
+	*/
 	void GetPosition(float& x, float& y) const;
 
-	// 设计园区
+	/*
+	* 设计园区
+	* @block: 所在地块
+	*/
 	void LayoutZone(const Lot* block);
 
-	// 自动分布建筑
+	/*
+	* 自动分布建筑
+	*/
 	void ArrangeBuildings();
 
-	// 清理空建筑
+	/*
+	* 清理面积为零的建筑
+	*/
 	void ClearZero();
+
+	/*
+	* 放置寻址锚点
+	* @zone: 园区所占据的矩形区域
+	*/
+	void PlacePivots(Quad* zone);
 
 private:
 	// 模组对象
@@ -83,9 +140,12 @@ private:
 
 	// 所在街区
 	Block* parentBlock;
-	
+
 	// 完整地址
 	std::string address;
+
+	// 寻址锚点
+	OBJECT_HOLDER std::vector<Node*> pivots;
 
 	// 内部建筑
 	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;
@@ -103,21 +163,59 @@ private:
 // 空园区
 class EmptyZone : public ZoneMod {
 public:
+	/*
+	* 构造空园区
+	*/
 	EmptyZone();
+
+	/*
+	* 析构空园区
+	*/
 	virtual ~EmptyZone();
 
+	/*
+	* Override
+	* 园区静态类型标识
+	*/
 	static const char* GetId();
+
+	/*
+	* Override
+	* 园区动态类型标识
+	*/
 	virtual const char* GetType() const override;
+
+	/*
+	* Override
+	* 园区实例唯一名称
+	*/
 	virtual const char* GetName() override;
 
+	// 按地块计算应生成的园区数量
 	static std::function<int(const Lot*)> ZoneAssigner;
 
+	/*
+	* Override
+	* 设计园区
+	* @block: 所在地块
+	*/
 	virtual void LayoutZone(const Lot* block) override;
 
+	/*
+	* Override
+	* 放置寻址锚点
+	* @zone: 园区所占据的矩形区域
+	*/
+	virtual void PlacePivots(Quad* zone) override;
+
 private:
+	// 总实例数量
 	static int count;
 
+	// 实例编号
 	int id;
+
+	// 实例名称
 	std::string name;
 };
 

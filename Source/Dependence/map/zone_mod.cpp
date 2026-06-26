@@ -79,8 +79,8 @@ vector<ZoneMod*> ZoneFactory::CreateZones(const string& type, const Lot* lot) co
 		return zoneMods;
 	}
 
-	int num = assigner->second(lot);
-	for (int i = 0; i < num; i++) {
+	int zoneCount = assigner->second(lot);
+	for (int i = 0; i < zoneCount; i++) {
 		ZoneMod* zoneMod = CreateZone(type);
 		if (zoneMod) {
 			zoneMods.push_back(zoneMod);

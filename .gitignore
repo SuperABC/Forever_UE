@@ -91,3 +91,4 @@ DerivedDataCache/*
 Debug/
 Release/
 Source/Resources/config.json
+Source/Resources/scripts/ys.json

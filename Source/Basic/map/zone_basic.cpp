@@ -32,6 +32,10 @@ void ResidentialZone::LayoutZone(const Lot* lot) {
 	script = { "empty", { "basic_zone" } };
 }
 
+void ResidentialZone::PlacePivots(Quad* zone) {
+
+}
+
 function<int(const Lot*)> ResidentialZone::ZoneAssigner = [](const Lot* lot) -> int {
 	return 1;
 };

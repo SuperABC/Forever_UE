@@ -678,6 +678,7 @@ int Map::InitContents() {
 			if (!zone) continue;
 			zone->ArrangeBuildings();
 			zone->ClearZero();
+			zone->PlacePivots(zone);
 			SetZone(zone, name);
 			for (auto& building : zone->GetBuildings()) {
 				if (!building.second) continue;

@@ -19,6 +19,7 @@ Zone::Zone(ZoneFactory* factory, const string& zone) :
 	name(mod->GetName()),
 	parentBlock(nullptr),
 	address(""),
+	pivots(),
 	buildings(),
 	script(nullptr) {
 
@@ -27,12 +28,18 @@ Zone::Zone(ZoneFactory* factory, const string& zone) :
 Zone::~Zone() {
 	factory->DestroyZone(mod);
 
+	for (auto& pivot : pivots) {
+		delete pivot;
+	}
+
 	for (auto &[_, building] : buildings) {
 		delete building;
 	}
 	buildings.clear();
 
-	if(script)delete script;
+	if (script) {
+		delete script;
+	}
 	script = nullptr;
 }
 
@@ -74,6 +81,10 @@ string Zone::GetAddress() {
 	return address.data();
 }
 
+const vector<Node*> Zone::GetPivots() {
+	return pivots;
+}
+
 bool Zone::GetStated() const {
 	return stated;
 }
@@ -107,10 +118,10 @@ void Zone::LayoutZone(const Lot* block) {
 	mod->LayoutZone(block);
 	SetAcreage(mod->acreage);
 
-	float acreageTmp = 0.f;
+	float acreageTemporary = 0.f;
 	int attempt = 0;
-	for (int i = 0; i < (int)mod->buildings.size(); i++) {
-		if (acreageTmp >= mod->acreage || attempt > 16) {
+	for (int i = 0; i < static_cast<int>(mod->buildings.size()); i++) {
+		if (acreageTemporary >= mod->acreage || attempt > 16) {
 			break;
 		}
 
@@ -120,17 +131,17 @@ void Zone::LayoutZone(const Lot* block) {
 		float acreageBuilding = building->RandomAcreage() * ratio;
 		float acreageMin = building->GetAcreageMin() * ratio;
 		float acreageMax = building->GetAcreageMax() * ratio;
-		if (mod->acreage - acreageTmp < acreageMin) {
+		if (mod->acreage - acreageTemporary < acreageMin) {
 			attempt++;
 			i--;
 			delete building;
 			continue;
 		}
-		else if (mod->acreage - acreageTmp < acreageBuilding) {
-			acreageBuilding = mod->acreage - acreageTmp;
+		else if (mod->acreage - acreageTemporary < acreageBuilding) {
+			acreageBuilding = mod->acreage - acreageTemporary;
 		}
 
-		acreageTmp += acreageBuilding;
+		acreageTemporary += acreageBuilding;
 		building->SetAcreage(acreageBuilding);
 		if (buildings.find(building->GetName()) != buildings.end()) {
 			THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + building->GetName() + ".\n");
@@ -166,14 +177,14 @@ void Zone::ArrangeBuildings() {
 	if (acreageRemain > 0) {
 		for (auto& [_, building] : buildings) {
 			if (!building) continue;
-			float acreageTmp = building->GetAcreage();
+			float acreageTemporary = building->GetAcreage();
 			float acreageMax = building->GetAcreageMax();
 			float acreageMin = building->GetAcreageMin();
 
-			float acreageExpand = acreageMax - acreageTmp;
+			float acreageExpand = acreageMax - acreageTemporary;
 
 			if (acreageExpand > acreageRemain && acreageRemain > 0) {
-				float acreageNew = acreageTmp + acreageRemain;
+				float acreageNew = acreageTemporary + acreageRemain;
 				if (acreageNew >= acreageMin && acreageNew <= acreageMax) {
 					building->SetAcreage(acreageNew);
 					acreageUsed += acreageRemain;
@@ -224,6 +235,14 @@ void Zone::ClearZero() {
 	}
 }
 
+void Zone::PlacePivots(Quad* zone) {
+	mod->PlacePivots(zone);
+
+	for (auto& pivot : mod->pivots) {
+		pivots.push_back(new Node(pivot[0] * zone->GetSizeX() + pivot[1], pivot[2] * zone->GetSizeY() + pivot[3]));
+	}
+}
+
 int EmptyZone::count = 0;
 
 EmptyZone::EmptyZone() : id(count++) {
@@ -248,6 +267,10 @@ const char* EmptyZone::GetName() {
 }
 
 void EmptyZone::LayoutZone(const Lot* lot) {
+
+}
+
+void EmptyZone::PlacePivots(Quad* zone) {
 
 }
 
