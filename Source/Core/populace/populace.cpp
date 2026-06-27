@@ -221,8 +221,8 @@ void Populace::Tick(Map* map, Player* player) {
 
 			if (citizen->GetScheduler()->GetStatus() == "idle_home") {
 				if (signin.GetYear() > 0 && time && *time > signin - Time(string("00:30:00"))) {
-					auto startNode = citizen->GetHome()->GetParentBuilding()->GetBoundary().corners[0];
-					auto endNode = job->GetPosition()->GetParentBuilding()->GetBoundary().corners[0];
+					auto startNode = citizen->GetHome()->GetNavigationNode();
+					auto endNode = job->GetPosition()->GetNavigationNode();
 					if (startNode && endNode) {
 						citizen->SetStatus(job->GetPosition(),
 							map->AutoNavigation(startNode->GetId(), endNode->GetId()), signin - Time(string("00:30:00")));
@@ -236,8 +236,8 @@ void Populace::Tick(Map* map, Player* player) {
 			else if (citizen->GetScheduler()->GetStatus() == "work_job") {
 				if (citizen->GetWork() != job)continue;
 				if (signout.GetYear() > 0 && time && *time > signout) {
-					auto startNode = job->GetPosition()->GetParentBuilding()->GetBoundary().corners[0];
-					auto endNode = citizen->GetHome()->GetParentBuilding()->GetBoundary().corners[0];
+					auto startNode = job->GetPosition()->GetNavigationNode();
+					auto endNode = citizen->GetHome()->GetNavigationNode();
 					if (startNode && endNode) {
 						citizen->SetStatus(citizen->GetHome(),
 							map->AutoNavigation(startNode->GetId(), endNode->GetId()), signout);

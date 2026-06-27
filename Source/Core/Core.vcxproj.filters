@@ -132,6 +132,9 @@
     <ClCompile Include="player\phone.cpp">
       <Filter>player</Filter>
     </ClCompile>
+    <ClCompile Include="common\trivial.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\industry.h">
@@ -241,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="player\phone.h">
       <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="common\trivial.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

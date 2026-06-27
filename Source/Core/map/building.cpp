@@ -1,5 +1,7 @@
 ﻿#include "building.h"
 
+#include "trivial.h"
+
 #include "map/map.h"
 #include "map/block.h"
 #include "map/zone.h"
@@ -13,6 +15,8 @@
 
 #include <fstream>
 #include <filesystem>
+#include <algorithm>
+#include <tuple>
 
 
 using namespace std;
@@ -549,6 +553,9 @@ Building::Building(BuildingFactory* factory, const string& building) :
 	address(),
 	pivots(),
 	boundary(),
+	nodes(),
+	singleRoomBySlot(),
+	rowRoomBySlot(),
 	stated(),
 	owner(),
 	script(nullptr),
@@ -566,6 +573,11 @@ Building::~Building() {
 		delete pivot;
 	}
 	pivots.clear();
+
+	for (auto node : nodes) {
+		delete node;
+	}
+	nodes.clear();
 
 	for (auto &cabin : cabins) {
 		delete cabin;
@@ -694,6 +706,10 @@ void Building::SetBoundary(const QuadBoundary& boundary) {
 	this->boundary = boundary;
 }
 
+const vector<Node*>& Building::GetNodes() const {
+	return nodes;
+}
+
 vector<Component*>& Building::GetComponents() {
 	return components;
 }
@@ -765,7 +781,7 @@ void Building::GetPosition(float& x, float& y) const {
 	}
 }
 
-void Building::LayoutBuilding(Layout* layout) {
+void Building::LayoutBuilding(Layout* layout, Map* map) {
 	mod->LayoutBuilding(this);
 	basements = mod->basements;
 	layers = mod->layers;
@@ -827,7 +843,12 @@ void Building::LayoutBuilding(Layout* layout) {
 	for (auto room : rooms) {
 		room->ConfigRoom();
 		room->PlacePivots(room);
+
+		auto [wx, wy] = ToWorldXY(room->GetPosX(), room->GetPosY());
+		room->SetNavigationNode(new Node(wx, wy, height * room->GetLayer()));
 	}
+
+	BuildNavigation(layout, map);
 
 	script = new Script(Story::scriptFactory, mod->script.first);
 	for (auto s : mod->script.second) {
@@ -877,6 +898,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 			layout->templateCorridors[basename] = vector<vector<Corridor>>(4);
 			layout->templateSingles[basename] = vector<vector<Single>>(4);
 			layout->templateRows[basename] = vector<vector<Row>>(4);
+			layout->templateNavigation[basename] = vector<NavigationTemplate>(4);
 			layout->templateHatches[basename] = vector<vector<Hatch>>(4);
 
 			for (auto s : root["stairs"]) {
@@ -1099,6 +1121,72 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 					layout->templateHatches[basename][i].push_back(hatch);
 				}
 			}
+
+			if (root.ValidMember("navigation")) {
+				auto& navRoot = root["navigation"];
+
+				vector<vector<float>> rawNodes;
+				for (auto n : navRoot["nodes"]) {
+					if (n["position"].size() != 4) {
+						fin.close();
+						delete layout;
+						THROW_EXCEPTION(JsonFormatException, "Navigation node position must have 4 floats.\n");
+					}
+					vector<float> position(4);
+					for (int i = 0; i < 4; i++) {
+						position[i] = n["position"][i].AsFloat();
+					}
+					rawNodes.push_back(position);
+				}
+
+				vector<pair<vector<float>, vector<float>>> rawLines;
+				for (auto l : navRoot["lines"]) {
+					if (l["begin"].size() != 4 || l["end"].size() != 4) {
+						fin.close();
+						delete layout;
+						THROW_EXCEPTION(JsonFormatException, "Navigation line begin/end must have 4 floats.\n");
+					}
+					vector<float> begin(4), end(4);
+					for (int i = 0; i < 4; i++) {
+						begin[i] = l["begin"][i].AsFloat();
+						end[i] = l["end"][i].AsFloat();
+					}
+					rawLines.emplace_back(begin, end);
+				}
+
+				auto readEndpoint = [](const JsonValue& e) -> NavigationEndpointTemplate {
+					NavigationEndpointTemplate endpoint;
+					endpoint.type = e["type"].AsString();
+					if (e.ValidMember("idx")) endpoint.idx = e["idx"].AsInt();
+					if (e.ValidMember("vertex")) endpoint.vertex = e["vertex"].AsInt();
+					return endpoint;
+					};
+
+				vector<NavigationConnectionTemplate> rawConnections;
+				for (auto c : navRoot["connections"]) {
+					NavigationConnectionTemplate connTemplate;
+					connTemplate.begin = readEndpoint(c["begin"]);
+					connTemplate.end = readEndpoint(c["end"]);
+					rawConnections.push_back(connTemplate);
+				}
+
+				for (int i = 0; i < 4; i++) {
+					NavigationTemplate navTemplate;
+					for (auto& position : rawNodes) {
+						NavigationNodeTemplate nodeTemplate;
+						nodeTemplate.position = InversePoint(position, i);
+						navTemplate.nodes.push_back(nodeTemplate);
+					}
+					for (auto& [begin, end] : rawLines) {
+						NavigationLineTemplate lineTemplate;
+						lineTemplate.begin = InversePoint(begin, i);
+						lineTemplate.end = InversePoint(end, i);
+						navTemplate.lines.push_back(lineTemplate);
+					}
+					navTemplate.connections = rawConnections;
+					layout->templateNavigation[basename][i] = navTemplate;
+				}
+			}
 		}
 		else {
 			fin.close();
@@ -1230,6 +1318,7 @@ void Building::AssignRoom(int level, int slot, const string& name,
 	component->AddRoom(room);
 
 	rooms.push_back(room);
+	singleRoomBySlot[level][slot] = room;
 }
 
 void Building::ArrangeRow(int level, int slot, const string& name, float acreage,
@@ -1270,6 +1359,7 @@ void Building::ArrangeRow(int level, int slot, const string& name, float acreage
 			component->AddRoom(room);
 
 			rooms.push_back(room);
+			rowRoomBySlot[level][slot].push_back(room);
 		}
 	}
 	else {
@@ -1291,6 +1381,7 @@ void Building::ArrangeRow(int level, int slot, const string& name, float acreage
 			component->AddRoom(room);
 
 			rooms.push_back(room);
+			rowRoomBySlot[level][slot].push_back(room);
 		}
 	}
 }
@@ -1361,6 +1452,311 @@ int Building::InverseDirection(int direction, int face) {
 	default:
 		return direction;
 	}
+}
+
+vector<float> Building::InversePoint(const vector<float>& point, int face) {
+	if (face < 0 || face >= 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
+	}
+	if (point.size() != 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Point must have 4 elements.\n");
+	}
+	switch (face) {
+	case 0:
+		return { 1.f - point[2], -point[3], point[0], point[1] };
+	case 1:
+		return { point[2], point[3], 1.f - point[0], -point[1] };
+	case 2:
+		return point;
+	case 3:
+		return { 1.f - point[0], -point[1], 1.f - point[2], -point[3] };
+	default:
+		return point;
+	}
+}
+
+pair<float, float> Building::ToWorldXY(float x, float y) const {
+	auto block = GetParentBlock();
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Building parent block is null.\n");
+	}
+
+	auto zone = GetParentZone();
+	float offsetX = zone ? zone->GetLeft() : 0.f;
+	float offsetY = zone ? zone->GetBottom() : 0.f;
+	return block->GetPosition(offsetX + GetLeft() + construction.GetLeft() + x,
+		offsetY + GetBottom() + construction.GetBottom() + y);
+}
+
+// line的运行期状态：固定端点缓存 + 沿line收集到的锚点（用于排序后串成走廊骨架）
+struct LineRuntime {
+	float beginX = 0.f, beginY = 0.f;
+	float endX = 0.f, endY = 0.f;
+	Node* nodeAt0 = nullptr;
+	Node* nodeAt1 = nullptr;
+	vector<pair<float, Node*>> anchors;
+};
+
+void Building::BuildNavigation(Layout* layout, Map* map) {
+	if (!layout || !map) {
+		THROW_EXCEPTION(InvalidArgumentException, "Layout or map pointer is null.\n");
+	}
+
+	vector<Node*> newNodes;
+	vector<Connection*> newConnections;
+
+	// 楼层间楼梯端点登记，留待所有楼层处理完后按相邻层贪心匹配
+	vector<tuple<int, Node*, bool>> stairEndpoints;
+
+	for (int idx = 0; idx < static_cast<int>(floors.size()); idx++) {
+		int level = idx - basements;
+		Floor* floor = floors[idx];
+		if (!floor) continue;
+
+		auto [templateName, face] = mod->templates[idx];
+		auto navIt = layout->templateNavigation.find(templateName);
+		if (navIt == layout->templateNavigation.end()) continue;
+		const NavigationTemplate& navTemplate = navIt->second[face];
+		if (navTemplate.nodes.empty() && navTemplate.lines.empty() && navTemplate.connections.empty()) continue;
+
+		float floorWidth = floor->GetSizeX();
+		float floorHeight = floor->GetSizeY();
+		float z = height * level;
+
+		auto instantiate = [this, floorWidth, floorHeight, z](const vector<float>& position) -> Node* {
+			float lx = position[0] * floorWidth + position[1];
+			float ly = position[2] * floorHeight + position[3];
+			auto [wx, wy] = ToWorldXY(lx, ly);
+			return new Node(wx, wy, z);
+			};
+
+		vector<Node*> floorFixedNodes;
+		for (auto& nodeTemplate : navTemplate.nodes) {
+			Node* node = instantiate(nodeTemplate.position);
+			nodes.push_back(node);
+			newNodes.push_back(node);
+			floorFixedNodes.push_back(node);
+		}
+
+		vector<LineRuntime> lineRuntimes(navTemplate.lines.size());
+		for (int i = 0; i < static_cast<int>(navTemplate.lines.size()); i++) {
+			auto& lineTemplate = navTemplate.lines[i];
+			lineRuntimes[i].beginX = lineTemplate.begin[0] * floorWidth + lineTemplate.begin[1];
+			lineRuntimes[i].beginY = lineTemplate.begin[2] * floorHeight + lineTemplate.begin[3];
+			lineRuntimes[i].endX = lineTemplate.end[0] * floorWidth + lineTemplate.end[1];
+			lineRuntimes[i].endY = lineTemplate.end[2] * floorHeight + lineTemplate.end[3];
+		}
+
+		// 解析一个普通端点（line的vertex=-1除外，那种情况由调用方单独处理）为一组导航节点
+		auto resolveEndpoint = [this, level, &floorFixedNodes, &lineRuntimes, &newNodes]
+			(const NavigationEndpointTemplate& endpoint) -> vector<Node*> {
+			if (endpoint.type == "node") {
+				if (endpoint.idx < 0 || endpoint.idx >= static_cast<int>(floorFixedNodes.size())) {
+					THROW_EXCEPTION(OutOfRangeException, "Navigation node index out of range.\n");
+				}
+				return { floorFixedNodes[endpoint.idx] };
+			}
+			else if (endpoint.type == "single") {
+				auto levelIt = singleRoomBySlot.find(level);
+				if (levelIt == singleRoomBySlot.end() || levelIt->second.find(endpoint.idx) == levelIt->second.end()) {
+					THROW_EXCEPTION(OutOfRangeException, "Navigation single slot not found.\n");
+				}
+				return { levelIt->second.at(endpoint.idx)->GetNavigationNode() };
+			}
+			else if (endpoint.type == "row") {
+				auto levelIt = rowRoomBySlot.find(level);
+				if (levelIt == rowRoomBySlot.end() || levelIt->second.find(endpoint.idx) == levelIt->second.end()) {
+					THROW_EXCEPTION(OutOfRangeException, "Navigation row slot not found.\n");
+				}
+				vector<Node*> result;
+				for (auto room : levelIt->second.at(endpoint.idx)) {
+					result.push_back(room->GetNavigationNode());
+				}
+				return result;
+			}
+			else if (endpoint.type == "line") {
+				if (endpoint.idx < 0 || endpoint.idx >= static_cast<int>(lineRuntimes.size())) {
+					THROW_EXCEPTION(OutOfRangeException, "Navigation line index out of range.\n");
+				}
+				auto& line = lineRuntimes[endpoint.idx];
+				if (endpoint.vertex == 0) {
+					if (!line.nodeAt0) {
+						auto [wx, wy] = ToWorldXY(line.beginX, line.beginY);
+						line.nodeAt0 = new Node(wx, wy, height * level);
+						nodes.push_back(line.nodeAt0);
+						newNodes.push_back(line.nodeAt0);
+						line.anchors.emplace_back(0.f, line.nodeAt0);
+					}
+					return { line.nodeAt0 };
+				}
+				else if (endpoint.vertex == 1) {
+					if (!line.nodeAt1) {
+						auto [wx, wy] = ToWorldXY(line.endX, line.endY);
+						line.nodeAt1 = new Node(wx, wy, height * level);
+						nodes.push_back(line.nodeAt1);
+						newNodes.push_back(line.nodeAt1);
+						line.anchors.emplace_back(1.f, line.nodeAt1);
+					}
+					return { line.nodeAt1 };
+				}
+				THROW_EXCEPTION(InvalidArgumentException, "Line vertex -1 must be resolved against a single/row endpoint.\n");
+			}
+			THROW_EXCEPTION(InvalidArgumentException, "Endpoint type '" + endpoint.type + "' cannot be resolved here.\n");
+			};
+
+		for (auto& connTemplate : navTemplate.connections) {
+			bool beginIsProjection = connTemplate.begin.type == "line" && connTemplate.begin.vertex == -1;
+			bool endIsProjection = connTemplate.end.type == "line" && connTemplate.end.vertex == -1;
+
+			if (beginIsProjection || endIsProjection) {
+				const NavigationEndpointTemplate& lineSide = beginIsProjection ? connTemplate.begin : connTemplate.end;
+				const NavigationEndpointTemplate& roomSide = beginIsProjection ? connTemplate.end : connTemplate.begin;
+				if (roomSide.type != "single" && roomSide.type != "row") {
+					THROW_EXCEPTION(JsonFormatException, "Line vertex -1 can only connect to a single or row endpoint.\n");
+				}
+				if (lineSide.idx < 0 || lineSide.idx >= static_cast<int>(lineRuntimes.size())) {
+					THROW_EXCEPTION(OutOfRangeException, "Navigation line index out of range.\n");
+				}
+
+				vector<Room*> rooms;
+				if (roomSide.type == "single") {
+					auto levelIt = singleRoomBySlot.find(level);
+					if (levelIt == singleRoomBySlot.end() || levelIt->second.find(roomSide.idx) == levelIt->second.end()) {
+						THROW_EXCEPTION(OutOfRangeException, "Navigation single slot not found.\n");
+					}
+					rooms.push_back(levelIt->second.at(roomSide.idx));
+				}
+				else {
+					auto levelIt = rowRoomBySlot.find(level);
+					if (levelIt == rowRoomBySlot.end() || levelIt->second.find(roomSide.idx) == levelIt->second.end()) {
+						THROW_EXCEPTION(OutOfRangeException, "Navigation row slot not found.\n");
+					}
+					rooms = levelIt->second.at(roomSide.idx);
+				}
+
+				auto& line = lineRuntimes[lineSide.idx];
+				for (auto room : rooms) {
+					float t = ProjectOntoLine(room->GetPosX(), room->GetPosY(),
+						line.beginX, line.beginY, line.endX, line.endY);
+					float px = line.beginX + t * (line.endX - line.beginX);
+					float py = line.beginY + t * (line.endY - line.beginY);
+					auto [wx, wy] = ToWorldXY(px, py);
+					Node* projected = new Node(wx, wy, height * level);
+					nodes.push_back(projected);
+					newNodes.push_back(projected);
+					line.anchors.emplace_back(t, projected);
+
+					newConnections.push_back(new Connection(*projected, *room->GetNavigationNode()));
+				}
+				continue;
+			}
+
+			if (connTemplate.begin.type == "outside" || connTemplate.end.type == "outside") {
+				const NavigationEndpointTemplate& otherSide = connTemplate.begin.type == "outside" ? connTemplate.end : connTemplate.begin;
+				vector<Node*> otherNodes = resolveEndpoint(otherSide);
+				if (otherNodes.size() != 1) {
+					THROW_EXCEPTION(JsonFormatException, "Outside endpoint must pair with a single navigation node.\n");
+				}
+				Node* otherNode = otherNodes[0];
+
+				Node* nearest = nullptr;
+				float nearestDistSq = 0.f;
+				for (int i = 0; i < 4; i++) {
+					Node* corner = boundary.corners[i];
+					if (!corner) continue;
+					float dx = corner->GetX() - otherNode->GetX();
+					float dy = corner->GetY() - otherNode->GetY();
+					float distSq = dx * dx + dy * dy;
+					if (!nearest || distSq < nearestDistSq) {
+						nearest = corner;
+						nearestDistSq = distSq;
+					}
+				}
+				if (!nearest) {
+					THROW_EXCEPTION(NullPointerException, "Building boundary has no valid corner for outside connection.\n");
+				}
+				newConnections.push_back(new Connection(*nearest, *otherNode));
+				continue;
+			}
+
+			if (connTemplate.begin.type == "upstair" || connTemplate.begin.type == "downstair" ||
+				connTemplate.end.type == "upstair" || connTemplate.end.type == "downstair") {
+				bool beginIsStair = connTemplate.begin.type == "upstair" || connTemplate.begin.type == "downstair";
+				const NavigationEndpointTemplate& stairSide = beginIsStair ? connTemplate.begin : connTemplate.end;
+				const NavigationEndpointTemplate& otherSide = beginIsStair ? connTemplate.end : connTemplate.begin;
+				vector<Node*> otherNodes = resolveEndpoint(otherSide);
+				if (otherNodes.size() != 1) {
+					THROW_EXCEPTION(JsonFormatException, "Stair endpoint must pair with a single navigation node.\n");
+				}
+				stairEndpoints.emplace_back(level, otherNodes[0], stairSide.type == "upstair");
+				continue;
+			}
+
+			vector<Node*> beginNodes = resolveEndpoint(connTemplate.begin);
+			vector<Node*> endNodes = resolveEndpoint(connTemplate.end);
+			for (auto beginNode : beginNodes) {
+				for (auto endNode : endNodes) {
+					newConnections.push_back(new Connection(*beginNode, *endNode));
+				}
+			}
+		}
+
+		for (auto& line : lineRuntimes) {
+			if (line.anchors.size() < 2) continue;
+			sort(line.anchors.begin(), line.anchors.end(),
+				[](const pair<float, Node*>& a, const pair<float, Node*>& b) { return a.first < b.first; });
+			for (int i = 0; i + 1 < static_cast<int>(line.anchors.size()); i++) {
+				newConnections.push_back(new Connection(*line.anchors[i].second, *line.anchors[i + 1].second));
+			}
+		}
+	}
+
+	// 相邻楼层之间按世界坐标贪心最近匹配upstair/downstair
+	unordered_map<int, vector<pair<Node*, int>>> upstairsByLevel;
+	unordered_map<int, vector<pair<Node*, int>>> downstairsByLevel;
+	for (int i = 0; i < static_cast<int>(stairEndpoints.size()); i++) {
+		auto& [level, node, isUp] = stairEndpoints[i];
+		if (isUp) upstairsByLevel[level].emplace_back(node, i);
+		else downstairsByLevel[level].emplace_back(node, i);
+	}
+
+	for (auto& [level, upList] : upstairsByLevel) {
+		auto downIt = downstairsByLevel.find(level + 1);
+		if (downIt == downstairsByLevel.end()) {
+			debugf("Warning: building has upstair on level %d with no matching downstair on level %d.\n", level, level + 1);
+			continue;
+		}
+		auto& downList = downIt->second;
+
+		vector<tuple<float, int, int>> candidates;
+		for (int i = 0; i < static_cast<int>(upList.size()); i++) {
+			for (int j = 0; j < static_cast<int>(downList.size()); j++) {
+				float dx = upList[i].first->GetX() - downList[j].first->GetX();
+				float dy = upList[i].first->GetY() - downList[j].first->GetY();
+				candidates.emplace_back(dx * dx + dy * dy, i, j);
+			}
+		}
+		sort(candidates.begin(), candidates.end(),
+			[](const tuple<float, int, int>& a, const tuple<float, int, int>& b) { return get<0>(a) < get<0>(b); });
+
+		vector<bool> upUsed(upList.size(), false), downUsed(downList.size(), false);
+		for (auto& [distSq, i, j] : candidates) {
+			if (upUsed[i] || downUsed[j]) continue;
+			upUsed[i] = true;
+			downUsed[j] = true;
+			newConnections.push_back(new Connection(*upList[i].first, *downList[j].first));
+		}
+	}
+
+	// Room自己的中心点导航节点由Room持有，不在building->nodes里，
+	// 但仍需要登记进Map::navigationNodes，否则AutoNavigation按id查不到这些节点
+	for (auto room : rooms) {
+		if (room && room->GetNavigationNode()) {
+			newNodes.push_back(room->GetNavigationNode());
+		}
+	}
+
+	map->ApplyDivideResult(newNodes, newConnections, {});
 }
 
 int EmptyBuilding::count = 0;

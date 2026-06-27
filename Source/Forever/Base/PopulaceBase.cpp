@@ -71,6 +71,14 @@ void APopulaceBase::SetGlobal(AGlobalBase* g) {
 	this->global = g;
 }
 
+AActor* APopulaceBase::GetInstance(FString name) {
+	auto it = personInstances.find(TCHAR_TO_UTF8(*name));
+	if (it == personInstances.end()) {
+		return nullptr;
+	}
+	return it->second;
+}
+
 void APopulaceBase::AddInstance(FString name, AActor* actor) {
 	if (personInstances.find(TCHAR_TO_UTF8(*name)) == personInstances.end()) {
 		personInstances[TCHAR_TO_UTF8(*name)] = actor;

@@ -708,6 +708,54 @@ private:
 	std::vector<std::string> options;
 };
 
+// 寻路固定节点模板
+struct NavigationNodeTemplate {
+	// 节点相对位置（xRatio, xOffset, yRatio, yOffset）
+	std::vector<float> position;
+};
+
+// 寻路线段模板（走廊骨架，仅用于和row/single的动态投影连接）
+struct NavigationLineTemplate {
+	// 起点相对位置
+	std::vector<float> begin;
+
+	// 终点相对位置
+	std::vector<float> end;
+};
+
+// 寻路连接端点模板
+struct NavigationEndpointTemplate {
+	// 端点类型：outside/node/line/single/row/upstair/downstair
+	std::string type;
+
+	// node/line/single/row 在各自列表中的序号
+	int idx = -1;
+
+	// line专用：0=begin端点，1=end端点，-1=由对端动态投影
+	int vertex = 0;
+};
+
+// 寻路连接模板
+struct NavigationConnectionTemplate {
+	// 连接起点
+	NavigationEndpointTemplate begin;
+
+	// 连接终点
+	NavigationEndpointTemplate end;
+};
+
+// 楼层寻路图模板
+struct NavigationTemplate {
+	// 固定节点
+	std::vector<NavigationNodeTemplate> nodes;
+
+	// 走廊骨架线段
+	std::vector<NavigationLineTemplate> lines;
+
+	// 连接关系
+	std::vector<NavigationConnectionTemplate> connections;
+};
+
 // 楼层布局模板集合
 class Layout {
 public:
@@ -737,6 +785,9 @@ public:
 
 	// 地板洞口模板
 	std::unordered_map<std::string, std::vector<std::vector<Hatch>>> templateHatches;
+
+	// 楼层寻路图模板（4个朝向）
+	std::unordered_map<std::string, std::vector<NavigationTemplate>> templateNavigation;
 };
 
 // 建筑实体
@@ -876,6 +927,11 @@ public:
 	void SetBoundary(const QuadBoundary& boundary);
 
 	/*
+	* 获取建筑内部导航图持有的节点
+	*/
+	const std::vector<Node*>& GetNodes() const;
+
+	/*
 	* 获取楼内全部组合
 	*/
 	std::vector<Component*>& GetComponents();
@@ -947,8 +1003,9 @@ public:
 	/*
 	* 布局内部对象
 	* @layout: 楼层布局模板集合
+	* @map: 所在地图，用于将内部导航图接入全局导航图
 	*/
-	void LayoutBuilding(Layout* layout);
+	void LayoutBuilding(Layout* layout, Map* map);
 
 	/*
 	* 放置寻址锚点
@@ -1016,6 +1073,19 @@ private:
 		Component* component, RoomFactory* factory);
 
 	/*
+	* 将楼层局部坐标（construction局部坐标系）转换为世界坐标
+	* @x, y: 楼层局部坐标
+	*/
+	std::pair<float, float> ToWorldXY(float x, float y) const;
+
+	/*
+	* 根据各楼层的navigation模板构建建筑内部导航图，并接入地图导航图
+	* @layout: 楼层布局模板集合
+	* @map: 所在地图
+	*/
+	void BuildNavigation(Layout* layout, Map* map);
+
+	/*
 	* Tool
 	* 根据转向修改矩形参数
 	* @params: 矩形相对参数（8个浮点数）
@@ -1030,6 +1100,14 @@ private:
 	* @face: 转向
 	*/
 	static int InverseDirection(int direction, int face);
+
+	/*
+	* Tool
+	* 根据转向修改点位相对参数
+	* @point: 点位相对参数（4个浮点数：xRatio, xOffset, yRatio, yOffset）
+	* @face: 转向
+	*/
+	static std::vector<float> InversePoint(const std::vector<float>& point, int face);
 
 	// 模组对象
 	OBJECT_HOLDER BuildingMod* mod;
@@ -1081,6 +1159,15 @@ private:
 
 	// 自身的四角四边（非持有引用）
 	QuadBoundary boundary;
+
+	// 内部导航图持有的节点（不含Room自己的中心点）
+	OBJECT_HOLDER std::vector<Node*> nodes;
+
+	// 独立房间导航映射：[楼层编号][独立房间序号] -> 生成的房间（非持有引用）
+	std::unordered_map<int, std::unordered_map<int, Room*>> singleRoomBySlot;
+
+	// 联排房间导航映射：[楼层编号][联排房间序号] -> 生成的房间组（非持有引用）
+	std::unordered_map<int, std::unordered_map<int, std::vector<Room*>>> rowRoomBySlot;
 
 	// 是否由政府拥有
 	bool stated;

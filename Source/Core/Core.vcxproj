@@ -137,6 +137,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common\config.cpp" />
+    <ClCompile Include="common\trivial.cpp" />
     <ClCompile Include="industry\industry.cpp" />
     <ClCompile Include="industry\manufacture.cpp" />
     <ClCompile Include="industry\product.cpp" />
@@ -175,6 +176,7 @@
   <ItemGroup>
     <ClInclude Include="common\class.h" />
     <ClInclude Include="common\config.h" />
+    <ClInclude Include="common\trivial.h" />
     <ClInclude Include="industry\industry.h" />
     <ClInclude Include="industry\manufacture.h" />
     <ClInclude Include="industry\product.h" />

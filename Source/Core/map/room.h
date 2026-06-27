@@ -144,6 +144,17 @@ public:
 	void PlacePivots(Quad* room);
 
 	/*
+	* 获取导航图节点（房间中心点）
+	*/
+	Node* GetNavigationNode() const;
+
+	/*
+	* 设置导航图节点（房间持有，负责释放）
+	* @node: 导航图节点
+	*/
+	void SetNavigationNode(Node* node);
+
+	/*
 	* 获取世界坐标
 	* @x, y: 房间局部坐标
 	*/
@@ -350,6 +361,9 @@ private:
 
 	// 寻址锚点
 	OBJECT_HOLDER std::vector<Node*> pivots;
+
+	// 导航图节点（房间中心点）
+	OBJECT_HOLDER Node* navigationNode;
 
 	// 是否由政府拥有
 	bool stated;

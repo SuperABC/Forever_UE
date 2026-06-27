@@ -5,7 +5,9 @@
 #include "PopulaceBase.h"
 #include "TrafficBase.h"
 
+#include "common/trivial.h"
 #include "map/map.h"
+#include "map/block.h"
 #include "map/zone.h"
 #include "map/building.h"
 #include "map/room.h"
@@ -205,6 +207,53 @@ void AStoryBase::ApplyChange(Change* change,
 			auto pos = room->GetPosition(room->GetSizeX() / 2.f, room->GetSizeY() / 2.f);
 			FVector location(pos.first, pos.second, room->GetLayer() * room->GetParentBuilding()->GetHeight());
 			global->SetLocation(location);
+		}
+	}
+	else if (type == "npc_navigate") {
+		auto obj = dynamic_cast<NPCNavigateChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to NPCNavigateChange.\n");
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetName());
+		string name = ToString(condition.EvaluateValue(getValues));
+		auto person = global->GetPopulace()->GetCitizen(name);
+		if (!person) {
+			debugf("Warning: Target citizen %s not found.\n", name.data());
+		}
+		else {
+			condition.ParseCondition(obj->GetDestination());
+			string destination = ToString(condition.EvaluateValue(getValues));
+
+			auto map = global->GetMap();
+			Room* destRoom = map->LocateRoom(destination);
+			Building* destBuilding = destRoom ? nullptr : map->LocateBuilding(destination);
+			Zone* destZone = (destRoom || destBuilding) ? nullptr : map->LocateZone(destination);
+			Block* destBlock = (destRoom || destBuilding || destZone) ? nullptr : map->LocateBlock(destination);
+
+			Node* startNode = ResolveNavigationNode(person->GetCurrentRoom(), person->GetCurrentBuilding(),
+				person->GetCurrentZone(), person->GetCurrentBlock());
+			Node* endNode = ResolveNavigationNode(destRoom, destBuilding, destZone, destBlock);
+
+			if (!startNode || !endNode) {
+				debugf("Warning: Failed to resolve navigation node for npc_navigate (%s -> %s).\n",
+					name.data(), destination.data());
+			}
+			else {
+				auto path = map->AutoNavigation(startNode->GetId(), endNode->GetId());
+
+				// AutoNavigation返回的Connection朝向与路径方向无关，按当前节点id逐段确定下一个端点
+				TArray<FVector> nodes;
+				nodes.Add(FVector(startNode->GetX(), startNode->GetY(), startNode->GetZ()));
+				int currentId = startNode->GetId();
+				for (auto connection : path) {
+					Node next = connection->GetStart().GetId() == currentId ? connection->GetEnd() : connection->GetStart();
+					nodes.Add(FVector(next.GetX(), next.GetY(), next.GetZ()));
+					currentId = next.GetId();
+				}
+
+				global->GetPopulaceActor()->NpcNavigate(UTF8_TO_TCHAR(name.data()), nodes);
+			}
 		}
 	}
 	else if(type == "enter_battle") {

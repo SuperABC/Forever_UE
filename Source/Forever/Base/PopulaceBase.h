@@ -39,9 +39,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void UpdatePopulace(const TArray<FPerson>& adds, const TArray<FString>& removes);
 	UFUNCTION(BlueprintCallable, Category = "World")
+	AActor* GetInstance(FString name);
+	UFUNCTION(BlueprintCallable, Category = "World")
 	void AddInstance(FString name, AActor* actor);
 	UFUNCTION(BlueprintCallable, Category = "World")
 	void RemoveInstance(FString name, AActor*& instances);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
+	void NpcNavigate(const FString& name, const TArray<FVector>& nodes);
 
 protected:
 	virtual void BeginPlay() override;

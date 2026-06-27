@@ -28,6 +28,7 @@ Room::Room(RoomFactory* factory, const string& room) :
 	windows(),
 	number(""),
 	pivots(),
+	navigationNode(nullptr),
 	stated(false),
 	owner(nullptr),
 	tenants(),
@@ -45,6 +46,9 @@ Room::~Room() {
 		delete pivot;
 	}
 	pivots.clear();
+
+	delete navigationNode;
+	navigationNode = nullptr;
 
 	for(auto &storage : storages) {
 		if(storage)delete storage;
@@ -156,6 +160,15 @@ void Room::PlacePivots(Quad* room) {
 	for (auto& pivot : mod->pivots) {
 		pivots.push_back(new Node(pivot[0] * room->GetSizeX() + pivot[1], pivot[2] * room->GetSizeY() + pivot[3]));
 	}
+}
+
+Node* Room::GetNavigationNode() const {
+	return navigationNode;
+}
+
+void Room::SetNavigationNode(Node* node) {
+	delete navigationNode;
+	navigationNode = node;
 }
 
 pair<float, float> Room::GetPosition(float x, float y) const {
