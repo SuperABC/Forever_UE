@@ -45,7 +45,9 @@
 			{"content": "免单成功！"},
 		]}
 	],
-	"changes": [],
+	"changes": [
+		{"condition": "$$local.result > 0", "type": "npc_navigate", "name": "$$self.name", "destination": "\"中山北路 0 yuanshen 140000\""}
+	],
 	"subsequences": []
 },
 ]

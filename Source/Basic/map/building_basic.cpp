@@ -124,7 +124,7 @@ vector<float> ShopBuilding::GetPowers() {
 }
 
 function<int(const Lot*, int, int)> ShopBuilding::BuildingAssigner = [](const Lot*, int, int) {
-	return 0;
+	return 1;
 };
 
 float ShopBuilding::RandomAcreage() {

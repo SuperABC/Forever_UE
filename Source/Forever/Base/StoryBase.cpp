@@ -244,11 +244,11 @@ void AStoryBase::ApplyChange(Change* change,
 
 				// AutoNavigation返回的Connection朝向与路径方向无关，按当前节点id逐段确定下一个端点
 				TArray<FVector> nodes;
-				nodes.Add(FVector(startNode->GetX(), startNode->GetY(), startNode->GetZ()));
+				nodes.Add(1000.f * FVector(startNode->GetX(), startNode->GetY(), startNode->GetZ()));
 				int currentId = startNode->GetId();
 				for (auto connection : path) {
 					Node next = connection->GetStart().GetId() == currentId ? connection->GetEnd() : connection->GetStart();
-					nodes.Add(FVector(next.GetX(), next.GetY(), next.GetZ()));
+					nodes.Add(1000.f * FVector(next.GetX(), next.GetY(), next.GetZ()));
 					currentId = next.GetId();
 				}
 

@@ -237,7 +237,7 @@ int FlappyPuzzle::Loop(Canvas* canvas, int ms) {
 		while ((key = canvas->BiosKey(0)) != 0) {
 			if (!(key & 0x8000)) {
 				DrawScene(canvas);
-				return score >= 10 ? 1 : -1;
+				return score >= 2 ? 1 : -1;
 			}
 		}
 		DrawScene(canvas);
