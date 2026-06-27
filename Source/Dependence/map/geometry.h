@@ -4,6 +4,8 @@
 #include "../common/error.h"
 
 #include <vector>
+#include <unordered_map>
+#include <functional>
 
 
 class Node {
@@ -140,6 +142,20 @@ private:
 	std::string type;
 };
 
+// 矩形的四角节点与四边连接（均为非持有引用，实际持有者是导航图的调用方）
+// 角点下标：0=左下，1=右下，2=右上，3=左上；边下标：0=下，1=右，2=上，3=左
+struct QuadBoundary {
+	Node* corners[4] = { nullptr, nullptr, nullptr, nullptr };
+	Connection* edges[4] = { nullptr, nullptr, nullptr, nullptr };
+
+	/*
+	* Tool
+	* 将edges里恰好出现在removed中的边引用置空（角点不会失效，只有被切断的边会失效）
+	* @removed: DivideSpace本次划分输出的失效连接列表
+	*/
+	void Invalidate(const std::vector<Connection*>& removed);
+};
+
 class Quad {
 public:
 	// 构造空矩形
@@ -199,8 +215,21 @@ public:
 	// 设置面积（在指定坐标之前设置期望面积）
 	void SetAcreage(float a);
 
-	// 递归分割内部空间
-	void DivideSpace(std::vector<Quad*>& elements);
+	/*
+	* Tool
+	* 递归分割内部空间，并记录分割过程中产生/失效的导航节点与连接
+	* @elements: 待分割摆放的子矩形元素
+	* @boundary: 当前矩形已有的四角四边（非持有引用，不会被回收）
+	* @toWorld: 将矩形局部坐标转换为世界坐标的方法，仅在创建新节点时调用
+	* @outNewNodes, outNewConnections: 本次调用新创建的节点与连接（追加写入）
+	* @outRemovedConnections: 因被切分而失效、需要从导航图移除并释放的旧连接（追加写入）
+	* @outElementBoundaries: 每个叶子元素最终所在的四角四边（按元素指针索引）
+	*/
+	void DivideSpace(std::vector<Quad*>& elements, const QuadBoundary& boundary,
+		const std::function<std::pair<float, float>(float, float)>& toWorld,
+		std::vector<Node*>& outNewNodes, std::vector<Connection*>& outNewConnections,
+		std::vector<Connection*>& outRemovedConnections,
+		std::unordered_map<Quad*, QuadBoundary>& outElementBoundaries);
 
 protected:
 	float posX, posY;

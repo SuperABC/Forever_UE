@@ -273,6 +273,14 @@ public:
 	// 添加一个与已有节点existingId相连的新节点node，接入寻路图；返回新建的连接
 	Connection* AddNode(Node* node, int existingId);
 
+	/*
+	* 批量应用一次DivideSpace产生的导航节点/连接增量到导航图
+	* @newNodes, newConnections: 新增的导航节点与连接
+	* @removedConnections: 因被切分而失效、需要从导航图移除并释放的旧连接
+	*/
+	void ApplyDivideResult(const std::vector<Node*>& newNodes,
+		const std::vector<Connection*>& newConnections, const std::vector<Connection*>& removedConnections);
+
 	// 地形工厂
 	static TerrainFactory* terrainFactory;
 

@@ -12,12 +12,12 @@
 using namespace std;
 
 Block::Block() :
-	Lot(), address(), zones(), buildings() {
+	Lot(), nodes(), boundary(), address(), zones(), buildings() {
 
 }
 
 Block::Block(Lot lot) :
-	Lot(lot), address(), zones(), buildings() {
+	Lot(lot), nodes(), boundary(), address(), zones(), buildings() {
 
 }
 
@@ -26,6 +26,10 @@ Block::~Block() {
 		delete node;
 	}
 	roads.clear();
+	for (auto node : nodes) {
+		delete node;
+	}
+	nodes.clear();
 	for (auto &[_, zone] : zones) {
 		delete zone;
 	}
@@ -55,6 +59,22 @@ Node* Block::GetRandomRoadNode() const {
 	if (roads.empty()) return nullptr;
 	int idx = GetRandom(static_cast<int>(roads.size()));
 	return roads[idx].second;
+}
+
+const vector<Node*>& Block::GetNodes() const {
+	return nodes;
+}
+
+const QuadBoundary& Block::GetBoundary() const {
+	return boundary;
+}
+
+void Block::AddNodes(const vector<Node*>& newNodes) {
+	nodes.insert(nodes.end(), newNodes.begin(), newNodes.end());
+}
+
+void Block::SetBoundary(const QuadBoundary& boundary) {
+	this->boundary = boundary;
 }
 
 unordered_map<string, Zone*>& Block::GetZones() {

@@ -865,6 +865,17 @@ public:
 	const std::vector<Node*> GetPivots();
 
 	/*
+	* 获取建筑自身的四角四边（非持有引用）
+	*/
+	const QuadBoundary& GetBoundary() const;
+
+	/*
+	* 设置建筑自身的四角四边
+	* @boundary: 四角四边（非持有引用）
+	*/
+	void SetBoundary(const QuadBoundary& boundary);
+
+	/*
 	* 获取楼内全部组合
 	*/
 	std::vector<Component*>& GetComponents();
@@ -1067,6 +1078,9 @@ private:
 
 	// 寻址锚点
 	OBJECT_HOLDER std::vector<Node*> pivots;
+
+	// 自身的四角四边（非持有引用）
+	QuadBoundary boundary;
 
 	// 是否由政府拥有
 	bool stated;

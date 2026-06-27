@@ -60,6 +60,28 @@ public:
 	const std::vector<Node*> GetPivots();
 
 	/*
+	* 获取园区内部划分（DivideSpace）产生的导航节点
+	*/
+	const std::vector<Node*>& GetNodes() const;
+
+	/*
+	* 获取园区自身的四角四边（非持有引用）
+	*/
+	const QuadBoundary& GetBoundary() const;
+
+	/*
+	* 追加园区内部划分产生的导航节点（园区持有，负责释放）
+	* @newNodes: 新增节点
+	*/
+	void AddNodes(const std::vector<Node*>& newNodes);
+
+	/*
+	* 设置园区自身的四角四边
+	* @boundary: 四角四边（非持有引用）
+	*/
+	void SetBoundary(const QuadBoundary& boundary);
+
+	/*
 	* 按名称获取园区内一栋建筑
 	* @name: 建筑名称
 	*/
@@ -110,9 +132,10 @@ public:
 	void LayoutZone(const Lot* block);
 
 	/*
-	* 自动分布建筑
+	* 自动分布建筑，并将分布过程中产生的导航节点与连接接入地图导航图
+	* @map: 所在地图
 	*/
-	void ArrangeBuildings();
+	void ArrangeBuildings(Map* map);
 
 	/*
 	* 清理面积为零的建筑
@@ -146,6 +169,12 @@ private:
 
 	// 寻址锚点
 	OBJECT_HOLDER std::vector<Node*> pivots;
+
+	// 内部划分产生的导航节点
+	OBJECT_HOLDER std::vector<Node*> nodes;
+
+	// 自身的四角四边（非持有引用）
+	QuadBoundary boundary;
 
 	// 内部建筑
 	OBJECT_HOLDER std::unordered_map<std::string, Building*> buildings;

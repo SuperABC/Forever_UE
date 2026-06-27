@@ -548,6 +548,7 @@ Building::Building(BuildingFactory* factory, const string& building) :
 	decorations(),
 	address(),
 	pivots(),
+	boundary(),
 	stated(),
 	owner(),
 	script(nullptr),
@@ -683,6 +684,14 @@ string Building::GetAddress() {
 
 const vector<Node*> Building::GetPivots() {
 	return pivots;
+}
+
+const QuadBoundary& Building::GetBoundary() const {
+	return boundary;
+}
+
+void Building::SetBoundary(const QuadBoundary& boundary) {
+	this->boundary = boundary;
 }
 
 vector<Component*>& Building::GetComponents() {

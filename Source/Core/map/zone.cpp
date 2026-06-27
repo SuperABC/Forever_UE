@@ -20,6 +20,8 @@ Zone::Zone(ZoneFactory* factory, const string& zone) :
 	parentBlock(nullptr),
 	address(""),
 	pivots(),
+	nodes(),
+	boundary(),
 	buildings(),
 	script(nullptr) {
 
@@ -31,6 +33,12 @@ Zone::~Zone() {
 	for (auto& pivot : pivots) {
 		delete pivot;
 	}
+	pivots.clear();
+
+	for (auto node : nodes) {
+		delete node;
+	}
+	nodes.clear();
 
 	for (auto &[_, building] : buildings) {
 		delete building;
@@ -83,6 +91,22 @@ string Zone::GetAddress() {
 
 const vector<Node*> Zone::GetPivots() {
 	return pivots;
+}
+
+const vector<Node*>& Zone::GetNodes() const {
+	return nodes;
+}
+
+const QuadBoundary& Zone::GetBoundary() const {
+	return boundary;
+}
+
+void Zone::AddNodes(const vector<Node*>& newNodes) {
+	nodes.insert(nodes.end(), newNodes.begin(), newNodes.end());
+}
+
+void Zone::SetBoundary(const QuadBoundary& boundary) {
+	this->boundary = boundary;
 }
 
 bool Zone::GetStated() const {
@@ -156,7 +180,7 @@ void Zone::LayoutZone(const Lot* block) {
 	script->SetValue("self.name", name);
 }
 
-void Zone::ArrangeBuildings() {
+void Zone::ArrangeBuildings(Map* map) {
 	if (buildings.empty()) {
 		return;
 	}
@@ -215,7 +239,30 @@ void Zone::ArrangeBuildings() {
 	}
 
 	Quad container(GetSizeX() / 2, GetSizeY() / 2, GetSizeX(), GetSizeY());
-	container.DivideSpace(elements);
+
+	auto toWorld = [this](float x, float y) -> pair<float, float> {
+		return parentBlock->GetPosition(GetPosX() - GetSizeX() / 2.f + x, GetPosY() - GetSizeY() / 2.f + y);
+		};
+	vector<Node*> newNodes;
+	vector<Connection*> newConnections, removedConnections;
+	unordered_map<Quad*, QuadBoundary> elementBoundaries;
+	container.DivideSpace(elements, boundary, toWorld, newNodes, newConnections, removedConnections, elementBoundaries);
+
+	AddNodes(newNodes);
+	if (map) {
+		map->ApplyDivideResult(newNodes, newConnections, removedConnections);
+	}
+
+	// 自身的边可能被本次划分切断，置空失效边，避免持有悬空指针
+	boundary.Invalidate(removedConnections);
+
+	for (auto& [_, building] : buildings) {
+		if (!building) continue;
+		auto it = elementBoundaries.find(building);
+		if (it != elementBoundaries.end()) {
+			building->SetBoundary(it->second);
+		}
+	}
 
 	if (emptyRect) {
 		delete emptyRect;

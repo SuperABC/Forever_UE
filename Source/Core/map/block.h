@@ -31,6 +31,28 @@ public:
 	// 随机获取一个相连道路连接点
 	Node* GetRandomRoadNode() const;
 
+	/*
+	* 获取街区内部划分（DivideSpace）产生的导航节点
+	*/
+	const std::vector<Node*>& GetNodes() const;
+
+	/*
+	* 获取街区自身的四角四边（非持有引用）
+	*/
+	const QuadBoundary& GetBoundary() const;
+
+	/*
+	* 追加街区内部划分产生的导航节点（街区持有，负责释放）
+	* @newNodes: 新增节点
+	*/
+	void AddNodes(const std::vector<Node*>& newNodes);
+
+	/*
+	* 设置街区自身的四角四边
+	* @boundary: 四角四边（非持有引用）
+	*/
+	void SetBoundary(const QuadBoundary& boundary);
+
 	// 获取全部园区
 	std::unordered_map<std::string, Zone*>& GetZones();
 
@@ -64,6 +86,12 @@ public:
 protected:
 	// 相连道路
 	OBJECT_HOLDER std::vector<std::pair<Road*, Node*>> roads;
+
+	// 内部划分产生的导航节点
+	OBJECT_HOLDER std::vector<Node*> nodes;
+
+	// 自身的四角四边（非持有引用）
+	QuadBoundary boundary;
 
 	// 街区地址
 	std::pair<std::string, int> address;

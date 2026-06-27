@@ -676,7 +676,7 @@ int Map::InitContents() {
 		auto zones = block->GetZones();
 		for (auto& [name, zone] : zones) {
 			if (!zone) continue;
-			zone->ArrangeBuildings();
+			zone->ArrangeBuildings(this);
 			zone->ClearZero();
 			zone->PlacePivots(zone);
 			SetZone(zone, name);
@@ -1609,6 +1609,50 @@ void Map::InitNavigationGraph() {
 	}
 }
 
+void Map::ApplyDivideResult(const vector<Node*>& newNodes,
+	const vector<Connection*>& newConnections, const vector<Connection*>& removedConnections) {
+	for (auto node : newNodes) {
+		if (!node) continue;
+		navigationNodes[node->GetId()] = node;
+	}
+
+	// 失效连接：从邻接表与持有列表中摘除并释放
+	// 同一条边可能是两个相邻子矩形共享的分隔边，各自后续划分时都会把它记作失效边，
+	// 这里用是否仍在navigationConnections中作为去重依据，避免同一个连接被delete两次
+	for (auto connection : removedConnections) {
+		if (!connection) continue;
+
+		auto connectionIt = find(navigationConnections.begin(), navigationConnections.end(), connection);
+		if (connectionIt == navigationConnections.end()) continue;
+
+		int v1 = connection->GetStart().GetId();
+		int v2 = connection->GetEnd().GetId();
+
+		auto eraseAdjacency = [this](int from, int to) {
+			auto it = navigationGraph.find(from);
+			if (it == navigationGraph.end()) return;
+			it->second.erase(remove_if(it->second.begin(), it->second.end(),
+				[to](const pair<int, Connection*>& neighbor) { return neighbor.first == to; }), it->second.end());
+			};
+		eraseAdjacency(v1, v2);
+		eraseAdjacency(v2, v1);
+
+		navigationConnections.erase(connectionIt);
+		delete connection;
+	}
+
+	// 新增连接：写入双向邻接表并交由地图持有
+	for (auto connection : newConnections) {
+		if (!connection) continue;
+		int v1 = connection->GetStart().GetId();
+		int v2 = connection->GetEnd().GetId();
+
+		navigationGraph[v1].emplace_back(v2, connection);
+		navigationGraph[v2].emplace_back(v1, connection);
+		navigationConnections.push_back(connection);
+	}
+}
+
 bool Map::CheckXY(int x, int y) const {
 	if (x < 0 || y < 0 || x >= width || y >= height) {
 		return false;
@@ -1677,8 +1721,50 @@ void Map::ArrangeBlocks() {
 
 		if (elements.empty()) continue;
 
+		auto [bottomLeftX, bottomLeftY] = block->GetVertex(3);
+		auto [bottomRightX, bottomRightY] = block->GetVertex(4);
+		auto [topRightX, topRightY] = block->GetVertex(1);
+		auto [topLeftX, topLeftY] = block->GetVertex(2);
+
+		QuadBoundary blockBoundary;
+		blockBoundary.corners[0] = new Node(bottomLeftX, bottomLeftY);
+		blockBoundary.corners[1] = new Node(bottomRightX, bottomRightY);
+		blockBoundary.corners[2] = new Node(topRightX, topRightY);
+		blockBoundary.corners[3] = new Node(topLeftX, topLeftY);
+		blockBoundary.edges[0] = new Connection(*blockBoundary.corners[0], *blockBoundary.corners[1]);
+		blockBoundary.edges[1] = new Connection(*blockBoundary.corners[1], *blockBoundary.corners[2]);
+		blockBoundary.edges[2] = new Connection(*blockBoundary.corners[2], *blockBoundary.corners[3]);
+		blockBoundary.edges[3] = new Connection(*blockBoundary.corners[3], *blockBoundary.corners[0]);
+
+		vector<Node*> blockNodes(blockBoundary.corners, blockBoundary.corners + 4);
+		vector<Connection*> blockConnections(blockBoundary.edges, blockBoundary.edges + 4);
+		block->AddNodes(blockNodes);
+		ApplyDivideResult(blockNodes, blockConnections, {});
+
+		auto toWorld = [block](float x, float y) -> pair<float, float> {
+			return block->GetPosition(x, y);
+			};
 		Quad container(block->GetSizeX() / 2, block->GetSizeY() / 2, block->GetSizeX(), block->GetSizeY());
-		container.DivideSpace(elements);
+
+		vector<Node*> newNodes;
+		vector<Connection*> newConnections, removedConnections;
+		unordered_map<Quad*, QuadBoundary> elementBoundaries;
+		container.DivideSpace(elements, blockBoundary, toWorld, newNodes, newConnections, removedConnections, elementBoundaries);
+
+		block->AddNodes(newNodes);
+		ApplyDivideResult(newNodes, newConnections, removedConnections);
+
+		// blockBoundary自身的边可能被本次划分切断，置空失效边，避免block持有悬空指针
+		blockBoundary.Invalidate(removedConnections);
+		block->SetBoundary(blockBoundary);
+		for (auto& [elem, elemBoundary] : elementBoundaries) {
+			if (auto zone = dynamic_cast<Zone*>(elem)) {
+				zone->SetBoundary(elemBoundary);
+			}
+			else if (auto building = dynamic_cast<Building*>(elem)) {
+				building->SetBoundary(elemBoundary);
+			}
+		}
 
 		if (emptyRect) {
 			delete emptyRect;
