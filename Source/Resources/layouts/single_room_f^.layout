@@ -28,5 +28,29 @@
 				"positions": [[0.3, 0, 0, 0.1, 0.7, 0, 1, -0.1]]
 			}
 		]
-	}]
+	}],
+	"navigation": {
+		"nodes": [
+			{
+				"position": [0.5, 0, 0.5, 0]
+			},
+			{
+				"position": [0.5, 0, 0, 0]
+			},
+		],
+		"connections": [
+			{
+				"begin": {"type": "outside"},
+				"end": {"type": "node", "idx": 1},
+			},
+			{
+				"begin": {"type": "node", "idx": 1},
+				"end": {"type": "node", "idx": 0},
+			},
+			{
+				"begin": {"type": "node", "idx": 0},
+				"end": {"type": "single", "idx": 0},
+			},
+		],
+	}
 }
