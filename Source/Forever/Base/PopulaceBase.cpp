@@ -6,6 +6,7 @@
 #include "map/room.h"
 #include "populace/populace.h"
 #include "populace/person.h"
+#include "populace/commute.h"
 
 
 using namespace std;
@@ -92,6 +93,14 @@ void APopulaceBase::RemoveInstance(FString name, AActor*& instance) {
 	if (personInstances.find(TCHAR_TO_UTF8(*name)) != personInstances.end()) {
 		instance = personInstances[TCHAR_TO_UTF8(*name)];
 		personInstances.erase(TCHAR_TO_UTF8(*name));
+
+		auto person = global->GetPopulace()->GetCitizen(TCHAR_TO_UTF8(*name));
+		if (person) {
+			auto commute = person->GetCurrentCommute();
+			if (commute) {
+				commute->EndVisible();
+			}
+		}
 	}
 	else {
 		THROW_EXCEPTION(RuntimeException, string("Person not found: ") + TCHAR_TO_UTF8(*name) + ".\n");

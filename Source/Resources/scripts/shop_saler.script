@@ -5,10 +5,48 @@
 	"triggers": [{"type": "game_start"}],
 	"dialogs": [],
 	"changes": [
+		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "08:01:00"},
+	],
+	"subsequences": ["daily_update", "begin_work", "end_work", "buy_item", "free_challenge"]
+},
+{
+	"milestone": "daily_update",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "time_up", "name": "$$(self.name)_$$(self.idx)_update"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "00:00:01"},
+		{"type": "create_timer", "name": "$$(self.name)_begin_work", "time": "$$self.signin_time"},
+		{"type": "create_timer", "name": "$$(self.name)_end_work", "time": "$$self.signout_time"},
+	],
+	"subsequences": []
+},
+{
+	"milestone": "begin_work",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "time_up", "name": "$$(self.name)_begin_work"}],
+	"dialogs": [],
+	"changes": [
 		{"type": "add_option", "name": "$$self.name", "option": "购物"},
 		{"type": "add_option", "name": "$$self.name", "option": "免单挑战"},
+		{"type": "npc_navigate", "name": "$$self.name", "destination": "$$self.work_address"}
 	],
-	"subsequences": ["buy_item", "free_challenge"]
+	"subsequences": []
+},
+{
+	"milestone": "end_work",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "time_up", "name": "$$(self.name)_end_work"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "remove_option", "name": "$$self.name", "option": "购物"},
+		{"type": "remove_option", "name": "$$self.name", "option": "免单挑战"},
+		{"type": "npc_navigate", "name": "$$self.name", "destination": "$$self.home_address"}
+	],
+	"subsequences": []
 },
 {
 	"milestone": "buy_item",
@@ -35,7 +73,6 @@
 {
 	"milestone": "challenge_result",
 	"visible": false,
-	"drop": "true",
 	"triggers": [{"type": "puzzle_result", "result": 0}],
 	"dialogs": [
 		{"condition": "$$local.result < 0", "list": [

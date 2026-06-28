@@ -11,8 +11,7 @@ Scheduler::Scheduler(SchedulerFactory* factory, const string& scheduler) :
 	factory(factory),
 	type(),
 	name(),
-	script(nullptr),
-	status("idle_home") {
+	script(nullptr) {
 	if (!mod)
 		THROW_EXCEPTION(NullPointerException, "Scheduler " + scheduler + " mod is null.\n");
 
@@ -47,14 +46,6 @@ void Scheduler::InitScheduler(string name) {
 
 Script* Scheduler::GetScript() const {
 	return script;
-}
-
-string Scheduler::GetStatus() const {
-	return status;
-}
-
-void Scheduler::SetStatus(const string& status) {
-	this->status = status;
 }
 
 int EmptyScheduler::count = 0;

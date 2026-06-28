@@ -47,13 +47,14 @@ void Job::SetCalendar(Calendar* calendar) {
 	this->calendar = calendar;
 }
 
-void Job::InitJob(string name) {
+void Job::InitJob(string name, int idx) {
 	mod->InitJob();
 	script = new Script(Story::scriptFactory, mod->script.first);
 	for (auto s : mod->script.second) {
 		script->ReadMilestones(Config::GetScript(s));
 	}
 	script->SetValue("self.name", name);
+	script->SetValue("self.idx", idx);
 }
 
 Script* Job::GetScript() const {

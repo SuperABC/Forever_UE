@@ -43,6 +43,9 @@ public:
 	// 获取时钟
 	Time* GetTime();
 
+	// 跨天
+	bool CrossDay();
+
 	// 获取手机
 	Phone* GetPhone() const;
 
@@ -55,6 +58,8 @@ public:
 private:
 	// 时钟
 	OBJECT_HOLDER Time* time;
+
+	int day;
 
 	// 手机
 	OBJECT_HOLDER Phone* phone;

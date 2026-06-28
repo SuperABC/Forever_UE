@@ -20,6 +20,9 @@ public:
 	// 设置通勤路线（每段均从起点完整通行至终点）
 	void SetPaths(const std::vector<Connection*>& paths);
 
+	// 获取通勤路线，每段为连接及其实际通行方向是否与其自身起点->终点相反
+	const std::vector<std::pair<Connection*, bool>>& GetPaths() const;
+
 	// 设置开始通勤时间
 	void SetTime(const Time& start);
 

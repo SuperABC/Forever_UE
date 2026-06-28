@@ -806,8 +806,9 @@ CreateTimerChange::CreateTimerChange() {
 
 }
 
-CreateTimerChange::CreateTimerChange(string timer, Time duration, int loop) :
-	timer(timer), duration(duration), loop(loop) {
+CreateTimerChange::CreateTimerChange(string name, string time) :
+	name(name),
+	time(time) {
 
 }
 
@@ -819,219 +820,20 @@ string CreateTimerChange::GetType() const {
 	return "create_timer";
 }
 
-void CreateTimerChange::SetTimer(string timer) {
-	this->timer = timer;
+void CreateTimerChange::SetName(string name) {
+	this->name = name;
 }
 
-string CreateTimerChange::GetTimer() const {
-	return timer;
+string CreateTimerChange::GetName() const {
+	return name;
 }
 
-void CreateTimerChange::SetDuration(Time duration) {
-	this->duration = duration;
+void CreateTimerChange::SetTime(string time) {
+	this->time = time;
 }
 
-Time CreateTimerChange::GetDuration() {
-	return duration;
-}
-
-void CreateTimerChange::SetLoop(int loop) {
-	this->loop = loop;
-}
-
-int CreateTimerChange::GetLoop() {
-	return loop;
-}
-
-PauseTimerChange::PauseTimerChange() {
-
-}
-
-PauseTimerChange::PauseTimerChange(string timer) :
-	timer(timer) {
-
-}
-
-PauseTimerChange::~PauseTimerChange() {
-
-}
-
-string PauseTimerChange::GetType() const {
-	return "pause_timer";
-}
-
-void PauseTimerChange::SetTimer(string timer) {
-	this->timer = timer;
-}
-
-string PauseTimerChange::GetTimer() const {
-	return timer;
-}
-
-ResumeTimerChange::ResumeTimerChange() {
-
-}
-
-ResumeTimerChange::ResumeTimerChange(string timer) :
-	timer(timer) {
-
-}
-
-ResumeTimerChange::~ResumeTimerChange() {
-
-}
-
-string ResumeTimerChange::GetType() const {
-	return "resume_timer";
-}
-
-void ResumeTimerChange::SetTimer(string timer) {
-	this->timer = timer;
-}
-
-string ResumeTimerChange::GetTimer() const {
-	return timer;
-}
-
-RemoveTimerChange::RemoveTimerChange() {
-
-}
-
-RemoveTimerChange::RemoveTimerChange(string timer) :
-	timer(timer) {
-
-}
-
-RemoveTimerChange::~RemoveTimerChange() {
-
-}
-
-string RemoveTimerChange::GetType() const {
-	return "remove_timer";
-}
-
-void RemoveTimerChange::SetTimer(string timer) {
-	this->timer = timer;
-}
-
-string RemoveTimerChange::GetTimer() const {
-	return timer;
-}
-
-ResetTimerChange::ResetTimerChange() {
-
-}
-
-ResetTimerChange::ResetTimerChange(string timer) :
-	timer(timer) {
-
-}
-
-ResetTimerChange::~ResetTimerChange() {
-
-}
-
-string ResetTimerChange::GetType() const {
-	return "reset_timer";
-}
-
-void ResetTimerChange::SetTimer(string timer) {
-	this->timer = timer;
-}
-
-string ResetTimerChange::GetTimer() const {
-	return timer;
-}
-
-CreateCounterChange::CreateCounterChange() {
-
-}
-
-CreateCounterChange::CreateCounterChange(string counter, int count) :
-	counter(counter), count(count) {
-
-}
-
-CreateCounterChange::~CreateCounterChange() {
-
-}
-
-string CreateCounterChange::GetType() const {
-	return "create_counter";
-}
-
-void CreateCounterChange::SetCounter(string counter) {
-	this->counter = counter;
-}
-
-string CreateCounterChange::GetCounter() const {
-	return counter;
-}
-
-void CreateCounterChange::SetCount(int count) {
-	this->count = count;
-}
-
-int CreateCounterChange::GetCount() {
-	return count;
-}
-
-CallCounterChange::CallCounterChange() {
-
-}
-
-CallCounterChange::CallCounterChange(string counter, int delta) :
-	counter(counter), delta(delta) {
-
-}
-
-CallCounterChange::~CallCounterChange() {
-
-}
-
-string CallCounterChange::GetType() const {
-	return "call_counter";
-}
-
-void CallCounterChange::SetCounter(string counter) {
-	this->counter = counter;
-}
-
-string CallCounterChange::GetCounter() const {
-	return counter;
-}
-
-void CallCounterChange::SetDelta(int delta) {
-	this->delta = delta;
-}
-
-int CallCounterChange::GetDelta() {
-	return delta;
-}
-
-RemoveCounterChange::RemoveCounterChange() {
-
-}
-
-RemoveCounterChange::RemoveCounterChange(string counter) :
-	counter(counter) {
-
-}
-
-RemoveCounterChange::~RemoveCounterChange() {
-
-}
-
-string RemoveCounterChange::GetType() const {
-	return "remove_counter";
-}
-
-void RemoveCounterChange::SetCounter(string counter) {
-	this->counter = counter;
-}
-
-string RemoveCounterChange::GetCounter() const {
-	return counter;
+string CreateTimerChange::GetTime() {
+	return time;
 }
 
 ChangeTimeChange::ChangeTimeChange() {

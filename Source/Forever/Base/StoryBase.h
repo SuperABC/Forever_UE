@@ -90,6 +90,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	// 检查所有计时器，对已到时的计时器触发time_up事件
+	void CheckTimers();
+
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AGlobalBase* global;
 

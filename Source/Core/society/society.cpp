@@ -291,7 +291,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 		}
 		auto jobs = organization->EnrollEmployee({ adults[i] });
 		if (!jobs.empty()) {
-			jobs[0]->InitJob(adults[i]->GetName());
+			jobs[0]->InitJob(adults[i]->GetName(), 0);
 			adults[i]->AddJob(jobs[0]);
 			jobs[0]->GetPosition()->AddWorker(adults[i]);
 		}

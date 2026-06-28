@@ -464,18 +464,11 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 			event = new PlayerSleepEvent(hour.AsInt());
 		}
 		else if (type == "time_up") {
-			auto timer = obj["timer"];
-			if (timer.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing timer for time_up event.\n");
+			auto name = obj["name"];
+			if (name.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing name for time_up event.\n");
 			}
-			event = new TimeUpEvent(timer.AsString());
-		}
-		else if (type == "count_up") {
-			auto counter = obj["counter"];
-			if (counter.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing counter for count_up event.\n");
-			}
-			event = new CountUpEvent(counter.AsString());
+			event = new TimeUpEvent(name.AsString());
 		}
 		else if (type == "battle_win") {
 			auto enemy = obj["enemy"];
@@ -796,65 +789,12 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			change = new PlayerSleepChange(hour.AsInt());
 		}
 		else if (type == "create_timer") {
-			auto timer = obj["timer"];
-			auto duration = obj["duration"];
-			if (timer.IsNull() || duration.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing timer or duration for create_timer change.\n");
+			auto name = obj["name"];
+			auto time = obj["time"];
+			if (name.IsNull() || time.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing name or time for create_timer change.\n");
 			}
-			int loop = obj["loop"].IsNull() ? 1 : obj["loop"].AsInt();
-			Time durationTime = Time(duration.AsString());
-			change = new CreateTimerChange(timer.AsString(), durationTime, loop);
-		}
-		else if (type == "pause_timer") {
-			auto timer = obj["timer"];
-			if (timer.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing timer for pause_timer change.\n");
-			}
-			change = new PauseTimerChange(timer.AsString());
-		}
-		else if (type == "resume_timer") {
-			auto timer = obj["timer"];
-			if (timer.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing timer for resume_timer change.\n");
-			}
-			change = new ResumeTimerChange(timer.AsString());
-		}
-		else if (type == "remove_timer") {
-			auto timer = obj["timer"];
-			if (timer.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing timer for remove_timer change.\n");
-			}
-			change = new RemoveTimerChange(timer.AsString());
-		}
-		else if (type == "reset_timer") {
-			auto timer = obj["timer"];
-			if (timer.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing timer for reset_timer change.\n");
-			}
-			change = new ResetTimerChange(timer.AsString());
-		}
-		else if (type == "create_counter") {
-			auto counter = obj["counter"];
-			auto count = obj["count"];
-			if (counter.IsNull() || count.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing counter or count for create_counter change.\n");
-			}
-			change = new CreateCounterChange(counter.AsString(), count.AsInt());
-		}
-		else if (type == "call_counter") {
-			auto counter = obj["counter"];
-			auto delta = obj["delta"];
-			if (counter.IsNull() || delta.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing counter or delta for call_counter change.\n");
-			}
-			change = new CallCounterChange(counter.AsString(), delta.AsInt());
-		}
-		else if (type == "remove_counter") {
-			auto counter = obj["counter"];
-			if (counter.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing counter for remove_counter change.\n");
-			}
-			change = new RemoveCounterChange(counter.AsString());
+			change = new CreateTimerChange(name.AsString(), time.AsString());
 		}
 		else if (type == "enter_battle") {
 			auto enemy = obj["enemy"];

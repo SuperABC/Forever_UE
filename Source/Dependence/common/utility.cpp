@@ -51,7 +51,7 @@ Time::Time(bool online) {
 
 Time::Time(int y, int mon, int d, int h, int min, int s, int ms)
 	: year(y), month(mon), day(d), hour(h), minute(min), second(s), millisecond(ms) {
-	Validate();
+	NormalizeTime();
 }
 
 Time::Time(string time) {
@@ -85,7 +85,7 @@ Time::Time(string time) {
 			}
 		}
 
-		Validate();
+		NormalizeTime();
 		return;
 	}
 
@@ -109,7 +109,7 @@ Time::Time(string time) {
 			}
 		}
 
-		Validate();
+		NormalizeTime();
 		return;
 	}
 
@@ -133,7 +133,7 @@ Time::Time(string time) {
 			}
 		}
 
-		Validate();
+		NormalizeTime();
 		return;
 	}
 
@@ -151,7 +151,7 @@ Time::Time(string time) {
 			else if (match[4].length() == 2) millisecond *= 10;
 		}
 
-		Validate();
+		NormalizeTime();
 		return;
 	}
 
@@ -287,8 +287,12 @@ void Time::AddMilliseconds(int ms) {
 	NormalizeTime();
 }
 
-string Time::ToString() const {
-	return Format("YYYY-MM-DD HH:mm:ss.zzz");
+string Time::ToString(bool showDate, bool showTime) const {
+	string fmt;
+	if (showDate) fmt += "YYYY-MM-DD";
+	if (showDate && showTime) fmt += " ";
+	if (showTime) fmt += "HH:mm:ss.zzz";
+	return Format(fmt);
 }
 
 string Time::Format(const string& fmt) const {
@@ -561,6 +565,15 @@ void Time::NormalizeTime() {
 	while (hour < 0) {
 		hour += 24;
 		day--;
+	}
+
+	while (month > 12) {
+		month -= 12;
+		year++;
+	}
+	while (month < 1) {
+		month += 12;
+		year--;
 	}
 
 	while (day > DaysInMonth(year, month)) {

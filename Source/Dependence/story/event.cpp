@@ -1200,8 +1200,8 @@ int PlayerSleepEvent::GetHour() {
 	return hour;
 }
 
-TimeUpEvent::TimeUpEvent(string timer) :
-	timer(timer) {
+TimeUpEvent::TimeUpEvent(string name) :
+	name(name) {
 
 }
 
@@ -1221,47 +1221,21 @@ bool TimeUpEvent::Match(Event* e,
 	auto other = dynamic_cast<TimeUpEvent*>(e);
 	if (!other) return false;
 
-	return timer == other->timer;
+	Condition condition;
+	condition.ParseCondition(name);
+	auto value = condition.EvaluateValue(getValues);
+	if (auto nameValue = get_if<string>(&value)) {
+		return *nameValue == other->name;
+	}
+	return name == other->name;
 }
 
-void TimeUpEvent::SetTimer(string timer) {
-	this->timer = timer;
+void TimeUpEvent::SetName(string name) {
+	this->name = name;
 }
 
-string TimeUpEvent::GetTimer() const {
-	return timer;
-}
-
-CountUpEvent::CountUpEvent(string counter) :
-	counter(counter) {
-
-}
-
-CountUpEvent::~CountUpEvent() {
-
-}
-
-string CountUpEvent::GetType() const {
-	return "count_up";
-}
-
-bool CountUpEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<CountUpEvent*>(e);
-	if (!other) return false;
-
-	return counter == other->counter;
-}
-
-void CountUpEvent::SetCounter(string counter) {
-	this->counter = counter;
-}
-
-string CountUpEvent::GetCounter() const {
-	return counter;
+string TimeUpEvent::GetName() const {
+	return name;
 }
 
 BattleWinEvent::BattleWinEvent(string enemy) :

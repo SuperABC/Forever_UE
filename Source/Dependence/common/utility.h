@@ -68,8 +68,12 @@ public:
 	void AddSeconds(int seconds);
 	void AddMilliseconds(int ms);
 
-	// 输出时间
-	std::string ToString() const;
+	/*
+	* 输出时间
+	* @showDate, showTime: 是否输出日期部分, 是否输出时间部分
+	*/
+	std::string ToString(bool showDate = true, bool showTime = true) const;
+
 	std::string Format(const std::string& fmt) const;
 
 	// 时间比较与计算

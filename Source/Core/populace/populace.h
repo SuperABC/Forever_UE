@@ -78,4 +78,7 @@ private:
 
 	// 身份证号（姓名->所在citizens索引）
 	std::unordered_map<std::string, int> ids;
+
+	// 当前游戏时间（每次Tick更新，用于设置通勤起始时间）
+	Time currentTime;
 };

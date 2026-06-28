@@ -41,6 +41,10 @@ void Commute::SetPaths(const vector<Connection*>& paths) {
 	}
 }
 
+const vector<pair<Connection*, bool>>& Commute::GetPaths() const {
+	return currentPaths;
+}
+
 void Commute::SetTime(const Time& start) {
 	if (currentPaths.size() == 0) {
 		debugf("Warning: commute paths is empty when assigning start time.\n");
@@ -84,7 +88,7 @@ bool Commute::Tick(const Time& time) {
 		}
 
 		float dist = currentPaths[currentIdx].first->CalcDistance();
-		int seconds = (int)(dist * 10);
+		int seconds = (int)(dist * 1); //为测试方便，几乎瞬间完成通勤
 		currentEnd = currentEnd + Time(0, 1, 1, seconds / 3600, (seconds / 60) % 60, seconds % 60);
 	}
 

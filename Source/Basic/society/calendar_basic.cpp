@@ -7,7 +7,7 @@ int StandardCalendar::count = 0;
 
 StandardCalendar::StandardCalendar() : id(count++) {
 	on = Time(string("09:00:00"));
-	off = Time(string("17:00:00"));
+	off = Time(string("10:00:00"));
 }
 
 StandardCalendar::~StandardCalendar() {
@@ -55,7 +55,7 @@ int FullCalendar::count = 0;
 
 FullCalendar::FullCalendar() : id(count++) {
 	on = Time(string("09:00:00"));
-	off = Time(string("17:00:00"));
+	off = Time(string("10:00:00"));
 }
 
 FullCalendar::~FullCalendar() {

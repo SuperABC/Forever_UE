@@ -217,11 +217,6 @@ Event* ParseEvent(Parser& parser) {
 		if (parser.HasOption("--timer")) timer = parser.GetOption("--timer");
 		return new TimeUpEvent(timer);
 	}
-	else if (type == "count_up") {
-		string counter = "";
-		if (parser.HasOption("--counter")) counter = parser.GetOption("--counter");
-		return new CountUpEvent(counter);
-	}
 	else if (type == "battle_win") {
 		string enemy = "";
 		if (parser.HasOption("--enemy")) enemy = parser.GetOption("--enemy");

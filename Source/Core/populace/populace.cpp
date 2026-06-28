@@ -1,5 +1,7 @@
 ﻿#include "populace.h"
 
+#include "trivial.h"
+
 #include "map/map.h"
 #include "map/roadnet.h"
 #include "map/block.h"
@@ -33,7 +35,8 @@ SchedulerFactory* Populace::schedulerFactory = nullptr;
 Populace::Populace() :
 	name(nullptr),
 	citizens(),
-	ids() {
+	ids(),
+	currentTime() {
 	if (!assetFactory) {
 		assetFactory = new AssetFactory();
 	}
@@ -195,60 +198,31 @@ void Populace::Tick(Map* map, Player* player) {
 	static int stride = 20;
 
 	auto time = player->GetTime();
+	auto cross = player->CrossDay();
+	currentTime = *time;
+
+	if (cross) {
+		for (int j = 0; j < citizens.size(); j++) {
+			auto citizen = citizens[j];
+			for (auto job : citizen->GetJobs()) {
+				auto signin = job->GetCalendar()->SigninTime(*time);
+				auto signout = job->GetCalendar()->SignoutTime(*time);
+				job->GetScript()->SetValue("self.signin_time", signin.ToString(false, true));
+				job->GetScript()->SetValue("self.signout_time", signout.ToString(false, true));
+			}
+		}
+	}
 
 	for (int j = step; j < citizens.size(); j+= stride) {
 		auto citizen = citizens[j];
+
 		if (auto commute = citizen->GetCurrentCommute()) {
 			if (commute->GetVisible())continue;
 			auto arrive = commute->Tick(*time);
 			if (arrive) {
 				citizen->SetStatus(map->LocateRoom(commute->GetTarget()));
-				if (citizen->GetScheduler()->GetStatus() == "commute_work") {
-					citizen->GetScheduler()->SetStatus("work_job");
-				}
-				else if(citizen->GetScheduler()->GetStatus() == "commute_home") {
-					citizen->GetScheduler()->SetStatus("idle_home");
-				}
 			}
 			continue;
-		}
-
-		bool idle = true;
-		int i = 0;
-		for (auto job : citizen->GetJobs()) {
-			auto signin = job->GetCalendar()->SigninTime(*time);
-			auto signout = job->GetCalendar()->SignoutTime(*time);
-
-			if (citizen->GetScheduler()->GetStatus() == "idle_home") {
-				if (signin.GetYear() > 0 && time && *time > signin - Time(string("00:30:00"))) {
-					auto startNode = citizen->GetHome()->GetNavigationNode();
-					auto endNode = job->GetPosition()->GetNavigationNode();
-					if (startNode && endNode) {
-						citizen->SetStatus(job->GetPosition(),
-							map->AutoNavigation(startNode->GetId(), endNode->GetId()), signin - Time(string("00:30:00")));
-						citizen->GetScheduler()->SetStatus("commute_work");
-						citizen->SetWork(i);
-						idle = false;
-						break;
-					}
-				}
-			}
-			else if (citizen->GetScheduler()->GetStatus() == "work_job") {
-				if (citizen->GetWork() != job)continue;
-				if (signout.GetYear() > 0 && time && *time > signout) {
-					auto startNode = job->GetPosition()->GetNavigationNode();
-					auto endNode = citizen->GetHome()->GetNavigationNode();
-					if (startNode && endNode) {
-						citizen->SetStatus(citizen->GetHome(),
-							map->AutoNavigation(startNode->GetId(), endNode->GetId()), signout);
-						citizen->GetScheduler()->SetStatus("commute_home");
-						citizen->SetWork(-1);
-						idle = false;
-						break;
-					}
-				}
-			}
-			i++;
 		}
 	}
 
@@ -408,6 +382,43 @@ void Populace::ApplyChange(Map* map, Change* change,
 		else {
 			person->SetStatus(room);
 		}
+	}
+	else if (type == "npc_navigate") {
+		auto obj = dynamic_cast<NPCNavigateChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to NPCNavigateChange.\n");
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetName());
+		string name = ToString(condition.EvaluateValue(getValues));
+		Person* person = GetCitizen(name);
+		if (!person) {
+			debugf("Warning: Target citizen %s not found.\n", name.data());
+			return;
+		}
+
+		condition.ParseCondition(obj->GetDestination());
+		string destination = ToString(condition.EvaluateValue(getValues));
+		auto room = map->LocateRoom(destination);
+		if (!room) {
+			debugf("Warning: Destination room %s not found.\n", destination.data());
+			return;
+		}
+
+		Node* startNode = ResolveNavigationNode(person->GetCurrentRoom(), person->GetCurrentBuilding(),
+			person->GetCurrentZone(), person->GetCurrentBlock());
+		Node* endNode = ResolveNavigationNode(room, nullptr, nullptr, nullptr);
+		if (!endNode) {
+			debugf("Warning: Failed to resolve navigation destination %s.\n", destination.data());
+			return;
+		}
+		if (!startNode) {
+			person->SetStatus(room);
+			return;
+		}
+
+		auto path = map->AutoNavigation(startNode->GetId(), endNode->GetId());
+		person->SetStatus(room, path, currentTime);
 	}
 }
 

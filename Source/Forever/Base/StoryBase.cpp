@@ -5,15 +5,14 @@
 #include "PopulaceBase.h"
 #include "TrafficBase.h"
 
-#include "common/trivial.h"
 #include "map/map.h"
-#include "map/block.h"
 #include "map/zone.h"
 #include "map/building.h"
 #include "map/room.h"
 #include "map/component.h"
 #include "populace/populace.h"
 #include "populace/person.h"
+#include "populace/commute.h"
 #include "populace/scheduler.h"
 #include "society/society.h"
 #include "society/job.h"
@@ -67,6 +66,8 @@ void AStoryBase::Tick(float DeltaTime) {
 			UpdateDialog(UTF8_TO_TCHAR(speaker.data()), UTF8_TO_TCHAR(content.data()), UTF8_TO_TCHAR(label.data()));
 		}
 	}
+
+	CheckTimers();
 }
 
 void AStoryBase::SetGlobal(AGlobalBase* g) {
@@ -171,14 +172,19 @@ void AStoryBase::ApplyChange(Change* change,
 		condition.ParseCondition(obj->GetSaler());
 		string name = ToString(condition.EvaluateValue(getValues));
 		auto saler = global->GetPopulace()->GetCitizen(name);
-		if (saler->GetWork()) {
-			auto component = saler->GetWork()->GetPosition()->GetParentComponent();
-			TArray<FItem> items;
-			auto values = component->GetScript()->GetValues("system\\.storage\\..*");
-			for (auto [product, amount] : values) {
-				items.Add(FItem(UTF8_TO_TCHAR(product.data()), 0.f, get<double>(amount)));
+		if (!saler) {
+			debugf("Warning: Saler %s not found.\n", name.data());
+		}
+		else if (saler->GetCurrentRoom()) {
+			auto component = saler->GetCurrentRoom()->GetParentComponent();
+			if (component) {
+				TArray<FItem> items;
+				auto values = component->GetScript()->GetValues("system\\.storage\\..*");
+				for (auto [product, amount] : values) {
+					items.Add(FItem(UTF8_TO_TCHAR(product.data()), 0.f, get<double>(amount)));
+				}
+				OpenShop(items);
 			}
-			OpenShop(items);
 		}
 	}
 	else if (type == "start_puzzle") {
@@ -222,37 +228,27 @@ void AStoryBase::ApplyChange(Change* change,
 			debugf("Warning: Target citizen %s not found.\n", name.data());
 		}
 		else {
-			condition.ParseCondition(obj->GetDestination());
-			string destination = ToString(condition.EvaluateValue(getValues));
-
-			auto map = global->GetMap();
-			Room* destRoom = map->LocateRoom(destination);
-			Building* destBuilding = destRoom ? nullptr : map->LocateBuilding(destination);
-			Zone* destZone = (destRoom || destBuilding) ? nullptr : map->LocateZone(destination);
-			Block* destBlock = (destRoom || destBuilding || destZone) ? nullptr : map->LocateBlock(destination);
-
-			Node* startNode = ResolveNavigationNode(person->GetCurrentRoom(), person->GetCurrentBuilding(),
-				person->GetCurrentZone(), person->GetCurrentBlock());
-			Node* endNode = ResolveNavigationNode(destRoom, destBuilding, destZone, destBlock);
-
-			if (!startNode || !endNode) {
-				debugf("Warning: Failed to resolve navigation node for npc_navigate (%s -> %s).\n",
-					name.data(), destination.data());
+			// 路径已经由Populace::ApplyChange调用AutoNavigation算好并存进了通勤里，这里只读取，不重复计算
+			auto commute = person->GetCurrentCommute();
+			if (!commute) {
+				debugf("Warning: No commute path available for npc_navigate (%s).\n", name.data());
 			}
 			else {
-				auto path = map->AutoNavigation(startNode->GetId(), endNode->GetId());
-
-				// AutoNavigation返回的Connection朝向与路径方向无关，按当前节点id逐段确定下一个端点
+				auto& paths = commute->GetPaths();
 				TArray<FVector> nodes;
-				nodes.Add(1000.f * FVector(startNode->GetX(), startNode->GetY(), startNode->GetZ()));
-				int currentId = startNode->GetId();
-				for (auto connection : path) {
-					Node next = connection->GetStart().GetId() == currentId ? connection->GetEnd() : connection->GetStart();
-					nodes.Add(1000.f * FVector(next.GetX(), next.GetY(), next.GetZ()));
-					currentId = next.GetId();
+				if (!paths.empty()) {
+					auto& [firstConnection, firstReversed] = paths.front();
+					Node firstPoint = firstReversed ? firstConnection->GetEnd() : firstConnection->GetStart();
+					nodes.Add(1000.f * FVector(firstPoint.GetX(), firstPoint.GetY(), firstPoint.GetZ()));
+					for (auto& [connection, reversed] : paths) {
+						Node nextPoint = reversed ? connection->GetStart() : connection->GetEnd();
+						nodes.Add(1000.f * FVector(nextPoint.GetX(), nextPoint.GetY(), nextPoint.GetZ()));
+					}
 				}
 
-				global->GetPopulaceActor()->NpcNavigate(UTF8_TO_TCHAR(name.data()), nodes);
+				if (global->GetPopulaceActor()->NpcNavigate(UTF8_TO_TCHAR(name.data()), nodes)) {
+					commute->StartVisible();
+				}
 			}
 		}
 	}
@@ -572,6 +568,114 @@ void AStoryBase::GameStart() {
 	}
 
 	delete event;
+}
+
+void AStoryBase::CheckTimers() {
+	auto story = global->GetStory();
+	auto now = global->GetPlayer()->GetTime();
+
+	// 先收集所有已到时的计时器名称，避免在移除计时器时破坏正在遍历的容器
+	vector<string> expired;
+	for (auto& [name, target] : story->GetTimers()) {
+		if (*now >= target) {
+			expired.push_back(name);
+		}
+	}
+
+	for (auto& name : expired) {
+		story->RemoveTimer(name);
+
+		auto event = new TimeUpEvent(name);
+
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](const string& valueName) -> pair<bool, ValueType> {
+				return story->GetScript()->GetValue(valueName);
+			}
+		};
+		MatchEvent(event, story->GetScript(), getValues);
+
+		auto zones = global->GetMap()->GetZones();
+		for (auto [_, z] : zones) {
+			getValues.push_back(
+				[&](const string& valueName) -> pair<bool, ValueType> {
+					return z->GetScript()->GetValue(valueName);
+				});
+			MatchEvent(event, z->GetScript(), getValues);
+			getValues.pop_back();
+			for (auto [__, b] : z->GetBuildings()) {
+				getValues.push_back(
+					[&](const string& valueName) -> pair<bool, ValueType> {
+						return b->GetScript()->GetValue(valueName);
+					});
+				MatchEvent(event, b->GetScript(), getValues);
+				getValues.pop_back();
+			}
+		}
+
+		auto buildings = global->GetMap()->GetBuildings();
+		for (auto [_, b] : buildings) {
+			getValues.push_back(
+				[&](const string& valueName) -> pair<bool, ValueType> {
+					return b->GetScript()->GetValue(valueName);
+				});
+			MatchEvent(event, b->GetScript(), getValues);
+			getValues.pop_back();
+			for (auto cabin : b->GetCabins()) {
+				if (!cabin->GetScript()) continue;
+				getValues.push_back(
+					[&](const string& valueName) -> pair<bool, ValueType> {
+						return cabin->GetScript()->GetValue(valueName);
+					});
+				MatchEvent(event, cabin->GetScript(), getValues);
+				getValues.pop_back();
+			}
+		}
+
+		for (auto [_, z] : zones) {
+			for (auto [__, b] : z->GetBuildings()) {
+				for (auto cabin : b->GetCabins()) {
+					if (!cabin->GetScript()) continue;
+					getValues.push_back(
+						[&](const string& valueName) -> pair<bool, ValueType> {
+							return cabin->GetScript()->GetValue(valueName);
+						});
+					MatchEvent(event, cabin->GetScript(), getValues);
+					getValues.pop_back();
+				}
+			}
+		}
+
+		auto citizens = global->GetPopulace()->GetCitizens();
+		for (auto citizen : citizens) {
+			getValues.push_back(
+				[&](const string& valueName) -> pair<bool, ValueType> {
+					return citizen->GetScheduler()->GetScript()->GetValue(valueName);
+				});
+			MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
+			getValues.pop_back();
+			for (auto job : citizen->GetJobs()) {
+				getValues.push_back(
+					[&](const string& valueName) -> pair<bool, ValueType> {
+						return job->GetScript()->GetValue(valueName);
+					});
+				MatchEvent(event, job->GetScript(), getValues);
+				getValues.pop_back();
+			}
+		}
+
+		auto vehicles = global->GetTraffic()->GetVehicles();
+		for (auto vehicle : vehicles) {
+			if (!vehicle->GetScript()) continue;
+			getValues.push_back(
+				[&](const string& valueName) -> pair<bool, ValueType> {
+					return vehicle->GetScript()->GetValue(valueName);
+				});
+			MatchEvent(event, vehicle->GetScript(), getValues);
+			getValues.pop_back();
+		}
+
+		delete event;
+	}
 }
 
 void AStoryBase::ScriptMessage(FString message) {

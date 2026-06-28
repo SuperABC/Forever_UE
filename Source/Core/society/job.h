@@ -42,7 +42,7 @@ public:
 	void SetPosition(Room* room);
 
 	// 初始化职业
-	void InitJob(std::string name);
+	void InitJob(std::string name, int idx);
 
 private:
 	// 模组对象

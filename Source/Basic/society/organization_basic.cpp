@@ -38,7 +38,7 @@ void ShopOrganization::ArrageVacancies(const unordered_map<string, int>& compone
 	for (const auto& [name, count] : components) {
 		vacancies[name] = vector<vector<pair<string, string>>>(count);
 		for (int i = 0; i < count; i++) {
-			for (int j = 0; j < 10; j++) {
+			for (int j = 0; j < 2; j++) {
 				vacancies[name][i].emplace_back("shop_saler", "full");
 			}
 		}

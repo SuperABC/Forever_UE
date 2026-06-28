@@ -146,12 +146,6 @@ public:
 	// 移除工作
 	void RemoveJob(Job* job);
 
-	// 获取正在工作
-	Job* GetWork() const;
-
-	// 设置正在工作
-	void SetWork(int job);
-
 	// 获取居住房间
 	Room* GetHome() const;
 
@@ -247,7 +241,6 @@ private:
 
 	Room* home;
 	std::vector<Job*> jobs;
-	int working;
 	OBJECT_HOLDER Scheduler* scheduler;
 
 	std::vector<EducationExperience> educationExperiences;

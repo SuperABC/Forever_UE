@@ -12,7 +12,10 @@ using namespace std;
 ScriptFactory* Story::scriptFactory = nullptr;
 
 Story::Story() :
-	script(nullptr) {
+	script(nullptr),
+	historyTalk(),
+	currentTime(),
+	timers() {
 	if (!scriptFactory) {
 		scriptFactory = new ScriptFactory();
 	}
@@ -77,7 +80,14 @@ void Story::Destroy() {
 }
 
 void Story::Tick(Player* player) {
+	currentTime = *player->GetTime();
 
+	script->SetValue("system.time.year", currentTime.GetYear());
+	script->SetValue("system.time.month", currentTime.GetMonth());
+	script->SetValue("system.time.day", currentTime.GetDay());
+	script->SetValue("system.time.hour", currentTime.GetHour());
+	script->SetValue("system.time.minute", currentTime.GetMinute());
+	script->SetValue("system.time.second", currentTime.GetSecond());
 }
 
 void Story::ApplyChange(Change* change,
@@ -98,12 +108,17 @@ void Story::ApplyChange(Change* change,
 		if (obj == nullptr) {
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to SetValueChange.\n");
 		}
-		if (obj->GetVariable().substr(0, 7) == "system.") {
+		if (obj->GetVariable().substr(0, 7) == "system." ||
+			obj->GetVariable().substr(0, 7) == "self." ||
+			obj->GetVariable().substr(0, 7) == "local.") {
 			return;
 		}
-		Condition condition;
-		condition.ParseCondition(obj->GetValue());
-		script->SetValue(obj->GetVariable(), condition.EvaluateValue(getValues));
+		Condition conditionVariable;
+		conditionVariable.ParseCondition(obj->GetVariable());
+		Condition conditionValue;
+		conditionValue.ParseCondition(obj->GetValue());
+		script->SetValue(ToString(conditionVariable.EvaluateValue(getValues)),
+			conditionValue.EvaluateValue(getValues));
 	}
 	else if (type == "remove_value") {
 		auto obj = dynamic_cast<RemoveValueChange*>(change);
@@ -123,6 +138,21 @@ void Story::ApplyChange(Change* change,
 		Script* target = targetScript ? targetScript : script;
 		target->DeactivateMilestone(obj->GetMilestone());
 	}
+	else if (type == "create_timer") {
+		auto obj = dynamic_cast<CreateTimerChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to CreateTimerChange.\n");
+		}
+		Condition nameCondition;
+		nameCondition.ParseCondition(obj->GetName());
+		string name = ToString(nameCondition.EvaluateValue(getValues));
+
+		Condition timeCondition;
+		timeCondition.ParseCondition(obj->GetTime());
+		string time = ToString(timeCondition.EvaluateValue(getValues));
+
+		CreateTimer(name, Time(time));
+	}
 }
 
 Script* Story::GetScript() const {
@@ -135,5 +165,22 @@ void Story::AddTalk(const string& speaker, const string& content) {
 
 const vector<pair<string, string>>& Story::GetHistory() const {
 	return historyTalk;
+}
+
+void Story::CreateTimer(const string& name, const Time& time) {
+	Time target = currentTime;
+	target.SetTime(time.GetHour(), time.GetMinute(), time.GetSecond(), time.GetMillisecond());
+	if (time.GetOnlySecond() <= currentTime.GetOnlySecond()) {
+		target.AddDays(1);
+	}
+	timers[name] = target;
+}
+
+void Story::RemoveTimer(const string& name) {
+	timers.erase(name);
+}
+
+const unordered_map<string, Time>& Story::GetTimers() const {
+	return timers;
 }
 

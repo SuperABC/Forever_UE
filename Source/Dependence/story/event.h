@@ -505,7 +505,7 @@ private:
 // 计时器
 class TimeUpEvent : public Event {
 public:
-	TimeUpEvent(std::string timer);
+	TimeUpEvent(std::string name);
 	virtual ~TimeUpEvent();
 
 	virtual std::string GetType() const;
@@ -513,29 +513,11 @@ public:
 	virtual bool Match(Event* e,
 			std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
 
-	void SetTimer(std::string timer);
-	std::string GetTimer() const;
+	void SetName(std::string name);
+	std::string GetName() const;
 
 private:
-	std::string timer;
-};
-
-// 计数器
-class CountUpEvent : public Event {
-public:
-	CountUpEvent(std::string counter);
-	virtual ~CountUpEvent();
-
-	virtual std::string GetType() const;
-
-	virtual bool Match(Event* e,
-			std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues) override;
-
-	void SetCounter(std::string counter);
-	std::string GetCounter() const;
-
-private:
-	std::string counter;
+	std::string name;
 };
 
 // 战斗胜利

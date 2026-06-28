@@ -5,6 +5,8 @@
 #include "error.h"
 #include "config.h"
 
+#include <unordered_map>
+
 
 class Story {
 public:
@@ -44,6 +46,22 @@ public:
 	// 获取对话历史
 	const std::vector<std::pair<std::string, std::string>>& GetHistory() const;
 
+	/*
+	* 创建或重置一个计时器（同名计时器已存在则覆盖），到时后只触发一次
+	* @name: 计时器名称
+	* @time: 目标时刻的时间部分；若比当前时间的时间部分晚，到达时间取当前日期+该时间，否则取当前日期次日+该时间
+	*/
+	void CreateTimer(const std::string& name, const Time& time);
+
+	/*
+	* 移除一个计时器
+	* @name: 计时器名称
+	*/
+	void RemoveTimer(const std::string& name);
+
+	// 获取所有计时器（名称 -> 到达时间）
+	const std::unordered_map<std::string, Time>& GetTimers() const;
+
 	// 脚本工厂
 	static ScriptFactory* scriptFactory;
 
@@ -53,5 +71,11 @@ private:
 
 	// 对话历史
 	std::vector<std::pair<std::string, std::string>> historyTalk;
+
+	// 当前游戏时间（每次Tick更新，用于计时器到时判断）
+	Time currentTime;
+
+	// 计时器（名称 -> 到达时间）
+	std::unordered_map<std::string, Time> timers;
 };
 

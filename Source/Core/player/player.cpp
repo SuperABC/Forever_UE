@@ -11,6 +11,7 @@ AppFactory* Player::appFactory = nullptr;
 
 Player::Player() :
 	time(nullptr),
+	day(-1),
 	phone(nullptr) {
 	if (!puzzleFactory) {
 		puzzleFactory = new PuzzleFactory();
@@ -120,6 +121,7 @@ void Player::Destroy() {
 }
 
 void Player::Tick(float delta) {
+	day = time->GetDay();
 	time->AddMilliseconds((int)(delta * 60 * 1000));
 }
 
@@ -130,6 +132,10 @@ void Player::ApplyChange(Change* change,
 
 Time* Player::GetTime() {
 	return time;
+}
+
+bool Player::CrossDay() {
+	return day == time->GetDay();
 }
 
 Phone* Player::GetPhone() const {

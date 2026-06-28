@@ -46,7 +46,7 @@ public:
 	void RemoveInstance(FString name, AActor*& instances);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
-	void NpcNavigate(const FString& name, const TArray<FVector>& nodes);
+	bool NpcNavigate(const FString& name, const TArray<FVector>& nodes);
 
 protected:
 	virtual void BeginPlay() override;

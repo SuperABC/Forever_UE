@@ -467,140 +467,19 @@ private:
 class CreateTimerChange : public Change {
 public:
 	CreateTimerChange();
-	CreateTimerChange(std::string timer, Time duration, int loop = 1);
+	CreateTimerChange(std::string name, std::string time);
 	virtual ~CreateTimerChange();
 
 	virtual std::string GetType() const;
 
-	void SetTimer(std::string timer);
-	std::string GetTimer() const;
-	void SetDuration(Time duration);
-	Time GetDuration();
-	void SetLoop(int loop);
-	int GetLoop();
+	void SetName(std::string name);
+	std::string GetName() const;
+	void SetTime(std::string time);
+	std::string GetTime();
 
 private:
-	std::string timer;
-	Time duration;
-	int loop;
-};
-
-// 暂停计时器
-class PauseTimerChange : public Change {
-public:
-	PauseTimerChange();
-	PauseTimerChange(std::string timer);
-	virtual ~PauseTimerChange();
-
-	virtual std::string GetType() const;
-
-	void SetTimer(std::string timer);
-	std::string GetTimer() const;
-
-private:
-	std::string timer;
-};
-
-// 恢复计时器
-class ResumeTimerChange : public Change {
-public:
-	ResumeTimerChange();
-	ResumeTimerChange(std::string timer);
-	virtual ~ResumeTimerChange();
-
-	virtual std::string GetType() const;
-
-	void SetTimer(std::string timer);
-	std::string GetTimer() const;
-
-private:
-	std::string timer;
-};
-
-// 删除计时器
-class RemoveTimerChange : public Change {
-public:
-	RemoveTimerChange();
-	RemoveTimerChange(std::string timer);
-	virtual ~RemoveTimerChange();
-
-	virtual std::string GetType() const;
-
-	void SetTimer(std::string timer);
-	std::string GetTimer() const;
-
-private:
-	std::string timer;
-};
-
-// 重置计时器
-class ResetTimerChange : public Change {
-public:
-	ResetTimerChange();
-	ResetTimerChange(std::string timer);
-	virtual ~ResetTimerChange();
-
-	virtual std::string GetType() const;
-
-	void SetTimer(std::string timer);
-	std::string GetTimer() const;
-
-private:
-	std::string timer;
-};
-
-// 创建计数器
-class CreateCounterChange : public Change {
-public:
-	CreateCounterChange();
-	CreateCounterChange(std::string counter, int count);
-	virtual ~CreateCounterChange();
-
-	virtual std::string GetType() const;
-
-	void SetCounter(std::string counter);
-	std::string GetCounter() const;
-	void SetCount(int count);
-	int GetCount();
-
-private:
-	std::string counter;
-	int count;
-};
-
-// 调用计数器
-class CallCounterChange : public Change {
-public:
-	CallCounterChange();
-	CallCounterChange(std::string counter, int delta);
-	virtual ~CallCounterChange();
-
-	virtual std::string GetType() const;
-
-	void SetCounter(std::string counter);
-	std::string GetCounter() const;
-	void SetDelta(int delta);
-	int GetDelta();
-
-private:
-	std::string counter;
-	int delta;
-};
-
-// 删除计数器
-class RemoveCounterChange : public Change {
-public:
-	RemoveCounterChange();
-	RemoveCounterChange(std::string counter);
-	virtual ~RemoveCounterChange();
-
-	virtual std::string GetType() const;
-
-	void SetCounter(std::string counter);
-	std::string GetCounter() const;
-
-private:
-	std::string counter;
+	std::string name;
+	std::string time;
 };
 
 // 变化时间

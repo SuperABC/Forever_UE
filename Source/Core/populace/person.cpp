@@ -9,6 +9,7 @@
 #include "populace/commute.h"
 #include "populace/experience.h"
 #include "society/job.h"
+#include "story/script.h"
 
 
 using namespace std;
@@ -29,7 +30,6 @@ Person::Person() :
 	acquaintances(),
 	assets(),
 	jobs(),
-	working(-1),
 	home(nullptr),
 	scheduler(nullptr),
 	educationExperiences(),
@@ -237,6 +237,8 @@ void Person::AddJob(Job* job) {
 	if (job == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Job is null.\n");
 	}
+	job->GetScript()->SetValue("self.work_address", job->GetPosition()->GetAddress());
+	job->GetScript()->SetValue("self.home_address", GetHome()->GetAddress());
 	jobs.push_back(job);
 }
 
@@ -246,32 +248,11 @@ void Person::RemoveJob(Job* job) {
 	}
 	for (auto it = jobs.begin(); it != jobs.end(); ++it) {
 		if (*it == job) {
-			auto index = it - jobs.begin();
-			if (working == index) {
-				working = -1;
-			}
-			else if (working > index) {
-				--working;
-			}
 			delete *it;
 			jobs.erase(it);
 			break;
 		}
 	}
-}
-
-void Person::SetWork(int job) {
-	if (job >= static_cast<int>(jobs.size())) {
-		THROW_EXCEPTION(OutOfRangeException, "Job index out of range.\n");
-	}
-	working = job;
-}
-
-Job* Person::GetWork() const {
-	if (working < 0 || working >= static_cast<int>(jobs.size())) {
-		THROW_EXCEPTION(OutOfRangeException, "Working index out of range.\n");
-	}
-	return jobs[working];
 }
 
 Room* Person::GetHome() const {
@@ -280,6 +261,7 @@ Room* Person::GetHome() const {
 
 void Person::SetHome(Room* room) {
 	home = room;
+	scheduler->GetScript()->SetValue("self.home_address", room->GetAddress());
 }
 
 void Person::RemoveHome() {
@@ -414,8 +396,6 @@ void Person::SetStatus(Room* target, const vector<Connection*>& paths, const Tim
 	currentCommute->SetTarget(target->GetAddress());
 	currentCommute->SetPaths(paths);
 	currentCommute->SetTime(time);
-
-	statusChanged = true;
 }
 
 Block* Person::GetCurrentBlock() const {
