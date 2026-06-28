@@ -6,11 +6,15 @@ using namespace std;
 Name::Name(NameFactory* factory, const string& name) :
 	mod(factory->CreateName(name)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	reserve(),
 	roll() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Name " + name + " mod is null.\n");
 
+	type = mod->GetType();
+	this->name = mod->GetName();
 }
 
 Name::~Name() {

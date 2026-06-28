@@ -6,9 +6,13 @@ using namespace std;
 Calendar::Calendar(CalendarFactory* factory, const string& calendar) :
 	mod(factory->CreateCalendar(calendar)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()) {
+	type(),
+	name() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Calendar " + calendar + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Calendar::~Calendar() {

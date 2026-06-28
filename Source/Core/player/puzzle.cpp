@@ -6,9 +6,13 @@ using namespace std;
 Puzzle::Puzzle(PuzzleFactory* factory, const string& puzzle) :
 	mod(factory->CreatePuzzle(puzzle)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()) {
+	type(),
+	name() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Puzzle " + puzzle + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Puzzle::~Puzzle() {

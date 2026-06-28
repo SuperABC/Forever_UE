@@ -21,6 +21,18 @@
 
 #undef max
 
+// 随机数采样精度（用于将[0,1)区间随机数离散为整数索引）
+#define RANDOM_SAMPLE_PRECISION 1e5f
+
+// 随机概率判定的基数（百分制）
+#define PROBABILITY_SCALE 100
+
+// 园区被私人持有的概率（百分之几）
+#define ZONE_OWNERSHIP_CHANCE 2
+
+// 建筑被私人持有的概率（百分之几）
+#define BUILDING_OWNERSHIP_CHANCE 5
+
 
 using namespace std;
 
@@ -611,7 +623,7 @@ int Map::InitContents() {
 
 		vector<string> presets;
 		for (auto [type, _] : powers) {
-			auto preset = buildingFactory->CreateBuildings(type, block, idx, (int)roadnet->GetBlocks().size());
+			auto preset = buildingFactory->CreateBuildings(type, block, idx, static_cast<int>(roadnet->GetBlocks().size()));
 			presets.insert(presets.end(), preset.begin(), preset.end());
 		}
 		for (auto& [_, building] : block->GetBuildings()) {
@@ -620,7 +632,7 @@ int Map::InitContents() {
 		float acreageTmp = 0.f;
 		int attempt = 0;
 		while (acreageTmp < acreageBlock) {
-			if (attempt > 16) break;
+			if (attempt > MAX_ALLOCATION_ATTEMPTS) break;
 
 			Building* building = nullptr;
 
@@ -630,7 +642,7 @@ int Map::InitContents() {
 				building = new Building(buildingFactory, preset);
 			}
 			else {
-				float rand = GetRandom(int(1e5)) / 1e5f;
+				float rand = GetRandom(int(RANDOM_SAMPLE_PRECISION)) / RANDOM_SAMPLE_PRECISION;
 				for (auto& cdf : cdfs[block->GetArea()]) {
 					if (rand < cdf.second) {
 						building = new Building(buildingFactory, cdf.first);
@@ -761,7 +773,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 	vector<Person*> adults;
 	adults.reserve(citizens.size());
 	for (auto citizen : citizens) {
-		if (citizen && citizen->GetAge(time) >= 18) {
+		if (citizen && citizen->GetAge(time) >= ADULT_AGE) {
 			adults.push_back(citizen);
 		}
 	}
@@ -788,7 +800,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 			continue;
 		}
 
-		if (GetRandom(100) < 2) {
+		if (GetRandom(PROBABILITY_SCALE) < ZONE_OWNERSHIP_CHANCE) {
 			int index = GetRandom(int(adults.size()));
 			zone->SetOwner(adults[index]);
 			auto asset = new Asset(Populace::assetFactory, "zone");
@@ -813,7 +825,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 			for (auto& buildingPair : zone->GetBuildings()) {
 				Building* building = buildingPair.second;
 				if (!building) continue;
-				if (GetRandom(100) < 5) {
+				if (GetRandom(PROBABILITY_SCALE) < BUILDING_OWNERSHIP_CHANCE) {
 					int index = GetRandom(int(adults.size()));
 					building->SetOwner(adults[index]);
 					auto asset = new Asset(Populace::assetFactory, "building");
@@ -861,7 +873,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 			continue;
 		}
 
-		if (GetRandom(100) < 5) {
+		if (GetRandom(PROBABILITY_SCALE) < BUILDING_OWNERSHIP_CHANCE) {
 			int index = GetRandom(int(adults.size()));
 			building->SetOwner(adults[index]);
 			auto asset = new Asset(Populace::assetFactory, "building");
@@ -900,7 +912,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 		if (adult->GetHome()) continue;
 		if (residences.empty()) break;
 
-		int index = GetRandom((int)residences.size());
+		int index = GetRandom(static_cast<int>(residences.size()));
 		auto& [room, count] = residences[index];
 
 		int num = 1;
@@ -914,7 +926,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 				room->AddTenant(adult->GetSpouse());
 				++num;
 				for (auto child : adult->GetChilds()) {
-					if (child && child->GetAge(time) < 18) {
+					if (child && child->GetAge(time) < ADULT_AGE) {
 						child->SetHome(room);
 						child->SetStatus(room);
 						room->AddTenant(child);
@@ -947,10 +959,10 @@ void Map::Destroy() {
 	navigationGraph.clear();
 	navigationNodes.clear();
 
-	if(roadnet)delete roadnet;
+	if (roadnet) delete roadnet;
 	roadnet = nullptr;
 
-	if(layout)delete layout;
+	if (layout) delete layout;
 	layout = nullptr;
 }
 
@@ -1047,7 +1059,7 @@ pair<bool, float> Map::GetWater(int x, int y) const {
 	return chunk->GetWater(x, y);
 }
 
-bool Map::SetTerrain(int x, int y, const string& terrain, const std::pair<bool, float> water) {
+bool Map::SetTerrain(int x, int y, const string& terrain, const pair<bool, float> water) {
 	if (!CheckXY(x, y)) {
 		debugf("Warning: Invalid coordinates (%d, %d) for map.\n", x, y);
 		return false;
@@ -1099,16 +1111,16 @@ vector<pair<Quad, float>> Map::GetHatches(int x, int y) const {
 void Map::AddHatch(Quad q, float rotation) {
 	float hw = q.GetSizeX() * 0.5f;
 	float hh = q.GetSizeY() * 0.5f;
-	float ac = std::abs(std::cos(rotation));
-	float as_ = std::abs(std::sin(rotation));
-	float ahw = hw * ac + hh * as_;
-	float ahh = hw * as_ + hh * ac;
+	float absCos = abs(cos(rotation));
+	float absSin = abs(sin(rotation));
+	float ahw = hw * absCos + hh * absSin;
+	float ahh = hw * absSin + hh * absCos;
 
 	float wx = q.GetPosX(), wy = q.GetPosY();
-	int x0 = (int)(wx - ahw);
-	int x1 = (int)(wx + ahw);
-	int y0 = (int)(wy - ahh);
-	int y1 = (int)(wy + ahh);
+	int x0 = static_cast<int>(wx - ahw);
+	int x1 = static_cast<int>(wx + ahw);
+	int y0 = static_cast<int>(wy - ahh);
+	int y1 = static_cast<int>(wy + ahh);
 
 	for (int cy = y0; cy <= y1; ++cy) {
 		for (int cx = x0; cx <= x1; ++cx) {
@@ -1195,15 +1207,15 @@ void Map::SetZone(Zone* zone, const string& name) {
 		zone->GetPosY() - zone->GetSizeY() / 2.f);
 
 	vector<pair<float, float>> points = { v1, v2, v3, v4 };
-	int minX = (int)points[0].first;
-	int maxX = (int)points[0].first;
-	int minY = (int)points[0].second;
-	int maxY = (int)points[0].second;
+	int minX = static_cast<int>(points[0].first);
+	int maxX = static_cast<int>(points[0].first);
+	int minY = static_cast<int>(points[0].second);
+	int maxY = static_cast<int>(points[0].second);
 	for (const auto& [x, y] : points) {
-		minX = min(minX, (int)x);
-		maxX = max(maxX, (int)x);
-		minY = min(minY, (int)y);
-		maxY = max(maxY, (int)y);
+		minX = min(minX, static_cast<int>(x));
+		maxX = max(maxX, static_cast<int>(x));
+		minY = min(minY, static_cast<int>(y));
+		maxY = max(maxY, static_cast<int>(y));
 	}
 
 	for (int x = minX; x <= maxX; ++x) {
@@ -1277,15 +1289,15 @@ void Map::SetBuilding(Building* building, const string& name, const pair<float, 
 		offset.second + building->GetPosY() - building->GetSizeY() / 2.f);
 
 	vector<pair<float, float>> points = { v1, v2, v3, v4 };
-	int minX = (int)points[0].first;
-	int maxX = (int)points[0].first;
-	int minY = (int)points[0].second;
-	int maxY = (int)points[0].second;
+	int minX = static_cast<int>(points[0].first);
+	int maxX = static_cast<int>(points[0].first);
+	int minY = static_cast<int>(points[0].second);
+	int maxY = static_cast<int>(points[0].second);
 	for (const auto& [x, y] : points) {
-		minX = min(minX, (int)x);
-		maxX = max(maxX, (int)x);
-		minY = min(minY, (int)y);
-		maxY = max(maxY, (int)y);
+		minX = min(minX, static_cast<int>(x));
+		maxX = max(maxX, static_cast<int>(x));
+		minY = min(minY, static_cast<int>(y));
+		maxY = max(maxY, static_cast<int>(y));
 	}
 
 	for (int x = minX; x <= maxX; ++x) {

@@ -11,12 +11,16 @@ using namespace std;
 Component::Component(ComponentFactory* factory, const string& component) :
 	mod(factory->CreateComponent(component)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	parentBuilding(nullptr),
 	rooms(),
 	script(nullptr) {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Component " + component + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Component::~Component() {

@@ -13,8 +13,8 @@ using namespace std;
 Storage::Storage(StorageFactory* factory, const string& storage) :
 	mod(factory->CreateStorage(storage)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	room(nullptr),
 	catagories(),
 	accept(true),
@@ -23,7 +23,11 @@ Storage::Storage(StorageFactory* factory, const string& storage) :
 	upstreams(),
 	downstreams(),
 	volume(1.f) {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Storage " + storage + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Storage::~Storage() {

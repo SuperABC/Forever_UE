@@ -20,8 +20,15 @@ enum FACE_DIRECTION : int {
 	FACE_SOUTH
 };
 
+// 点位相对参数的固定长度（xRatio, xOffset, yRatio, yOffset）
+#define POINT_PARAM_COUNT 4
+
 // 规定pair哈希以作为map键
 struct PairHash {
+	/*
+	* 计算pair哈希值
+	* @p: 待计算哈希的pair
+	*/
 	std::size_t operator()(const std::pair<std::string, int>& p) const {
 		return std::hash<std::string>()(p.first) ^ (std::hash<int>()(p.second) << 1);
 	}

@@ -1,5 +1,7 @@
 ﻿#include "room_mod.h"
 
+#include "building_mod.h"
+
 
 using namespace std;
 
@@ -23,10 +25,10 @@ RoomMod::~RoomMod() {
 }
 
 void RoomMod::AddPivot(vector<float> point, int face) {
-	if (face < 0 || face >= 4) {
+	if (face < 0 || face >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
 	}
-	if (point.size() != 4) {
+	if (point.size() != POINT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Pivot must have 4 elements.\n");
 	}
 

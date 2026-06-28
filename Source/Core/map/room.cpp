@@ -18,8 +18,8 @@ using namespace std;
 Room::Room(RoomFactory* factory, const string& room) :
 	mod(factory->CreateRoom(room)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	parentBuilding(nullptr),
 	parentComponent(nullptr),
 	layer(0),
@@ -36,7 +36,11 @@ Room::Room(RoomFactory* factory, const string& room) :
 	storages(),
 	manufactures(),
 	parkings() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Room " + room + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Room::~Room() {
@@ -173,7 +177,13 @@ void Room::SetNavigationNode(Node* node) {
 
 pair<float, float> Room::GetPosition(float x, float y) const {
 	auto building = GetParentBuilding();
-	auto block = GetParentBuilding()->GetParentBlock();
+	if (!building) {
+		THROW_EXCEPTION(NullPointerException, "Room parent building is null.\n");
+	}
+	auto block = building->GetParentBlock();
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Room parent block is null.\n");
+	}
 	auto zone = building->GetParentZone();
 	if (zone) {
 		float blockX = zone->GetPosX() - zone->GetSizeX() / 2.f +

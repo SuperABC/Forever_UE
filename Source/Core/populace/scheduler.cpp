@@ -9,11 +9,15 @@ using namespace std;
 Scheduler::Scheduler(SchedulerFactory* factory, const string& scheduler) :
 	mod(factory->CreateScheduler(scheduler)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	script(nullptr),
 	status("idle_home") {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Scheduler " + scheduler + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Scheduler::~Scheduler() {

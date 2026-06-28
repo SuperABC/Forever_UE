@@ -71,7 +71,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 			direction = GetRandom(2);
 		}
 	}
-	
+
 	string component = "residential";
 	AssignFloor(-1, direction, "straight_linear_b+");
 	ArrangeRow(-1, 0, "residential", 200.f, component, 0);
@@ -155,7 +155,7 @@ void ShopBuilding::LayoutBuilding(const Quad* quad) {
 			direction = GetRandom(2);
 		}
 	}
-	
+
 	string component = "shop";
 	AssignFloor(0, direction, "lobby_linear_f^+");
 	AssignRoom(0, 0, "shop", component, 0);
@@ -167,7 +167,7 @@ void ShopBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(i, 0, "residential", 200.f, component, 0);
 		ArrangeRow(i, 1, "residential", 200.f, component, 0);
 	}
-	
+
 	script = { "empty", { "basic_building" } };
 }
 
@@ -222,13 +222,13 @@ void FactoryBuilding::LayoutBuilding(const Quad* quad) {
 	wallTexture = "/Game/Asset/Materials/White.White";
 
 	int direction = GetRandom(4);
-	
+
 	string component = "factory";
 	AssignFloor(-1, direction, "single_room_b+");
 	AssignRoom(-1, 0, "parking", component, 0);
 	AssignFloor(0, direction, "single_room_f^-");
 	AssignRoom(0, 0, "factory", component, 0);
-	
+
 	script = { "empty", { "basic_building" } };
 }
 

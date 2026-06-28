@@ -6,14 +6,18 @@ using namespace std;
 Product::Product(ProductFactory* factory, const string& product) :
 	mod(factory->CreateProduct(product)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	catagories(),
 	price(0.f),
 	amount(0.f),
 	ingredients(),
 	byproducts() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Product " + product + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Product::~Product() {

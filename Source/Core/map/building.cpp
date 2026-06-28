@@ -41,21 +41,21 @@ void Stair::SetDirection(FACE_DIRECTION direction) {
 }
 
 bool Stair::GetWall(int direction) const {
-	if (direction < 0 || direction >= 4) {
+	if (direction < 0 || direction >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Stair wall direction out of range [0, 3].\n");
 	}
 	return walls[direction];
 }
 
 void Stair::AddWall(int direction) {
-	if (direction < 0 || direction >= 4) {
+	if (direction < 0 || direction >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Stair wall direction out of range [0, 3].\n");
 	}
 	walls[direction] = true;
 }
 
 void Stair::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Stair rect must have 8 elements.\n");
 	}
 
@@ -86,21 +86,21 @@ void Elevator::SetDirection(FACE_DIRECTION direction) {
 }
 
 bool Elevator::GetWall(int direction) const {
-	if (direction < 0 || direction >= 4) {
+	if (direction < 0 || direction >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Elevator wall direction out of range [0, 3].\n");
 	}
 	return walls[direction];
 }
 
 void Elevator::AddWall(int direction) {
-	if (direction < 0 || direction >= 4) {
+	if (direction < 0 || direction >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Elevator wall direction out of range [0, 3].\n");
 	}
 	walls[direction] = true;
 }
 
 void Elevator::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Elevator rect must have 8 elements.\n");
 	}
 
@@ -131,21 +131,21 @@ void Ramp::SetDirection(FACE_DIRECTION direction) {
 }
 
 bool Ramp::GetWall(int direction) const {
-	if (direction < 0 || direction >= 4) {
+	if (direction < 0 || direction >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Ramp wall direction out of range [0, 3].\n");
 	}
 	return walls[direction];
 }
 
 void Ramp::AddWall(int direction) {
-	if (direction < 0 || direction >= 4) {
+	if (direction < 0 || direction >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Ramp wall direction out of range [0, 3].\n");
 	}
 	walls[direction] = true;
 }
 
 void Ramp::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Ramp rect must have 8 elements.\n");
 	}
 
@@ -166,7 +166,7 @@ Ceiling::~Ceiling() {
 }
 
 void Ceiling::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Ceiling rect must have 8 elements.\n");
 	}
 
@@ -187,7 +187,7 @@ Ground::~Ground() {
 }
 
 void Ground::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Ground rect must have 8 elements.\n");
 	}
 
@@ -211,7 +211,7 @@ Corridor::~Corridor() {
 }
 
 bool Corridor::GetWall(int direction) const {
-	if (direction < 0 || direction >= 4) {
+	if (direction < 0 || direction >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Corridor wall direction out of range [0, 3].\n");
 	}
 
@@ -219,7 +219,7 @@ bool Corridor::GetWall(int direction) const {
 }
 
 void Corridor::AddWall(int direction) {
-	if (direction < 0 || direction >= 4) {
+	if (direction < 0 || direction >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Corridor wall direction out of range [0, 3].\n");
 	}
 
@@ -247,7 +247,7 @@ void Corridor::AddWindow(FACE_DIRECTION direction, vector<vector<float>> positio
 }
 
 void Corridor::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Corridor rect must have 8 elements.\n");
 	}
 
@@ -268,7 +268,7 @@ Hatch::~Hatch() {
 }
 
 void Hatch::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Hatch rect must have 8 elements.\n");
 	}
 
@@ -320,7 +320,7 @@ void Single::AddWindow(FACE_DIRECTION direction, vector<vector<float>> positions
 }
 
 void Single::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Single rect must have 8 elements.\n");
 	}
 
@@ -372,7 +372,7 @@ void Row::AddWindow(FACE_DIRECTION direction, vector<vector<float>> positions) {
 }
 
 void Row::InstanciateQuad(float width, float height) {
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Row rect must have 8 elements.\n");
 	}
 
@@ -538,8 +538,8 @@ vector<string> Cabin::GetOptions() const {
 Building::Building(BuildingFactory* factory, const string& building) :
 	mod(factory->CreateBuilding(building)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	parentZone(nullptr),
 	parentBlock(nullptr),
 	layers(1),
@@ -563,7 +563,11 @@ Building::Building(BuildingFactory* factory, const string& building) :
 	floors(),
 	components(),
 	rooms() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Building " + building + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Building::~Building() {
@@ -688,7 +692,11 @@ string Building::GetAddress() {
 		return address;
 	}
 	else {
-		auto blockAddress = GetParentBlock()->GetAddress();
+		auto block = GetParentBlock();
+		if (!block) {
+			THROW_EXCEPTION(NullPointerException, "Building parent block is null.\n");
+		}
+		auto blockAddress = block->GetAddress();
 		address = blockAddress + " " + GetName();
 		return address;
 	}
@@ -890,20 +898,20 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 		}
 
 		if (reader.Parse(fin, root)) {
-			layout->templateStairs[basename] = vector<vector<Stair>>(4);
-			layout->templateElevators[basename] = vector<vector<Elevator>>(4);
-			layout->templateRamps[basename] = vector<vector<Ramp>>(4);
-			layout->templateCeilings[basename] = vector<vector<Ceiling>>(4);
-			layout->templateGrounds[basename] = vector<vector<Ground>>(4);
-			layout->templateCorridors[basename] = vector<vector<Corridor>>(4);
-			layout->templateSingles[basename] = vector<vector<Single>>(4);
-			layout->templateRows[basename] = vector<vector<Row>>(4);
-			layout->templateNavigation[basename] = vector<NavigationTemplate>(4);
-			layout->templateHatches[basename] = vector<vector<Hatch>>(4);
+			layout->templateStairs[basename] = vector<vector<Stair>>(FACE_DIRECTION_COUNT);
+			layout->templateElevators[basename] = vector<vector<Elevator>>(FACE_DIRECTION_COUNT);
+			layout->templateRamps[basename] = vector<vector<Ramp>>(FACE_DIRECTION_COUNT);
+			layout->templateCeilings[basename] = vector<vector<Ceiling>>(FACE_DIRECTION_COUNT);
+			layout->templateGrounds[basename] = vector<vector<Ground>>(FACE_DIRECTION_COUNT);
+			layout->templateCorridors[basename] = vector<vector<Corridor>>(FACE_DIRECTION_COUNT);
+			layout->templateSingles[basename] = vector<vector<Single>>(FACE_DIRECTION_COUNT);
+			layout->templateRows[basename] = vector<vector<Row>>(FACE_DIRECTION_COUNT);
+			layout->templateNavigation[basename] = vector<NavigationTemplate>(FACE_DIRECTION_COUNT);
+			layout->templateHatches[basename] = vector<vector<Hatch>>(FACE_DIRECTION_COUNT);
 
 			for (auto s : root["stairs"]) {
-				vector<float> rect(8);
-				if (s["rect"].size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (s["rect"].size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -911,7 +919,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = s["rect"][i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Stair stair(InverseParams(rect, i));
 					stair.SetDirection(static_cast<FACE_DIRECTION>(InverseDirection(s["direction"].AsInt(), i)));
 					for (auto wall : s["walls"]) {
@@ -922,8 +930,8 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 			}
 
 			for (auto e : root["elevators"]) {
-				vector<float> rect(8);
-				if (e["rect"].size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (e["rect"].size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -931,7 +939,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = e["rect"][i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Elevator elevator(InverseParams(rect, i));
 					elevator.SetDirection(static_cast<FACE_DIRECTION>(InverseDirection(e["direction"].AsInt(), i)));
 					for (auto wall : e["walls"]) {
@@ -942,8 +950,8 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 			}
 
 			for (auto r : root["ramps"]) {
-				vector<float> rect(8);
-				if (r["rect"].size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (r["rect"].size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -951,7 +959,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = r["rect"][i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Ramp ramp(InverseParams(rect, i));
 					ramp.SetDirection(static_cast<FACE_DIRECTION>(InverseDirection(r["direction"].AsInt(), i)));
 					for (auto wall : r["walls"]) {
@@ -962,8 +970,8 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 			}
 
 			for (auto c : root["ceilings"]) {
-				vector<float> rect(8);
-				if (c.size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (c.size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -971,15 +979,15 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = c[i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Ceiling ceiling(InverseParams(rect, i));
 					layout->templateCeilings[basename][i].push_back(ceiling);
 				}
 			}
 
 			for (auto g : root["grounds"]) {
-				vector<float> rect(8);
-				if (g.size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (g.size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -987,15 +995,15 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = g[i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Ground ground(InverseParams(rect, i));
 					layout->templateGrounds[basename][i].push_back(ground);
 				}
 			}
 
 			for (auto c : root["corridors"]) {
-				vector<float> rect(8);
-				if (c["rect"].size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (c["rect"].size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -1003,7 +1011,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = c["rect"][i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Corridor corridor(InverseParams(rect, i));
 					for (auto wall : c["walls"]) {
 						corridor.AddWall(InverseDirection(wall.AsInt(), i));
@@ -1033,8 +1041,8 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 			}
 
 			for (auto s : root["singles"]) {
-				vector<float> rect(8);
-				if (s["rect"].size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (s["rect"].size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -1042,7 +1050,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = s["rect"][i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Single single(InverseParams(rect, i));
 					single.SetDirection(static_cast<FACE_DIRECTION>(InverseDirection(s["direction"].AsInt(), i)));
 					for (auto door : s["doors"]) {
@@ -1070,8 +1078,8 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 			}
 
 			for (auto r : root["rows"]) {
-				vector<float> rect(8);
-				if (r["rect"].size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (r["rect"].size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -1079,7 +1087,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = r["rect"][i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Row row(InverseParams(rect, i));
 					row.SetDirection(static_cast<FACE_DIRECTION>(InverseDirection(r["direction"].AsInt(), i)));
 					for (auto door : r["doors"]) {
@@ -1107,8 +1115,8 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 			}
 
 			for (auto h : root["hatches"]) {
-				vector<float> rect(8);
-				if (h.size() != 8) {
+				vector<float> rect(RECT_PARAM_COUNT);
+				if (h.size() != RECT_PARAM_COUNT) {
 					fin.close();
 					delete layout;
 					THROW_EXCEPTION(JsonFormatException, "Layout rect must have 8 floats.\n");
@@ -1116,7 +1124,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 				for (int i = 0; i < 8; i++) {
 					rect[i] = h[i].AsFloat();
 				}
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					Hatch hatch(InverseParams(rect, i));
 					layout->templateHatches[basename][i].push_back(hatch);
 				}
@@ -1127,13 +1135,13 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 
 				vector<vector<float>> rawNodes;
 				for (auto n : navRoot["nodes"]) {
-					if (n["position"].size() != 4) {
+					if (n["position"].size() != POINT_PARAM_COUNT) {
 						fin.close();
 						delete layout;
 						THROW_EXCEPTION(JsonFormatException, "Navigation node position must have 4 floats.\n");
 					}
-					vector<float> position(4);
-					for (int i = 0; i < 4; i++) {
+					vector<float> position(POINT_PARAM_COUNT);
+					for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 						position[i] = n["position"][i].AsFloat();
 					}
 					rawNodes.push_back(position);
@@ -1141,13 +1149,13 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 
 				vector<pair<vector<float>, vector<float>>> rawLines;
 				for (auto l : navRoot["lines"]) {
-					if (l["begin"].size() != 4 || l["end"].size() != 4) {
+					if (l["begin"].size() != POINT_PARAM_COUNT || l["end"].size() != POINT_PARAM_COUNT) {
 						fin.close();
 						delete layout;
 						THROW_EXCEPTION(JsonFormatException, "Navigation line begin/end must have 4 floats.\n");
 					}
-					vector<float> begin(4), end(4);
-					for (int i = 0; i < 4; i++) {
+					vector<float> begin(POINT_PARAM_COUNT), end(POINT_PARAM_COUNT);
+					for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 						begin[i] = l["begin"][i].AsFloat();
 						end[i] = l["end"][i].AsFloat();
 					}
@@ -1160,7 +1168,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 					if (e.ValidMember("idx")) endpoint.idx = e["idx"].AsInt();
 					if (e.ValidMember("vertex")) endpoint.vertex = e["vertex"].AsInt();
 					return endpoint;
-					};
+				};
 
 				vector<NavigationConnectionTemplate> rawConnections;
 				for (auto c : navRoot["connections"]) {
@@ -1170,7 +1178,7 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 					rawConnections.push_back(connTemplate);
 				}
 
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < FACE_DIRECTION_COUNT; i++) {
 					NavigationTemplate navTemplate;
 					for (auto& position : rawNodes) {
 						NavigationNodeTemplate nodeTemplate;
@@ -1321,6 +1329,9 @@ void Building::AssignRoom(int level, int slot, const string& name,
 	singleRoomBySlot[level][slot] = room;
 }
 
+// 联排房间数量四舍五入时的小数部分阈值
+#define ROOM_COUNT_ROUND_UP_THRESHOLD 0.5f
+
 void Building::ArrangeRow(int level, int slot, const string& name, float acreage,
 	Component* component, RoomFactory* factory) {
 	if (!component || !factory) {
@@ -1337,7 +1348,7 @@ void Building::ArrangeRow(int level, int slot, const string& name, float acreage
 	auto& row = rows[slot];
 
 	float num = row.GetAcreage() / acreage;
-	if (num < 1 || num - static_cast<int>(num) >= 0.5f)
+	if (num < 1 || num - static_cast<int>(num) >= ROOM_COUNT_ROUND_UP_THRESHOLD)
 		num = num + 1;
 
 	if (row.GetDirection() == 0 || row.GetDirection() == 1) {
@@ -1387,10 +1398,10 @@ void Building::ArrangeRow(int level, int slot, const string& name, float acreage
 }
 
 vector<float> Building::InverseParams(const vector<float>& params, int face) {
-	if (face < 0 || face >= 4) {
+	if (face < 0 || face >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
 	}
-	if (params.size() != 8) {
+	if (params.size() != RECT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Params must have 8 elements.\n");
 	}
 	auto inversed = params;
@@ -1435,7 +1446,7 @@ vector<float> Building::InverseParams(const vector<float>& params, int face) {
 }
 
 int Building::InverseDirection(int direction, int face) {
-	if (face < 0 || face >= 4) {
+	if (face < 0 || face >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
 	}
 	switch (face) {
@@ -1455,10 +1466,10 @@ int Building::InverseDirection(int direction, int face) {
 }
 
 vector<float> Building::InversePoint(const vector<float>& point, int face) {
-	if (face < 0 || face >= 4) {
+	if (face < 0 || face >= FACE_DIRECTION_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
 	}
-	if (point.size() != 4) {
+	if (point.size() != POINT_PARAM_COUNT) {
 		THROW_EXCEPTION(InvalidArgumentException, "Point must have 4 elements.\n");
 	}
 	switch (face) {
@@ -1490,10 +1501,19 @@ pair<float, float> Building::ToWorldXY(float x, float y) const {
 
 // line的运行期状态：固定端点缓存 + 沿line收集到的锚点（用于排序后串成走廊骨架）
 struct LineRuntime {
+	// 起点世界坐标
 	float beginX = 0.f, beginY = 0.f;
+
+	// 终点世界坐标
 	float endX = 0.f, endY = 0.f;
+
+	// 起点处的导航节点（按需创建）
 	Node* nodeAt0 = nullptr;
+
+	// 终点处的导航节点（按需创建）
 	Node* nodeAt1 = nullptr;
+
+	// 沿line收集到的锚点（参数t, 节点）
 	vector<pair<float, Node*>> anchors;
 };
 
@@ -1528,7 +1548,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 			float ly = position[2] * floorHeight + position[3];
 			auto [wx, wy] = ToWorldXY(lx, ly);
 			return new Node(wx, wy, z);
-			};
+		};
 
 		vector<Node*> floorFixedNodes;
 		for (auto& nodeTemplate : navTemplate.nodes) {
@@ -1602,12 +1622,13 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 				THROW_EXCEPTION(InvalidArgumentException, "Line vertex -1 must be resolved against a single/row endpoint.\n");
 			}
 			THROW_EXCEPTION(InvalidArgumentException, "Endpoint type '" + endpoint.type + "' cannot be resolved here.\n");
-			};
+		};
 
 		for (auto& connTemplate : navTemplate.connections) {
 			bool beginIsProjection = connTemplate.begin.type == "line" && connTemplate.begin.vertex == -1;
 			bool endIsProjection = connTemplate.end.type == "line" && connTemplate.end.vertex == -1;
 
+			// line的vertex=-1端：将房间中心动态投影到line上生成锚点并与房间连接
 			if (beginIsProjection || endIsProjection) {
 				const NavigationEndpointTemplate& lineSide = beginIsProjection ? connTemplate.begin : connTemplate.end;
 				const NavigationEndpointTemplate& roomSide = beginIsProjection ? connTemplate.end : connTemplate.begin;
@@ -1651,6 +1672,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 				continue;
 			}
 
+			// outside端：连接到建筑边界四角中离对端最近的角点
 			if (connTemplate.begin.type == "outside" || connTemplate.end.type == "outside") {
 				const NavigationEndpointTemplate& otherSide = connTemplate.begin.type == "outside" ? connTemplate.end : connTemplate.begin;
 				vector<Node*> otherNodes = resolveEndpoint(otherSide);
@@ -1661,7 +1683,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 
 				Node* nearest = nullptr;
 				float nearestDistSq = 0.f;
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < QUAD_VERTEX_COUNT; i++) {
 					Node* corner = boundary.corners[i];
 					if (!corner) continue;
 					float dx = corner->GetX() - otherNode->GetX();
@@ -1679,6 +1701,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 				continue;
 			}
 
+			// upstair/downstair端：先登记，留待所有楼层处理完后按相邻层贪心匹配
 			if (connTemplate.begin.type == "upstair" || connTemplate.begin.type == "downstair" ||
 				connTemplate.end.type == "upstair" || connTemplate.end.type == "downstair") {
 				bool beginIsStair = connTemplate.begin.type == "upstair" || connTemplate.begin.type == "downstair";
@@ -1786,6 +1809,7 @@ vector<float> EmptyBuilding::GetPowers() {
 	return vector<float>(AREA_END, 0.f);
 }
 
+// 按地块计算应生成的建筑数量
 function<int(const Lot*, int, int)> EmptyBuilding::BuildingAssigner = [](const Lot*, int, int) {
 	return 0;
 };

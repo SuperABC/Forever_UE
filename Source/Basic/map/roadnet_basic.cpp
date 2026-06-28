@@ -29,7 +29,7 @@ const char* JingRoadnet::GetName() {
 void JingRoadnet::DistributeRoadnet(int width, int height,
 	const function<string(int, int)>& get) {
 	string meshPath = "/Game/Asset/Meshes/default_1_1.default_1_1";
-		
+
 	vector<pair<Node, int>> horizontalNode1w;
 	vector<pair<Node, int>> horizontalNode1e;
 	vector<pair<Node, int>> horizontalNode2w;

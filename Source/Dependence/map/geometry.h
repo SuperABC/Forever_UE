@@ -38,9 +38,19 @@ public:
 	float GetZ() const;
 
 private:
+	// 唯一id
 	int id;
-	float posX, posY, posZ;
 
+	// 坐标x
+	float posX;
+
+	// 坐标y
+	float posY;
+
+	// 坐标z
+	float posZ;
+
+	// id分配计数器
 	static int count;
 };
 
@@ -83,10 +93,19 @@ public:
 	float CalcDistance(float f1, float f2) const;
 
 protected:
+	// 起点
 	OBJECT_HOLDER Node* beginVertex;
-	OBJECT_HOLDER Node* endVertex;
-	float begin, end;
 
+	// 终点
+	OBJECT_HOLDER Node* endVertex;
+
+	// 起点参数
+	float begin;
+
+	// 终点参数
+	float end;
+
+	// 控制点及其权重
 	OBJECT_HOLDER std::vector<std::pair<Node*, float>> controlVertices;
 };
 
@@ -138,23 +157,34 @@ public:
 	std::string GetType() const;
 
 private:
+	// 道路名称
 	std::string name;
+
+	// 道路类型
 	std::string type;
 };
+
+// 矩形的角点/边的固定个数
+#define QUAD_VERTEX_COUNT 4
 
 // 矩形的四角节点与四边连接（均为非持有引用，实际持有者是导航图的调用方）
 // 角点下标：0=左下，1=右下，2=右上，3=左上；边下标：0=下，1=右，2=上，3=左
 struct QuadBoundary {
-	Node* corners[4] = { nullptr, nullptr, nullptr, nullptr };
-	Connection* edges[4] = { nullptr, nullptr, nullptr, nullptr };
+	// 四角节点
+	Node* corners[QUAD_VERTEX_COUNT] = { nullptr, nullptr, nullptr, nullptr };
+
+	// 四边连接
+	Connection* edges[QUAD_VERTEX_COUNT] = { nullptr, nullptr, nullptr, nullptr };
 
 	/*
-	* Tool
 	* 将edges里恰好出现在removed中的边引用置空（角点不会失效，只有被切断的边会失效）
 	* @removed: DivideSpace本次划分输出的失效连接列表
 	*/
 	void Invalidate(const std::vector<Connection*>& removed);
 };
+
+// 由长宽计算默认面积时的换算系数
+#define ACREAGE_SCALE_FACTOR 100.f
 
 class Quad {
 public:
@@ -216,7 +246,6 @@ public:
 	void SetAcreage(float a);
 
 	/*
-	* Tool
 	* 递归分割内部空间，并记录分割过程中产生/失效的导航节点与连接
 	* @elements: 待分割摆放的子矩形元素
 	* @boundary: 当前矩形已有的四角四边（非持有引用，不会被回收）
@@ -232,10 +261,46 @@ public:
 		std::unordered_map<Quad*, QuadBoundary>& outElementBoundaries);
 
 protected:
-	float posX, posY;
-	float sizeX, sizeY;
+	// 中心点坐标x
+	float posX;
 
+	// 中心点坐标y
+	float posY;
+
+	// 长宽尺寸x
+	float sizeX;
+
+	// 长宽尺寸y
+	float sizeY;
+
+	// 面积
 	float acreage;
+
+private:
+	/*
+	* 记录elem最终落位的边界：若elem是尚待继续分割的Space则写入其boundary字段，否则写入叶子元素的输出表
+	* @elem: 待记录边界的元素
+	* @boundary: elem最终落位的四角四边
+	* @outElementBoundaries: 叶子元素最终所在的四角四边（按元素指针索引）
+	*/
+	static void RecordBoundary(Quad* elem, const QuadBoundary& boundary,
+		std::unordered_map<Quad*, QuadBoundary>& outElementBoundaries);
+
+	/*
+	* 将boundary范围内的a、b两个子矩形按面积比沿长边二分定位，记录切分产生的新节点与新旧连接
+	* @left, right, bottom, top: 当前待分割区域的边界
+	* @boundary: 当前区域已有的四角四边
+	* @a, b: 待定位的两个子矩形
+	* @toWorld: 将矩形局部坐标转换为世界坐标的方法，仅在创建新节点时调用
+	* @outNewNodes, outNewConnections: 本次调用新创建的节点与连接（追加写入）
+	* @outRemovedConnections: 因被切分而失效、需要从导航图移除并释放的旧连接（追加写入）
+	* @outElementBoundaries: 每个叶子元素最终所在的四角四边（按元素指针索引）
+	*/
+	static void SplitInto(float left, float right, float bottom, float top, const QuadBoundary& boundary,
+		Quad* a, Quad* b, const std::function<std::pair<float, float>(float, float)>& toWorld,
+		std::vector<Node*>& outNewNodes, std::vector<Connection*>& outNewConnections,
+		std::vector<Connection*>& outRemovedConnections,
+		std::unordered_map<Quad*, QuadBoundary>& outElementBoundaries);
 };
 
 enum AREA_TYPE : int {
@@ -256,6 +321,9 @@ enum AREA_TYPE : int {
 	AREA_END
 };
 
+// 朝向枚举的取值个数（西/东/南/北四个方向）
+#define FACE_DIRECTION_COUNT 4
+
 class Lot : public Quad {
 public:
 	// 构造空地块
@@ -265,10 +333,10 @@ public:
 	Lot(float x, float y, float w, float h, float r);
 
 	// 根据连续三个端点构造地块
-	Lot(Node n1, Node n2, Node n3, std::vector<float> margin = std::vector<float>(4, 0.f));
+	Lot(Node n1, Node n2, Node n3, std::vector<float> margin = std::vector<float>(FACE_DIRECTION_COUNT, 0.f));
 
 	// 根据连续四个端点构造地块
-	Lot(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin = std::vector<float>(4, 0.f));
+	Lot(Node n1, Node n2, Node n3, Node n4, std::vector<float> margin = std::vector<float>(FACE_DIRECTION_COUNT, 0.f));
 
 	// 无析构
 	virtual ~Lot();
@@ -301,7 +369,10 @@ public:
 	void SetPosition(Node n1, Node n2, Node n3, Node n4, const std::vector<float>& margin);
 
 protected:
+	// 旋转角度
 	float rotation;
+
+	// 地块类型
 	AREA_TYPE area;
 };
 

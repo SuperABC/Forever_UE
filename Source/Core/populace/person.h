@@ -15,6 +15,9 @@
 #undef GetJob
 #undef AddJob
 
+// 成年年龄阈值
+#define ADULT_AGE 18
+
 
 enum GENDER_TYPE : int {
 	GENDER_FEMALE, // 女性

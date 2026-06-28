@@ -6,10 +6,14 @@ using namespace std;
 Station::Station(StationFactory* factory, const string& station) :
 	mod(factory->CreateStation(station)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	building() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Station " + station + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Station::~Station() {

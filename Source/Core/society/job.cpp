@@ -11,11 +11,15 @@ using namespace std;
 Job::Job(JobFactory* factory, const string& job) :
 	mod(factory->CreateJob(job)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	calendar(nullptr),
 	script(nullptr) {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Job " + job + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Job::~Job() {

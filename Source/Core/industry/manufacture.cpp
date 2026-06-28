@@ -12,15 +12,19 @@ using namespace std;
 Manufacture::Manufacture(ManufactureFactory* factory, const string& manufacture) :
 	mod(factory->CreateManufacture(manufacture)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	inputCache(nullptr),
 	outputCache(nullptr),
 	ingredients(),
 	targets(),
 	byproducts(),
 	currentWorkload(0.f) {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Manufacture " + manufacture + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Manufacture::~Manufacture() {

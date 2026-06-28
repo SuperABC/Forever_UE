@@ -8,9 +8,13 @@ using namespace std;
 App::App(AppFactory* factory, const string& app) :
 	mod(factory->CreateApp(app)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()) {
+	type(),
+	name() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "App " + app + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 App::~App() {

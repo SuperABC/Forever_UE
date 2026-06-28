@@ -57,11 +57,8 @@ private:
 	// 目标地址
 	std::string targetAddress;
 
-	// 路线
-	std::vector<Connection*> currentPaths;
-
-	// 每段连接的实际通行方向是否与其自身起点->终点相反
-	std::vector<bool> reversedPaths;
+	// 路线，每段为连接及其实际通行方向是否与其自身起点->终点相反
+	std::vector<std::pair<Connection*, bool>> currentPaths;
 
 	// 当前所在连接索引
 	int currentIdx;

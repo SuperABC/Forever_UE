@@ -12,12 +12,22 @@
 using namespace std;
 
 Block::Block() :
-	Lot(), nodes(), boundary(), address(), zones(), buildings() {
+	Lot(),
+	nodes(),
+	boundary(),
+	address(),
+	zones(),
+	buildings() {
 
 }
 
 Block::Block(Lot lot) :
-	Lot(lot), nodes(), boundary(), address(), zones(), buildings() {
+	Lot(lot),
+	nodes(),
+	boundary(),
+	address(),
+	zones(),
+	buildings() {
 
 }
 
@@ -51,6 +61,9 @@ void Block::SetRoads(const vector<pair<Road*, float>>& r) {
 	roads.clear();
 
 	for (auto& [road, position] : r) {
+		if (road == nullptr) {
+			THROW_EXCEPTION(NullPointerException, "Road is null when setting block roads.\n");
+		}
 		roads.emplace_back(road, new Node(road->GetPoint(position)));
 	}
 }
@@ -86,6 +99,9 @@ unordered_map<string, Building*>& Block::GetBuildings() {
 }
 
 void Block::AddZone(const string& name, Zone* zone) {
+	if (zone == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Zone is null when adding to block.\n");
+	}
 	if (zones.find(name) != zones.end()) {
 		THROW_EXCEPTION(RuntimeException, "Duplicate zone name: " + name + ".\n");
 	}
@@ -93,6 +109,9 @@ void Block::AddZone(const string& name, Zone* zone) {
 }
 
 void Block::AddBuilding(const string& name, Building* building) {
+	if (building == nullptr) {
+		THROW_EXCEPTION(NullPointerException, "Building is null when adding to block.\n");
+	}
 	if (buildings.find(name) != buildings.end()) {
 		THROW_EXCEPTION(RuntimeException, "Duplicate building name: " + name + ".\n");
 	}

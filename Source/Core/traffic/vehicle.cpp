@@ -10,15 +10,20 @@ using namespace std;
 Vehicle::Vehicle(VehicleFactory* factory, const string& label) :
 	mod(factory->CreateVehicle(label)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
-	path(mod->path),
+	type(),
+	name(),
+	path(),
 	owner(nullptr),
 	driver(nullptr),
 	room(nullptr),
 	xyzr({ 0.f, 0.f, 0.f, 0.f }),
 	script(nullptr) {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Vehicle " + label + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
+	path = mod->path;
 }
 
 Vehicle::~Vehicle() {

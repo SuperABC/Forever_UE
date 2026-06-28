@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModBuildingsFunc)(BuildingFactory* factory);
 
+// 矩形相对参数的固定长度（两个对角点，每点x/y各占ratio+offset两个浮点）
+#define RECT_PARAM_COUNT 8
+
 // 楼梯
 class Stair : public Quad {
 public:
@@ -1086,7 +1089,6 @@ private:
 	void BuildNavigation(Layout* layout, Map* map);
 
 	/*
-	* Tool
 	* 根据转向修改矩形参数
 	* @params: 矩形相对参数（8个浮点数）
 	* @face: 转向
@@ -1094,7 +1096,6 @@ private:
 	static std::vector<float> InverseParams(const std::vector<float>& params, int face);
 
 	/*
-	* Tool
 	* 根据转向修改朝向参数
 	* @direction: 朝向
 	* @face: 转向
@@ -1102,7 +1103,6 @@ private:
 	static int InverseDirection(int direction, int face);
 
 	/*
-	* Tool
 	* 根据转向修改点位相对参数
 	* @point: 点位相对参数（4个浮点数：xRatio, xOffset, yRatio, yOffset）
 	* @face: 转向

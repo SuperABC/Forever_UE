@@ -8,7 +8,6 @@ Commute::Commute() :
 	visible(false),
 	targetAddress(),
 	currentPaths(),
-	reversedPaths(),
 	currentIdx(0),
 	currentEnd() {
 
@@ -27,15 +26,17 @@ void Commute::SetTarget(const string& target) {
 }
 
 void Commute::SetPaths(const vector<Connection*>& paths) {
-	currentPaths = paths;
+	currentPaths.clear();
+	for (auto path : paths) {
+		currentPaths.emplace_back(path, false);
+	}
 
 	// 根据相邻连接共享的端点，推算每段连接的实际通行方向（第一段默认按其自身起点->终点方向通行）
-	reversedPaths.assign(paths.size(), false);
-	for (size_t i = 1; i < paths.size(); i++) {
-		int previousExit = reversedPaths[i - 1] ?
-			paths[i - 1]->GetStart().GetId() : paths[i - 1]->GetEnd().GetId();
-		if (paths[i]->GetEnd().GetId() == previousExit) {
-			reversedPaths[i] = true;
+	for (size_t i = 1; i < currentPaths.size(); i++) {
+		int previousExit = currentPaths[i - 1].second ?
+			currentPaths[i - 1].first->GetStart().GetId() : currentPaths[i - 1].first->GetEnd().GetId();
+		if (currentPaths[i].first->GetEnd().GetId() == previousExit) {
+			currentPaths[i].second = true;
 		}
 	}
 }
@@ -46,7 +47,7 @@ void Commute::SetTime(const Time& start) {
 		return;
 	}
 
-	float dist = currentPaths[0]->CalcDistance();
+	float dist = currentPaths[0].first->CalcDistance();
 	int seconds = (int)(dist * 10);
 	currentEnd = start + Time(0, 1, 1, seconds / 3600, (seconds / 60) % 60, seconds % 60);
 }
@@ -82,7 +83,7 @@ bool Commute::Tick(const Time& time) {
 			return true;
 		}
 
-		float dist = currentPaths[currentIdx]->CalcDistance();
+		float dist = currentPaths[currentIdx].first->CalcDistance();
 		int seconds = (int)(dist * 10);
 		currentEnd = currentEnd + Time(0, 1, 1, seconds / 3600, (seconds / 60) % 60, seconds % 60);
 	}
@@ -96,20 +97,20 @@ Connection* Commute::NextRoad(const Time& time) {
 		return nullptr;
 	}
 
-	float dist = currentPaths[currentIdx]->CalcDistance();
+	float dist = currentPaths[currentIdx].first->CalcDistance();
 	int seconds = (int)(dist * 10);
 	currentEnd = time + Time(0, 1, 1, seconds / 3600, (seconds / 60) % 60, seconds % 60);
 
-	return currentPaths[currentIdx];
+	return currentPaths[currentIdx].first;
 }
 
 pair<Connection*, float> Commute::RealtimeRoad(const Time& time) {
-	float dist = currentPaths[currentIdx]->CalcDistance();
+	float dist = currentPaths[currentIdx].first->CalcDistance();
 	float remaining = (currentEnd - time).GetOnlySecond() * 0.1f / dist;
-	if (!reversedPaths[currentIdx]) {
-		return { currentPaths[currentIdx], 1.f - remaining };
+	if (!currentPaths[currentIdx].second) {
+		return { currentPaths[currentIdx].first, 1.f - remaining };
 	}
 	else {
-		return { currentPaths[currentIdx], remaining };
+		return { currentPaths[currentIdx].first, remaining };
 	}
 }

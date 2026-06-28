@@ -10,10 +10,14 @@ using namespace std;
 Organization::Organization(OrganizationFactory* factory, const string& organization) :
 	mod(factory->CreateOrganization(organization)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	jobs() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Organization " + organization + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Organization::~Organization() {

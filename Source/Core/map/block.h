@@ -13,22 +13,36 @@
 
 class Block : public Lot {
 public:
-	// 构造空街区
+	/*
+	* 构造空街区
+	*/
 	Block();
 
-	// 根据地块构造街区
+	/*
+	* 根据地块构造街区
+	* @lot: 地块
+	*/
 	Block(Lot lot);
 
-	// 析构园区与建筑
+	/*
+	* 析构园区与建筑
+	*/
 	virtual ~Block();
 
-	// 获取街区相连路线及连接点
+	/*
+	* 获取街区相连路线及连接点
+	*/
 	const std::vector<std::pair<Road*, Node*>>& GetRoads() const;
 
-	// 设置街区相连路线及连接点位置（按位置创建并持有连接点Node）
+	/*
+	* 设置街区相连路线及连接点位置（按位置创建并持有连接点Node）
+	* @roads: 相连路线及其在路线上的位置
+	*/
 	void SetRoads(const std::vector<std::pair<Road*, float>>& roads);
 
-	// 随机获取一个相连道路连接点
+	/*
+	* 随机获取一个相连道路连接点
+	*/
 	Node* GetRandomRoadNode() const;
 
 	/*
@@ -53,34 +67,61 @@ public:
 	*/
 	void SetBoundary(const QuadBoundary& boundary);
 
-	// 获取全部园区
+	/*
+	* 获取全部园区
+	*/
 	std::unordered_map<std::string, Zone*>& GetZones();
 
-	// 获取全部建筑
+	/*
+	* 获取全部建筑
+	*/
 	std::unordered_map<std::string, Building*>& GetBuildings();
 
-	// 添加一个园区
+	/*
+	* 添加一个园区
+	* @name, zone: 园区名称, 园区
+	*/
 	void AddZone(const std::string& name, Zone* zone);
 
-	// 添加一个建筑
+	/*
+	* 添加一个建筑
+	* @name, building: 建筑名称, 建筑
+	*/
 	void AddBuilding(const std::string& name, Building* building);
 
-	// 按名称获取园区
+	/*
+	* 按名称获取园区
+	* @name: 园区名称
+	*/
 	Zone* GetZone(const std::string& name) const;
 
-	// 按名称获取建筑
+	/*
+	* 按名称获取建筑
+	* @name: 建筑名称
+	*/
 	Building* GetBuilding(const std::string& name) const;
 
-	// 按名称移除园区
+	/*
+	* 按名称移除园区
+	* @name: 园区名称
+	*/
 	void RemoveZone(const std::string& name);
 
-	// 按名称移除建筑
+	/*
+	* 按名称移除建筑
+	* @name: 建筑名称
+	*/
 	void RemoveBuilding(const std::string& name);
 
-	// 设置街区地址
+	/*
+	* 设置街区地址
+	* @road, id: 道路名称, 编号
+	*/
 	void SetAddress(const std::string& road, int id);
 
-	// 获取街区地址
+	/*
+	* 获取街区地址
+	*/
 	std::string GetAddress() const;
 
 protected:

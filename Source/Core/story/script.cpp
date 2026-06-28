@@ -16,11 +16,15 @@ unordered_map<string, pair<vector<string>, unordered_map<string, Milestone*>>> S
 Script::Script(ScriptFactory* factory, const string& script) :
 	mod(factory->CreateScript(script)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	milestones(),
 	actives() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Script " + script + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Script::~Script() {

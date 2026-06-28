@@ -7,6 +7,9 @@
 
 #define CHUNK_SIZE 64
 
+// 资源/空间分配重试的最大尝试次数
+#define MAX_ALLOCATION_ATTEMPTS 16
+
 
 // 10m*10m地图元素，用于地图可视化
 class Element {
@@ -23,31 +26,48 @@ public:
 	// 获取地图元素水面信息
 	std::pair<bool, float> GetWater() const;
 
-	// 设置地图元素地形名称
+	/*
+	* 设置地图元素地形名称
+	* @terrain: 地形名称
+	* @water: 水面信息
+	*/
 	bool SetTerrain(const std::string& terrain, const std::pair<bool, float> water);
 
 	// 获取地图元素地形高度
 	float GetHeight() const;
 
-	// 设置地图元素地形高度
+	/*
+	* 设置地图元素地形高度
+	* @height: 地形高度
+	*/
 	bool SetHeight(float height);
 
 	// 获取地图元素所在园区名称
 	std::string GetZone() const;
 
-	// 设置地图元素所在园区名称
+	/*
+	* 设置地图元素所在园区名称
+	* @zone: 园区名称
+	*/
 	bool SetZone(const std::string& zone);
 
 	// 获取地图元素所在建筑名称
 	std::string GetBuilding() const;
 
-	// 设置地图元素所在建筑名称
+	/*
+	* 设置地图元素所在建筑名称
+	* @building: 建筑名称
+	*/
 	bool SetBuilding(const std::string& building);
 
 	// 获取地图元素开洞信息
 	std::vector<std::pair<Quad, float>> GetHatches() const;
 
-	// 添加地图元素开洞
+	/*
+	* 添加地图元素开洞
+	* @q: 开洞区域
+	* @rotation: 开洞旋转角度
+	*/
 	void AddHatch(Quad q, float rotation);
 
 private:
@@ -76,47 +96,93 @@ public:
 	// 禁止空构造
 	Chunk() = delete;
 
-	// 按照地图区块排列位置构造区块
+	/*
+	* 按照地图区块排列位置构造区块
+	* @x, y: 区块排列位置
+	*/
 	Chunk(int x, int y);
 
 	// 析构地图区块
 	~Chunk();
 
-	// 获取地图区块内某一元素地形名称
+	/*
+	* 获取地图区块内某一元素地形名称
+	* @x, y: 全局坐标
+	*/
 	std::string GetTerrain(int x, int y) const;
 
-	// 获取地图区块内某一元素水面信息
+	/*
+	* 获取地图区块内某一元素水面信息
+	* @x, y: 全局坐标
+	*/
 	std::pair<bool, float> GetWater(int x, int y) const;
 
-	// 设置地图区块内某一元素地形名称
+	/*
+	* 设置地图区块内某一元素地形名称
+	* @x, y: 全局坐标
+	* @terrain: 地形名称
+	* @water: 水面信息
+	*/
 	bool SetTerrain(int x, int y, const std::string& terrain, const std::pair<bool, float> water);
 
-	// 获取地图区块内某一元素地形高度
+	/*
+	* 获取地图区块内某一元素地形高度
+	* @x, y: 全局坐标
+	*/
 	float GetHeight(int x, int y) const;
 
-	// 设置地图区块内某一元素地形高度
+	/*
+	* 设置地图区块内某一元素地形高度
+	* @x, y: 全局坐标
+	* @height: 地形高度
+	*/
 	bool SetHeight(int x, int y, float height);
 
-	// 获取地图区块内某一元素所在园区名称
+	/*
+	* 获取地图区块内某一元素所在园区名称
+	* @x, y: 全局坐标
+	*/
 	std::string GetZone(int x, int y) const;
 
-	// 设置地图区块内某一元素所在园区名称
+	/*
+	* 设置地图区块内某一元素所在园区名称
+	* @x, y: 全局坐标
+	* @zone: 园区名称
+	*/
 	bool SetZone(int x, int y, const std::string& zone);
 
-	// 获取地图区块内某一元素所在建筑名称
+	/*
+	* 获取地图区块内某一元素所在建筑名称
+	* @x, y: 全局坐标
+	*/
 	std::string GetBuilding(int x, int y) const;
 
-	// 设置地图区块内某一元素所在建筑名称
+	/*
+	* 设置地图区块内某一元素所在建筑名称
+	* @x, y: 全局坐标
+	* @zone: 建筑名称
+	*/
 	bool SetBuilding(int x, int y, const std::string& zone);
 
-	// 获取地图区块内某一元素开洞信息
+	/*
+	* 获取地图区块内某一元素开洞信息
+	* @x, y: 全局坐标
+	*/
 	std::vector<std::pair<Quad, float>> GetHatches(int x, int y) const;
 
-	// 添加地图区块内某一元素开洞
+	/*
+	* 添加地图区块内某一元素开洞
+	* @x, y: 全局坐标
+	* @q: 开洞区域
+	* @rotation: 开洞旋转角度
+	*/
 	bool AddHatch(int x, int y, Quad q, float rotation);
 
 private:
-	// 检查全局坐标是否在地块内
+	/*
+	* 检查全局坐标是否在地块内
+	* @x, y: 全局坐标
+	*/
 	bool CheckXY(int x, int y) const;
 
 	// 地块排列位置
@@ -136,93 +202,178 @@ public:
 
 	// 读取配置文件
 	void LoadConfigs() const;
-	
-	// 读取地形模组
+
+	/*
+	* 读取地形模组
+	* @modHandles: 已加载的模组句柄映射
+	* @dlls: 待加载的动态库列表
+	*/
 	void InitTerrains(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取路网模组
+	/*
+	* 读取路网模组
+	* @modHandles: 已加载的模组句柄映射
+	* @dlls: 待加载的动态库列表
+	*/
 	void InitRoadnets(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取园区模组
+	/*
+	* 读取园区模组
+	* @modHandles: 已加载的模组句柄映射
+	* @dlls: 待加载的动态库列表
+	*/
 	void InitZones(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取建筑模组
+	/*
+	* 读取建筑模组
+	* @modHandles: 已加载的模组句柄映射
+	* @dlls: 待加载的动态库列表
+	*/
 	void InitBuildings(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取组合模组
+	/*
+	* 读取组合模组
+	* @modHandles: 已加载的模组句柄映射
+	* @dlls: 待加载的动态库列表
+	*/
 	void InitComponents(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取房间模组
+	/*
+	* 读取房间模组
+	* @modHandles: 已加载的模组句柄映射
+	* @dlls: 待加载的动态库列表
+	*/
 	void InitRooms(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 初始化地图区块
+	/*
+	* 初始化地图区块
+	* @chunkX, chunkY: 区块矩阵尺寸
+	*/
 	void InitBlocks(int chunkX, int chunkY);
 
 	// 初始化内容
 	int InitContents();
 
-	// 市民入驻
+	/*
+	* 市民入驻
+	* @populace, player: 居民与玩家
+	*/
 	void Checkin(Populace* populace, Player* player) const;
 
 	// 释放空间
 	void Destroy();
 
-	// 时钟周期
+	/*
+	* 时钟周期
+	* @player: 玩家
+	*/
 	void Tick(Player* player);
 
-	// 应用剧情变化
+	/*
+	* 应用剧情变化
+	* @change: 剧情变化
+	* @getValues: 取值回调列表
+	*/
 	void ApplyChange(Change* change,
 		std::vector < std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
 	// 获取地图尺寸
 	std::pair<int, int> GetSize() const;
 
-	// 获取某一元素水面信息
+	/*
+	* 获取某一元素水面信息
+	* @x, y: 全局坐标
+	*/
 	std::pair<bool, float> GetWater(int x, int y) const;
 
-	// 获取某一元素地形名称
+	/*
+	* 获取某一元素地形名称
+	* @x, y: 全局坐标
+	*/
 	std::string GetTerrain(int x, int y) const;
 
-	// 设置某一元素地形名称
+	/*
+	* 设置某一元素地形名称
+	* @x, y: 全局坐标
+	* @terrain: 地形名称
+	* @water: 水面信息
+	*/
 	bool SetTerrain(int x, int y, const std::string& terrain, const std::pair<bool, float> water = { false, 0.f });
 
-	// 获取某一元素地形高度
+	/*
+	* 获取某一元素地形高度
+	* @x, y: 全局坐标
+	*/
 	float GetHeight(int x, int y) const;
 
-	// 设置某一元素地形高度
+	/*
+	* 设置某一元素地形高度
+	* @x, y: 全局坐标
+	* @height: 地形高度
+	*/
 	bool SetHeight(int x, int y, float height);
 
 	// 计算精确位置地形
 	const std::unordered_map<std::string, std::pair<int, std::string>>& GetTerrainTextures() const;
 
-	// 获取某一元素所在园区名称
+	/*
+	* 获取某一元素所在园区名称
+	* @x, y: 全局坐标
+	*/
 	std::string GetZone(int x, int y) const;
 
-	// 设置某一元素所在园区名称
+	/*
+	* 设置某一元素所在园区名称
+	* @x, y: 全局坐标
+	* @zone: 园区名称
+	*/
 	bool SetZone(int x, int y, const std::string& zone);
 
-	// 设置园区内所有元素所属园区
+	/*
+	* 设置园区内所有元素所属园区
+	* @zone: 园区
+	* @name: 园区名称
+	*/
 	void SetZone(Zone* zone, const std::string& name);
 
-	// 获取某一元素所在建筑名称
+	/*
+	* 获取某一元素所在建筑名称
+	* @x, y: 全局坐标
+	*/
 	std::string GetBuilding(int x, int y) const;
 
-	// 设置某一元素所在建筑名称
+	/*
+	* 设置某一元素所在建筑名称
+	* @x, y: 全局坐标
+	* @zone: 建筑名称
+	*/
 	bool SetBuilding(int x, int y, const std::string& zone);
 
-	// 获取某一元素开洞信息
+	/*
+	* 获取某一元素开洞信息
+	* @x, y: 全局坐标
+	*/
 	std::vector<std::pair<Quad, float>> GetHatches(int x, int y) const;
 
-	// 添加开洞（自动分发到所有重叠element）
+	/*
+	* 添加开洞（自动分发到所有重叠element）
+	* @q: 开洞区域
+	* @rotation: 开洞旋转角度
+	*/
 	void AddHatch(Quad q, float rotation);
 
-	// 设置建筑内所有元素所属建筑
+	/*
+	* 设置建筑内所有元素所属建筑
+	* @building: 建筑
+	* @name: 建筑名称
+	* @offset: 建筑在所属容器中的偏移
+	*/
 	void SetBuilding(Building* building, const std::string& name, const std::pair<float, float>& offset = { 0.f, 0.f });
 
 	// 获取玩家坐标
@@ -234,19 +385,31 @@ public:
 	// 获取所有园区
 	const std::unordered_map<std::string, Zone*>& GetZones() const;
 
-	// 根据名称查找园区
+	/*
+	* 根据名称查找园区
+	* @name: 园区名称
+	*/
 	Zone* GetZone(const std::string& name) const;
 
-	// 添加园区
+	/*
+	* 添加园区
+	* @zone: 园区
+	*/
 	void AddZone(Zone* zone);
 
 	// 获取所有建筑
 	const std::unordered_map<std::string, Building*>& GetBuildings() const;
 
-	// 根据名称查找建筑
+	/*
+	* 根据名称查找建筑
+	* @name: 建筑名称
+	*/
 	Building* GetBuilding(const std::string& name) const;
 
-	// 添加建筑
+	/*
+	* 添加建筑
+	* @building: 建筑
+	*/
 	void AddBuilding(Building* building);
 
 	// 获取所有组合
@@ -255,22 +418,41 @@ public:
 	// 获取所有房间
 	std::vector<Room*> GetRooms() const;
 
-	// 寻址地块
+	/*
+	* 寻址地块
+	* @address: 地址字符串
+	*/
 	Block* LocateBlock(const std::string& address) const;
 
-	// 寻址园区
+	/*
+	* 寻址园区
+	* @address: 地址字符串
+	*/
 	Zone* LocateZone(const std::string& address) const;
 
-	// 寻址建筑
+	/*
+	* 寻址建筑
+	* @address: 地址字符串
+	*/
 	Building* LocateBuilding(const std::string& address) const;
 
-	// 寻址房间
+	/*
+	* 寻址房间
+	* @address: 地址字符串
+	*/
 	Room* LocateRoom(const std::string& address) const;
 
-	// 自动寻路
+	/*
+	* 自动寻路
+	* @startIdx, endIdx: 起点与终点的导航节点id
+	*/
 	std::vector<Connection*> AutoNavigation(int startIdx, int endIdx);
 
-	// 添加一个与已有节点existingId相连的新节点node，接入寻路图；返回新建的连接
+	/*
+	* 添加一个与已有节点相连的新节点，接入寻路图；返回新建的连接
+	* @node: 新节点
+	* @existingId: 已有节点的id
+	*/
 	Connection* AddNode(Node* node, int existingId);
 
 	/*
@@ -300,7 +482,10 @@ public:
 	static RoomFactory* roomFactory;
 
 private:
-	// 检查全局坐标是否在地图内
+	/*
+	* 检查全局坐标是否在地图内
+	* @x, y: 全局坐标
+	*/
 	bool CheckXY(int x, int y) const;
 
 	// 分配所有地块内布局

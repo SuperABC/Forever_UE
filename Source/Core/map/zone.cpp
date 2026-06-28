@@ -15,8 +15,8 @@ using namespace std;
 Zone::Zone(ZoneFactory* factory, const string& zone) :
 	mod(factory->CreateZone(zone)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	parentBlock(nullptr),
 	address(""),
 	pivots(),
@@ -24,7 +24,11 @@ Zone::Zone(ZoneFactory* factory, const string& zone) :
 	boundary(),
 	buildings(),
 	script(nullptr) {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Zone " + zone + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Zone::~Zone() {
@@ -84,7 +88,11 @@ string Zone::GetAddress() {
 		return address.data();
 	}
 
-	auto blockAddress = GetParent()->GetAddress();
+	auto block = GetParent();
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Zone's parent block is null.\n");
+	}
+	auto blockAddress = block->GetAddress();
 	address = blockAddress + " " + GetName();
 	return address.data();
 }
@@ -145,7 +153,7 @@ void Zone::LayoutZone(const Lot* block) {
 	float acreageTemporary = 0.f;
 	int attempt = 0;
 	for (int i = 0; i < static_cast<int>(mod->buildings.size()); i++) {
-		if (acreageTemporary >= mod->acreage || attempt > 16) {
+		if (acreageTemporary >= mod->acreage || attempt > MAX_ALLOCATION_ATTEMPTS) {
 			break;
 		}
 
@@ -236,6 +244,9 @@ void Zone::ArrangeBuildings(Map* map) {
 
 	if (elements.empty()) {
 		return;
+	}
+	if (!parentBlock) {
+		THROW_EXCEPTION(NullPointerException, "Zone's parent block is null.\n");
 	}
 
 	Quad container(GetSizeX() / 2, GetSizeY() / 2, GetSizeX(), GetSizeY());

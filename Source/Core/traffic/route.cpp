@@ -13,10 +13,14 @@ using namespace std;
 Route::Route(RouteFactory* factory, const string& route) :
 	mod(factory->CreateRoute(route)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()),
+	type(),
+	name(),
 	stations() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Route " + route + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Route::~Route() {

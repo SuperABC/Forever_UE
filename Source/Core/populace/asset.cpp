@@ -6,9 +6,13 @@ using namespace std;
 Asset::Asset(AssetFactory* factory, const string& asset) :
 	mod(factory->CreateAsset(asset)),
 	factory(factory),
-	type(mod->GetType()),
-	name(mod->GetName()) {
+	type(),
+	name() {
+	if (!mod)
+		THROW_EXCEPTION(NullPointerException, "Asset " + asset + " mod is null.\n");
 
+	type = mod->GetType();
+	name = mod->GetName();
 }
 
 Asset::~Asset() {
