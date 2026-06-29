@@ -16,7 +16,7 @@
 	"triggers": [{"type": "time_up", "name": "$$(self.name)_$$(self.idx)_update"}],
 	"dialogs": [],
 	"changes": [
-		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "08:01:00", "category": "citizen", "label": "$$self.name"},
+		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "00:00:00", "category": "citizen", "label": "$$self.name"},
 		{"type": "create_timer", "name": "$$(self.name)_begin_work", "time": "$$self.signin_time", "category": "citizen", "label": "$$self.name"},
 		{"type": "create_timer", "name": "$$(self.name)_end_work", "time": "$$self.signout_time", "category": "citizen", "label": "$$self.name"},
 	],

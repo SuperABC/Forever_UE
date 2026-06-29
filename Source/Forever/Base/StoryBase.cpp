@@ -27,7 +27,7 @@
 #include "player/player.h"
 
 // 每次CheckTimers最多处理的到时计时器数量，避免单帧处理过多计时器导致卡顿
-#define MAX_TIMERS_PER_CHECK 10
+#define MAX_TIMERS_PER_CHECK 4
 
 
 using namespace std;

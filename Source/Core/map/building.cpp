@@ -1672,7 +1672,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 				continue;
 			}
 
-			// outside端：连接到建筑边界四角中离对端最近的角点
+			// outside端：连接到建筑边界四角中离对端最近的两个角点，各构建一条Connection
 			if (connTemplate.begin.type == "outside" || connTemplate.end.type == "outside") {
 				const NavigationEndpointTemplate& otherSide = connTemplate.begin.type == "outside" ? connTemplate.end : connTemplate.begin;
 				vector<Node*> otherNodes = resolveEndpoint(otherSide);
@@ -1681,23 +1681,24 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 				}
 				Node* otherNode = otherNodes[0];
 
-				Node* nearest = nullptr;
-				float nearestDistSq = 0.f;
+				vector<pair<float, Node*>> candidates;
 				for (int i = 0; i < QUAD_VERTEX_COUNT; i++) {
 					Node* corner = boundary.corners[i];
 					if (!corner) continue;
 					float dx = corner->GetX() - otherNode->GetX();
 					float dy = corner->GetY() - otherNode->GetY();
-					float distSq = dx * dx + dy * dy;
-					if (!nearest || distSq < nearestDistSq) {
-						nearest = corner;
-						nearestDistSq = distSq;
-					}
+					candidates.emplace_back(dx * dx + dy * dy, corner);
 				}
-				if (!nearest) {
+				if (candidates.empty()) {
 					THROW_EXCEPTION(NullPointerException, "Building boundary has no valid corner for outside connection.\n");
 				}
-				newConnections.push_back(new Connection(*nearest, *otherNode));
+				sort(candidates.begin(), candidates.end(),
+					[](const pair<float, Node*>& a, const pair<float, Node*>& b) { return a.first < b.first; });
+
+				int connectCount = min(static_cast<int>(candidates.size()), 2);
+				for (int i = 0; i < connectCount; i++) {
+					newConnections.push_back(new Connection(*candidates[i].second, *otherNode));
+				}
 				continue;
 			}
 
