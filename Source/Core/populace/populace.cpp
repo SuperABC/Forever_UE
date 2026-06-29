@@ -8,7 +8,6 @@
 #include "map/building.h"
 #include "map/room.h"
 #include "populace/person.h"
-#include "populace/asset.h"
 #include "populace/name.h"
 #include "populace/scheduler.h"
 #include "populace/commute.h"
@@ -28,7 +27,6 @@
 
 using namespace std;
 
-AssetFactory* Populace::assetFactory = nullptr;
 NameFactory* Populace::nameFactory = nullptr;
 SchedulerFactory* Populace::schedulerFactory = nullptr;
 
@@ -37,9 +35,6 @@ Populace::Populace() :
 	citizens(),
 	ids(),
 	currentTime() {
-	if (!assetFactory) {
-		assetFactory = new AssetFactory();
-	}
 	if (!nameFactory) {
 		nameFactory = new NameFactory();
 	}
@@ -53,14 +48,9 @@ Populace::~Populace() {
 }
 
 void Populace::LoadConfigs() const {
-	assetFactory->RemoveAll();
 	nameFactory->RemoveAll();
 	schedulerFactory->RemoveAll();
 
-	auto assets = Config::GetEnables("asset");
-	for (auto asset : assets) {
-		assetFactory->SetConfig(asset, true);
-	}
 	auto names = Config::GetEnables("name");
 	if (names.size() != 1) {
 		THROW_EXCEPTION(RuntimeException, "There should be one and only one enabled name.\n");
@@ -69,39 +59,6 @@ void Populace::LoadConfigs() const {
 	auto schedulers = Config::GetEnables("scheduler");
 	for (auto scheduler : schedulers) {
 		schedulerFactory->SetConfig(scheduler, true);
-	}
-}
-
-void Populace::InitAssets(unordered_map<string, HMODULE>& modHandles,
-	const vector<string>& dlls) {
-
-	assetFactory->RegisterAsset(EmptyAsset::GetId(),
-		[]() { return new EmptyAsset(); },
-		[](AssetMod* asset) { delete asset; }
-	);
-
-	for (auto dll : dlls) {
-		HMODULE modHandle;
-		if (modHandles.find(dll) != modHandles.end()) {
-			modHandle = modHandles[dll];
-		}
-		else {
-			modHandle = LoadLibraryA(dll.data());
-			modHandles[dll] = modHandle;
-		}
-
-		if (modHandle) {
-			debugf("Log: %s loaded successfully.\n", dll.data());
-
-			auto registerFunc =
-				reinterpret_cast<RegisterModAssetsFunc>(GetProcAddress(modHandle, "RegisterModAssets"));
-			if (registerFunc) {
-				registerFunc(assetFactory);
-			}
-		}
-		else {
-			debugf("Warning: Failed to load %s.\n", dll.data());
-		}
 	}
 }
 

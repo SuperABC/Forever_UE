@@ -35,7 +35,7 @@
     <ClCompile Include="player\puzzle_flappy.cpp" />
     <ClCompile Include="player\puzzle_war.cpp" />
     <ClCompile Include="player\puzzle_tetris.cpp" />
-    <ClCompile Include="populace\asset_basic.cpp" />
+    <ClCompile Include="player\asset_basic.cpp" />
     <ClCompile Include="populace\name_basic.cpp" />
     <ClCompile Include="populace\scheduler_basic.cpp" />
     <ClCompile Include="society\calendar_basic.cpp" />
@@ -62,7 +62,7 @@
     <ClInclude Include="player\puzzle_flappy.h" />
     <ClInclude Include="player\puzzle_war.h" />
     <ClInclude Include="player\puzzle_tetris.h" />
-    <ClInclude Include="populace\asset_basic.h" />
+    <ClInclude Include="player\asset_basic.h" />
     <ClInclude Include="populace\name_basic.h" />
     <ClInclude Include="populace\scheduler_basic.h" />
     <ClInclude Include="society\calendar_basic.h" />

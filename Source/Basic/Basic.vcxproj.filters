@@ -59,9 +59,6 @@
     <ClCompile Include="populace\scheduler_basic.cpp">
       <Filter>populace</Filter>
     </ClCompile>
-    <ClCompile Include="populace\asset_basic.cpp">
-      <Filter>populace</Filter>
-    </ClCompile>
     <ClCompile Include="society\calendar_basic.cpp">
       <Filter>society</Filter>
     </ClCompile>
@@ -101,6 +98,9 @@
     <ClCompile Include="player\app_basic.cpp">
       <Filter>player</Filter>
     </ClCompile>
+    <ClCompile Include="player\asset_basic.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="industry\product_basic.h">
@@ -129,9 +129,6 @@
     </ClInclude>
     <ClInclude Include="map\building_basic.h">
       <Filter>map</Filter>
-    </ClInclude>
-    <ClInclude Include="populace\asset_basic.h">
-      <Filter>populace</Filter>
     </ClInclude>
     <ClInclude Include="populace\name_basic.h">
       <Filter>populace</Filter>
@@ -176,6 +173,9 @@
       <Filter>player</Filter>
     </ClInclude>
     <ClInclude Include="player\app_basic.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="player\asset_basic.h">
       <Filter>player</Filter>
     </ClInclude>
   </ItemGroup>

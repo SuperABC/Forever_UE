@@ -9,10 +9,10 @@
 #include "map/room.h"
 #include "populace/populace.h"
 #include "populace/person.h"
-#include "populace/asset.h"
 #include "story/script.h"
 #include "story/change.h"
 #include "player/player.h"
+#include "player/asset.h"
 
 #include <algorithm>
 #include <cmath>
@@ -803,7 +803,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 		if (GetRandom(PROBABILITY_SCALE) < ZONE_OWNERSHIP_CHANCE) {
 			int index = GetRandom(int(adults.size()));
 			zone->SetOwner(adults[index]);
-			auto asset = new Asset(Populace::assetFactory, "zone");
+			auto asset = new Asset(Player::assetFactory, "zone");
 			if (asset) {
 				asset->SetAsset(zone->GetAddress());
 				adults[index]->AddAsset(asset);
@@ -828,7 +828,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 				if (GetRandom(PROBABILITY_SCALE) < BUILDING_OWNERSHIP_CHANCE) {
 					int index = GetRandom(int(adults.size()));
 					building->SetOwner(adults[index]);
-					auto asset = new Asset(Populace::assetFactory, "building");
+					auto asset = new Asset(Player::assetFactory, "building");
 					if (asset) {
 						asset->SetAsset(building->GetAddress());
 						adults[index]->AddAsset(asset);
@@ -846,7 +846,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 						if (!room) continue;
 						int index = GetRandom(int(adults.size()));
 						room->SetOwner(adults[index]);
-						auto asset = new Asset(Populace::assetFactory, "room");
+						auto asset = new Asset(Player::assetFactory, "room");
 						if (asset) {
 							asset->SetAsset(room->GetAddress());
 							adults[index]->AddAsset(asset);
@@ -876,7 +876,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 		if (GetRandom(PROBABILITY_SCALE) < BUILDING_OWNERSHIP_CHANCE) {
 			int index = GetRandom(int(adults.size()));
 			building->SetOwner(adults[index]);
-			auto asset = new Asset(Populace::assetFactory, "building");
+			auto asset = new Asset(Player::assetFactory, "building");
 			if (asset) {
 				asset->SetAsset(building->GetAddress());
 				adults[index]->AddAsset(asset);
@@ -894,7 +894,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 				if (!room) continue;
 				int index = GetRandom(int(adults.size()));
 				room->SetOwner(adults[index]);
-				auto asset = new Asset(Populace::assetFactory, "room");
+				auto asset = new Asset(Player::assetFactory, "room");
 				if (asset) {
 					asset->SetAsset(room->GetAddress());
 					adults[index]->AddAsset(asset);

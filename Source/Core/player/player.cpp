@@ -1,11 +1,13 @@
 ﻿#include "player.h"
 
+#include "player/asset.h"
 #include "player/puzzle.h"
 #include "player/app.h"
 
 
 using namespace std;
 
+AssetFactory* Player::assetFactory = nullptr;
 PuzzleFactory* Player::puzzleFactory = nullptr;
 AppFactory* Player::appFactory = nullptr;
 
@@ -13,6 +15,9 @@ Player::Player() :
 	time(nullptr),
 	day(-1),
 	phone(nullptr) {
+	if (!assetFactory) {
+		assetFactory = new AssetFactory();
+	}
 	if (!puzzleFactory) {
 		puzzleFactory = new PuzzleFactory();
 	}
@@ -26,6 +31,12 @@ Player::~Player() {
 }
 
 void Player::LoadConfigs() const {
+	assetFactory->RemoveAll();
+	auto assets = Config::GetEnables("asset");
+	for (auto asset : assets) {
+		assetFactory->SetConfig(asset, true);
+	}
+
 	puzzleFactory->RemoveAll();
 	auto puzzles = Config::GetEnables("puzzle");
 	for (auto puzzle : puzzles) {
@@ -36,6 +47,39 @@ void Player::LoadConfigs() const {
 	auto apps = Config::GetEnables("app");
 	for (auto app : apps) {
 		appFactory->SetConfig(app, true);
+	}
+}
+
+void Player::InitAssets(unordered_map<string, HMODULE>& modHandles,
+	const vector<string>& dlls) {
+
+	assetFactory->RegisterAsset(EmptyAsset::GetId(),
+		[]() { return new EmptyAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
+
+	for (auto dll : dlls) {
+		HMODULE modHandle;
+		if (modHandles.find(dll) != modHandles.end()) {
+			modHandle = modHandles[dll];
+		}
+		else {
+			modHandle = LoadLibraryA(dll.data());
+			modHandles[dll] = modHandle;
+		}
+
+		if (modHandle) {
+			debugf("Log: %s loaded successfully.\n", dll.data());
+
+			auto registerFunc =
+				reinterpret_cast<RegisterModAssetsFunc>(GetProcAddress(modHandle, "RegisterModAssets"));
+			if (registerFunc) {
+				registerFunc(assetFactory);
+			}
+		}
+		else {
+			debugf("Warning: Failed to load %s.\n", dll.data());
+		}
 	}
 }
 

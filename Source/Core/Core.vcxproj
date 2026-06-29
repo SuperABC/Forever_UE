@@ -154,7 +154,7 @@
     <ClCompile Include="player\phone.cpp" />
     <ClCompile Include="player\player.cpp" />
     <ClCompile Include="player\puzzle.cpp" />
-    <ClCompile Include="populace\asset.cpp" />
+    <ClCompile Include="player\asset.cpp" />
     <ClCompile Include="populace\commute.cpp" />
     <ClCompile Include="populace\experience.cpp" />
     <ClCompile Include="populace\name.cpp" />
@@ -193,7 +193,7 @@
     <ClInclude Include="player\phone.h" />
     <ClInclude Include="player\player.h" />
     <ClInclude Include="player\puzzle.h" />
-    <ClInclude Include="populace\asset.h" />
+    <ClInclude Include="player\asset.h" />
     <ClInclude Include="populace\commute.h" />
     <ClInclude Include="populace\experience.h" />
     <ClInclude Include="populace\name.h" />

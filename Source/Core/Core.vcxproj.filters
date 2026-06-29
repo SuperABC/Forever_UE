@@ -78,8 +78,8 @@
     <ClCompile Include="populace\scheduler.cpp">
       <Filter>populace</Filter>
     </ClCompile>
-    <ClCompile Include="populace\asset.cpp">
-      <Filter>populace</Filter>
+    <ClCompile Include="player\asset.cpp">
+      <Filter>player</Filter>
     </ClCompile>
     <ClCompile Include="society\organization.cpp">
       <Filter>society</Filter>
@@ -185,8 +185,8 @@
     <ClInclude Include="populace\experience.h">
       <Filter>populace</Filter>
     </ClInclude>
-    <ClInclude Include="populace\asset.h">
-      <Filter>populace</Filter>
+    <ClInclude Include="player\asset.h">
+      <Filter>player</Filter>
     </ClInclude>
     <ClInclude Include="populace\scheduler.h">
       <Filter>populace</Filter>

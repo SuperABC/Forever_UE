@@ -144,7 +144,7 @@
     <ClCompile Include="player\app_mod.cpp" />
     <ClCompile Include="player\canvas.cpp" />
     <ClCompile Include="player\puzzle_mod.cpp" />
-    <ClCompile Include="populace\asset_mod.cpp" />
+    <ClCompile Include="player\asset_mod.cpp" />
     <ClCompile Include="populace\name_mod.cpp" />
     <ClCompile Include="populace\scheduler_mod.cpp" />
     <ClCompile Include="society\calendar_mod.cpp" />
@@ -176,7 +176,7 @@
     <ClInclude Include="player\app_mod.h" />
     <ClInclude Include="player\canvas.h" />
     <ClInclude Include="player\puzzle_mod.h" />
-    <ClInclude Include="populace\asset_mod.h" />
+    <ClInclude Include="player\asset_mod.h" />
     <ClInclude Include="populace\name_mod.h" />
     <ClInclude Include="populace\scheduler_mod.h" />
     <ClInclude Include="society\calendar_mod.h" />

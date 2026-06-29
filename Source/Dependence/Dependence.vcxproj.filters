@@ -57,9 +57,6 @@
     <ClCompile Include="populace\scheduler_mod.cpp">
       <Filter>populace</Filter>
     </ClCompile>
-    <ClCompile Include="populace\asset_mod.cpp">
-      <Filter>populace</Filter>
-    </ClCompile>
     <ClCompile Include="society\organization_mod.cpp">
       <Filter>society</Filter>
     </ClCompile>
@@ -117,6 +114,9 @@
     <ClCompile Include="player\puzzle_mod.cpp">
       <Filter>player</Filter>
     </ClCompile>
+    <ClCompile Include="player\asset_mod.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="map\terrain_mod.h">
@@ -144,9 +144,6 @@
       <Filter>map</Filter>
     </ClInclude>
     <ClInclude Include="populace\name_mod.h">
-      <Filter>populace</Filter>
-    </ClInclude>
-    <ClInclude Include="populace\asset_mod.h">
       <Filter>populace</Filter>
     </ClInclude>
     <ClInclude Include="populace\scheduler_mod.h">
@@ -207,6 +204,9 @@
       <Filter>player</Filter>
     </ClInclude>
     <ClInclude Include="player\puzzle_mod.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="player\asset_mod.h">
       <Filter>player</Filter>
     </ClInclude>
   </ItemGroup>

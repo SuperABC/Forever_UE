@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "populace/asset_mod.h"
+#include "player/asset_mod.h"
 
 
 // 园区资产

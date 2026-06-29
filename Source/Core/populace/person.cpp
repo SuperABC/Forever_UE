@@ -4,12 +4,12 @@
 #include "map/zone.h"
 #include "map/building.h"
 #include "map/room.h"
-#include "populace/asset.h"
 #include "populace/scheduler.h"
 #include "populace/commute.h"
 #include "populace/experience.h"
 #include "society/job.h"
 #include "story/script.h"
+#include "player/asset.h"
 
 
 using namespace std;

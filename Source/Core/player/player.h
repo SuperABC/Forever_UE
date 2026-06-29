@@ -19,6 +19,10 @@ public:
 	// 读取配置文件
 	void LoadConfigs() const;
 
+	// 读取资产模组
+	void InitAssets(std::unordered_map<std::string, HMODULE>& modHandles,
+		const std::vector<std::string>& dlls);
+
 	// 读取小游戏模组
 	void InitPuzzles(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
@@ -48,6 +52,9 @@ public:
 
 	// 获取手机
 	Phone* GetPhone() const;
+
+	// 资产工厂
+	static AssetFactory* assetFactory;
 
 	// 小游戏工厂
 	static PuzzleFactory* puzzleFactory;

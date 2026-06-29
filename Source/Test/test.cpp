@@ -357,7 +357,6 @@ int main() {
 
 	// 读取Populace相关类及Mod
 	populace->LoadConfigs();
-	populace->InitAssets(modHandles, mods);
 	populace->InitNames(modHandles, mods);
 	populace->InitSchedulers(modHandles, mods);
 
@@ -385,6 +384,7 @@ int main() {
 
 	// 读取Player相关类及Mod
 	player->LoadConfigs();
+	player->InitAssets(modHandles, mods);
 	player->InitPuzzles(modHandles, mods);
 	player->InitApps(modHandles, mods);
 
