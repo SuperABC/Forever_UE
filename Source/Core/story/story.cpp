@@ -151,7 +151,11 @@ void Story::ApplyChange(Change* change,
 		timeCondition.ParseCondition(obj->GetTime());
 		string time = ToString(timeCondition.EvaluateValue(getValues));
 
-		CreateTimer(name, Time(time));
+		Condition labelCondition;
+		labelCondition.ParseCondition(obj->GetLabel());
+		string label = ToString(labelCondition.EvaluateValue(getValues));
+
+		CreateTimer(name, Time(time), obj->GetCategory(), label);
 	}
 }
 
@@ -167,20 +171,20 @@ const vector<pair<string, string>>& Story::GetHistory() const {
 	return historyTalk;
 }
 
-void Story::CreateTimer(const string& name, const Time& time) {
+void Story::CreateTimer(const string& name, const Time& time, const string& category, const string& label) {
 	Time target = currentTime;
 	target.SetTime(time.GetHour(), time.GetMinute(), time.GetSecond(), time.GetMillisecond());
 	if (time.GetOnlySecond() <= currentTime.GetOnlySecond()) {
 		target.AddDays(1);
 	}
-	timers[name] = target;
+	timers[name] = { target, category, label };
 }
 
 void Story::RemoveTimer(const string& name) {
 	timers.erase(name);
 }
 
-const unordered_map<string, Time>& Story::GetTimers() const {
+const unordered_map<string, tuple<Time, string, string>>& Story::GetTimers() const {
 	return timers;
 }
 

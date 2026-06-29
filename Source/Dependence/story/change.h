@@ -467,7 +467,7 @@ private:
 class CreateTimerChange : public Change {
 public:
 	CreateTimerChange();
-	CreateTimerChange(std::string name, std::string time);
+	CreateTimerChange(std::string name, std::string time, std::string category, std::string label);
 	virtual ~CreateTimerChange();
 
 	virtual std::string GetType() const;
@@ -476,10 +476,20 @@ public:
 	std::string GetName() const;
 	void SetTime(std::string time);
 	std::string GetTime();
+	void SetCategory(std::string category);
+	std::string GetCategory() const;
+	void SetLabel(std::string label);
+	std::string GetLabel() const;
 
 private:
 	std::string name;
 	std::string time;
+
+	// 持有该计时器所属脚本的类型（global/zone/building/citizen/elevator/vehicle），用于到时后精确匹配脚本
+	std::string category;
+
+	// 持有该计时器所属脚本的实体名称（global不需要名称）
+	std::string label;
 };
 
 // 变化时间

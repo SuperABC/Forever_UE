@@ -806,9 +806,11 @@ CreateTimerChange::CreateTimerChange() {
 
 }
 
-CreateTimerChange::CreateTimerChange(string name, string time) :
+CreateTimerChange::CreateTimerChange(string name, string time, string category, string label) :
 	name(name),
-	time(time) {
+	time(time),
+	category(category),
+	label(label) {
 
 }
 
@@ -834,6 +836,22 @@ void CreateTimerChange::SetTime(string time) {
 
 string CreateTimerChange::GetTime() {
 	return time;
+}
+
+void CreateTimerChange::SetCategory(string category) {
+	this->category = category;
+}
+
+string CreateTimerChange::GetCategory() const {
+	return category;
+}
+
+void CreateTimerChange::SetLabel(string label) {
+	this->label = label;
+}
+
+string CreateTimerChange::GetLabel() const {
+	return label;
 }
 
 ChangeTimeChange::ChangeTimeChange() {

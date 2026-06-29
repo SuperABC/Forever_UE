@@ -50,7 +50,7 @@ void APopulaceBase::Tick(float DeltaTime) {
 		pos.first += (GetRandom(11) / 10.f - 0.5f) * 0.4f;
 		pos.second += (GetRandom(11) / 10.f - 0.5f) * 0.4f;
 		citizenInfo.pos = FVector(pos.first, pos.second, room->GetLayer() * room->GetParentBuilding()->GetHeight());
-		if ((location - citizenInfo.pos).Size() > 2.f) {
+		if ((location - citizenInfo.pos).Size() > 2.f || fabs(location.Z - citizenInfo.pos.Z) > 0.4f) {
 			continue;
 		}
 		adds.Add(citizenInfo);
@@ -59,7 +59,8 @@ void APopulaceBase::Tick(float DeltaTime) {
 	TArray<FString> removes;
 	for(auto &[name, instance] : personInstances) {
 		auto change = populace->GetCitizen(name)->PopChange();
-		if(change || (instance->GetActorLocation() / 1000.f - location).Size() > 4.f) {
+		auto pos = instance->GetActorLocation() / 1000.f;
+		if(change || (pos - location).Size() > 4.f || fabs(pos.Z - location.Z) > 0.8f) {
 			removes.Add(UTF8_TO_TCHAR(name.data()));
 		}
 	}

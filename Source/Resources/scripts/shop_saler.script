@@ -5,7 +5,7 @@
 	"triggers": [{"type": "game_start"}],
 	"dialogs": [],
 	"changes": [
-		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "08:01:00"},
+		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "08:01:00", "category": "citizen", "label": "$$self.name"},
 	],
 	"subsequences": ["daily_update", "begin_work", "end_work", "buy_item", "free_challenge"]
 },
@@ -16,9 +16,9 @@
 	"triggers": [{"type": "time_up", "name": "$$(self.name)_$$(self.idx)_update"}],
 	"dialogs": [],
 	"changes": [
-		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "00:00:01"},
-		{"type": "create_timer", "name": "$$(self.name)_begin_work", "time": "$$self.signin_time"},
-		{"type": "create_timer", "name": "$$(self.name)_end_work", "time": "$$self.signout_time"},
+		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "08:01:00", "category": "citizen", "label": "$$self.name"},
+		{"type": "create_timer", "name": "$$(self.name)_begin_work", "time": "$$self.signin_time", "category": "citizen", "label": "$$self.name"},
+		{"type": "create_timer", "name": "$$(self.name)_end_work", "time": "$$self.signout_time", "category": "citizen", "label": "$$self.name"},
 	],
 	"subsequences": []
 },
@@ -82,9 +82,7 @@
 			{"content": "免单成功！"},
 		]}
 	],
-	"changes": [
-		{"condition": "$$local.result > 0", "type": "npc_navigate", "name": "$$self.name", "destination": "\"中山北路 0 yuanshen 140000\""}
-	],
+	"changes": [],
 	"subsequences": []
 },
 ]

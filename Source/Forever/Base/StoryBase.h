@@ -93,6 +93,12 @@ protected:
 	// 检查所有计时器，对已到时的计时器触发time_up事件
 	void CheckTimers();
 
+	/*
+	* 按名称查找电梯轿厢（遍历所有建筑，包括园区内的建筑）
+	* @name: 轿厢名称
+	*/
+	Cabin* FindCabin(const std::string& name);
+
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AGlobalBase* global;
 

@@ -6,6 +6,7 @@
 #include "config.h"
 
 #include <unordered_map>
+#include <tuple>
 
 
 class Story {
@@ -50,8 +51,9 @@ public:
 	* 创建或重置一个计时器（同名计时器已存在则覆盖），到时后只触发一次
 	* @name: 计时器名称
 	* @time: 目标时刻的时间部分；若比当前时间的时间部分晚，到达时间取当前日期+该时间，否则取当前日期次日+该时间
+	* @category, label: 计时器所属脚本的类型（global/zone/building/citizen/elevator/vehicle）与实体名称（global不需要名称），用于到时后精确匹配脚本
 	*/
-	void CreateTimer(const std::string& name, const Time& time);
+	void CreateTimer(const std::string& name, const Time& time, const std::string& category, const std::string& label);
 
 	/*
 	* 移除一个计时器
@@ -59,8 +61,8 @@ public:
 	*/
 	void RemoveTimer(const std::string& name);
 
-	// 获取所有计时器（名称 -> 到达时间）
-	const std::unordered_map<std::string, Time>& GetTimers() const;
+	// 获取所有计时器（名称 -> (到达时间, 所属脚本类型, 所属脚本实体名称)）
+	const std::unordered_map<std::string, std::tuple<Time, std::string, std::string>>& GetTimers() const;
 
 	// 脚本工厂
 	static ScriptFactory* scriptFactory;
@@ -75,7 +77,7 @@ private:
 	// 当前游戏时间（每次Tick更新，用于计时器到时判断）
 	Time currentTime;
 
-	// 计时器（名称 -> 到达时间）
-	std::unordered_map<std::string, Time> timers;
+	// 计时器（名称 -> (到达时间, 所属脚本类型, 所属脚本实体名称)）
+	std::unordered_map<std::string, std::tuple<Time, std::string, std::string>> timers;
 };
 

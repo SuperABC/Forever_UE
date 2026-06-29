@@ -26,6 +26,9 @@
 #include "traffic/vehicle.h"
 #include "player/player.h"
 
+// 每次CheckTimers最多处理的到时计时器数量，避免单帧处理过多计时器导致卡顿
+#define MAX_TIMERS_PER_CHECK 10
+
 
 using namespace std;
 
@@ -570,19 +573,39 @@ void AStoryBase::GameStart() {
 	delete event;
 }
 
+Cabin* AStoryBase::FindCabin(const string& name) {
+	auto map = global->GetMap();
+	for (auto& [_, building] : map->GetBuildings()) {
+		for (auto cabin : building->GetCabins()) {
+			if (cabin->GetName() == name) return cabin;
+		}
+	}
+	for (auto& [_, zone] : map->GetZones()) {
+		for (auto& [__, building] : zone->GetBuildings()) {
+			for (auto cabin : building->GetCabins()) {
+				if (cabin->GetName() == name) return cabin;
+			}
+		}
+	}
+	return nullptr;
+}
+
 void AStoryBase::CheckTimers() {
 	auto story = global->GetStory();
 	auto now = global->GetPlayer()->GetTime();
 
-	// 先收集所有已到时的计时器名称，避免在移除计时器时破坏正在遍历的容器
-	vector<string> expired;
-	for (auto& [name, target] : story->GetTimers()) {
+	// 先收集所有已到时的计时器信息，避免在移除计时器时破坏正在遍历的容器；单次最多处理MAX_TIMERS_PER_CHECK个，避免卡顿
+	vector<tuple<string, string, string>> expired;
+	for (auto& [name, info] : story->GetTimers()) {
+		if (expired.size() >= MAX_TIMERS_PER_CHECK) break;
+
+		auto& [target, category, label] = info;
 		if (*now >= target) {
-			expired.push_back(name);
+			expired.emplace_back(name, category, label);
 		}
 	}
 
-	for (auto& name : expired) {
+	for (auto& [name, category, label] : expired) {
 		story->RemoveTimer(name);
 
 		auto event = new TimeUpEvent(name);
@@ -592,86 +615,72 @@ void AStoryBase::CheckTimers() {
 				return story->GetScript()->GetValue(valueName);
 			}
 		};
-		MatchEvent(event, story->GetScript(), getValues);
 
-		auto zones = global->GetMap()->GetZones();
-		for (auto [_, z] : zones) {
-			getValues.push_back(
-				[&](const string& valueName) -> pair<bool, ValueType> {
-					return z->GetScript()->GetValue(valueName);
-				});
-			MatchEvent(event, z->GetScript(), getValues);
-			getValues.pop_back();
-			for (auto [__, b] : z->GetBuildings()) {
+		// 按计时器记录的类型与名称精确匹配脚本，不再广播给全部脚本
+		if (category == "global") {
+			MatchEvent(event, story->GetScript(), getValues);
+		}
+		else if (category == "zone") {
+			auto zone = global->GetMap()->GetZone(label);
+			if (zone) {
 				getValues.push_back(
 					[&](const string& valueName) -> pair<bool, ValueType> {
-						return b->GetScript()->GetValue(valueName);
+						return zone->GetScript()->GetValue(valueName);
 					});
-				MatchEvent(event, b->GetScript(), getValues);
-				getValues.pop_back();
+				MatchEvent(event, zone->GetScript(), getValues);
 			}
 		}
-
-		auto buildings = global->GetMap()->GetBuildings();
-		for (auto [_, b] : buildings) {
-			getValues.push_back(
-				[&](const string& valueName) -> pair<bool, ValueType> {
-					return b->GetScript()->GetValue(valueName);
-				});
-			MatchEvent(event, b->GetScript(), getValues);
-			getValues.pop_back();
-			for (auto cabin : b->GetCabins()) {
-				if (!cabin->GetScript()) continue;
+		else if (category == "building") {
+			auto building = global->GetMap()->GetBuilding(label);
+			if (building) {
+				getValues.push_back(
+					[&](const string& valueName) -> pair<bool, ValueType> {
+						return building->GetScript()->GetValue(valueName);
+					});
+				MatchEvent(event, building->GetScript(), getValues);
+			}
+		}
+		else if (category == "citizen") {
+			auto citizen = global->GetPopulace()->GetCitizen(label);
+			if (citizen) {
+				getValues.push_back(
+					[&](const string& valueName) -> pair<bool, ValueType> {
+						return citizen->GetScheduler()->GetScript()->GetValue(valueName);
+					});
+				MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
+				getValues.pop_back();
+				for (auto job : citizen->GetJobs()) {
+					getValues.push_back(
+						[&](const string& valueName) -> pair<bool, ValueType> {
+							return job->GetScript()->GetValue(valueName);
+						});
+					MatchEvent(event, job->GetScript(), getValues);
+					getValues.pop_back();
+				}
+			}
+		}
+		else if (category == "elevator") {
+			auto cabin = FindCabin(label);
+			if (cabin && cabin->GetScript()) {
 				getValues.push_back(
 					[&](const string& valueName) -> pair<bool, ValueType> {
 						return cabin->GetScript()->GetValue(valueName);
 					});
 				MatchEvent(event, cabin->GetScript(), getValues);
-				getValues.pop_back();
 			}
 		}
-
-		for (auto [_, z] : zones) {
-			for (auto [__, b] : z->GetBuildings()) {
-				for (auto cabin : b->GetCabins()) {
-					if (!cabin->GetScript()) continue;
-					getValues.push_back(
-						[&](const string& valueName) -> pair<bool, ValueType> {
-							return cabin->GetScript()->GetValue(valueName);
-						});
-					MatchEvent(event, cabin->GetScript(), getValues);
-					getValues.pop_back();
-				}
-			}
-		}
-
-		auto citizens = global->GetPopulace()->GetCitizens();
-		for (auto citizen : citizens) {
-			getValues.push_back(
-				[&](const string& valueName) -> pair<bool, ValueType> {
-					return citizen->GetScheduler()->GetScript()->GetValue(valueName);
-				});
-			MatchEvent(event, citizen->GetScheduler()->GetScript(), getValues);
-			getValues.pop_back();
-			for (auto job : citizen->GetJobs()) {
+		else if (category == "vehicle") {
+			auto vehicle = global->GetTraffic()->GetVehicle(label);
+			if (vehicle && vehicle->GetScript()) {
 				getValues.push_back(
 					[&](const string& valueName) -> pair<bool, ValueType> {
-						return job->GetScript()->GetValue(valueName);
+						return vehicle->GetScript()->GetValue(valueName);
 					});
-				MatchEvent(event, job->GetScript(), getValues);
-				getValues.pop_back();
+				MatchEvent(event, vehicle->GetScript(), getValues);
 			}
 		}
-
-		auto vehicles = global->GetTraffic()->GetVehicles();
-		for (auto vehicle : vehicles) {
-			if (!vehicle->GetScript()) continue;
-			getValues.push_back(
-				[&](const string& valueName) -> pair<bool, ValueType> {
-					return vehicle->GetScript()->GetValue(valueName);
-				});
-			MatchEvent(event, vehicle->GetScript(), getValues);
-			getValues.pop_back();
+		else {
+			debugf("Warning: Unknown timer category '%s' for timer %s.\n", category.data(), name.data());
 		}
 
 		delete event;

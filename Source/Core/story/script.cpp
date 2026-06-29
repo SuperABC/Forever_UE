@@ -791,10 +791,12 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 		else if (type == "create_timer") {
 			auto name = obj["name"];
 			auto time = obj["time"];
-			if (name.IsNull() || time.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing name or time for create_timer change.\n");
+			auto category = obj["category"];
+			if (name.IsNull() || time.IsNull() || category.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing name, time or category for create_timer change.\n");
 			}
-			change = new CreateTimerChange(name.AsString(), time.AsString());
+			string label = obj["label"].IsNull() ? "" : obj["label"].AsString();
+			change = new CreateTimerChange(name.AsString(), time.AsString(), category.AsString(), label);
 		}
 		else if (type == "enter_battle") {
 			auto enemy = obj["enemy"];
