@@ -5,7 +5,7 @@
 #include "error.h"
 #include "config.h"
 
-#include <unordered_map>
+#include <set>
 #include <tuple>
 
 
@@ -61,8 +61,12 @@ public:
 	*/
 	void RemoveTimer(const std::string& name);
 
-	// 获取所有计时器（名称 -> (到达时间, 所属脚本类型, 所属脚本实体名称)）
-	const std::unordered_map<std::string, std::tuple<Time, std::string, std::string>>& GetTimers() const;
+	/*
+	* 按到达时间从早到晚取出最多maxCount个已到时的计时器（取出的计时器会从计时器表中移除），不足maxCount个则只返回实际到时的数量
+	* @now: 当前时间
+	* @maxCount: 最多取出的数量
+	*/
+	std::vector<std::tuple<std::string, std::string, std::string>> PopExpiredTimers(const Time& now, int maxCount);
 
 	// 脚本工厂
 	static ScriptFactory* scriptFactory;
@@ -77,7 +81,7 @@ private:
 	// 当前游戏时间（每次Tick更新，用于计时器到时判断）
 	Time currentTime;
 
-	// 计时器（名称 -> (到达时间, 所属脚本类型, 所属脚本实体名称)）
-	std::unordered_map<std::string, std::tuple<Time, std::string, std::string>> timers;
+	// 计时器集合（到达时间, 名称, 所属脚本类型, 所属脚本实体名称），按到达时间有序，begin()即最先到时的计时器
+	std::set<std::tuple<Time, std::string, std::string, std::string>> timerSet;
 };
 

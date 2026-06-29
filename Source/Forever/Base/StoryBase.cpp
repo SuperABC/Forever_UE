@@ -27,7 +27,7 @@
 #include "player/player.h"
 
 // 每次CheckTimers最多处理的到时计时器数量，避免单帧处理过多计时器导致卡顿
-#define MAX_TIMERS_PER_CHECK 4
+#define MAX_TIMERS_PER_CHECK 2
 
 
 using namespace std;
@@ -594,20 +594,10 @@ void AStoryBase::CheckTimers() {
 	auto story = global->GetStory();
 	auto now = global->GetPlayer()->GetTime();
 
-	// 先收集所有已到时的计时器信息，避免在移除计时器时破坏正在遍历的容器；单次最多处理MAX_TIMERS_PER_CHECK个，避免卡顿
-	vector<tuple<string, string, string>> expired;
-	for (auto& [name, info] : story->GetTimers()) {
-		if (expired.size() >= MAX_TIMERS_PER_CHECK) break;
-
-		auto& [target, category, label] = info;
-		if (*now >= target) {
-			expired.emplace_back(name, category, label);
-		}
-	}
+	// 计时器按到达时间维护成小顶堆，这里直接从堆顶取最多MAX_TIMERS_PER_CHECK个已到时的计时器，不用遍历全部计时器
+	auto expired = story->PopExpiredTimers(*now, MAX_TIMERS_PER_CHECK);
 
 	for (auto& [name, category, label] : expired) {
-		story->RemoveTimer(name);
-
 		auto event = new TimeUpEvent(name);
 
 		vector<function<pair<bool, ValueType>(const string&)>> getValues = {

@@ -15,7 +15,7 @@ Story::Story() :
 	script(nullptr),
 	historyTalk(),
 	currentTime(),
-	timers() {
+	timerSet() {
 	if (!scriptFactory) {
 		scriptFactory = new ScriptFactory();
 	}
@@ -177,14 +177,29 @@ void Story::CreateTimer(const string& name, const Time& time, const string& cate
 	if (time.GetOnlySecond() <= currentTime.GetOnlySecond()) {
 		target.AddDays(1);
 	}
-	timers[name] = { target, category, label };
+	timerSet.insert({ target, name, category, label });
 }
 
 void Story::RemoveTimer(const string& name) {
-	timers.erase(name);
+	for (auto it = timerSet.begin(); it != timerSet.end(); ++it) {
+		if (get<1>(*it) == name) {
+			timerSet.erase(it);
+			break;
+		}
+	}
 }
 
-const unordered_map<string, tuple<Time, string, string>>& Story::GetTimers() const {
-	return timers;
+vector<tuple<string, string, string>> Story::PopExpiredTimers(const Time& now, int maxCount) {
+	vector<tuple<string, string, string>> result;
+
+	while (static_cast<int>(result.size()) < maxCount && !timerSet.empty()) {
+		auto it = timerSet.begin();
+		auto& [target, name, category, label] = *it;
+		if (now < target) break;
+		result.emplace_back(name, category, label);
+		timerSet.erase(it);
+	}
+
+	return result;
 }
 
