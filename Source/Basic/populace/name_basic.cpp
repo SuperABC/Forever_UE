@@ -1,5 +1,8 @@
 ﻿#include "name_basic.h"
 
+// 生成姓名重复时的最大重试次数
+#define MAX_ALLOCATION_ATTEMPTS 16
+
 
 using namespace std;
 
@@ -58,9 +61,9 @@ void ChineseName::GetSurname(function<void(const string&)> set,
 
 void ChineseName::GenerateName(function<void(const string&)> set,
 	bool male, bool female, bool neutral) {
-	int randVal = GetRandom((int)(surnames.size() * surnames.size()));
-	int idx = (int)sqrt(randVal);
-	int surnameIdx = (int)surnames.size() - 1 - idx;
+	int randVal = GetRandom(static_cast<int>(surnames.size() * surnames.size()));
+	int idx = static_cast<int>(sqrt(randVal));
+	int surnameIdx = static_cast<int>(surnames.size()) - 1 - idx;
 	string surname = surnames[surnameIdx];
 
 	GenerateName(set, surname, male, female, neutral);
@@ -70,23 +73,23 @@ void ChineseName::GenerateName(function<void(const string&)> set,
 	const string& surname, bool male, bool female, bool neutral) {
 	vector<int> nameList;
 
-	nameList.push_back(male ? (int)maleNames.size() : 0);
-	nameList.push_back(female ? (int)femaleNames.size() : 0);
-	nameList.push_back(neutral ? (int)neutralNames.size() : 0);
+	nameList.push_back(male ? static_cast<int>(maleNames.size()) : 0);
+	nameList.push_back(female ? static_cast<int>(femaleNames.size()) : 0);
+	nameList.push_back(neutral ? static_cast<int>(neutralNames.size()) : 0);
 
-	int nameLength = 1 + (bool)GetRandom(9);
+	int nameLength = 1 + static_cast<bool>(GetRandom(9));
 	int listLength = nameList[0] + nameList[1] + nameList[2];
 
 	if (listLength == 0) {
 		neutral = true;
-		nameList[2] = (int)neutralNames.size();
-		listLength = (int)neutralNames.size();
+		nameList[2] = static_cast<int>(neutralNames.size());
+		listLength = static_cast<int>(neutralNames.size());
 	}
 
 	string givenName;
 	int attempt = 0;
 	while (true) {
-		if (attempt++ > 16)return;
+		if (attempt++ > MAX_ALLOCATION_ATTEMPTS)return;
 		givenName.clear();
 		for (int i = 0; i < nameLength; ++i) {
 			int idx = GetRandom(listLength);
