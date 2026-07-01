@@ -119,17 +119,7 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 				}
 				else if constexpr (is_same_v<decltype(ptr), Change*>) {
 					auto* change = dynamic_cast<Change*>(ptr);
-					if (change->GetCondition().EvaluateBool(getValues)) {
-						global->GetMap()->ApplyChange(change, getValues);
-						global->GetPopulace()->ApplyChange(global->GetMap(), change, getValues);
-						global->GetSociety()->ApplyChange(change, getValues);
-						global->GetStory()->ApplyChange(change, getValues, script);
-						global->GetIndustry()->ApplyChange(change, getValues);
-						global->GetTraffic()->ApplyChange(change, getValues);
-						global->GetPlayer()->ApplyChange(change, getValues);
-
-						ApplyChange(change, getValues, script);
-					}
+					ApplyChanges({ change }, getValues, script);
 				}
 			}, action);
 		}
@@ -137,6 +127,39 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 	catch (ExceptionBase& e) {
 		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
 	}
+}
+
+void AStoryBase::ApplyChanges(const vector<Change*>& changes,
+	vector<function<pair<bool, ValueType>(const string&)>>& getValues,
+	Script* ownerScript) {
+	for (auto change : changes) {
+		if (!change) continue;
+		if (change->GetCondition().EvaluateBool(getValues)) {
+			global->GetMap()->ApplyChange(change, getValues);
+			global->GetPopulace()->ApplyChange(global->GetMap(), change, getValues);
+			global->GetSociety()->ApplyChange(change, getValues);
+			global->GetStory()->ApplyChange(change, getValues, ownerScript);
+			global->GetIndustry()->ApplyChange(change, getValues);
+			global->GetTraffic()->ApplyChange(change, getValues);
+			global->GetPlayer()->ApplyChange(change, getValues);
+
+			ApplyChange(change, getValues, ownerScript);
+		}
+	}
+}
+
+void AStoryBase::ApplySchedulerChanges(vector<Change*>& changes) {
+	auto story = global->GetStory();
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](const string& valueName) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(valueName);
+		}
+	};
+	ApplyChanges(changes, getValues, nullptr);
+	for (auto change : changes) {
+		delete change;
+	}
+	changes.clear();
 }
 
 void AStoryBase::ApplyChange(Change* change,

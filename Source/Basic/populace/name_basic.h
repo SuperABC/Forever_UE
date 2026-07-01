@@ -6,10 +6,14 @@
 // 中文姓名
 class ChineseName : public NameMod {
 public:
-	// 构造中文姓名
+	/*
+	* 构造中文姓名
+	*/
 	ChineseName();
 
-	// 析构中文姓名
+	/*
+	* 析构中文姓名
+	*/
 	virtual ~ChineseName();
 
 	/*
@@ -59,10 +63,14 @@ public:
 		const std::string& surname, bool male = true, bool female = true, bool neutral = true) override;
 
 private:
-	// 初始化姓氏库
+	/*
+	* 初始化姓氏库
+	*/
 	void InitializeSurnames();
 
-	// 初始化名字库
+	/*
+	* 初始化名字库
+	*/
 	void InitializeNames();
 
 	// 姓氏库

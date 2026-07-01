@@ -13,7 +13,9 @@ typedef void (*RegisterModNamesFunc)(NameFactory* factory);
 // 姓名实体
 class Name {
 public:
-	// 禁止默认构造
+	/*
+	* 禁止默认构造
+	*/
 	Name() = delete;
 
 	/*
@@ -23,13 +25,19 @@ public:
 	*/
 	Name(NameFactory* factory, const std::string& name);
 
-	// 析构姓名
+	/*
+	* 析构姓名
+	*/
 	~Name();
 
-	// 获取类型
+	/*
+	* 获取类型
+	*/
 	std::string GetType() const;
 
-	// 获取名称
+	/*
+	* 获取名称
+	*/
 	std::string GetName() const;
 
 	/*
@@ -92,10 +100,14 @@ private:
 // 空姓名
 class EmptyName : public NameMod {
 public:
-	// 构造空姓名
+	/*
+	* 构造空姓名
+	*/
 	EmptyName();
 
-	// 析构空姓名
+	/*
+	* 析构空姓名
+	*/
 	virtual ~EmptyName();
 
 	/*

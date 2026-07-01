@@ -55,16 +55,16 @@ void AZoneBase::Tick(float DeltaTime) {
 			zoneInfo.rotation = block->GetRotation();
 			zoneInfo.fences.Add(
 				FFence(FVector(zone->GetSizeX() / 2.f - 0.2f, 0.f, 0.f),
-					FVector(0.1f, zone->GetSizeY() - 0.4f, 0.1f)));
+					FVector(0.1f, zone->GetSizeY() - 0.4f, 0.05f)));
 			zoneInfo.fences.Add(
 				FFence(FVector(-zone->GetSizeX() / 2.f + 0.2f, 0.f, 0.f),
-					FVector(0.1f, zone->GetSizeY() - 0.4f, 0.1f)));
+					FVector(0.1f, zone->GetSizeY() - 0.4f, 0.05f)));
 			zoneInfo.fences.Add(
 				FFence(FVector(0.f, zone->GetSizeY() / 2.f - 0.2f, 0.f),
-					FVector(zone->GetSizeX() - 0.4f, 0.1f, 0.1f)));
+					FVector(zone->GetSizeX() - 0.4f, 0.1f, 0.05f)));
 			zoneInfo.fences.Add(
 				FFence(FVector(0.f, -zone->GetSizeY() / 2.f + 0.2f, 0.f),
-					FVector(zone->GetSizeX() - 0.4f, 0.1f, 0.1f)));
+					FVector(zone->GetSizeX() - 0.4f, 0.1f, 0.05f)));
 			zones.Add(zoneInfo);
 		}
 	}

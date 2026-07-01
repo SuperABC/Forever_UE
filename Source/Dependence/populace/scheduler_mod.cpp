@@ -12,6 +12,10 @@ SchedulerMod::~SchedulerMod() {
 
 }
 
+void SchedulerMod::AddNode(const std::string& name, const Time& time) {
+	plans[name] = time;
+}
+
 void SchedulerFactory::RegisterScheduler(const string& id, float power,
 	function<SchedulerMod* ()> creator, function<void(SchedulerMod*)> deleter) {
 	registries[id] = { creator, deleter };

@@ -9,10 +9,14 @@
 
 class NameMod {
 public:
-	// 无构造
+	/*
+	* 无构造
+	*/
 	NameMod();
 
-	// 无析构
+	/*
+	* 无析构
+	*/
 	virtual ~NameMod();
 
 	/*
@@ -72,7 +76,9 @@ public:
 	void RegisterName(const std::string& id,
 		std::function<NameMod* ()> creator, std::function<void(NameMod*)> deleter);
 
-	// 清空注册
+	/*
+	* 清空注册
+	*/
 	void RemoveAll();
 
 	/*
@@ -94,7 +100,9 @@ public:
 	*/
 	void SetConfig(const std::string& name, bool config);
 
-	// 获取启用姓名
+	/*
+	* 获取启用姓名
+	*/
 	std::string GetName() const;
 
 	/*

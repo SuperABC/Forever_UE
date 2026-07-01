@@ -33,3 +33,12 @@ float WorkonlyScheduler::GetPower() {
 void WorkonlyScheduler::InitScheduler() {
 	script = { "empty", { "basic_scheduler" } };
 }
+
+void WorkonlyScheduler::DailyPlan() {
+
+}
+
+void WorkonlyScheduler::ExecNode(const string& node,
+	Script* storyScript, Script* schedulerScript, const vector<Script*>& jobScripts) {
+
+}

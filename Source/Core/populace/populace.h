@@ -5,6 +5,9 @@
 #include "error.h"
 #include "config.h"
 
+#include <set>
+#include <tuple>
+
 
 class Populace {
 public:
@@ -31,8 +34,11 @@ public:
 	// 释放空间
 	void Destroy();
 
-	// 时钟周期
-	void Tick(Map* map, Player* player);
+	/*
+	* 时钟周期，返回本帧调度节点产生的变化列表（由调用方负责释放）
+	* @map, story, player: 地图、剧情、玩家
+	*/
+	std::vector<Change*> Tick(Map* map, Story* story, Player* player);
 
 	// 应用剧情变化
 	void ApplyChange(Map* map, Change* change,
@@ -74,4 +80,7 @@ private:
 
 	// 当前游戏时间（每次Tick更新，用于设置通勤起始时间）
 	Time currentTime;
+
+	// 市民计划计时器集合（到达时间, Person*, 节点名称），按到达时间有序
+	std::set<std::tuple<Time, Person*, std::string>> timerSet;
 };

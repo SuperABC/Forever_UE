@@ -48,6 +48,22 @@ Script* Scheduler::GetScript() const {
 	return script;
 }
 
+void Scheduler::DailyPlan() {
+	mod->DailyPlan();
+}
+
+vector<Change*> Scheduler::ExecNode(const string& node, Script* storyScript, const vector<Script*>& jobScripts) {
+	mod->changes.clear();
+	mod->ExecNode(node, storyScript, script, jobScripts);
+	vector<Change*> result = move(mod->changes);
+	mod->changes.clear();
+	return result;
+}
+
+const unordered_map<string, Time>& Scheduler::GetPlans() const {
+	return mod->plans;
+}
+
 int EmptyScheduler::count = 0;
 
 EmptyScheduler::EmptyScheduler() : id(count++) {
@@ -79,4 +95,12 @@ void EmptyScheduler::InitScheduler() {
 
 }
 
+void EmptyScheduler::DailyPlan() {
+
+}
+
+void EmptyScheduler::ExecNode(const string& node,
+	Script* storyScript, Script* schedulerScript, const vector<Script*>& jobScripts) {
+
+}
 

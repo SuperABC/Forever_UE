@@ -14,6 +14,7 @@
 #include "populace/experience.h"
 #include "society/calendar.h"
 #include "society/job.h"
+#include "story/story.h"
 #include "story/script.h"
 #include "story/change.h"
 #include "player/player.h"
@@ -23,6 +24,9 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+
+// 每次Tick最多执行的市民计划节点数量
+#define MAX_CITIZEN_TIMERS_PER_TICK 4
 
 
 using namespace std;
@@ -34,7 +38,8 @@ Populace::Populace() :
 	name(nullptr),
 	citizens(),
 	ids(),
-	currentTime() {
+	currentTime(),
+	timerSet() {
 	if (!nameFactory) {
 		nameFactory = new NameFactory();
 	}
@@ -142,6 +147,7 @@ void Populace::Init(int accomodation, Player* player) {
 }
 
 void Populace::Destroy() {
+	timerSet.clear();
 	for (auto& citizen : citizens) {
 		delete citizen;
 	}
@@ -150,7 +156,7 @@ void Populace::Destroy() {
 	name = nullptr;
 }
 
-void Populace::Tick(Map* map, Player* player) {
+vector<Change*> Populace::Tick(Map* map, Story* story, Player* player) {
 	static int step = 0;
 	static int stride = 20;
 
@@ -159,8 +165,13 @@ void Populace::Tick(Map* map, Player* player) {
 	currentTime = *time;
 
 	if (cross) {
+		timerSet.clear();
 		for (int j = 0; j < citizens.size(); j++) {
 			auto citizen = citizens[j];
+			citizen->GetScheduler()->DailyPlan();
+			for (auto& [node, timer] : citizen->GetScheduler()->GetPlans()) {
+				timerSet.insert({ timer, citizen, node });
+			}
 			for (auto job : citizen->GetJobs()) {
 				auto signin = job->GetCalendar()->SigninTime(*time);
 				auto signout = job->GetCalendar()->SignoutTime(*time);
@@ -168,6 +179,22 @@ void Populace::Tick(Map* map, Player* player) {
 				job->GetScript()->SetValue("self.signout_time", signout.ToString(false, true));
 			}
 		}
+	}
+
+	vector<Change*> result;
+	int count = 0;
+	while (count < MAX_CITIZEN_TIMERS_PER_TICK && !timerSet.empty()) {
+		auto it = timerSet.begin();
+		auto& [target, citizen, node] = *it;
+		if (currentTime < target) break;
+		vector<Script*> jobScripts;
+		for (auto job : citizen->GetJobs()) {
+			jobScripts.push_back(job->GetScript());
+		}
+		auto changes = citizen->GetScheduler()->ExecNode(node, story->GetScript(), jobScripts);
+		result.insert(result.end(), changes.begin(), changes.end());
+		timerSet.erase(it);
+		count++;
 	}
 
 	for (int j = step; j < citizens.size(); j+= stride) {
@@ -184,6 +211,8 @@ void Populace::Tick(Map* map, Player* player) {
 	}
 
 	step = (step + 1) % stride;
+
+	return result;
 }
 
 void Populace::ApplyChange(Map* map, Change* change,
