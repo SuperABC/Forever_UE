@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "class.h"
 #include "utility.h"
@@ -11,27 +11,44 @@
 
 class Populace {
 public:
-	// 构造人口
+	/*
+	* 构造人口
+	*/
 	Populace();
 
-	// 析构人口
+	/*
+	* 析构人口
+	*/
 	~Populace();
 
-	// 读取配置文件
+	/*
+	* 读取配置文件
+	*/
 	void LoadConfigs() const;
 
-	// 读取姓名模组
+	/*
+	* 读取姓名模组
+	* @modHandles, dlls: 模组句柄映射与动态库列表
+	*/
 	void InitNames(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取调度模组
+	/*
+	* 读取调度模组
+	* @modHandles, dlls: 模组句柄映射与动态库列表
+	*/
 	void InitSchedulers(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 初始化人口
+	/*
+	* 初始化人口
+	* @accomodation, player: 容纳量与玩家对象
+	*/
 	void Init(int accomodation, Player* player);
 
-	// 释放空间
+	/*
+	* 释放空间
+	*/
 	void Destroy();
 
 	/*
@@ -40,33 +57,50 @@ public:
 	*/
 	std::vector<Change*> Tick(Map* map, Story* story, Player* player);
 
-	// 应用剧情变化
+	/*
+	* 应用剧情变化
+	* @map, change, getValues: 地图、变化对象、值获取回调列表
+	*/
 	void ApplyChange(Map* map, Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
-	// 获取全部市民
+	/*
+	* 获取全部市民
+	*/
 	std::vector<Person*>& GetCitizens();
 
-	// 按姓名查找市民
+	/*
+	* 按姓名查找市民
+	* @name: 市民姓名
+	*/
 	Person* GetCitizen(const std::string& name);
 
-	// 姓名工厂
-	static NameFactory* nameFactory;
+	static NameFactory* nameFactory; // 姓名工厂
 
-	// 调度工厂
-	static SchedulerFactory* schedulerFactory;
+	static SchedulerFactory* schedulerFactory; // 调度工厂
 
 private:
-	// 生成市民
+	/*
+	* 生成市民
+	* @num, time: 数量与游戏时间指针
+	*/
 	void GenerateCitizens(int num, Time* time);
 
-	// 生成教育经历
+	/*
+	* 生成教育经历
+	* @time: 游戏时间指针
+	*/
 	void GenerateEducations(Time* time);
 
-	// 生成感情经历
+	/*
+	* 生成感情经历
+	* @time: 游戏时间指针
+	*/
 	void GenerateEmotions(Time* time);
 
-	// 生成工作经历
+	/*
+	* 生成工作经历
+	*/
 	void GenerateJobs();
 
 	// 姓名生成器

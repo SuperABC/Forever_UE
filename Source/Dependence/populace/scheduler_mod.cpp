@@ -12,7 +12,7 @@ SchedulerMod::~SchedulerMod() {
 
 }
 
-void SchedulerMod::AddNode(const std::string& name, const Time& time) {
+void SchedulerMod::AddNode(const string& name, const Time& time) {
 	plans[name] = time;
 }
 

@@ -15,7 +15,7 @@
 using namespace std;
 
 Person::Person() :
-	id(0), 
+	id(0),
 	avatar(),
 	name(),
 	gender(GENDER_FEMALE),
