@@ -4,6 +4,8 @@
 #include "../common/error.h"
 #include "../common/json.h"
 
+#include "condition.h"
+
 #include <string>
 #include <queue>
 #include <variant>
@@ -37,14 +39,12 @@ public:
 	// 脚本文件
 	std::string scriptPath;
 
-	// 脚本前逻辑
-	COSTOM_RUNTIME virtual void PreTrigger(const Event* event) = 0;
+	// 脚本逻辑重载
+	COSTOM_RUNTIME virtual void WrapScript(const Event* event,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) = 0;
 		
-	// 脚本后逻辑
-	COSTOM_RUNTIME virtual void PostTrigger(const Event* event) = 0;
-	
 	// 脚本前逻辑+脚本逻辑+脚本后逻辑
-	std::queue<ScriptAction> actionQueue;
+	std::vector<ScriptAction> actionQueue;
 };
 
 class ScriptFactory {

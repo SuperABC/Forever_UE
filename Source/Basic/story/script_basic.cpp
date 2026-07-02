@@ -34,11 +34,8 @@ void NPCScript::SetScript() {
 
 }
 
-void NPCScript::PreTrigger(const Event* event) {
-
-}
-
-void NPCScript::PostTrigger(const Event* event) {
+void NPCScript::WrapScript(const Event* event,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 
 }
 
@@ -73,10 +70,7 @@ void ElevatorScript::SetScript() {
 
 }
 
-void ElevatorScript::PreTrigger(const Event* event) {
-
-}
-
-void ElevatorScript::PostTrigger(const Event* event) {
+void ElevatorScript::WrapScript(const Event* event,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 
 }

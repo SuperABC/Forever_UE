@@ -94,32 +94,12 @@ string Script::GetTask() {
 	return task;
 }
 
-vector<ScriptAction> Script::PreTrigger(Event* event) {
-	vector<ScriptAction> actions;
+vector<ScriptAction>& Script::WrapScript(Event* event, vector<ScriptAction>& actions,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	mod->actionQueue = move(actions);
+	mod->WrapScript(event, getValues);
 
-	mod->PreTrigger(event);
-
-	actions.reserve(mod->actionQueue.size());
-	while (!mod->actionQueue.empty()) {
-		actions.push_back(mod->actionQueue.front());
-		mod->actionQueue.pop();
-	}
-
-	return actions;
-}
-
-vector<ScriptAction> Script::PostTrigger(Event* event) {
-	vector<ScriptAction> actions;
-
-	mod->PostTrigger(event);
-
-	actions.reserve(mod->actionQueue.size());
-	while (!mod->actionQueue.empty()) {
-		actions.push_back(mod->actionQueue.front());
-		mod->actionQueue.pop();
-	}
-
-	return actions;
+	return mod->actionQueue;
 }
 
 void Script::ReadScript(const string& path) {
@@ -936,10 +916,7 @@ void EmptyScript::SetScript() {
 
 }
 
-void EmptyScript::PreTrigger(const Event* event) {
-
-}
-
-void EmptyScript::PostTrigger(const Event* event) {
+void EmptyScript::WrapScript(const Event* event,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 
 }

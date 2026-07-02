@@ -43,11 +43,9 @@ public:
 	// 获取任务描述
 	std::string GetTask();
 
-	// 脚本前逻辑
-	std::vector<ScriptAction> PreTrigger(Event* event);
-
-	// 脚本后逻辑
-	std::vector<ScriptAction> PostTrigger(Event* event);
+	// 脚本逻辑重载
+	std::vector<ScriptAction>& WrapScript(Event* event, std::vector<ScriptAction>& actions,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	// 读取剧本
 	static void ReadScript(const std::string& path);
@@ -124,10 +122,9 @@ public:
 
 	virtual void SetScript();
 
-	virtual void PreTrigger(const Event* event);
+	virtual void WrapScript(const Event* event,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 	
-	virtual void PostTrigger(const Event* event);
-
 private:
 	static int count;
 

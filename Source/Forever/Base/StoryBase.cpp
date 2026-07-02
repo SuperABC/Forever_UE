@@ -101,13 +101,8 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 	}
 
 	try {
-		vector<ScriptAction> actions;
-		auto pres = script->PreTrigger(event);
-		actions.insert(actions.end(), pres.begin(), pres.end());
-		auto matches = script->MatchEvent(event, getValues);
-		actions.insert(actions.end(), matches.begin(), matches.end());
-		auto posts = script->PostTrigger(event);
-		actions.insert(actions.end(), posts.begin(), posts.end());
+		auto actions = script->MatchEvent(event, getValues);
+		actions = script->WrapScript(event, actions, getValues);
 
 		for (auto action : actions) {
 			visit([&](auto* ptr) {

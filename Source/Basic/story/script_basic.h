@@ -17,9 +17,8 @@ public:
 
 	virtual void SetScript();
 
-	virtual void PreTrigger(const Event* event);
-
-	virtual void PostTrigger(const Event* event);
+	virtual void WrapScript(const Event* event,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 private:
 	static int count;
@@ -42,9 +41,8 @@ public:
 
 	virtual void SetScript();
 
-	virtual void PreTrigger(const Event* event);
-
-	virtual void PostTrigger(const Event* event);
+	virtual void WrapScript(const Event* event,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 private:
 	static int count;

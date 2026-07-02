@@ -450,13 +450,8 @@ int main() {
 					}
 				};
 				
-				vector<ScriptAction> actions;
-				auto pres = story->GetScript()->PreTrigger(event);
-				actions.insert(actions.end(), pres.begin(), pres.end());
-				auto matches = story->GetScript()->MatchEvent(event, getValues);
-				actions.insert(actions.end(), matches.begin(), matches.end());
-				auto posts = story->GetScript()->PostTrigger(event);
-				actions.insert(actions.end(), posts.begin(), posts.end());
+				auto actions = story->GetScript()->MatchEvent(event, getValues);
+				actions = story->GetScript()->WrapScript(event, actions, getValues);
 				for (auto action : actions) {
 					visit([&](auto* ptr) {
 						if constexpr (is_same_v<decltype(ptr), Dialog*>) {
