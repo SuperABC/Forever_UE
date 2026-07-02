@@ -14,7 +14,8 @@ Job::Job(JobFactory* factory, const string& job) :
 	type(),
 	name(),
 	calendar(nullptr),
-	script(nullptr) {
+	script(nullptr),
+	position(nullptr) {
 	if (!mod)
 		THROW_EXCEPTION(NullPointerException, "Job " + job + " mod is null.\n");
 
@@ -25,9 +26,9 @@ Job::Job(JobFactory* factory, const string& job) :
 Job::~Job() {
 	factory->DestroyJob(mod);
 
-	if (calendar)delete calendar;
+	if (calendar) delete calendar;
 	calendar = nullptr;
-	if (script)delete script;
+	if (script) delete script;
 	script = nullptr;
 }
 

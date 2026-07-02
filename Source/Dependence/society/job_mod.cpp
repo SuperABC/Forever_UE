@@ -3,7 +3,7 @@
 
 using namespace std;
 
-JobMod::JobMod():
+JobMod::JobMod() :
 	script() {
 
 }

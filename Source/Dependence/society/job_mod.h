@@ -9,18 +9,38 @@
 
 class JobMod {
 public:
-	// 无构造
+	/*
+	* 无构造
+	*/
 	JobMod();
 
-	// 无析构
+	/*
+	* 无析构
+	*/
 	virtual ~JobMod();
 
-	// 统一类型定义
+	/*
+	* Override
+	* 职业静态类型标识
+	*/
 	static const char* GetId();
+
+	/*
+	* Override
+	* 职业动态类型标识
+	*/
 	virtual const char* GetType() const = 0;
+
+	/*
+	* Override
+	* 职业实例唯一名称
+	*/
 	virtual const char* GetName() = 0;
 
-	// 初始化职业
+	/*
+	* Override
+	* 初始化职业
+	*/
 	COSTOM_INIT virtual void InitJob() = 0;
 
 	// 关联剧情与脚本
@@ -29,23 +49,42 @@ public:
 
 class JobFactory {
 public:
-	// 注册组合
+	/*
+	* 注册职业
+	* @id: 职业静态类型标识
+	* @creator, deleter: 构造与析构方法
+	*/
 	void RegisterJob(const std::string& id,
 		std::function<JobMod* ()> creator, std::function<void(JobMod*)> deleter);
 
-	// 清空注册
+	/*
+	* 清空注册
+	*/
 	void RemoveAll();
 
-	// 创建组合
+	/*
+	* 创建职业
+	* @id: 职业静态类型标识
+	*/
 	JobMod* CreateJob(const std::string& id) const;
 
-	// 检查是否注册
+	/*
+	* 检查是否注册
+	* @id: 职业静态类型标识
+	*/
 	bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
+	/*
+	* 设置启用配置
+	* @name: 职业静态类型标识
+	* @config: 是否启用
+	*/
 	void SetConfig(const std::string& name, bool config);
 
-	// 析构组合
+	/*
+	* 析构职业
+	* @jobMod: 待析构的职业模组对象
+	*/
 	void DestroyJob(JobMod* jobMod) const;
 
 private:

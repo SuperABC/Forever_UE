@@ -17,8 +17,8 @@
 	"dialogs": [],
 	"changes": [
 		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_update", "time": "00:00:00", "category": "citizen", "label": "$$self.name"},
-		{"type": "create_timer", "name": "$$(self.name)_begin_work", "time": "$$self.signin_time", "category": "citizen", "label": "$$self.name"},
-		{"type": "create_timer", "name": "$$(self.name)_end_work", "time": "$$self.signout_time", "category": "citizen", "label": "$$self.name"},
+		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_begin_work", "time": "$$self.signin_time", "category": "citizen", "label": "$$self.name"},
+		{"type": "create_timer", "name": "$$(self.name)_$$(self.idx)_end_work", "time": "$$self.signout_time", "category": "citizen", "label": "$$self.name"},
 	],
 	"subsequences": []
 },
@@ -26,7 +26,7 @@
 	"milestone": "begin_work",
 	"visible": false,
 	"drop": "false",
-	"triggers": [{"type": "time_up", "name": "$$(self.name)_begin_work"}],
+	"triggers": [{"type": "time_up", "name": "$$(self.name)_$$(self.idx)_begin_work"}],
 	"dialogs": [],
 	"changes": [
 		{"type": "add_option", "name": "$$self.name", "option": "购物"},
@@ -39,7 +39,7 @@
 	"milestone": "end_work",
 	"visible": false,
 	"drop": "false",
-	"triggers": [{"type": "time_up", "name": "$$(self.name)_end_work"}],
+	"triggers": [{"type": "time_up", "name": "$$(self.name)_$$(self.idx)_end_work"}],
 	"dialogs": [],
 	"changes": [
 		{"type": "remove_option", "name": "$$self.name", "option": "购物"},
