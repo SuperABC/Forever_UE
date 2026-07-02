@@ -27,11 +27,11 @@ string Calendar::GetName() const {
 	return name;
 }
 
-Time Calendar::SigninTime(const Time &date) const {
+Time Calendar::SigninTime(const Time& date) const {
 	return mod->SigninTime(date);
 }
 
-Time Calendar::SignoutTime(const Time &date) const {
+Time Calendar::SignoutTime(const Time& date) const {
 	return mod->SignoutTime(date);
 }
 
