@@ -53,6 +53,12 @@ public:
 	// 获取手机
 	Phone* GetPhone() const;
 
+	// 获取存款
+	int GetDeposit() const;
+
+	// 存取款
+	void AddDeposit(int amount);
+
 	// 资产工厂
 	static AssetFactory* assetFactory;
 
@@ -70,6 +76,9 @@ private:
 
 	// 手机
 	OBJECT_HOLDER Phone* phone;
+
+	// 银行存款
+	int deposit;
 
 };
 

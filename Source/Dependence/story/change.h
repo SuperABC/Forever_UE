@@ -29,6 +29,29 @@ private:
 	Condition condition;
 };
 
+// 范围循环
+class ForRangeChange : public Change {
+public:
+	ForRangeChange(std::string var, std::string from, std::string to, std::string step,
+		std::vector<Change*> changes);
+	virtual ~ForRangeChange();
+
+	virtual std::string GetType() const;
+
+	std::string GetVar() const;
+	std::string GetFrom() const;
+	std::string GetTo() const;
+	std::string GetStep() const;
+	const std::vector<Change*>& GetChanges() const;
+
+private:
+	std::string var;
+	std::string from;
+	std::string to;
+	std::string step;
+	std::vector<Change*> changes;
+};
+
 // 全局广播（已实现）
 class GlobalMessageChange : public Change {
 public:
@@ -230,6 +253,25 @@ private:
 	std::string destination;
 };
 
+// NPC自动导航（已实现）
+class NPCNavigateChange : public Change {
+public:
+	NPCNavigateChange();
+	NPCNavigateChange(std::string name, std::string destination);
+	virtual ~NPCNavigateChange();
+
+	virtual std::string GetType() const;
+
+	void SetName(std::string name);
+	std::string GetName() const;
+	void SetDestination(std::string destination);
+	std::string GetDestination() const;
+
+private:
+	std::string name;
+	std::string destination;
+};
+
 // 瞬移角色（已实现）
 class TeleportPlayerChange : public Change {
 public:
@@ -278,54 +320,101 @@ private:
 	std::string puzzle;
 };
 
-// NPC自动导航
-class NPCNavigateChange : public Change {
+// 进入载具（已实现）
+class EnterVehicleChange : public Change {
 public:
-	NPCNavigateChange();
-	NPCNavigateChange(std::string name, std::string destination);
-	virtual ~NPCNavigateChange();
+	EnterVehicleChange();
+	EnterVehicleChange(std::string vehicle);
+	virtual ~EnterVehicleChange();
+
+	virtual std::string GetType() const;
+
+	void SetVehicle(std::string vehicle);
+	std::string GetVehicle() const;
+
+private:
+	std::string vehicle;
+};
+
+// 离开载具（已实现）
+class LeaveVehicleChange : public Change {
+public:
+	LeaveVehicleChange();
+	LeaveVehicleChange(std::string vehicle);
+	virtual ~LeaveVehicleChange();
+
+	virtual std::string GetType() const;
+
+	void SetVehicle(std::string vehicle);
+	std::string GetVehicle() const;
+
+private:
+	std::string vehicle;
+};
+
+// 创建计时器（已实现）
+class CreateTimerChange : public Change {
+public:
+	CreateTimerChange();
+	CreateTimerChange(std::string name, std::string time, std::string category, std::string label);
+	virtual ~CreateTimerChange();
 
 	virtual std::string GetType() const;
 
 	void SetName(std::string name);
 	std::string GetName() const;
-	void SetDestination(std::string destination);
-	std::string GetDestination() const;
+	void SetTime(std::string time);
+	std::string GetTime();
+	void SetCategory(std::string category);
+	std::string GetCategory() const;
+	void SetLabel(std::string label);
+	std::string GetLabel() const;
 
 private:
 	std::string name;
-	std::string destination;
+	std::string time;
+	std::string category;
+	std::string label;
+};
+
+// 启动电梯（已实现）
+class LaunchElevatorChange : public Change {
+public:
+	LaunchElevatorChange();
+	LaunchElevatorChange(std::string building, std::string elevator, std::string command);
+	virtual ~LaunchElevatorChange();
+
+	virtual std::string GetType() const;
+
+	void SetBuilding(std::string building);
+	std::string GetBuilding() const;
+	void SetElevator(std::string elevator);
+	std::string GetElevator() const;
+	void SetCommand(std::string command);
+	std::string GetCommand() const;
+
+private:
+	std::string building;
+	std::string elevator;
+	std::string command;
 };
 
 // 存款收支
 class BankTransactionChange : public Change {
 public:
 	BankTransactionChange();
-	BankTransactionChange(int amount);
+	BankTransactionChange(std::string name, int amount);
 	virtual ~BankTransactionChange();
 
 	virtual std::string GetType() const;
 
+	void SetName(std::string name);
+	std::string GetName() const;
 	void SetAmount(int amount);
 	int GetAmount() const;
 
 private:
-	int amount;
-};
-
-// 现金收支
-class CashTransactionChange : public Change {
-public:
-	CashTransactionChange();
-	CashTransactionChange(int amount);
-	virtual ~CashTransactionChange();
-
-	virtual std::string GetType() const;
-
-	void SetAmount(int amount);
-	int GetAmount() const;
-
-private:
+	std::string name;
 	int amount;
 };
 
@@ -463,35 +552,6 @@ private:
 	int hour;
 };
 
-// 创建计时器
-class CreateTimerChange : public Change {
-public:
-	CreateTimerChange();
-	CreateTimerChange(std::string name, std::string time, std::string category, std::string label);
-	virtual ~CreateTimerChange();
-
-	virtual std::string GetType() const;
-
-	void SetName(std::string name);
-	std::string GetName() const;
-	void SetTime(std::string time);
-	std::string GetTime();
-	void SetCategory(std::string category);
-	std::string GetCategory() const;
-	void SetLabel(std::string label);
-	std::string GetLabel() const;
-
-private:
-	std::string name;
-	std::string time;
-
-	// 持有该计时器所属脚本的类型（global/zone/building/citizen/elevator/vehicle），用于到时后精确匹配脚本
-	std::string category;
-
-	// 持有该计时器所属脚本的实体名称（global不需要名称）
-	std::string label;
-};
-
 // 变化时间
 class ChangeTimeChange : public Change {
 public:
@@ -562,38 +622,6 @@ private:
 	std::string weather;
 };
 
-// 进入载具
-class EnterVehicleChange : public Change {
-public:
-	EnterVehicleChange();
-	EnterVehicleChange(std::string vehicle);
-	virtual ~EnterVehicleChange();
-
-	virtual std::string GetType() const;
-
-	void SetVehicle(std::string vehicle);
-	std::string GetVehicle() const;
-
-private:
-	std::string vehicle;
-};
-
-// 离开载具
-class LeaveVehicleChange : public Change {
-public:
-	LeaveVehicleChange();
-	LeaveVehicleChange(std::string vehicle);
-	virtual ~LeaveVehicleChange();
-
-	virtual std::string GetType() const;
-
-	void SetVehicle(std::string vehicle);
-	std::string GetVehicle() const;
-
-private:
-	std::string vehicle;
-};
-
 // 变化政策
 class ChangePolicyChange : public Change {
 public:
@@ -608,50 +636,5 @@ public:
 
 private:
 	std::string policy;
-};
-
-// 启动电梯
-class LaunchElevatorChange : public Change {
-public:
-	LaunchElevatorChange();
-	LaunchElevatorChange(std::string building, std::string elevator, std::string command);
-	virtual ~LaunchElevatorChange();
-
-	virtual std::string GetType() const;
-
-	void SetBuilding(std::string building);
-	std::string GetBuilding() const;
-	void SetElevator(std::string elevator);
-	std::string GetElevator() const;
-	void SetCommand(std::string command);
-	std::string GetCommand() const;
-
-private:
-	std::string building;
-	std::string elevator;
-	std::string command;
-};
-
-// 范围循环
-class ForRangeChange : public Change {
-public:
-	ForRangeChange(std::string var, std::string from, std::string to, std::string step,
-		std::vector<Change*> changes);
-	virtual ~ForRangeChange();
-
-	virtual std::string GetType() const;
-
-	std::string GetVar() const;
-	std::string GetFrom() const;
-	std::string GetTo() const;
-	std::string GetStep() const;
-	const std::vector<Change*>& GetChanges() const;
-
-private:
-	std::string var;
-	std::string from;
-	std::string to;
-	std::string step;
-	std::vector<Change*> changes;
 };
 

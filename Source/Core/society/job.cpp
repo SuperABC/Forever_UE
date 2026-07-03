@@ -70,9 +70,9 @@ void Job::SetPosition(Room* room) {
 	position = room;
 }
 
-void Job::DailyPlan() {
+void Job::DailyPlan(const Time& time) {
 	mod->plans.clear();
-	mod->DailyPlan();
+	mod->DailyPlan(time);
 }
 
 vector<Change*> Job::ExecNode(const string& node, Script* storyScript, Script* schedulerScript) {
@@ -114,7 +114,7 @@ void EmptyJob::InitJob() {
 
 }
 
-void EmptyJob::DailyPlan() {
+void EmptyJob::DailyPlan(const Time& time) {
 
 }
 

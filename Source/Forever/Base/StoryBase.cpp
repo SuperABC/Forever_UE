@@ -132,7 +132,7 @@ void AStoryBase::ApplyChanges(const vector<Change*>& changes,
 		if (change->GetCondition().EvaluateBool(getValues)) {
 			global->GetMap()->ApplyChange(change, getValues);
 			global->GetPopulace()->ApplyChange(global->GetMap(), change, getValues);
-			global->GetSociety()->ApplyChange(change, getValues);
+			global->GetSociety()->ApplyChange(global->GetPopulace(), global->GetPlayer(), change, getValues);
 			global->GetStory()->ApplyChange(change, getValues, ownerScript);
 			global->GetIndustry()->ApplyChange(change, getValues);
 			global->GetTraffic()->ApplyChange(change, getValues);
@@ -370,18 +370,7 @@ void AStoryBase::ApplyChange(Change* change,
 			innerGetValues.push_back(loopGetValue);
 			innerGetValues.insert(innerGetValues.end(), getValues.begin(), getValues.end());
 
-			for (auto* innerChange : obj->GetChanges()) {
-				if (innerChange->GetCondition().EvaluateBool(innerGetValues)) {
-					global->GetMap()->ApplyChange(innerChange, innerGetValues);
-					global->GetPopulace()->ApplyChange(global->GetMap(), innerChange, innerGetValues);
-					global->GetSociety()->ApplyChange(innerChange, innerGetValues);
-					global->GetStory()->ApplyChange(innerChange, innerGetValues, ownerScript);
-					global->GetIndustry()->ApplyChange(innerChange, innerGetValues);
-					global->GetTraffic()->ApplyChange(innerChange, innerGetValues);
-					global->GetPlayer()->ApplyChange(innerChange, innerGetValues);
-					ApplyChange(innerChange, innerGetValues, ownerScript);
-				}
-			}
+			ApplyChanges(obj->GetChanges(), innerGetValues, ownerScript);
 		}
 	}
 }
@@ -419,18 +408,7 @@ bool AStoryBase::SelectOption(FString selected) {
 				}
 			}
 			auto changes = option.GetChanges();
-			for (auto change : changes) {
-				if (!change->GetCondition().EvaluateBool(getValues))continue;
-				global->GetMap()->ApplyChange(change, getValues);
-				global->GetPopulace()->ApplyChange(global->GetMap(), change, getValues);
-				global->GetSociety()->ApplyChange(change, getValues);
-				global->GetStory()->ApplyChange(change, getValues, ownerScript);
-				global->GetIndustry()->ApplyChange(change, getValues);
-				global->GetTraffic()->ApplyChange(change, getValues);
-				global->GetPlayer()->ApplyChange(change, getValues);
-
-				ApplyChange(change, getValues, ownerScript);
-			}
+			ApplyChanges(changes, getValues, ownerScript);
 			interacting = false;
 			return true;
 		}
@@ -577,6 +555,16 @@ void AStoryBase::GameStart() {
 		}
 	}
 
+	auto organizations = global->GetSociety()->GetOrganizations();
+	for (auto org : organizations) {
+		getValues.push_back(
+			[&](const string& name) -> pair<bool, ValueType> {
+				return org->GetScript()->GetValue(name);
+			});
+		MatchEvent(event, org->GetScript(), getValues);
+		getValues.pop_back();
+	}
+
 	auto vehicles = global->GetTraffic()->GetVehicles();
 	for (auto vehicle : vehicles) {
 		if (!vehicle->GetScript()) continue;
@@ -667,6 +655,9 @@ void AStoryBase::CheckTimers() {
 				}
 			}
 		}
+		else if(category == "organization") {
+
+		}
 		else if (category == "elevator") {
 			auto cabin = FindCabin(label);
 			if (cabin && cabin->GetScript()) {
@@ -685,6 +676,16 @@ void AStoryBase::CheckTimers() {
 						return vehicle->GetScript()->GetValue(valueName);
 					});
 				MatchEvent(event, vehicle->GetScript(), getValues);
+			}
+		}
+		else if (category == "organization") {
+			auto organization = global->GetSociety()->GetOrganization(label);
+			if (organization && organization->GetScript()) {
+				getValues.push_back(
+					[&](const string& valueName) -> pair<bool, ValueType> {
+						return organization->GetScript()->GetValue(valueName);
+					});
+				MatchEvent(event, organization->GetScript(), getValues);
 			}
 		}
 		else {

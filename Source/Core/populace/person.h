@@ -162,6 +162,12 @@ public:
 	void SetDeposit(int deposit);
 
 	/*
+	* 存取款
+	* @amount: 金额（正数存入，负数取出）
+	*/
+	void AddDeposit(int amount);
+
+	/*
 	* 获取手机号
 	*/
 	int GetPhone() const;

@@ -103,12 +103,16 @@ vector<ScriptAction>& Script::WrapScript(Event* event, vector<ScriptAction>& act
 }
 
 void Script::ReadScript(const string& path) {
+	if (path.empty()) {
+		return;
+	}
 	if (caches.find(path) != caches.end()) {
 		return;
 	}
 
 	if (!filesystem::exists(path)) {
-		THROW_EXCEPTION(IOException, "Path does not exist: " + path + ".\n");
+		debugf("Warning: Script path does not exist: %s.\n", path.data());
+		return;
 	}
 
 	JsonReader reader;
@@ -179,18 +183,26 @@ void Script::ReadScript(const string& path) {
 }
 
 vector<string> Script::ReadNames(const string& path) {
+	if (path.empty()) {
+		return {};
+	}
 	ReadScript(path);
 	if (caches.find(path) == caches.end()) {
-		THROW_EXCEPTION(RuntimeException, "Read script failed: " + path + "\n");
+		debugf("Warning: Read script failed: %s.\n", path.data());
+		return {};
 	}
 
 	return caches[path].first;
 }
 
 void Script::ReadMilestones(const string& path) {
+	if (path.empty()) {
+		return;
+	}
 	ReadScript(path);
 	if (caches.find(path) == caches.end()) {
-		THROW_EXCEPTION(RuntimeException, "Read script failed: " + path + "\n");
+		debugf("Warning: Read script failed: %s.\n", path.data());
+		return;
 	}
 
 	actives.clear();
@@ -580,14 +592,25 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 		string type = obj["type"].AsString();
 		Change* change = nullptr;
 
-		if (type == "global_message") {
+		if (type == "for_range") {
+			auto var = obj["var"];
+			auto from = obj["from"];
+			auto to = obj["to"];
+			if (var.IsNull() || from.IsNull() || to.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing var, from or to for for_range change.\n");
+			}
+			string step = obj["step"].IsNull() ? "1" : obj["step"].AsString();
+			auto doChanges = BuildChanges(obj["do"]);
+			change = new ForRangeChange(var.AsString(), from.AsString(), to.AsString(), step, doChanges);
+		}
+		else if (type == "global_message") {
 			auto message = obj["message"];
 			if (message.IsNull()) {
 				THROW_EXCEPTION(RuntimeException, "Missing message for global_message change.\n");
 			}
 			change = new GlobalMessageChange(message.AsString());
 		}
-		else if(type == "game_end") {
+		else if (type == "game_end") {
 			change = new GameEndChange();
 		}
 		else if (type == "set_value") {
@@ -649,7 +672,7 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			int phone = obj["phone"].IsNull() ? 0 : obj["phone"].AsInt();
 			string home = obj["home"].IsNull() ? "" : obj["home"].AsString();
 			vector<string> jobs;
-			for(auto job : obj["jobs"]) {
+			for (auto job : obj["jobs"]) {
 				if (!job.IsString()) {
 					THROW_EXCEPTION(RuntimeException, "Invalid job for spawn_npc change.\n");
 				}
@@ -666,14 +689,6 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			}
 			change = new RemoveNpcChange(name.AsString());
 		}
-		else if (type == "npc_navigate") {
-			auto name = obj["name"];
-			auto destination = obj["destination"];
-			if (name.IsNull() || destination.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing name or destination for npc_navigate change.\n");
-			}
-			change = new NPCNavigateChange(name.AsString(), destination.AsString());
-		}
 		else if (type == "teleport_citizen") {
 			auto name = obj["name"];
 			auto destination = obj["destination"];
@@ -681,6 +696,14 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 				THROW_EXCEPTION(RuntimeException, "Missing name or destination for teleport_citizen change.\n");
 			}
 			change = new TeleportCitizenChange(name.AsString(), destination.AsString());
+		}
+		else if (type == "npc_navigate") {
+			auto name = obj["name"];
+			auto destination = obj["destination"];
+			if (name.IsNull() || destination.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing name or destination for npc_navigate change.\n");
+			}
+			change = new NPCNavigateChange(name.AsString(), destination.AsString());
 		}
 		else if (type == "teleport_player") {
 			auto destination = obj["destination"];
@@ -703,19 +726,47 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			}
 			change = new StartPuzzleChange(puzzle.AsString());
 		}
+		else if (type == "enter_vehicle") {
+			auto vehicle = obj["vehicle"];
+			if (vehicle.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing vehicle for enter_vehicle change.\n");
+			}
+			change = new EnterVehicleChange(vehicle.AsString());
+		}
+		else if (type == "leave_vehicle") {
+			auto vehicle = obj["vehicle"];
+			if (vehicle.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing vehicle for leave_vehicle change.\n");
+			}
+			change = new LeaveVehicleChange(vehicle.AsString());
+		}
+		else if (type == "create_timer") {
+			auto name = obj["name"];
+			auto time = obj["time"];
+			auto category = obj["category"];
+			if (name.IsNull() || time.IsNull() || category.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing name, time or category for create_timer change.\n");
+			}
+			string label = obj["label"].IsNull() ? "" : obj["label"].AsString();
+			change = new CreateTimerChange(name.AsString(), time.AsString(), category.AsString(), label);
+		}
+		else if (type == "launch_elevator") {
+			auto building = obj["building"];
+			auto elevator = obj["elevator"];
+			auto command = obj["command"];
+			if (building.IsNull() || elevator.IsNull() || command.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing building, elevator or command for launch_elevator change.\n");
+			}
+			change = new LaunchElevatorChange(building.AsString(), elevator.AsString(), command.AsString());
+		}
 		else if (type == "bank_transaction") {
 			auto amount = obj["amount"];
 			if (amount.IsNull()) {
 				THROW_EXCEPTION(RuntimeException, "Missing amount for bank_transaction change.\n");
 			}
-			change = new BankTransactionChange(amount.AsInt());
-		}
-		else if (type == "cash_transaction") {
-			auto amount = obj["amount"];
-			if (amount.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing amount for cash_transaction change.\n");
-			}
-			change = new CashTransactionChange(amount.AsInt());
+			auto nameVal = obj["name"];
+			string name = nameVal.IsNull() ? "" : nameVal.AsString();
+			change = new BankTransactionChange(name, amount.AsInt());
 		}
 		else if (type == "give_item") {
 			auto item = obj["item"];
@@ -732,6 +783,13 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 				THROW_EXCEPTION(RuntimeException, "Missing item or num for remove_item change.\n");
 			}
 			change = new RemoveItemChange(item.AsString(), num.AsInt());
+		}
+		else if (type == "enter_battle") {
+			auto enemy = obj["enemy"];
+			if (enemy.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing enemy for enter_battle change.\n");
+			}
+			change = new EnterBattleChange(enemy.AsString());
 		}
 		else if (type == "player_injured") {
 			auto wound = obj["wound"];
@@ -767,37 +825,6 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 				THROW_EXCEPTION(RuntimeException, "Missing hour for player_sleep change.\n");
 			}
 			change = new PlayerSleepChange(hour.AsInt());
-		}
-		else if (type == "create_timer") {
-			auto name = obj["name"];
-			auto time = obj["time"];
-			auto category = obj["category"];
-			if (name.IsNull() || time.IsNull() || category.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing name, time or category for create_timer change.\n");
-			}
-			string label = obj["label"].IsNull() ? "" : obj["label"].AsString();
-			change = new CreateTimerChange(name.AsString(), time.AsString(), category.AsString(), label);
-		}
-		else if (type == "enter_battle") {
-			auto enemy = obj["enemy"];
-			if (enemy.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing enemy for enter_battle change.\n");
-			}
-			change = new EnterBattleChange(enemy.AsString());
-		}
-		else if (type == "enter_vehicle") {
-			auto vehicle = obj["vehicle"];
-			if (vehicle.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing vehicle for enter_vehicle change.\n");
-			}
-			change = new EnterVehicleChange(vehicle.AsString());
-		}
-		else if (type == "leave_vehicle") {
-			auto vehicle = obj["vehicle"];
-			if (vehicle.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing vehicle for leave_vehicle change.\n");
-			}
-			change = new LeaveVehicleChange(vehicle.AsString());
 		}
 		else if (type == "change_time") {
 			auto delta = obj["delta"];
@@ -836,26 +863,6 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 				THROW_EXCEPTION(RuntimeException, "Missing policy for change_policy change.\n");
 			}
 			change = new ChangePolicyChange(policy.AsString());
-		}
-		else if (type == "launch_elevator") {
-			auto building = obj["building"];
-			auto elevator = obj["elevator"];
-			auto command = obj["command"];
-			if (building.IsNull() || elevator.IsNull() || command.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing building, elevator or command for launch_elevator change.\n");
-			}
-			change = new LaunchElevatorChange(building.AsString(), elevator.AsString(), command.AsString());
-		}
-		else if (type == "for_range") {
-			auto var = obj["var"];
-			auto from = obj["from"];
-			auto to = obj["to"];
-			if (var.IsNull() || from.IsNull() || to.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing var, from or to for for_range change.\n");
-			}
-			string step = obj["step"].IsNull() ? "1" : obj["step"].AsString();
-			auto doChanges = BuildChanges(obj["do"]);
-			change = new ForRangeChange(var.AsString(), from.AsString(), to.AsString(), step, doChanges);
 		}
 
 		if (!change) {

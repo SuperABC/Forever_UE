@@ -73,6 +73,34 @@ public:
 	*/
 	std::vector<std::pair<Component*, std::vector<std::pair<Job*, Person*>>>> GetJobs() const;
 
+	/*
+	* 获取关联剧情
+	*/
+	Script* GetScript() const;
+
+	/*
+	* 初始化组织，创建关联剧情对象
+	*/
+	void InitOrganization();
+
+	/*
+	* 每日规划，委托模组填充plans字段
+	* @time: 当前游戏时间
+	*/
+	void DailyPlan(const Time& time);
+
+	/*
+	* 规划节点调用，返回节点产出的变化列表（由调用方负责释放）
+	* @node: 节点名称
+	* @storyScript: 主线剧情脚本
+	*/
+	std::vector<Change*> ExecNode(const std::string& node, Script* storyScript);
+
+	/*
+	* 获取今日计划（节点名 -> 触发时刻）
+	*/
+	const std::unordered_map<std::string, Time>& GetPlans() const;
+
 private:
 	// 模组对象
 	OBJECT_HOLDER OrganizationMod* mod;
@@ -88,6 +116,9 @@ private:
 
 	// 员工
 	OBJECT_HOLDER std::vector<std::pair<Component*, std::vector<std::pair<Job*, Person*>>>> jobs;
+
+	// 关联剧情
+	OBJECT_HOLDER Script* script;
 };
 
 // 空组织
@@ -148,6 +179,28 @@ public:
 	*/
 	virtual void ArrageRoom(std::vector<std::pair<std::string, int>>& arrangements,
 		const std::vector<std::string>& rooms) override;
+
+	/*
+	* Override
+	* 初始化组织
+	*/
+	virtual void InitOrganization() override;
+
+	/*
+	* Override
+	* 每日规划
+	* @time: 当前游戏时间
+	*/
+	virtual void DailyPlan(const Time& time) override;
+
+	/*
+	* Override
+	* 规划节点调用
+	* @name: 节点名称
+	* @storyScript, orgScript: 主线剧情脚本、组织自身剧情脚本
+	*/
+	virtual void ExecNode(const std::string& name,
+		Script* storyScript, Script* orgScript) override;
 
 private:
 	// 总实例数量

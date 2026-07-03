@@ -1,4 +1,4 @@
-﻿#include "change.h"
+#include "change.h"
 
 
 using namespace std;
@@ -19,17 +19,19 @@ void Change::SetCondition(const Condition& condition) {
 	this->condition = condition;
 }
 
-GameEndChange::GameEndChange() {
+ForRangeChange::ForRangeChange(string var, string from, string to, string step, vector<Change*> changes)
+	: var(var), from(from), to(to), step(step), changes(changes) {}
 
+ForRangeChange::~ForRangeChange() {
+	for (auto c : changes) delete c;
 }
 
-GameEndChange::~GameEndChange() {
-
-}
-
-string GameEndChange::GetType() const {
-	return "game_end";
-}
+string ForRangeChange::GetType() const { return "for_range"; }
+string ForRangeChange::GetVar() const { return var; }
+string ForRangeChange::GetFrom() const { return from; }
+string ForRangeChange::GetTo() const { return to; }
+string ForRangeChange::GetStep() const { return step; }
+const vector<Change*>& ForRangeChange::GetChanges() const { return changes; }
 
 GlobalMessageChange::GlobalMessageChange() {
 
@@ -54,6 +56,18 @@ void GlobalMessageChange::SetMessage(string message) {
 
 string GlobalMessageChange::GetMessage() const {
 	return message;
+}
+
+GameEndChange::GameEndChange() {
+
+}
+
+GameEndChange::~GameEndChange() {
+
+}
+
+string GameEndChange::GetType() const {
+	return "game_end";
 }
 
 SetValueChange::SetValueChange() {
@@ -378,6 +392,39 @@ string TeleportCitizenChange::GetDestination() const {
 	return destination;
 }
 
+NPCNavigateChange::NPCNavigateChange() {
+
+}
+
+NPCNavigateChange::NPCNavigateChange(string name, string destination) :
+	name(name), destination(destination) {
+
+}
+
+NPCNavigateChange::~NPCNavigateChange() {
+
+}
+
+string NPCNavigateChange::GetType() const {
+	return "npc_navigate";
+}
+
+void NPCNavigateChange::SetName(string name) {
+	this->name = name;
+}
+
+string NPCNavigateChange::GetName() const {
+	return name;
+}
+
+void NPCNavigateChange::SetDestination(string destination) {
+	this->destination = destination;
+}
+
+string NPCNavigateChange::GetDestination() const {
+	return destination;
+}
+
 TeleportPlayerChange::TeleportPlayerChange() {
 
 }
@@ -453,45 +500,155 @@ string StartPuzzleChange::GetPuzzle() const {
 	return puzzle;
 }
 
-NPCNavigateChange::NPCNavigateChange() {
+EnterVehicleChange::EnterVehicleChange() {
 
 }
 
-NPCNavigateChange::NPCNavigateChange(string name, string destination) :
-	name(name), destination(destination) {
+EnterVehicleChange::EnterVehicleChange(string vehicle) :
+	vehicle(vehicle) {
 
 }
 
-NPCNavigateChange::~NPCNavigateChange() {
+EnterVehicleChange::~EnterVehicleChange() {
 
 }
 
-string NPCNavigateChange::GetType() const {
-	return "npc_navigate";
+string EnterVehicleChange::GetType() const {
+	return "enter_vehicle";
 }
 
-void NPCNavigateChange::SetName(string name) {
+void EnterVehicleChange::SetVehicle(string vehicle) {
+	this->vehicle = vehicle;
+}
+
+string EnterVehicleChange::GetVehicle() const {
+	return vehicle;
+}
+
+LeaveVehicleChange::LeaveVehicleChange() {
+
+}
+
+LeaveVehicleChange::LeaveVehicleChange(string vehicle) :
+	vehicle(vehicle) {
+
+}
+
+LeaveVehicleChange::~LeaveVehicleChange() {
+
+}
+
+string LeaveVehicleChange::GetType() const {
+	return "leave_vehicle";
+}
+
+void LeaveVehicleChange::SetVehicle(string vehicle) {
+	this->vehicle = vehicle;
+}
+
+string LeaveVehicleChange::GetVehicle() const {
+	return vehicle;
+}
+
+CreateTimerChange::CreateTimerChange() {
+
+}
+
+CreateTimerChange::CreateTimerChange(string name, string time, string category, string label) :
+	name(name),
+	time(time),
+	category(category),
+	label(label) {
+
+}
+
+CreateTimerChange::~CreateTimerChange() {
+
+}
+
+string CreateTimerChange::GetType() const {
+	return "create_timer";
+}
+
+void CreateTimerChange::SetName(string name) {
 	this->name = name;
 }
 
-string NPCNavigateChange::GetName() const {
+string CreateTimerChange::GetName() const {
 	return name;
 }
 
-void NPCNavigateChange::SetDestination(string destination) {
-	this->destination = destination;
+void CreateTimerChange::SetTime(string time) {
+	this->time = time;
 }
 
-string NPCNavigateChange::GetDestination() const {
-	return destination;
+string CreateTimerChange::GetTime() {
+	return time;
+}
+
+void CreateTimerChange::SetCategory(string category) {
+	this->category = category;
+}
+
+string CreateTimerChange::GetCategory() const {
+	return category;
+}
+
+void CreateTimerChange::SetLabel(string label) {
+	this->label = label;
+}
+
+string CreateTimerChange::GetLabel() const {
+	return label;
+}
+
+LaunchElevatorChange::LaunchElevatorChange() {
+
+}
+
+LaunchElevatorChange::LaunchElevatorChange(string building, string elevator, string command) :
+	building(building), elevator(elevator), command(command) {
+
+}
+
+LaunchElevatorChange::~LaunchElevatorChange() {
+
+}
+
+string LaunchElevatorChange::GetType() const {
+	return "launch_elevator";
+}
+
+void LaunchElevatorChange::SetBuilding(string building) {
+	this->building = building;
+}
+
+string LaunchElevatorChange::GetBuilding() const {
+	return building;
+}
+
+void LaunchElevatorChange::SetElevator(string elevator) {
+	this->elevator = elevator;
+}
+
+string LaunchElevatorChange::GetElevator() const {
+	return elevator;
+}
+
+void LaunchElevatorChange::SetCommand(string command) {
+	this->command = command;
+}
+
+string LaunchElevatorChange::GetCommand() const {
+	return command;
 }
 
 BankTransactionChange::BankTransactionChange() {
 
 }
 
-BankTransactionChange::BankTransactionChange(int amount) :
-	amount(amount) {
+BankTransactionChange::BankTransactionChange(string name, int amount) :
+	name(name), amount(amount) {
 
 }
 
@@ -503,36 +660,19 @@ string BankTransactionChange::GetType() const {
 	return "bank_transaction";
 }
 
+void BankTransactionChange::SetName(string name) {
+	this->name = name;
+}
+
+string BankTransactionChange::GetName() const {
+	return name;
+}
+
 void BankTransactionChange::SetAmount(int amount) {
 	this->amount = amount;
 }
 
 int BankTransactionChange::GetAmount() const {
-	return amount;
-}
-
-CashTransactionChange::CashTransactionChange() {
-
-}
-
-CashTransactionChange::CashTransactionChange(int amount) :
-	amount(amount) {
-
-}
-
-CashTransactionChange::~CashTransactionChange() {
-
-}
-
-string CashTransactionChange::GetType() const {
-	return "cash_transaction";
-}
-
-void CashTransactionChange::SetAmount(int amount) {
-	this->amount = amount;
-}
-
-int CashTransactionChange::GetAmount() const {
 	return amount;
 }
 
@@ -625,56 +765,6 @@ void EnterBattleChange::SetEnemy(string enemy) {
 
 string EnterBattleChange::GetEnemy() const {
 	return enemy;
-}
-
-EnterVehicleChange::EnterVehicleChange() {
-
-}
-
-EnterVehicleChange::EnterVehicleChange(string vehicle) :
-	vehicle(vehicle) {
-
-}
-
-EnterVehicleChange::~EnterVehicleChange() {
-
-}
-
-string EnterVehicleChange::GetType() const {
-	return "enter_vehicle";
-}
-
-void EnterVehicleChange::SetVehicle(string vehicle) {
-	this->vehicle = vehicle;
-}
-
-string EnterVehicleChange::GetVehicle() const {
-	return vehicle;
-}
-
-LeaveVehicleChange::LeaveVehicleChange() {
-
-}
-
-LeaveVehicleChange::LeaveVehicleChange(string vehicle) :
-	vehicle(vehicle) {
-
-}
-
-LeaveVehicleChange::~LeaveVehicleChange() {
-
-}
-
-string LeaveVehicleChange::GetType() const {
-	return "leave_vehicle";
-}
-
-void LeaveVehicleChange::SetVehicle(string vehicle) {
-	this->vehicle = vehicle;
-}
-
-string LeaveVehicleChange::GetVehicle() const {
-	return vehicle;
 }
 
 PlayerInjuredChange::PlayerInjuredChange() {
@@ -800,58 +890,6 @@ void PlayerSleepChange::SetHour(int hour) {
 
 int PlayerSleepChange::GetHour() {
 	return hour;
-}
-
-CreateTimerChange::CreateTimerChange() {
-
-}
-
-CreateTimerChange::CreateTimerChange(string name, string time, string category, string label) :
-	name(name),
-	time(time),
-	category(category),
-	label(label) {
-
-}
-
-CreateTimerChange::~CreateTimerChange() {
-
-}
-
-string CreateTimerChange::GetType() const {
-	return "create_timer";
-}
-
-void CreateTimerChange::SetName(string name) {
-	this->name = name;
-}
-
-string CreateTimerChange::GetName() const {
-	return name;
-}
-
-void CreateTimerChange::SetTime(string time) {
-	this->time = time;
-}
-
-string CreateTimerChange::GetTime() {
-	return time;
-}
-
-void CreateTimerChange::SetCategory(string category) {
-	this->category = category;
-}
-
-string CreateTimerChange::GetCategory() const {
-	return category;
-}
-
-void CreateTimerChange::SetLabel(string label) {
-	this->label = label;
-}
-
-string CreateTimerChange::GetLabel() const {
-	return label;
 }
 
 ChangeTimeChange::ChangeTimeChange() {
@@ -994,58 +1032,3 @@ void ChangePolicyChange::SetPolicy(string policy) {
 string ChangePolicyChange::GetPolicy() const {
 	return policy;
 }
-
-LaunchElevatorChange::LaunchElevatorChange() {
-
-}
-
-LaunchElevatorChange::LaunchElevatorChange(string building, string elevator, string command) :
-	building(building), elevator(elevator), command(command) {
-
-}
-
-LaunchElevatorChange::~LaunchElevatorChange() {
-
-}
-
-string LaunchElevatorChange::GetType() const {
-	return "launch_elevator";
-}
-
-void LaunchElevatorChange::SetBuilding(string building) {
-	this->building = building;
-}
-
-string LaunchElevatorChange::GetBuilding() const {
-	return building;
-}
-
-void LaunchElevatorChange::SetElevator(string elevator) {
-	this->elevator = elevator;
-}
-
-string LaunchElevatorChange::GetElevator() const {
-	return elevator;
-}
-
-void LaunchElevatorChange::SetCommand(string command) {
-	this->command = command;
-}
-
-string LaunchElevatorChange::GetCommand() const {
-	return command;
-}
-
-ForRangeChange::ForRangeChange(string var, string from, string to, string step, vector<Change*> changes)
-	: var(var), from(from), to(to), step(step), changes(changes) {}
-
-ForRangeChange::~ForRangeChange() {
-	for (auto c : changes) delete c;
-}
-
-string ForRangeChange::GetType() const { return "for_range"; }
-string ForRangeChange::GetVar() const { return var; }
-string ForRangeChange::GetFrom() const { return from; }
-string ForRangeChange::GetTo() const { return to; }
-string ForRangeChange::GetStep() const { return step; }
-const vector<Change*>& ForRangeChange::GetChanges() const { return changes; }

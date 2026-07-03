@@ -68,8 +68,14 @@ public:
 	* 应用剧情变化
 	* @change, getValues: 变化对象与值获取回调列表
 	*/
-	void ApplyChange(Change* change,
+	void ApplyChange(Populace* populace, Player* player, Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+
+	/*
+	* 按名称查找组织
+	* @name: 组织实例名称
+	*/
+	Organization* GetOrganization(const std::string& name) const;
 
 	// 日程工厂
 	static CalendarFactory* calendarFactory;
@@ -87,8 +93,10 @@ private:
 	// 当前游戏时间（每次Tick更新，用于设置职业计划起始时间）
 	Time currentTime;
 
-	// 职业计划计时器集合（到达时间, Job*, Person*, 节点名称），按到达时间有序
-	std::set<std::tuple<Time, Job*, Person*, std::string>> timerSet;
+	// 计划计时器集合（到达时间, Job*, Person*, Organization*, 节点名称），按到达时间有序
+	// Job计时器：job/person非空，organization为nullptr
+	// Organization计时器：organization非空，job/person为nullptr
+	std::set<std::tuple<Time, Job*, Person*, Organization*, std::string>> timerSet;
 
 };
 

@@ -49,8 +49,9 @@ public:
 	/*
 	* Override
 	* 每日规划
+	* @time: 当前游戏时间
 	*/
-	virtual void DailyPlan() override;
+	virtual void DailyPlan(const Time& time) override;
 
 	/*
 	* Override

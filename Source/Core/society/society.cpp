@@ -11,10 +11,11 @@
 #include "society/organization.h"
 #include "story/story.h"
 #include "story/script.h"
+#include "story/change.h"
 #include "player/player.h"
 
-// 每次Tick最多执行的职业计划节点数量
-#define MAX_JOB_TIMERS_PER_TICK 4
+// 每次Tick最多执行的计划节点数量（职业与组织合计）
+#define MAX_TIMERS_PER_TICK 4
 
 // 资源/空间分配重试的最大尝试次数
 #define MAX_ALLOCATION_ATTEMPTS 16
@@ -264,6 +265,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 		}
 
 		organization->ArrangeRooms();
+		organization->InitOrganization();
 	}
 
 	// 分配工作
@@ -331,16 +333,19 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 	if (cross) {
 		for (auto organization : organizations) {
 			if (!organization) continue;
+			organization->DailyPlan(*time);
+			for (auto& [node, timer] : organization->GetPlans()) {
+				timerSet.insert({ timer, nullptr, nullptr, organization, node });
+			}
 			for (auto& [component, jobs] : organization->GetJobs()) {
 				for (auto& [job, person] : jobs) {
-					if (!job) continue;
 					auto signin = job->GetCalendar()->SigninTime(*time);
 					auto signout = job->GetCalendar()->SignoutTime(*time);
 					job->GetScript()->SetValue("self.signin_time", signin.ToString(false, true));
 					job->GetScript()->SetValue("self.signout_time", signout.ToString(false, true));
-					job->DailyPlan();
+					job->DailyPlan(*time);
 					for (auto& [node, timer] : job->GetPlans()) {
-						timerSet.insert({ timer, job, person, node });
+						timerSet.insert({ timer, job, person, nullptr, node });
 					}
 				}
 			}
@@ -348,12 +353,19 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 	}
 
 	vector<Change*> result;
+
 	int count = 0;
-	while (count < MAX_JOB_TIMERS_PER_TICK && !timerSet.empty()) {
+	while (count < MAX_TIMERS_PER_TICK && !timerSet.empty()) {
 		auto it = timerSet.begin();
-		auto& [target, job, person, node] = *it;
+		auto& [target, job, person, organization, node] = *it;
 		if (currentTime < target) break;
-		auto changes = job->ExecNode(node, story->GetScript(), person->GetScheduler()->GetScript());
+		vector<Change*> changes;
+		if (job) {
+			changes = job->ExecNode(node, story->GetScript(), person->GetScheduler()->GetScript());
+		}
+		else if (organization) {
+			changes = organization->ExecNode(node, story->GetScript());
+		}
 		result.insert(result.end(), changes.begin(), changes.end());
 		timerSet.erase(it);
 		count++;
@@ -362,7 +374,31 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 	return result;
 }
 
-void Society::ApplyChange(Change* change,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+Organization* Society::GetOrganization(const string& name) const {
+	for (auto organization : organizations) {
+		if (organization && organization->GetName() == name) {
+			return organization;
+		}
+	}
+	return nullptr;
+}
 
+void Society::ApplyChange(Populace* populace, Player* player, Change* change,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	auto type = change->GetType();
+
+	if (type == "bank_transaction") {
+		auto obj = dynamic_cast<BankTransactionChange*>(change);
+		if (!obj) return;
+
+		if (obj->GetName().size() == 0) {
+			player->AddDeposit(obj->GetAmount());
+		}
+		else {
+			auto citizen = populace->GetCitizen(obj->GetName());
+			if(citizen) {
+				citizen->AddDeposit(obj->GetAmount());
+			}
+		}
+	}
 }

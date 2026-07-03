@@ -62,6 +62,28 @@ public:
 	virtual void ArrageRoom(std::vector<std::pair<std::string, int>>& arrangements,
 		const std::vector<std::string>& rooms) override;
 
+	/*
+	* Override
+	* 初始化组织
+	*/
+	virtual void InitOrganization() override;
+
+	/*
+	* Override
+	* 每日规划
+	* @time: 当前游戏时间
+	*/
+	virtual void DailyPlan(const Time& time) override;
+
+	/*
+	* Override
+	* 规划节点调用
+	* @name: 节点名称
+	* @storyScript, orgScript: 主线剧情脚本、组织自身剧情脚本
+	*/
+	virtual void ExecNode(const std::string& name,
+		Script* storyScript, Script* orgScript) override;
+
 private:
 	// 总实例数量
 	static int count;

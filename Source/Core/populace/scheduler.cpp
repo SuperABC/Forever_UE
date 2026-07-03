@@ -48,9 +48,9 @@ Script* Scheduler::GetScript() const {
 	return script;
 }
 
-void Scheduler::DailyPlan() {
+void Scheduler::DailyPlan(const Time& time) {
 	mod->plans.clear();
-	mod->DailyPlan();
+	mod->DailyPlan(time);
 }
 
 vector<Change*> Scheduler::ExecNode(const string& node, Script* storyScript, const vector<Script*>& jobScripts) {
@@ -96,7 +96,7 @@ void EmptyScheduler::InitScheduler() {
 
 }
 
-void EmptyScheduler::DailyPlan() {
+void EmptyScheduler::DailyPlan(const Time& time) {
 
 }
 

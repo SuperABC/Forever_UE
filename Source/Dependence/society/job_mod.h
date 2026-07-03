@@ -42,7 +42,7 @@ public:
 	* Override
 	* 职业实例唯一名称
 	*/
-	virtual const char* GetName() = 0;
+	virtual const char* GetName() = 0; 
 
 	/*
 	* Override
@@ -53,8 +53,9 @@ public:
 	/*
 	* Override
 	* 每日规划，填充plans字段
+	* @time: 当前游戏时间
 	*/
-	COSTOM_RUNTIME virtual void DailyPlan() = 0;
+	COSTOM_RUNTIME virtual void DailyPlan(const Time& time) = 0;
 
 	/*
 	* Override

@@ -14,7 +14,8 @@ AppFactory* Player::appFactory = nullptr;
 Player::Player() :
 	time(nullptr),
 	day(-1),
-	phone(nullptr) {
+	phone(nullptr),
+	deposit(0) {
 	if (!assetFactory) {
 		assetFactory = new AssetFactory();
 	}
@@ -184,4 +185,12 @@ bool Player::CrossDay() {
 
 Phone* Player::GetPhone() const {
 	return phone;
+}
+
+int Player::GetDeposit() const {
+	return deposit;
+}
+
+void Player::AddDeposit(int amount) {
+	deposit += amount;
 }

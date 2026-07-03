@@ -3,8 +3,15 @@
 #include "../common/utility.h"
 #include "../common/error.h"
 
+#include "../story/change.h"
+
 #include <string>
 #include <functional>
+#include <unordered_map>
+#include <vector>
+
+
+class Script;
 
 
 class OrganizationMod {
@@ -64,6 +71,37 @@ public:
 	*/
 	COSTOM_INIT virtual void ArrageRoom(std::vector<std::pair<std::string, int>>& arrangements,
 		const std::vector<std::string>& rooms) = 0;
+
+	/*
+	* Override
+	* 初始化组织，设置关联剧情信息（写入script字段）
+	*/
+	COSTOM_INIT virtual void InitOrganization() = 0;
+
+	/*
+	* Override
+	* 每日规划，填充plans字段
+	* @time: 当前游戏时间
+	*/
+	COSTOM_RUNTIME virtual void DailyPlan(const Time& time) = 0;
+
+	/*
+	* Override
+	* 规划节点调用，结果写入changes字段
+	* @name: 节点名称
+	* @storyScript, orgScript: 主线剧情脚本、组织自身剧情脚本
+	*/
+	COSTOM_RUNTIME virtual void ExecNode(const std::string& name,
+		Script* storyScript, Script* orgScript) = 0;
+
+	// 关联剧情与脚本
+	std::pair<std::string, std::vector<std::string>> script;
+
+	// 每日计划（节点名 -> 触发时刻）
+	std::unordered_map<std::string, Time> plans;
+
+	// 节点执行产出的变化列表
+	OBJECT_HOLDER std::vector<Change*> changes;
 
 	// 需要的组合类型与数量上下限
 	std::unordered_map<std::string, std::pair<int, int>> requirements;

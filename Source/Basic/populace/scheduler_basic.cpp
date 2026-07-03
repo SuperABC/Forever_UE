@@ -34,7 +34,7 @@ void WorkonlyScheduler::InitScheduler() {
 	script = { "empty", { "basic_scheduler" } };
 }
 
-void WorkonlyScheduler::DailyPlan() {
+void WorkonlyScheduler::DailyPlan(const Time& time) {
 
 }
 

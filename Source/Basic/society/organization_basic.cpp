@@ -53,4 +53,16 @@ void ShopOrganization::ArrageRoom(vector<pair<string, int>>& arrangements,
 	}
 }
 
+void ShopOrganization::InitOrganization() {
+	script = { "empty", { "" } };
+}
+
+void ShopOrganization::DailyPlan(const Time& time) {
+
+}
+
+void ShopOrganization::ExecNode(const string& name, Script* storyScript, Script* orgScript) {
+
+}
+
 

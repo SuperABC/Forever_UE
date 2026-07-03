@@ -167,7 +167,7 @@ vector<Change*> Populace::Tick(Map* map, Story* story, Player* player) {
 	if (cross) {
 		for (int j = 0; j < citizens.size(); j++) {
 			auto citizen = citizens[j];
-			citizen->GetScheduler()->DailyPlan();
+			citizen->GetScheduler()->DailyPlan(*time);
 			for (auto& [node, timer] : citizen->GetScheduler()->GetPlans()) {
 				timerSet.insert({ timer, citizen, node });
 			}

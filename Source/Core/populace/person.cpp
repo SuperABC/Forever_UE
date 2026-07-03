@@ -153,6 +153,10 @@ void Person::SetDeposit(int deposit) {
 	this->deposit = deposit;
 }
 
+void Person::AddDeposit(int amount) {
+	deposit += amount;
+}
+
 int Person::GetPhone() const {
 	return phone;
 }

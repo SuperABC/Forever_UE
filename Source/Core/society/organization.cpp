@@ -3,6 +3,8 @@
 #include "map/component.h"
 #include "map/room.h"
 #include "society/job.h"
+#include "story/story.h"
+#include "story/script.h"
 
 
 using namespace std;
@@ -12,7 +14,8 @@ Organization::Organization(OrganizationFactory* factory, const string& organizat
 	factory(factory),
 	type(),
 	name(),
-	jobs() {
+	jobs(),
+	script(nullptr) {
 	if (!mod)
 		THROW_EXCEPTION(NullPointerException, "Organization " + organization + " mod is null.\n");
 
@@ -27,6 +30,8 @@ Organization::~Organization() {
 			delete job;
 		}
 	}
+	if (script) delete script;
+	script = nullptr;
 }
 
 string Organization::GetType() const {
@@ -104,6 +109,37 @@ vector<pair<Component*, vector<pair<Job*, Person*>>>> Organization::GetJobs() co
 	return jobs;
 }
 
+Script* Organization::GetScript() const {
+	return script;
+}
+
+void Organization::InitOrganization() {
+	mod->InitOrganization();
+	script = new Script(Story::scriptFactory, mod->script.first);
+	for (auto s : mod->script.second) {
+		script->ReadMilestones(Config::GetScript(s));
+	}
+	script->SetValue("self.name", string(mod->GetName()));
+	script->SetValue("self.type", string(mod->GetType()));
+}
+
+void Organization::DailyPlan(const Time& time) {
+	mod->plans.clear();
+	mod->DailyPlan(time);
+}
+
+vector<Change*> Organization::ExecNode(const string& node, Script* storyScript) {
+	mod->changes.clear();
+	mod->ExecNode(node, storyScript, script);
+	vector<Change*> result = move(mod->changes);
+	mod->changes.clear();
+	return result;
+}
+
+const unordered_map<string, Time>& Organization::GetPlans() const {
+	return mod->plans;
+}
+
 int EmptyOrganization::count = 0;
 
 EmptyOrganization::EmptyOrganization() : id(count++) {
@@ -141,6 +177,18 @@ void EmptyOrganization::ArrageVacancies(const unordered_map<string, int>& compon
 
 void EmptyOrganization::ArrageRoom(vector<pair<string, int>>& arrages,
 	const vector<string>& rooms) {
+
+}
+
+void EmptyOrganization::InitOrganization() {
+	script = { "empty", {} };
+}
+
+void EmptyOrganization::DailyPlan(const Time& time) {
+
+}
+
+void EmptyOrganization::ExecNode(const string& name, Script* storyScript, Script* orgScript) {
 
 }
 

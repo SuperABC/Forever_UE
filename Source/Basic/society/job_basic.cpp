@@ -30,7 +30,7 @@ void ShopSalerJob::InitJob() {
 	script = { "empty", {"shop_saler"} };
 }
 
-void ShopSalerJob::DailyPlan() {
+void ShopSalerJob::DailyPlan(const Time& time) {
 
 }
 

@@ -51,8 +51,9 @@ public:
 
 	/*
 	* 每日计划
+	* @time: 当前游戏时间
 	*/
-	void DailyPlan();
+	void DailyPlan(const Time& time);
 
 	/*
 	* 执行节点，返回节点计算出的变化列表（由调用方负责释放）
@@ -130,8 +131,9 @@ public:
 	/*
 	* Override
 	* 每日规划
+	* @time: 当前游戏时间
 	*/
-	virtual void DailyPlan() override;
+	virtual void DailyPlan(const Time& time) override;
 
 	/*
 	* Override

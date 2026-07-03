@@ -74,8 +74,9 @@ public:
 
 	/*
 	* 每日规划，委托模组填充plans字段
+	* @time: 当前游戏时间
 	*/
-	void DailyPlan();
+	void DailyPlan(const Time& time);
 
 	/*
 	* 规划节点调用，返回节点产出的变化列表（由调用方负责释放）；jobScript由内部获取
@@ -153,8 +154,9 @@ public:
 	/*
 	* Override
 	* 每日规划
+	* @time: 当前游戏时间
 	*/
-	virtual void DailyPlan() override;
+	virtual void DailyPlan(const Time& time) override;
 
 	/*
 	* Override
