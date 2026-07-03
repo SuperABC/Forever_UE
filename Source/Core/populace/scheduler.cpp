@@ -49,6 +49,7 @@ Script* Scheduler::GetScript() const {
 }
 
 void Scheduler::DailyPlan() {
+	mod->plans.clear();
 	mod->DailyPlan();
 }
 

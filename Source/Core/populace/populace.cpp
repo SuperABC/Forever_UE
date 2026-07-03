@@ -165,18 +165,11 @@ vector<Change*> Populace::Tick(Map* map, Story* story, Player* player) {
 	currentTime = *time;
 
 	if (cross) {
-		timerSet.clear();
 		for (int j = 0; j < citizens.size(); j++) {
 			auto citizen = citizens[j];
 			citizen->GetScheduler()->DailyPlan();
 			for (auto& [node, timer] : citizen->GetScheduler()->GetPlans()) {
 				timerSet.insert({ timer, citizen, node });
-			}
-			for (auto job : citizen->GetJobs()) {
-				auto signin = job->GetCalendar()->SigninTime(*time);
-				auto signout = job->GetCalendar()->SignoutTime(*time);
-				job->GetScript()->SetValue("self.signin_time", signin.ToString(false, true));
-				job->GetScript()->SetValue("self.signout_time", signout.ToString(false, true));
 			}
 		}
 	}

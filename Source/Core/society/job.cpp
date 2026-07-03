@@ -70,6 +70,23 @@ void Job::SetPosition(Room* room) {
 	position = room;
 }
 
+void Job::DailyPlan() {
+	mod->plans.clear();
+	mod->DailyPlan();
+}
+
+vector<Change*> Job::ExecNode(const string& node, Script* storyScript, Script* schedulerScript) {
+	mod->changes.clear();
+	mod->ExecNode(node, storyScript, schedulerScript, script);
+	vector<Change*> result = move(mod->changes);
+	mod->changes.clear();
+	return result;
+}
+
+const unordered_map<string, Time>& Job::GetPlans() const {
+	return mod->plans;
+}
+
 int EmptyJob::count = 0;
 
 EmptyJob::EmptyJob() : id(count++) {
@@ -94,6 +111,14 @@ const char* EmptyJob::GetName() {
 }
 
 void EmptyJob::InitJob() {
+
+}
+
+void EmptyJob::DailyPlan() {
+
+}
+
+void EmptyJob::ExecNode(const string& name, Script* storyScript, Script* schedulerScript, Script* jobScript) {
 
 }
 

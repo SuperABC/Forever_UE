@@ -100,6 +100,10 @@ void Organization::ArrangeRooms() {
 	}
 }
 
+vector<pair<Component*, vector<pair<Job*, Person*>>>> Organization::GetJobs() const {
+	return jobs;
+}
+
 int EmptyOrganization::count = 0;
 
 EmptyOrganization::EmptyOrganization() : id(count++) {

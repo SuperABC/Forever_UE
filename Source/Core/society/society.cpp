@@ -5,9 +5,12 @@
 #include "map/room.h"
 #include "populace/populace.h"
 #include "populace/person.h"
+#include "populace/scheduler.h"
 #include "society/calendar.h"
 #include "society/job.h"
 #include "society/organization.h"
+#include "story/story.h"
+#include "story/script.h"
 #include "player/player.h"
 
 
@@ -17,8 +20,13 @@ CalendarFactory* Society::calendarFactory = nullptr;
 JobFactory* Society::jobFactory = nullptr;
 OrganizationFactory* Society::organizationFactory = nullptr;
 
+// 每次Tick最多执行的职业计划节点数量
+#define MAX_JOB_TIMERS_PER_TICK 4
+
 Society::Society() :
-	organizations() {
+	organizations(),
+	currentTime(),
+	timerSet() {
 	if (!calendarFactory) {
 		calendarFactory = new CalendarFactory();
 	}
@@ -312,8 +320,43 @@ void Society::Destroy() {
 	organizations.clear();
 }
 
-void Society::Tick(Player* player) {
+vector<Change*> Society::Tick(Player* player, Story* story) {
+	auto time = player->GetTime();
+	auto cross = player->CrossDay();
+	currentTime = *time;
 
+	if (cross) {
+		for (auto organization : organizations) {
+			if (!organization) continue;
+			for (auto& [component, jobs] : organization->GetJobs()) {
+				for (auto& [job, person] : jobs) {
+					if (!job) continue;
+					auto signin = job->GetCalendar()->SigninTime(*time);
+					auto signout = job->GetCalendar()->SignoutTime(*time);
+					job->GetScript()->SetValue("self.signin_time", signin.ToString(false, true));
+					job->GetScript()->SetValue("self.signout_time", signout.ToString(false, true));
+					job->DailyPlan();
+					for (auto& [node, timer] : job->GetPlans()) {
+						timerSet.insert({ timer, job, person, node });
+					}
+				}
+			}
+		}
+	}
+
+	vector<Change*> result;
+	int count = 0;
+	while (count < MAX_JOB_TIMERS_PER_TICK && !timerSet.empty()) {
+		auto it = timerSet.begin();
+		auto& [target, job, person, node] = *it;
+		if (currentTime < target) break;
+		auto changes = job->ExecNode(node, story->GetScript(), person->GetScheduler()->GetScript());
+		result.insert(result.end(), changes.begin(), changes.end());
+		timerSet.erase(it);
+		count++;
+	}
+
+	return result;
 }
 
 void Society::ApplyChange(Change* change,

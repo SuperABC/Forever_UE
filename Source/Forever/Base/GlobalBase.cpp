@@ -199,11 +199,14 @@ void AGlobalBase::Tick(float DeltaTime) {
 
 	player->Tick(DeltaTime);
 	map->Tick(player);
+	auto societyChanges = society->Tick(player, story);
+	if (!societyChanges.empty() && storyActor) {
+		storyActor->ApplySchedulerChanges(societyChanges);
+	}
 	auto schedulerChanges = populace->Tick(map, story, player);
 	if (!schedulerChanges.empty() && storyActor) {
 		storyActor->ApplySchedulerChanges(schedulerChanges);
 	}
-	society->Tick(player);
 	story->Tick(player);
 	industry->Tick(player);
 	traffic->Tick(player);

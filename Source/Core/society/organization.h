@@ -42,6 +42,9 @@ public:
 	// 分配工位
 	void ArrangeRooms();
 
+	// 获取职位
+	std::vector<std::pair<Component*, std::vector<std::pair<Job*, Person*>>>> GetJobs() const;
+
 private:
 	// 模组对象
 	OBJECT_HOLDER OrganizationMod* mod;

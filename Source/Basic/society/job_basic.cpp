@@ -29,3 +29,11 @@ const char* ShopSalerJob::GetName() {
 void ShopSalerJob::InitJob() {
 	script = { "empty", {"shop_saler"} };
 }
+
+void ShopSalerJob::DailyPlan() {
+
+}
+
+void ShopSalerJob::ExecNode(const string& name, Script* storyScript, Script* schedulerScript, Script* jobScript) {
+
+}

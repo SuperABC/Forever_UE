@@ -39,6 +39,21 @@ public:
 	*/
 	virtual void InitJob() override;
 
+	/*
+	* Override
+	* 每日规划
+	*/
+	virtual void DailyPlan() override;
+
+	/*
+	* Override
+	* 规划节点调用
+	* @name: 节点名称
+	* @storyScript, schedulerScript, jobScript: 主线剧情脚本、市民调度脚本、职业自身剧情脚本
+	*/
+	virtual void ExecNode(const std::string& name,
+		Script* storyScript, Script* schedulerScript, Script* jobScript) override;
+
 private:
 	// 总实例数量
 	static int count;

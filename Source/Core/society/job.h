@@ -72,6 +72,24 @@ public:
 	*/
 	void InitJob(std::string name, int idx);
 
+	/*
+	* 每日规划，委托模组填充plans字段
+	*/
+	void DailyPlan();
+
+	/*
+	* 规划节点调用，返回节点产出的变化列表（由调用方负责释放）；jobScript由内部获取
+	* @node: 节点名称
+	* @storyScript: 主线剧情脚本
+	* @schedulerScript: 持有该职业的市民调度脚本
+	*/
+	std::vector<Change*> ExecNode(const std::string& node, Script* storyScript, Script* schedulerScript);
+
+	/*
+	* 获取今日计划（节点名 -> 触发时刻）
+	*/
+	const std::unordered_map<std::string, Time>& GetPlans() const;
+
 private:
 	// 模组对象
 	OBJECT_HOLDER JobMod* mod;
@@ -131,6 +149,21 @@ public:
 	* 初始化职业
 	*/
 	virtual void InitJob() override;
+
+	/*
+	* Override
+	* 每日规划
+	*/
+	virtual void DailyPlan() override;
+
+	/*
+	* Override
+	* 规划节点调用
+	* @name: 节点名称
+	* @storyScript, schedulerScript, jobScript: 主线剧情脚本、市民调度脚本、职业自身剧情脚本
+	*/
+	virtual void ExecNode(const std::string& name,
+		Script* storyScript, Script* schedulerScript, Script* jobScript) override;
 
 private:
 	// 总实例数量

@@ -3,8 +3,15 @@
 #include "../common/utility.h"
 #include "../common/error.h"
 
+#include "../story/change.h"
+
 #include <string>
 #include <functional>
+#include <unordered_map>
+#include <vector>
+
+
+class Script;
 
 
 class JobMod {
@@ -43,8 +50,29 @@ public:
 	*/
 	COSTOM_INIT virtual void InitJob() = 0;
 
+	/*
+	* Override
+	* 每日规划，填充plans字段
+	*/
+	COSTOM_RUNTIME virtual void DailyPlan() = 0;
+
+	/*
+	* Override
+	* 规划节点调用，结果写入changes字段
+	* @name: 节点名称
+	* @storyScript, schedulerScript, jobScript: 主线剧情脚本、持有该职业的市民调度脚本、职业自身剧情脚本
+	*/
+	COSTOM_RUNTIME virtual void ExecNode(const std::string& name,
+		Script* storyScript, Script* schedulerScript, Script* jobScript) = 0;
+
 	// 关联剧情与脚本
 	std::pair<std::string, std::vector<std::string>> script;
+
+	// 每日计划（节点名 -> 触发时刻）
+	std::unordered_map<std::string, Time> plans;
+
+	// 节点执行产出的变化列表 
+	OBJECT_HOLDER std::vector<Change*> changes;
 };
 
 class JobFactory {

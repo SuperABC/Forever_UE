@@ -5,6 +5,9 @@
 #include "error.h"
 #include "config.h"
 
+#include <set>
+#include <tuple>
+
 
 class Society {
 public:
@@ -35,8 +38,11 @@ public:
 	// 释放空间
 	void Destroy();
 
-	// 时钟周期
-	void Tick(Player* player);
+	/*
+	* 时钟周期，返回本帧职业计划节点产生的变化列表（由调用方负责释放）
+	* @player, story: 玩家与剧情对象
+	*/
+	std::vector<Change*> Tick(Player* player, Story* story);
 
 	// 应用剧情变化
 	void ApplyChange(Change* change,
@@ -54,6 +60,12 @@ public:
 private:
 	// 全部组织
 	OBJECT_HOLDER std::vector<Organization*> organizations;
+
+	// 当前游戏时间（每次Tick更新，用于设置职业计划起始时间）
+	Time currentTime;
+
+	// 职业计划计时器集合（到达时间, Job*, Person*, 节点名称），按到达时间有序
+	std::set<std::tuple<Time, Job*, Person*, std::string>> timerSet;
 
 };
 
