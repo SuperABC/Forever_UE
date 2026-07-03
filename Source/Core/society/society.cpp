@@ -13,15 +13,18 @@
 #include "story/script.h"
 #include "player/player.h"
 
+// 每次Tick最多执行的职业计划节点数量
+#define MAX_JOB_TIMERS_PER_TICK 4
+
+// 资源/空间分配重试的最大尝试次数
+#define MAX_ALLOCATION_ATTEMPTS 16
+
 
 using namespace std;
 
 CalendarFactory* Society::calendarFactory = nullptr;
 JobFactory* Society::jobFactory = nullptr;
 OrganizationFactory* Society::organizationFactory = nullptr;
-
-// 每次Tick最多执行的职业计划节点数量
-#define MAX_JOB_TIMERS_PER_TICK 4
 
 Society::Society() :
 	organizations(),
@@ -193,7 +196,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 	}
 
 	int attempt = 0;
-	while (attempt < 16) {
+	while (attempt < MAX_ALLOCATION_ATTEMPTS) {
 		float r = GetRandom(1000) / 1000.f;
 		string selectedOrganization;
 		for (const auto& [id, cdf] : cdfs) {

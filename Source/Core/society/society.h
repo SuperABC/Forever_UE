@@ -11,31 +11,51 @@
 
 class Society {
 public:
-	// 构造社会
+	/*
+	* 构造社会
+	*/
 	Society();
 
-	// 析构社会
+	/*
+	* 析构社会
+	*/
 	~Society();
 
-	// 读取配置文件
+	/*
+	* 读取配置文件
+	*/
 	void LoadConfigs() const;
 
-	// 读取日程模组
+	/*
+	* 读取日程模组
+	* @modHandles, dlls: 模组句柄映射与动态库列表
+	*/
 	void InitCalendars(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取职业模组
+	/*
+	* 读取职业模组
+	* @modHandles, dlls: 模组句柄映射与动态库列表
+	*/
 	void InitJobs(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取组织模组
+	/*
+	* 读取组织模组
+	* @modHandles, dlls: 模组句柄映射与动态库列表
+	*/
 	void InitOrganizations(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 初始化社区
+	/*
+	* 初始化社区
+	* @map, populace, player: 地图、人口与玩家对象
+	*/
 	void Init(Map* map, Populace* populace, Player* player);
 
-	// 释放空间
+	/*
+	* 释放空间
+	*/
 	void Destroy();
 
 	/*
@@ -44,7 +64,10 @@ public:
 	*/
 	std::vector<Change*> Tick(Player* player, Story* story);
 
-	// 应用剧情变化
+	/*
+	* 应用剧情变化
+	* @change, getValues: 变化对象与值获取回调列表
+	*/
 	void ApplyChange(Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 

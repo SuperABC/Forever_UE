@@ -62,7 +62,7 @@ void Organization::AddVacancy(Component* component, const vector<Job*>& vacancie
 vector<Job*> Organization::EnrollEmployee(const vector<Person*>& candidates) {
 	vector<Job*> positions;
 
-	if (candidates.size() == 0)return positions;
+	if (candidates.size() == 0) return positions;
 
 	int i = 0;
 	for (auto& [_, vacancies] : jobs) {
