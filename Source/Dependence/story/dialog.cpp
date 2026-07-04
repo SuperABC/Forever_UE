@@ -13,7 +13,7 @@ Option::~Option() {
 
 }
 
-Condition& Option::GetCondition() {
+const Condition& Option::GetCondition() const {
 	return condition;
 }
 
@@ -45,7 +45,7 @@ bool Section::IsBranch() const {
 	return branch;
 }
 
-void Section::EvaluateText(vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+void Section::EvaluateText(const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	Condition condition;
 
 	condition.ParseCondition(get<0>(speaking));
@@ -99,7 +99,7 @@ vector<Section> Dialog::GetDialogs() {
 void Dialog::SetCondition(Condition condition) {
 	this->condition = condition;
 }
-Condition& Dialog::GetCondition() {
+const Condition& Dialog::GetCondition() const {
 	return condition;
 }
 

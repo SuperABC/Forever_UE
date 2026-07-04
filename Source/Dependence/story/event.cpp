@@ -32,7 +32,7 @@ string GameStartEvent::GetType() const {
 }
 
 bool GameStartEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 	return true;
@@ -52,7 +52,7 @@ string ScriptMessageEvent::GetType() const {
 }
 
 bool ScriptMessageEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -102,7 +102,7 @@ string OptionDialogEvent::GetType() const {
 }
 
 bool OptionDialogEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -179,7 +179,7 @@ string SpeakingFinishEvent::GetType() const {
 }
 
 bool SpeakingFinishEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 	auto other = dynamic_cast<SpeakingFinishEvent*>(e);
@@ -224,7 +224,7 @@ string EnterZoneEvent::GetType() const {
 }
 
 bool EnterZoneEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -269,7 +269,7 @@ string LeaveZoneEvent::GetType() const {
 }
 
 bool LeaveZoneEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -313,7 +313,7 @@ string EnterBuildingEvent::GetType() const {
 }
 
 bool EnterBuildingEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -376,7 +376,7 @@ string LeaveBuildingEvent::GetType() const {
 }
 
 bool LeaveBuildingEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -439,7 +439,7 @@ string EnterRoomEvent::GetType() const {
 }
 
 bool EnterRoomEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -521,7 +521,7 @@ string LeaveRoomEvent::GetType() const {
 }
 
 bool LeaveRoomEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -601,7 +601,7 @@ string PuzzleResultEvent::GetType() const {
 }
 
 bool PuzzleResultEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -633,7 +633,7 @@ string NPCMeetEvent::GetType() const {
 }
 
 bool NPCMeetEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -677,7 +677,7 @@ string CitizenBornEvent::GetType() const {
 }
 
 bool CitizenBornEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -721,7 +721,7 @@ string CitizenDeceaseEvent::GetType() const {
 }
 
 bool CitizenDeceaseEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -784,7 +784,7 @@ string DepositChangeEvent::GetType() const {
 }
 
 bool DepositChangeEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -824,7 +824,7 @@ string CashChangeEvent::GetType() const {
 }
 
 bool CashChangeEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -864,7 +864,7 @@ string GetItemEvent::GetType() const {
 }
 
 bool GetItemEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -919,7 +919,7 @@ string LoseItemEvent::GetType() const {
 }
 
 bool LoseItemEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -974,7 +974,7 @@ string PlayerInjuredEvent::GetType() const {
 }
 
 bool PlayerInjuredEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1018,7 +1018,7 @@ string PlayerCuredEvent::GetType() const {
 }
 
 bool PlayerCuredEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1062,7 +1062,7 @@ string PlayerIllEvent::GetType() const {
 }
 
 bool PlayerIllEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1106,7 +1106,7 @@ string PlayerRecoverEvent::GetType() const {
 }
 
 bool PlayerRecoverEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1150,7 +1150,7 @@ string PlayerRestEvent::GetType() const {
 }
 
 bool PlayerRestEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1182,7 +1182,7 @@ string PlayerSleepEvent::GetType() const {
 }
 
 bool PlayerSleepEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1214,7 +1214,7 @@ string TimeUpEvent::GetType() const {
 }
 
 bool TimeUpEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1252,7 +1252,7 @@ string BattleWinEvent::GetType() const {
 }
 
 bool BattleWinEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1296,7 +1296,7 @@ string BattleLoseEvent::GetType() const {
 }
 
 bool BattleLoseEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1340,7 +1340,7 @@ string EscapeSuccessEvent::GetType() const {
 }
 
 bool EscapeSuccessEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1384,7 +1384,7 @@ string EscapeFailEvent::GetType() const {
 }
 
 bool EscapeFailEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1428,7 +1428,7 @@ string CultivationChangeEvent::GetType() const {
 }
 
 bool CultivationChangeEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1481,7 +1481,7 @@ string WantedChangeEvent::GetType() const {
 }
 
 bool WantedChangeEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1534,7 +1534,7 @@ string PlayerArrestedEvent::GetType() const {
 }
 
 bool PlayerArrestedEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1578,7 +1578,7 @@ string PlayerReleasedEvent::GetType() const {
 }
 
 bool PlayerReleasedEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1622,7 +1622,7 @@ string WeatherChangeEvent::GetType() const {
 }
 
 bool WeatherChangeEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1666,7 +1666,7 @@ string PolicyChangeEvent::GetType() const {
 }
 
 bool PolicyChangeEvent::Match(Event* e,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
@@ -1704,4 +1704,5 @@ void PolicyChangeEvent::SetStatus(bool status) {
 bool PolicyChangeEvent::GetStatus() {
 	return status;
 }
+
 
