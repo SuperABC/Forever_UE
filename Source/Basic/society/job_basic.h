@@ -53,7 +53,7 @@ public:
 	* @storyScript, schedulerScript, jobScript: 主线剧情脚本、市民调度脚本、职业自身剧情脚本
 	*/
 	virtual void ExecNode(const std::string& name,
-		Script* storyScript, Script* schedulerScript, Script* jobScript) override;
+		Container* storyScript, Container* schedulerScript, Container* jobScript) override;
 
 private:
 	// 总实例数量

@@ -61,7 +61,7 @@ public:
 	* @jobScripts: 市民所有工作的剧情脚本列表
 	*/
 	virtual void ExecNode(const std::string& node,
-		Script* storyScript, Script* schedulerScript, const std::vector<Script*>& jobScripts) override;
+		Container* storyScript, Container* schedulerScript, const std::vector<Container*>& jobScripts) override;
 
 private:
 	// 总实例数量

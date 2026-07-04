@@ -2,6 +2,7 @@
 
 #include "map/component.h"
 #include "map/room.h"
+#include "populace/person.h"
 #include "society/job.h"
 #include "story/story.h"
 #include "story/script.h"
@@ -14,6 +15,7 @@ Organization::Organization(OrganizationFactory* factory, const string& organizat
 	factory(factory),
 	type(),
 	name(),
+	count(0),
 	jobs(),
 	script(nullptr) {
 	if (!mod)
@@ -70,12 +72,17 @@ vector<Job*> Organization::EnrollEmployee(const vector<Person*>& candidates) {
 	if (candidates.size() == 0) return positions;
 
 	int i = 0;
-	for (auto& [_, vacancies] : jobs) {
+	for (auto& [component, vacancies] : jobs) {
 		for (auto& [job, employee] : vacancies) {
-			if (employee == nullptr) {
+			if (!employee) {
 				positions.push_back(job);
 				employee = candidates[i];
-				++i;
+				script->SetValue("self.employees[" + to_string(count) + "].name", employee->GetName());
+				script->SetValue("self.employees[" + to_string(count) + "].job", job->GetType());
+				script->SetValue("self.employees[" + to_string(count) + "].position", job->GetPosition()->GetAddress());
+				script->SetValue("self.employees[" + to_string(count) + "].component", component->GetName());
+				script->SetValue("self.employee_count", ++count);
+				i++;
 				if (i >= candidates.size()) {
 					return positions;
 				}
@@ -124,14 +131,16 @@ void Organization::InitOrganization() {
 }
 
 void Organization::DailyPlan(const Time& time) {
-	mod->plans.clear();
 	mod->DailyPlan(time);
 }
 
 vector<Change*> Organization::ExecNode(const string& node, Script* storyScript) {
 	mod->changes.clear();
 	mod->ExecNode(node, storyScript, script);
-	vector<Change*> result = move(mod->changes);
+	vector<Change*> result;
+	for (auto& cv : mod->changes) {
+		result.push_back(visit([](auto& c) -> Change* { return new decay_t<decltype(c)>(c); }, cv));
+	}
 	mod->changes.clear();
 	return result;
 }
@@ -188,7 +197,7 @@ void EmptyOrganization::DailyPlan(const Time& time) {
 
 }
 
-void EmptyOrganization::ExecNode(const string& name, Script* storyScript, Script* orgScript) {
+void EmptyOrganization::ExecNode(const string& name, Container* storyScript, Container* orgScript) {
 
 }
 

@@ -49,14 +49,17 @@ Script* Scheduler::GetScript() const {
 }
 
 void Scheduler::DailyPlan(const Time& time) {
-	mod->plans.clear();
 	mod->DailyPlan(time);
 }
 
 vector<Change*> Scheduler::ExecNode(const string& node, Script* storyScript, const vector<Script*>& jobScripts) {
 	mod->changes.clear();
-	mod->ExecNode(node, storyScript, script, jobScripts);
-	vector<Change*> result = move(mod->changes);
+	vector<Container*> containerJobScripts(jobScripts.begin(), jobScripts.end());
+	mod->ExecNode(node, storyScript, script, containerJobScripts);
+	vector<Change*> result;
+	for (auto& cv : mod->changes) {
+		result.push_back(visit([](auto& c) -> Change* { return new decay_t<decltype(c)>(c); }, cv));
+	}
 	mod->changes.clear();
 	return result;
 }
@@ -101,7 +104,7 @@ void EmptyScheduler::DailyPlan(const Time& time) {
 }
 
 void EmptyScheduler::ExecNode(const string& node,
-	Script* storyScript, Script* schedulerScript, const vector<Script*>& jobScripts) {
+	Container* storyScript, Container* schedulerScript, const vector<Container*>& jobScripts) {
 
 }
 

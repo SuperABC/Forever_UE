@@ -70,7 +70,7 @@ public:
 	* @jobScripts: 市民所有工作的剧情脚本列表
 	*/
 	COSTOM_RUNTIME virtual void ExecNode(const std::string& name,
-		Script* storyScript, Script* schedulerScript, const std::vector<Script*>& jobScripts) = 0;
+		Container* storyScript, Container* schedulerScript, const std::vector<Container*>& jobScripts) = 0;
 
 	/*
 	* 添加一条计划
@@ -86,7 +86,7 @@ public:
 	std::unordered_map<std::string, Time> plans;
 
 	// 节点执行产出的变化列表
-	OBJECT_HOLDER std::vector<Change*> changes;
+	std::vector<ChangeValue> changes;
 };
 
 class SchedulerFactory {

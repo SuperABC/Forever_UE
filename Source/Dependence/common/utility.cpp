@@ -637,3 +637,165 @@ Counter::Counter(int count) : num(count) {
 bool Counter::count() {
 	return --num <= 0;
 }
+
+int ToInt(const ValueType& value) {
+	return visit([](const auto& v) -> int {
+		using T = decay_t<decltype(v)>;
+		if constexpr (is_same_v<T, int>) return v;
+		else if constexpr (is_same_v<T, double>) return static_cast<int>(v);
+		else if constexpr (is_same_v<T, bool>) return v ? 1 : 0;
+		else return 0;
+	}, value);
+}
+
+double ToDouble(const ValueType& value) {
+	return visit([](const auto& v) -> double {
+		using T = decay_t<decltype(v)>;
+		if constexpr (is_same_v<T, int>) return static_cast<double>(v);
+		else if constexpr (is_same_v<T, double>) return v;
+		else if constexpr (is_same_v<T, bool>) return v ? 1.0 : 0.0;
+		else return 0.0;
+	}, value);
+}
+
+bool ToBool(const ValueType& value) {
+	return visit([](const auto& v) -> bool {
+		using T = decay_t<decltype(v)>;
+		if constexpr (is_same_v<T, int>) return v != 0;
+		else if constexpr (is_same_v<T, double>) return v != 0.0;
+		else if constexpr (is_same_v<T, bool>) return v;
+		else return !v.empty();
+	}, value);
+}
+
+string ToString(const ValueType& value) {
+	return visit([](const auto& v) -> string {
+		using T = decay_t<decltype(v)>;
+		if constexpr (is_same_v<T, int>) {
+			return to_string(v);
+		}
+		else if constexpr (is_same_v<T, double>) {
+			string str = to_string(v);
+			size_t dot_pos = str.find('.');
+			if (dot_pos != string::npos) {
+				size_t last_non_zero = str.find_last_not_of('0');
+				if (last_non_zero != string::npos && last_non_zero > dot_pos) {
+					if (str[last_non_zero] == '.') {
+						str = str.substr(0, last_non_zero);
+					}
+					else {
+						str = str.substr(0, last_non_zero + 1);
+					}
+				}
+			}
+			return str;
+		}
+		else if constexpr (is_same_v<T, bool>) {
+			return v ? "true" : "false";
+		}
+		else if constexpr (is_same_v<T, string>) {
+			return v;
+		}
+		else {
+			return "unknown_type";
+		}
+	}, value);
+}
+
+ValueType FromString(const string& s) {
+	if (s.empty()) {
+		return string("");
+	}
+
+	if (s == "true") {
+		return true;
+	}
+
+	if (s == "false") {
+		return false;
+	}
+
+	if (s.length() >= 2 &&
+		((s.front() == '"' && s.back() == '"') ||
+			(s.front() == '\'' && s.back() == '\''))) {
+		return s.substr(1, s.length() - 2);
+	}
+
+	for (char c : s) {
+		if (static_cast<unsigned char>(c) > 127) {
+			return s;
+		}
+	}
+
+	try {
+		size_t pos;
+		int int_val = stoi(s, &pos);
+		if (pos == s.length()) {
+			return int_val;
+		}
+	}
+	catch (const exception&) {}
+
+	try {
+		size_t pos;
+		double double_val = stod(s, &pos);
+		if (pos == s.length()) {
+			return double_val;
+		}
+	}
+	catch (const exception&) {}
+
+	bool is_all_digit = !s.empty();
+	for (char c : s) {
+		if (!isdigit(static_cast<unsigned char>(c))) {
+			is_all_digit = false;
+			break;
+		}
+	}
+
+	if (is_all_digit) {
+		if ((s.length() > 1 && s[0] == '0') || s.length() > 10) {
+			return s;
+		}
+		try {
+			return stoi(s);
+		}
+		catch (const exception&) {
+			return s;
+		}
+	}
+
+	if (!s.empty() && isdigit(static_cast<unsigned char>(s[0]))) {
+		bool has_non_digit = false;
+		bool has_dot = false;
+		bool has_exponent = false;
+
+		for (size_t i = 0; i < s.length(); i++) {
+			char c = s[i];
+			if (!isdigit(static_cast<unsigned char>(c))) {
+				if (c == '.' && !has_dot) {
+					has_dot = true;
+				}
+				else if ((c == 'e' || c == 'E') && !has_exponent) {
+					has_exponent = true;
+					if (i + 1 < s.length() && (s[i + 1] == '+' || s[i + 1] == '-')) {
+						i++;
+					}
+				}
+				else {
+					has_non_digit = true;
+					break;
+				}
+			}
+		}
+
+		if (!has_non_digit && (has_dot || has_exponent)) {
+			try {
+				return stod(s);
+			}
+			catch (const exception&) {}
+		}
+	}
+
+	return s;
+}

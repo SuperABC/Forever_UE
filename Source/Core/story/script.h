@@ -11,7 +11,7 @@
 typedef void (*RegisterModScriptsFunc)(ScriptFactory* factory);
 
 // 事件实体
-class Script {
+class Script : public Container {
 public:
 	// 禁止默认构造
 	Script() = delete;
@@ -29,13 +29,13 @@ public:
 	std::string GetName() const;
 
 	// 获取变量
-	std::pair<bool, ValueType> GetValue(const std::string& name) const;
+	std::pair<bool, ValueType> GetValue(const std::string& name) const override;
 
 	// 正则获取变量
 	std::map<std::string, ValueType> GetValues(const std::string& reg) const;
 
 	// 设置变量
-	void SetValue(const std::string& name, ValueType value);
+	void SetValue(const std::string& name, ValueType value) override;
 
 	// 移除变量
 	void RemoveValue(const std::string& name);

@@ -39,6 +39,6 @@ void WorkonlyScheduler::DailyPlan(const Time& time) {
 }
 
 void WorkonlyScheduler::ExecNode(const string& node,
-	Script* storyScript, Script* schedulerScript, const vector<Script*>& jobScripts) {
+	Container* storyScript, Container* schedulerScript, const vector<Container*>& jobScripts) {
 
 }

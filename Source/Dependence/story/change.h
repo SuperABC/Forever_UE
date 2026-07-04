@@ -638,3 +638,37 @@ private:
 	std::string policy;
 };
 
+using ChangeValue = std::variant<
+	GlobalMessageChange,
+	GameEndChange,
+	SetValueChange,
+	RemoveValueChange,
+	DeactivateMilestoneChange,
+	AddOptionChange,
+	RemoveOptionChange,
+	SpawnNpcChange,
+	RemoveNpcChange,
+	TeleportCitizenChange,
+	NPCNavigateChange,
+	TeleportPlayerChange,
+	OpenShopChange,
+	StartPuzzleChange,
+	EnterVehicleChange,
+	LeaveVehicleChange,
+	CreateTimerChange,
+	LaunchElevatorChange,
+	BankTransactionChange,
+	GiveItemChange,
+	RemoveItemChange,
+	EnterBattleChange,
+	PlayerInjuredChange,
+	PlayerCuredChange,
+	PlayerIllChange,
+	PlayerRecoverChange,
+	PlayerSleepChange,
+	ChangeTimeChange,
+	ChangeCultivationChange,
+	ChangeWantedChange,
+	ChangeWeatherChange,
+	ChangePolicyChange
+>;

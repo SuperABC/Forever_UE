@@ -16,6 +16,7 @@
 #include "populace/scheduler.h"
 #include "society/society.h"
 #include "society/job.h"
+#include "society/organization.h"
 #include "story/story.h"
 #include "story/script.h"
 #include "story/event.h"
@@ -556,12 +557,12 @@ void AStoryBase::GameStart() {
 	}
 
 	auto organizations = global->GetSociety()->GetOrganizations();
-	for (auto org : organizations) {
+	for (auto organization : organizations) {
 		getValues.push_back(
 			[&](const string& name) -> pair<bool, ValueType> {
-				return org->GetScript()->GetValue(name);
+				return organization->GetScript()->GetValue(name);
 			});
-		MatchEvent(event, org->GetScript(), getValues);
+		MatchEvent(event, organization->GetScript(), getValues);
 		getValues.pop_back();
 	}
 

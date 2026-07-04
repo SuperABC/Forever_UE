@@ -6,7 +6,6 @@
 #include <string>
 #include <memory>
 #include <functional>
-#include <variant>
 #include <unordered_map>
 
 
@@ -34,8 +33,6 @@ enum class UnaryOperator : int {
 	NEGATE,
 	LOGICAL_NOT
 };
-
-using ValueType = std::variant<int, double, bool, std::string>;
 
 // 表达式基类
 class Expression {
@@ -208,8 +205,3 @@ bool IsOperatorChar(char c);
 bool IsSpaceChar(char c);
 bool IsIdentifierChar(char c);
 
-// 值转换字符串
-std::string ToString(const ValueType& value);
-
-// 读取字符串的表达式值
-ValueType FromString(const std::string& s);

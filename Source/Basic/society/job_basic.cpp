@@ -34,6 +34,6 @@ void ShopSalerJob::DailyPlan(const Time& time) {
 
 }
 
-void ShopSalerJob::ExecNode(const string& name, Script* storyScript, Script* schedulerScript, Script* jobScript) {
+void ShopSalerJob::ExecNode(const string& name, Container* storyScript, Container* schedulerScript, Container* jobScript) {
 
 }

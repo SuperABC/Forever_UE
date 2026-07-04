@@ -77,6 +77,11 @@ public:
 	*/
 	Organization* GetOrganization(const std::string& name) const;
 
+	/*
+	* 获取全部组织列表
+	*/
+	const std::vector<Organization*>& GetOrganizations() const;
+
 	// 日程工厂
 	static CalendarFactory* calendarFactory;
 

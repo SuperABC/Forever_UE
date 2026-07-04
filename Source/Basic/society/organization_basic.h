@@ -79,10 +79,10 @@ public:
 	* Override
 	* 规划节点调用
 	* @name: 节点名称
-	* @storyScript, orgScript: 主线剧情脚本、组织自身剧情脚本
+	* @storyScript, organizationScript: 主线剧情脚本、组织自身剧情脚本
 	*/
 	virtual void ExecNode(const std::string& name,
-		Script* storyScript, Script* orgScript) override;
+		Container* storyScript, Container* organizationScript) override;
 
 private:
 	// 总实例数量

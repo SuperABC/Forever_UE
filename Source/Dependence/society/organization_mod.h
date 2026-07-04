@@ -89,10 +89,10 @@ public:
 	* Override
 	* 规划节点调用，结果写入changes字段
 	* @name: 节点名称
-	* @storyScript, orgScript: 主线剧情脚本、组织自身剧情脚本
+	* @storyScript, organizationScript: 主线剧情脚本、组织自身剧情脚本
 	*/
 	COSTOM_RUNTIME virtual void ExecNode(const std::string& name,
-		Script* storyScript, Script* orgScript) = 0;
+		Container* storyScript, Container* organizationScript) = 0;
 
 	// 关联剧情与脚本
 	std::pair<std::string, std::vector<std::string>> script;
@@ -101,7 +101,7 @@ public:
 	std::unordered_map<std::string, Time> plans;
 
 	// 节点执行产出的变化列表
-	OBJECT_HOLDER std::vector<Change*> changes;
+	std::vector<ChangeValue> changes;
 
 	// 需要的组合类型与数量上下限
 	std::unordered_map<std::string, std::pair<int, int>> requirements;

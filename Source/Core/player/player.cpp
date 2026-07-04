@@ -180,7 +180,7 @@ Time* Player::GetTime() {
 }
 
 bool Player::CrossDay() {
-	return day == time->GetDay();
+	return day != time->GetDay();
 }
 
 Phone* Player::GetPhone() const {

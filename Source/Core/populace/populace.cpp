@@ -161,7 +161,7 @@ vector<Change*> Populace::Tick(Map* map, Story* story, Player* player) {
 	static int stride = 20;
 
 	auto time = player->GetTime();
-	auto cross = player->CrossDay();
+	auto cross = currentTime.GetYear() == 0 || player->CrossDay();
 	currentTime = *time;
 
 	if (cross) {

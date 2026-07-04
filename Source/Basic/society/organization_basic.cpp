@@ -58,11 +58,19 @@ void ShopOrganization::InitOrganization() {
 }
 
 void ShopOrganization::DailyPlan(const Time& time) {
-
+	if (time.GetDay() == 1) {
+		plans["salary_payment"] = time;
+	}
 }
 
-void ShopOrganization::ExecNode(const string& name, Script* storyScript, Script* orgScript) {
-
+void ShopOrganization::ExecNode(const string& name, Container* storyScript, Container* organizationScript) {
+	if (name == "salary_payment") {
+		int count = ToInt(organizationScript->GetValue("self.employee_count").second);
+		for (int i = 0; i < count; i++) {
+			string employee = ToString(organizationScript->GetValue("self.employees[" + to_string(i) + "].name").second);
+			changes.push_back(BankTransactionChange(employee, 5000));
+		}
+	}
 }
 
 

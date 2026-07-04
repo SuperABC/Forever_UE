@@ -8,6 +8,9 @@
 #include <locale>
 #include <exception>
 
+#include <variant>
+#include <functional>
+
 #include <windows.h>
 #include <strsafe.h>
 
@@ -20,6 +23,35 @@
 #define MOD_TEST
 #endif // DEBUG
 
+
+using ValueType = std::variant<int, double, bool, std::string>;
+
+// 将ValueType转换为int（string返回0）
+int ToInt(const ValueType& value);
+
+// 将ValueType转换为double（string返回0.0）
+double ToDouble(const ValueType& value);
+
+// 将ValueType转换为bool（空string为false，其余string为true）
+bool ToBool(const ValueType& value);
+
+// 将ValueType转换为string
+std::string ToString(const ValueType& value);
+
+// 将string解析为ValueType（自动推断int/double/bool/string）
+ValueType FromString(const std::string& s);
+
+// 键值容器接口
+class Container {
+public:
+	virtual ~Container() = default;
+
+	// 获取变量值，返回 {是否存在, 值}
+	virtual std::pair<bool, ValueType> GetValue(const std::string& name) const = 0;
+
+	// 设置变量值
+	virtual void SetValue(const std::string& name, ValueType value) = 0;
+};
 
 // 调试控制台输出
 void debugf(LPCSTR format, ...);

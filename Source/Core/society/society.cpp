@@ -327,7 +327,7 @@ void Society::Destroy() {
 
 vector<Change*> Society::Tick(Player* player, Story* story) {
 	auto time = player->GetTime();
-	auto cross = player->CrossDay();
+	auto cross = currentTime.GetYear() == 0 || player->CrossDay();
 	currentTime = *time;
 
 	if (cross) {
@@ -372,6 +372,10 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 	}
 
 	return result;
+}
+
+const vector<Organization*>& Society::GetOrganizations() const {
+	return organizations;
 }
 
 Organization* Society::GetOrganization(const string& name) const {

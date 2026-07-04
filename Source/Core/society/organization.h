@@ -61,7 +61,7 @@ public:
 	* 员工入职
 	* @candidates: 候选人列表
 	*/
-	virtual std::vector<Job*> EnrollEmployee(const std::vector<Person*>& candidates);
+	std::vector<Job*> EnrollEmployee(const std::vector<Person*>& candidates);
 
 	/*
 	* 为所有职位分配工位
@@ -113,6 +113,9 @@ private:
 
 	// 组织名称
 	std::string name;
+
+	// 工号上限
+	int count;
 
 	// 员工
 	OBJECT_HOLDER std::vector<std::pair<Component*, std::vector<std::pair<Job*, Person*>>>> jobs;
@@ -200,7 +203,7 @@ public:
 	* @storyScript, orgScript: 主线剧情脚本、组织自身剧情脚本
 	*/
 	virtual void ExecNode(const std::string& name,
-		Script* storyScript, Script* orgScript) override;
+		Container* storyScript, Container* orgScript) override;
 
 private:
 	// 总实例数量
