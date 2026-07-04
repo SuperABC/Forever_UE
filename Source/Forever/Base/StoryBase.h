@@ -61,6 +61,8 @@ public:
 	void StartPuzzle(const FString& puzzle);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void EnterBattle(AStoryBase* story, const FString& enemy);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
+	void PlayVideo(const FString& path);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void FinishSection();
 	UFUNCTION(BlueprintCallable, Category = "Story")

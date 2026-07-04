@@ -864,6 +864,13 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			}
 			change = new ChangePolicyChange(policy.AsString());
 		}
+		else if (type == "play_video") {
+			auto path = obj["path"];
+			if (path.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing path for play_video change.\n");
+			}
+			change = new PlayVideoChange(path.AsString());
+		}
 
 		if (!change) {
 			THROW_EXCEPTION(InvalidArgumentException, "Invalid change type: " + type + ".\n");

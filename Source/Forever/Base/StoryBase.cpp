@@ -250,7 +250,6 @@ void AStoryBase::ApplyChange(Change* change,
 			debugf("Warning: Target citizen %s not found.\n", name.data());
 		}
 		else {
-			// 路径已经由Populace::ApplyChange调用AutoNavigation算好并存进了通勤里，这里只读取，不重复计算
 			auto commute = person->GetCurrentCommute();
 			if (!commute) {
 				debugf("Warning: No commute path available for npc_navigate (%s).\n", name.data());
@@ -336,6 +335,16 @@ void AStoryBase::ApplyChange(Change* change,
 		auto buildingActor = global->GetBuildingActor();
 		AActor* buildingInstance = buildingActor->GetInstance(UTF8_TO_TCHAR(buildingName.data()));
 		buildingActor->LaunchElevator(buildingInstance, UTF8_TO_TCHAR(elevatorName.data()), target);
+	}
+	else if (type == "play_video") {
+		auto obj = dynamic_cast<PlayVideoChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to PlayVideoChange.\n");
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetPath());
+		string path = ToString(condition.EvaluateValue(getValues));
+		PlayVideo(UTF8_TO_TCHAR(path.data()));
 	}
 	else if (type == "for_range") {
 		auto obj = dynamic_cast<ForRangeChange*>(change);

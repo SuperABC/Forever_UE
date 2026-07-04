@@ -1032,3 +1032,28 @@ void ChangePolicyChange::SetPolicy(string policy) {
 string ChangePolicyChange::GetPolicy() const {
 	return policy;
 }
+
+PlayVideoChange::PlayVideoChange() {
+
+}
+
+PlayVideoChange::PlayVideoChange(string path) :
+	path(path) {
+
+}
+
+PlayVideoChange::~PlayVideoChange() {
+
+}
+
+string PlayVideoChange::GetType() const {
+	return "play_video";
+}
+
+void PlayVideoChange::SetPath(string path) {
+	this->path = path;
+}
+
+string PlayVideoChange::GetPath() const {
+	return path;
+}
