@@ -1127,7 +1127,48 @@ private:
 
 };
 
-// 存款收支
+// 播放视频（已实现）
+class PlayVideoChange : public Change {
+public:
+	/*
+	* 默认构造播放视频变化
+	*/
+	PlayVideoChange();
+
+	/*
+	* 构造播放视频变化
+	* @path: 视频文件路径
+	*/
+	PlayVideoChange(std::string path);
+
+	/*
+	* 析构播放视频变化
+	*/
+	virtual ~PlayVideoChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 设置视频文件路径
+	* @path: 路径
+	*/
+	void SetPath(std::string path);
+
+	/*
+	* 获取视频文件路径
+	*/
+	std::string GetPath() const;
+
+private:
+	// 视频文件路径
+	std::string path;
+
+};
+
+// 存款收支（已实现）
 class BankTransactionChange : public Change {
 public:
 	/*
@@ -1769,47 +1810,6 @@ public:
 private:
 	// 政策名称
 	std::string policy;
-
-};
-
-// 播放视频
-class PlayVideoChange : public Change {
-public:
-	/*
-	* 默认构造播放视频变化
-	*/
-	PlayVideoChange();
-
-	/*
-	* 构造播放视频变化
-	* @path: 视频文件路径
-	*/
-	PlayVideoChange(std::string path);
-
-	/*
-	* 析构播放视频变化
-	*/
-	virtual ~PlayVideoChange();
-
-	/*
-	* 变化类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 设置视频文件路径
-	* @path: 路径
-	*/
-	void SetPath(std::string path);
-
-	/*
-	* 获取视频文件路径
-	*/
-	std::string GetPath() const;
-
-private:
-	// 视频文件路径
-	std::string path;
 
 };
 

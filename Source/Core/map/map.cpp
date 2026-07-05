@@ -46,6 +46,7 @@ RoomFactory* Map::roomFactory = nullptr;
 Element::Element() :
 	terrain("plain"),
 	height(0.f),
+	water({ false, 0.f }),
 	zone(),
 	building() {
 
@@ -971,7 +972,7 @@ void Map::Tick(Player* player) {
 }
 
 void Map::ApplyChange(Change* change,
-	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	auto type = change->GetType();
 
 	auto findCabin = [&](const string& name) -> Cabin* {

@@ -3,7 +3,8 @@
 
 using namespace std;
 
-Change::Change() {
+Change::Change() :
+	condition() {
 
 }
 
@@ -33,7 +34,8 @@ string ForRangeChange::GetTo() const { return to; }
 string ForRangeChange::GetStep() const { return step; }
 const vector<Change*>& ForRangeChange::GetChanges() const { return changes; }
 
-GlobalMessageChange::GlobalMessageChange() {
+GlobalMessageChange::GlobalMessageChange() :
+	message() {
 
 }
 
@@ -70,7 +72,9 @@ string GameEndChange::GetType() const {
 	return "game_end";
 }
 
-SetValueChange::SetValueChange() {
+SetValueChange::SetValueChange() :
+	variable(),
+	value() {
 
 }
 
@@ -103,7 +107,8 @@ string SetValueChange::GetValue() const {
 	return value;
 }
 
-RemoveValueChange::RemoveValueChange() {
+RemoveValueChange::RemoveValueChange() :
+	variable() {
 
 }
 
@@ -128,7 +133,8 @@ string RemoveValueChange::GetVariable() const {
 	return variable;
 }
 
-DeactivateMilestoneChange::DeactivateMilestoneChange() {
+DeactivateMilestoneChange::DeactivateMilestoneChange() :
+	milestone() {
 
 }
 
@@ -153,7 +159,9 @@ string DeactivateMilestoneChange::GetMilestone() const {
 	return milestone;
 }
 
-AddOptionChange::AddOptionChange() {
+AddOptionChange::AddOptionChange() :
+	name(),
+	option() {
 
 }
 
@@ -186,7 +194,9 @@ string AddOptionChange::GetOption() const {
 	return option;
 }
 
-RemoveOptionChange::RemoveOptionChange() {
+RemoveOptionChange::RemoveOptionChange() :
+	name(),
+	option() {
 
 }
 
@@ -219,7 +229,19 @@ string RemoveOptionChange::GetOption() const {
 	return option;
 }
 
-SpawnNpcChange::SpawnNpcChange() {
+SpawnNpcChange::SpawnNpcChange() :
+	avatar(),
+	name(),
+	gender(),
+	birthday(),
+	height(0.f),
+	weight(0.f),
+	nick(),
+	deposit(0),
+	phone(0),
+	home(),
+	jobs(),
+	scheduler() {
 
 }
 
@@ -334,7 +356,8 @@ string SpawnNpcChange::GetScheduler() const {
 	return scheduler;
 }
 
-RemoveNpcChange::RemoveNpcChange() {
+RemoveNpcChange::RemoveNpcChange() :
+	name() {
 
 }
 
@@ -359,7 +382,9 @@ string RemoveNpcChange::GetName() const {
 	return name;
 }
 
-TeleportCitizenChange::TeleportCitizenChange() {
+TeleportCitizenChange::TeleportCitizenChange() :
+	name(),
+	destination() {
 
 }
 
@@ -392,7 +417,9 @@ string TeleportCitizenChange::GetDestination() const {
 	return destination;
 }
 
-NPCNavigateChange::NPCNavigateChange() {
+NPCNavigateChange::NPCNavigateChange() :
+	name(),
+	destination() {
 
 }
 
@@ -425,7 +452,8 @@ string NPCNavigateChange::GetDestination() const {
 	return destination;
 }
 
-TeleportPlayerChange::TeleportPlayerChange() {
+TeleportPlayerChange::TeleportPlayerChange() :
+	destination() {
 
 }
 
@@ -450,7 +478,8 @@ string TeleportPlayerChange::GetDestination() const {
 	return destination;
 }
 
-OpenShopChange::OpenShopChange() {
+OpenShopChange::OpenShopChange() :
+	saler() {
 
 }
 
@@ -475,7 +504,8 @@ string OpenShopChange::GetSaler() const {
 	return saler;
 }
 
-StartPuzzleChange::StartPuzzleChange() {
+StartPuzzleChange::StartPuzzleChange() :
+	puzzle() {
 
 }
 
@@ -500,7 +530,8 @@ string StartPuzzleChange::GetPuzzle() const {
 	return puzzle;
 }
 
-EnterVehicleChange::EnterVehicleChange() {
+EnterVehicleChange::EnterVehicleChange() :
+	vehicle() {
 
 }
 
@@ -525,7 +556,8 @@ string EnterVehicleChange::GetVehicle() const {
 	return vehicle;
 }
 
-LeaveVehicleChange::LeaveVehicleChange() {
+LeaveVehicleChange::LeaveVehicleChange() :
+	vehicle() {
 
 }
 
@@ -550,7 +582,11 @@ string LeaveVehicleChange::GetVehicle() const {
 	return vehicle;
 }
 
-CreateTimerChange::CreateTimerChange() {
+CreateTimerChange::CreateTimerChange() :
+	name(),
+	time(),
+	category(),
+	label() {
 
 }
 
@@ -602,7 +638,10 @@ string CreateTimerChange::GetLabel() const {
 	return label;
 }
 
-LaunchElevatorChange::LaunchElevatorChange() {
+LaunchElevatorChange::LaunchElevatorChange() :
+	building(),
+	elevator(),
+	command() {
 
 }
 
@@ -643,7 +682,35 @@ string LaunchElevatorChange::GetCommand() const {
 	return command;
 }
 
-BankTransactionChange::BankTransactionChange() {
+PlayVideoChange::PlayVideoChange() :
+	path() {
+
+}
+
+PlayVideoChange::PlayVideoChange(string path) :
+	path(path) {
+
+}
+
+PlayVideoChange::~PlayVideoChange() {
+
+}
+
+string PlayVideoChange::GetType() const {
+	return "play_video";
+}
+
+void PlayVideoChange::SetPath(string path) {
+	this->path = path;
+}
+
+string PlayVideoChange::GetPath() const {
+	return path;
+}
+
+BankTransactionChange::BankTransactionChange() :
+	name(),
+	amount(0) {
 
 }
 
@@ -676,7 +743,9 @@ int BankTransactionChange::GetAmount() const {
 	return amount;
 }
 
-GiveItemChange::GiveItemChange() {
+GiveItemChange::GiveItemChange() :
+	item(),
+	num(0) {
 
 }
 
@@ -709,7 +778,9 @@ int GiveItemChange::GetNum() {
 	return num;
 }
 
-RemoveItemChange::RemoveItemChange() {
+RemoveItemChange::RemoveItemChange() :
+	item(),
+	num(0) {
 
 }
 
@@ -742,7 +813,8 @@ int RemoveItemChange::GetNum() {
 	return num;
 }
 
-EnterBattleChange::EnterBattleChange() {
+EnterBattleChange::EnterBattleChange() :
+	enemy() {
 
 }
 
@@ -767,7 +839,8 @@ string EnterBattleChange::GetEnemy() const {
 	return enemy;
 }
 
-PlayerInjuredChange::PlayerInjuredChange() {
+PlayerInjuredChange::PlayerInjuredChange() :
+	wound() {
 
 }
 
@@ -792,7 +865,8 @@ string PlayerInjuredChange::GetWound() const {
 	return wound;
 }
 
-PlayerCuredChange::PlayerCuredChange() {
+PlayerCuredChange::PlayerCuredChange() :
+	wound() {
 
 }
 
@@ -817,7 +891,8 @@ string PlayerCuredChange::GetWound() const {
 	return wound;
 }
 
-PlayerIllChange::PlayerIllChange() {
+PlayerIllChange::PlayerIllChange() :
+	illness() {
 
 }
 
@@ -842,7 +917,8 @@ string PlayerIllChange::GetIllness() const {
 	return illness;
 }
 
-PlayerRecoverChange::PlayerRecoverChange() {
+PlayerRecoverChange::PlayerRecoverChange() :
+	illness() {
 
 }
 
@@ -867,7 +943,8 @@ string PlayerRecoverChange::GetIllness() const {
 	return illness;
 }
 
-PlayerSleepChange::PlayerSleepChange() {
+PlayerSleepChange::PlayerSleepChange() :
+	hour(0) {
 
 }
 
@@ -892,7 +969,8 @@ int PlayerSleepChange::GetHour() {
 	return hour;
 }
 
-ChangeTimeChange::ChangeTimeChange() {
+ChangeTimeChange::ChangeTimeChange() :
+	delta() {
 
 }
 
@@ -917,7 +995,9 @@ Time ChangeTimeChange::GetDelta() {
 	return delta;
 }
 
-ChangeCultivationChange::ChangeCultivationChange() {
+ChangeCultivationChange::ChangeCultivationChange() :
+	method(),
+	level(0) {
 
 }
 
@@ -950,7 +1030,9 @@ int ChangeCultivationChange::GetLevel() {
 	return level;
 }
 
-ChangeWantedChange::ChangeWantedChange() {
+ChangeWantedChange::ChangeWantedChange() :
+	reason(),
+	level(0) {
 
 }
 
@@ -983,7 +1065,8 @@ int ChangeWantedChange::GetLevel() {
 	return level;
 }
 
-ChangeWeatherChange::ChangeWeatherChange() {
+ChangeWeatherChange::ChangeWeatherChange() :
+	weather() {
 
 }
 
@@ -1008,7 +1091,8 @@ string ChangeWeatherChange::GetWeather() const {
 	return weather;
 }
 
-ChangePolicyChange::ChangePolicyChange() {
+ChangePolicyChange::ChangePolicyChange() :
+	policy() {
 
 }
 
@@ -1031,29 +1115,4 @@ void ChangePolicyChange::SetPolicy(string policy) {
 
 string ChangePolicyChange::GetPolicy() const {
 	return policy;
-}
-
-PlayVideoChange::PlayVideoChange() {
-
-}
-
-PlayVideoChange::PlayVideoChange(string path) :
-	path(path) {
-
-}
-
-PlayVideoChange::~PlayVideoChange() {
-
-}
-
-string PlayVideoChange::GetType() const {
-	return "play_video";
-}
-
-void PlayVideoChange::SetPath(string path) {
-	this->path = path;
-}
-
-string PlayVideoChange::GetPath() const {
-	return path;
 }

@@ -3,7 +3,8 @@
 
 using namespace std;
 
-Event::Event() {
+Event::Event() :
+	condition() {
 
 }
 

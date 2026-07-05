@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "class.h"
 #include "utility.h"
@@ -14,86 +14,105 @@
 // 10m*10m地图元素，用于地图可视化
 class Element {
 public:
-	// 构造地图元素
+	/*
+	* 构造地图元素
+	*/
 	Element();
 
-	// 析构地图元素
+	/*
+	* 析构地图元素
+	*/
 	~Element();
 
-	// 获取地图元素地形名称
+	/*
+	* 获取地形名称
+	*/
 	std::string GetTerrain() const;
 
-	// 获取地图元素水面信息
+	/*
+	* 获取水面信息
+	*/
 	std::pair<bool, float> GetWater() const;
 
 	/*
-	* 设置地图元素地形名称
+	* 设置地形名称与水面信息
 	* @terrain: 地形名称
 	* @water: 水面信息
 	*/
 	bool SetTerrain(const std::string& terrain, const std::pair<bool, float> water);
 
-	// 获取地图元素地形高度
+	/*
+	* 获取地形高度
+	*/
 	float GetHeight() const;
 
 	/*
-	* 设置地图元素地形高度
+	* 设置地形高度
 	* @height: 地形高度
 	*/
 	bool SetHeight(float height);
 
-	// 获取地图元素所在园区名称
+	/*
+	* 获取所在园区名称
+	*/
 	std::string GetZone() const;
 
 	/*
-	* 设置地图元素所在园区名称
+	* 设置所在园区名称
 	* @zone: 园区名称
 	*/
 	bool SetZone(const std::string& zone);
 
-	// 获取地图元素所在建筑名称
+	/*
+	* 获取所在建筑名称
+	*/
 	std::string GetBuilding() const;
 
 	/*
-	* 设置地图元素所在建筑名称
+	* 设置所在建筑名称
 	* @building: 建筑名称
 	*/
 	bool SetBuilding(const std::string& building);
 
-	// 获取地图元素开洞信息
+	/*
+	* 获取开洞信息列表
+	*/
 	std::vector<std::pair<Quad, float>> GetHatches() const;
 
 	/*
-	* 添加地图元素开洞
+	* 添加开洞
 	* @q: 开洞区域
 	* @rotation: 开洞旋转角度
 	*/
 	void AddHatch(Quad q, float rotation);
 
 private:
-	// 地图元素所在地形类型
+	// 地形类型
 	std::string terrain;
 
-	// 地图元素所在地形高度
+	// 地形高度
 	float height;
 
-	// 地图元素是否添加水面
+	// 水面信息
 	std::pair<bool, float> water;
 
-	// 地图元素所在园区名称
+	// 所在园区名称
 	std::string zone;
 
-	// 地图元素所在建筑名称
+	// 所在建筑名称
 	std::string building;
 
-	// 开洞
+	// 开洞列表
 	std::vector<std::pair<Quad, float>> hatches;
+
 };
 
 // CHUNK_SIZE*CHUNK_SIZE地图区块
 class Chunk {
 public:
-	// 禁止空构造
+	/*
+	* 禁止空构造
+	*/
 	Chunk() = delete;
 
 	/*
@@ -102,7 +121,9 @@ public:
 	*/
 	Chunk(int x, int y);
 
-	// 析构地图区块
+	/*
+	* 析构地图区块
+	*/
 	~Chunk();
 
 	/*
@@ -185,22 +206,32 @@ private:
 	*/
 	bool CheckXY(int x, int y) const;
 
-	// 地块排列位置
-	int offsetX, offsetY;
+	// 地块x方向偏移
+	int offsetX;
+
+	// 地块y方向偏移
+	int offsetY;
 
 	// 地块内元素矩阵
 	OBJECT_HOLDER std::vector<std::vector<Element*>> elements;
+
 };
 
 class Map {
 public:
-	// 构造地图
+	/*
+	* 构造地图
+	*/
 	Map();
 
-	// 析构地图
+	/*
+	* 析构地图
+	*/
 	~Map();
 
-	// 读取配置文件
+	/*
+	* 读取配置文件
+	*/
 	void LoadConfigs() const;
 
 	/*
@@ -257,7 +288,9 @@ public:
 	*/
 	void InitBlocks(int chunkX, int chunkY);
 
-	// 初始化内容
+	/*
+	* 初始化内容，返回生成的导航节点数量
+	*/
 	int InitContents();
 
 	/*
@@ -266,7 +299,9 @@ public:
 	*/
 	void Checkin(Populace* populace, Player* player) const;
 
-	// 释放空间
+	/*
+	* 释放空间
+	*/
 	void Destroy();
 
 	/*
@@ -281,9 +316,11 @@ public:
 	* @getValues: 取值回调列表
 	*/
 	void ApplyChange(Change* change,
-		std::vector < std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
-	// 获取地图尺寸
+	/*
+	* 获取地图尺寸
+	*/
 	std::pair<int, int> GetSize() const;
 
 	/*
@@ -319,7 +356,9 @@ public:
 	*/
 	bool SetHeight(int x, int y, float height);
 
-	// 计算精确位置地形
+	/*
+	* 获取地形纹理映射表
+	*/
 	const std::unordered_map<std::string, std::pair<int, std::string>>& GetTerrainTextures() const;
 
 	/*
@@ -376,13 +415,19 @@ public:
 	*/
 	void SetBuilding(Building* building, const std::string& name, const std::pair<float, float>& offset = { 0.f, 0.f });
 
-	// 获取玩家坐标
+	/*
+	* 获取玩家坐标
+	*/
 	std::pair<float, float> GetPlayerPos() const;
 
-	// 获取路网
+	/*
+	* 获取路网
+	*/
 	Roadnet* GetRoadnet() const;
 
-	// 获取所有园区
+	/*
+	* 获取所有园区
+	*/
 	const std::unordered_map<std::string, Zone*>& GetZones() const;
 
 	/*
@@ -397,7 +442,9 @@ public:
 	*/
 	void AddZone(Zone* zone);
 
-	// 获取所有建筑
+	/*
+	* 获取所有建筑
+	*/
 	const std::unordered_map<std::string, Building*>& GetBuildings() const;
 
 	/*
@@ -412,10 +459,14 @@ public:
 	*/
 	void AddBuilding(Building* building);
 
-	// 获取所有组合
+	/*
+	* 获取所有组合
+	*/
 	std::vector<Component*> GetComponents() const;
 
-	// 获取所有房间
+	/*
+	* 获取所有房间
+	*/
 	std::vector<Room*> GetRooms() const;
 
 	/*
@@ -488,17 +539,26 @@ private:
 	*/
 	bool CheckXY(int x, int y) const;
 
-	// 分配所有地块内布局
+	/*
+	* 分配所有地块内布局
+	*/
 	void ArrangeBlocks();
 
-	// 清理空园区和空建筑
+	/*
+	* 清理空园区和空建筑
+	*/
 	void ClearZero();
 
-	// 根据当前路网和地块连接情况初始化寻路图
+	/*
+	* 根据当前路网和地块连接情况初始化寻路图
+	*/
 	void InitNavigationGraph();
 
-	// 地图尺寸
-	int width, height;
+	// 地图宽度
+	int width;
+
+	// 地图高度
+	int height;
 
 	// 地图区块矩阵
 	OBJECT_HOLDER std::vector<std::vector<Chunk*>> chunks;
@@ -529,4 +589,5 @@ private:
 
 	// 预设布局
 	OBJECT_HOLDER Layout* layout;
+
 };
