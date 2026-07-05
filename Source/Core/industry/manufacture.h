@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "industry/manufacture_mod.h"
 
@@ -11,61 +11,106 @@ typedef void (*RegisterModManufacturesFunc)(ManufactureFactory* factory);
 // 工坊实体
 class Manufacture {
 public:
-	// 禁止默认构造
+	/*
+	* 禁止默认构造
+	*/
 	Manufacture() = delete;
 
-	// 通过类型从工厂构造
+	/*
+	* 通过类型从工厂构造
+	* @factory: 工坊工厂
+	* @manufacture: 工坊静态类型标识
+	*/
 	Manufacture(ManufactureFactory* factory, const std::string& manufacture);
 
-	// 析构工坊
+	/*
+	* 析构工坊
+	*/
 	~Manufacture();
 
-	// 获取类型
+	/*
+	* 获取类型
+	*/
 	std::string GetType() const;
 
-	// 获取名称
+	/*
+	* 获取名称
+	*/
 	std::string GetName() const;
 
-	// 设置参数
+	/*
+	* 设置参数
+	* @room: 所在房间
+	*/
 	void SetProperty(Room* room);
 
-	// 获取所在房间
+	/*
+	* 获取所在房间
+	*/
 	Room* GetRoom() const;
 
-	// 获取输入暂存仓库
+	/*
+	* 获取输入暂存仓库
+	*/
 	Storage* GetInput() const;
 
-	// 获取输出暂存仓库
+	/*
+	* 获取输出暂存仓库
+	*/
 	Storage* GetOutput() const;
 
-	// 获取上游仓库
+	/*
+	* 获取上游仓库
+	*/
 	std::unordered_map<std::string, Storage*> GetUpstreams() const;
 
-	// 设置上游仓库
+	/*
+	* 连接上游仓库
+	* @type: 产品类型标识
+	* @storage: 上游仓库
+	*/
 	void ConnectUpstream(std::string type, Storage* storage);
 
-	// 获取下游仓库
+	/*
+	* 获取下游仓库
+	*/
 	std::unordered_map<std::string, Storage*> GetDownstreams() const;
 
-	// 设置下游仓库
+	/*
+	* 连接下游仓库
+	* @type: 产品类型标识
+	* @storage: 下游仓库
+	*/
 	void ConnectDownstream(std::string type, Storage* storage);
 
-	// 获取日原料消耗量
+	/*
+	* 获取日原料消耗量
+	*/
 	std::unordered_map<std::string, float> GetIngredients() const;
 
-	// 获取日产品产量
+	/*
+	* 获取日产品产量
+	*/
 	std::unordered_map<std::string, float> GetTargets() const;
 
-	// 获取日副产物产量
+	/*
+	* 获取日副产物产量
+	*/
 	std::unordered_map<std::string, float> GetByproducts() const;
 
-	// 前一日生产结算
+	/*
+	* 前一日生产结算
+	*/
 	void WorkAccount();
 
-	// 每日生产前物流
+	/*
+	* 每日生产前物流
+	*/
 	void InitDelivery();
 
-	// 每日启动生产
+	/*
+	* 每日启动生产
+	*/
 	void StartProduce();
 
 private:
@@ -101,24 +146,54 @@ private:
 
 	// 当日生产效率
 	float currentWorkload;
+
 };
 
 // 空工坊
 class EmptyManufacture : public ManufactureMod {
 public:
+	/*
+	* 构造空工坊
+	*/
 	EmptyManufacture();
+
+	/*
+	* 析构空工坊
+	*/
 	virtual ~EmptyManufacture();
 
+	/*
+	* Override
+	* 工坊静态类型标识
+	*/
 	static const char* GetId();
+
+	/*
+	* Override
+	* 工坊动态类型标识
+	*/
 	virtual const char* GetType() const override;
+
+	/*
+	* Override
+	* 工坊实例名称
+	*/
 	virtual const char* GetName() override;
 
-	virtual void SetTargets();
+	/*
+	* Override
+	* 设置生产目标
+	*/
+	virtual void SetTargets() override;
 
 private:
+	// 总实例数量
 	static int count;
 
+	// 实例编号
 	int id;
-	std::string name;
-};
 
+	// 实例名称
+	std::string name;
+
+};

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "class.h"
 #include "utility.h"
@@ -8,37 +8,67 @@
 
 class Industry {
 public:
-	// 构造工业
+	/*
+	* 构造工业
+	*/
 	Industry();
 
-	// 析构工业
+	/*
+	* 析构工业
+	*/
 	~Industry();
 
-	// 读取配置文件
+	/*
+	* 读取配置文件
+	*/
 	void LoadConfigs() const;
 
-	// 读取产品模组
+	/*
+	* 读取产品模组
+	* @modHandles: 已加载的模组句柄表
+	* @dlls: 需加载的DLL路径列表
+	*/
 	void InitProducts(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取仓库模组
+	/*
+	* 读取仓库模组
+	* @modHandles: 已加载的模组句柄表
+	* @dlls: 需加载的DLL路径列表
+	*/
 	void InitStorages(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 读取工坊模组
+	/*
+	* 读取工坊模组
+	* @modHandles: 已加载的模组句柄表
+	* @dlls: 需加载的DLL路径列表
+	*/
 	void InitManufactures(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 初始化工业
+	/*
+	* 初始化工业，创建仓库与工坊并建立上下游连接
+	* @map: 地图对象
+	*/
 	void Init(Map* map);
 
-	// 释放空间
+	/*
+	* 释放全部工业对象
+	*/
 	void Destroy();
 
-	// 时钟周期
+	/*
+	* 每日时钟周期，驱动生产结算与物流
+	* @player: 玩家对象
+	*/
 	void Tick(Player* player);
 
-	// 应用剧情变化
+	/*
+	* 应用剧情变化
+	* @change: 变化对象
+	* @getValues: 值获取回调列表
+	*/
 	void ApplyChange(Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
@@ -59,4 +89,3 @@ private:
 	std::vector<Manufacture*> manufactures;
 
 };
-

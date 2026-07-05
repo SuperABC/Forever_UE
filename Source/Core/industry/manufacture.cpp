@@ -186,12 +186,14 @@ unordered_map<string, float> Manufacture::GetByproducts() const {
 }
 
 void Manufacture::WorkAccount() {
+	// 按当日效率增加主产物产量
 	for (auto& [type, amount] : targets) {
 		auto product = outputCache->GetProduct(type);
 		if (!product)
 			THROW_EXCEPTION(NullPointerException, "WorkAccount: product " + type + " not found in outputCache.\n");
 		product->IncreaseAmount(amount * currentWorkload);
 	}
+	// 按当日效率增加副产物产量
 	for (auto& [type, amount] : byproducts) {
 		auto product = outputCache->GetProduct(type);
 		if (!product)
@@ -201,6 +203,7 @@ void Manufacture::WorkAccount() {
 }
 
 void Manufacture::InitDelivery() {
+	// 将输出缓存中的产品推送到下游仓库
 	for (auto& [output, storage] : outputCache->GetDownstreams()) {
 		auto product = outputCache->GetProduct(output);
 		if (!product) continue;
@@ -211,6 +214,7 @@ void Manufacture::InitDelivery() {
 		storage->InputProduct(output, out);
 	}
 
+	// 从上游仓库拉取原材料到输入缓存
 	for (auto& [input, storage] : inputCache->GetUpstreams()) {
 		auto product = storage->GetProduct(input);
 		if (!product) continue;
@@ -225,6 +229,7 @@ void Manufacture::InitDelivery() {
 void Manufacture::StartProduce() {
 	float efficiency = 1.f;
 
+	// 按原料短缺比例降低效率
 	for (auto& [type, standard] : ingredients) {
 		auto input = inputCache->GetProduct(type)->GetAmount();
 		if (input < standard && efficiency > input / standard) {
@@ -232,6 +237,7 @@ void Manufacture::StartProduce() {
 		}
 	}
 
+	// 累计一天满产所需的输出空间
 	float capacity = outputCache->GetSpace();
 	float standard = 0.f;
 	for (auto& [_, amount] : targets) {
@@ -240,11 +246,13 @@ void Manufacture::StartProduce() {
 	for (auto& [_, amount] : byproducts) {
 		standard += amount;
 	}
+	// 按输出空间不足比例降低效率
 	if (capacity < standard && efficiency > capacity / standard) {
 		efficiency = capacity / standard;
 	}
 	currentWorkload = efficiency;
 
+	// 按实际效率消耗原材料
 	for (auto& [type, standard] : ingredients) {
 		inputCache->GetProduct(type)->DecreaseAmount(standard * efficiency);
 	}
