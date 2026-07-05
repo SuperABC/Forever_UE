@@ -4,6 +4,7 @@
 #include "industry/storage.h"
 #include "industry/product.h"
 
+#include <functional>
 #include <unordered_set>
 
 
@@ -52,6 +53,67 @@ void Manufacture::SetProperty(Room* room) {
 		return;
 	}
 
+	unordered_set<string> targetSet;
+	for (auto& [t, _] : mod->targets) targetSet.insert(t);
+
+	// Step 1: 按原始比例计算所有target产生的副产物总量
+	unordered_map<string, float> allByproducts;
+	for (auto& [target, scalar] : mod->targets) {
+		Product tmp(Industry::productFactory, target);
+		for (auto& [bp, rate] : tmp.GetByproducts()) {
+			allByproducts[bp] += rate * scalar;
+		}
+	}
+
+	// Step 2: 副产物覆盖的target减少主动生产量
+	targets.clear();
+	for (auto& [target, scalar] : mod->targets) {
+		float bpCoverage = allByproducts.count(target) ? allByproducts.at(target) : 0.f;
+		float active = max(0.f, scalar - bpCoverage);
+		if (active > 0.f) {
+			targets[target] = active;
+		}
+	}
+
+	// Step 3: 递归展开配方，将target-as-ingredient替换为其原材料
+	unordered_map<string, float> rawIngredients;
+	function<void(const string&, float)> expand = [&](const string& productType, float amount) {
+		Product tmp(Industry::productFactory, productType);
+		for (auto& [ingredient, rate] : tmp.GetIngredients()) {
+			if (targetSet.count(ingredient)) {
+				expand(ingredient, rate * amount);
+			}
+			else {
+				rawIngredients[ingredient] += rate * amount;
+			}
+		}
+	};
+	for (auto& [target, active] : targets) {
+		expand(target, active);
+	}
+
+	// Step 4: 用副产物抵消对应原材料的外部需求
+	ingredients.clear();
+	for (auto& [ingredient, needed] : rawIngredients) {
+		float bpAvailable = allByproducts.count(ingredient) ? allByproducts.at(ingredient) : 0.f;
+		float actual = max(0.f, needed - bpAvailable);
+		if (actual > 0.f) {
+			ingredients[ingredient] = actual;
+		}
+	}
+
+	byproducts = allByproducts;
+
+	// 合并输出产品表：主动产量 + 副产物
+	unordered_map<string, float> outputProducts;
+	for (auto& [target, amount] : targets) {
+		outputProducts[target] += amount;
+	}
+	for (auto& [byproduct, amount] : byproducts) {
+		outputProducts[byproduct] += amount;
+	}
+
+	// 初始化缓存仓库
 	inputCache = new Storage(Industry::storageFactory, "empty");
 	inputCache->SetProperty(0.f);
 	inputCache->SetRoom(room);
@@ -59,35 +121,25 @@ void Manufacture::SetProperty(Room* room) {
 	outputCache->SetProperty(0.f);
 	outputCache->SetRoom(room);
 
-	targets = mod->targets;
 	float inputSize = 0.f, outputSize = 0.f;
-	unordered_map<string, float> inputAmount, outputAmount;
-	for (auto& [target, scalar] : mod->targets) {
-		outputSize += scalar;
-		outputCache->InputProduct(target, 0.f);
-		outputAmount[target] += scalar;
-		Product tmp(Industry::productFactory, target);
-		for (auto& [ingredient, amount] : tmp.GetIngredients()) {
-			inputSize += amount * scalar;
-			inputCache->InputProduct(target, 0.f);
-			inputAmount[ingredient] += amount * scalar;
-			ingredients[ingredient] += amount * scalar;
-		}
-		for (auto& [byproduct, amount] : tmp.GetByproducts()) {
-			outputSize += amount * scalar;
-			outputCache->InputProduct(target, 0.f);
-			outputAmount[byproduct] += amount * scalar;
-			byproducts[byproduct] += amount * scalar;
-		}
+
+	for (auto& [ingredient, amount] : ingredients) {
+		inputSize += amount;
+		inputCache->InputProduct(ingredient, 0.f);
+	}
+	for (auto& [product, total] : outputProducts) {
+		outputSize += total;
+		outputCache->InputProduct(product, 0.f);
 	}
 
 	inputCache->SetVolume(inputSize);
 	outputCache->SetVolume(outputSize);
-	for (auto& [input, amount] : inputAmount) {
-		inputCache->InputProduct(input, amount);
+
+	for (auto& [ingredient, amount] : ingredients) {
+		inputCache->InputProduct(ingredient, amount);
 	}
-	for (auto& [output, amount] : outputAmount) {
-		outputCache->InputProduct(output, amount);
+	for (auto& [product, total] : outputProducts) {
+		outputCache->InputProduct(product, total);
 	}
 }
 

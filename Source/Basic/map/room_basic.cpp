@@ -92,7 +92,7 @@ const char* WarehouseRoom::GetName() {
 
 void WarehouseRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 	isStorage = true;
-	storageConfig = { {"empty", 100.f} };
+	storageConfig = { {"shop", 100.f} };
 }
 
 void WarehouseRoom::PlacePivots(Quad* room) {

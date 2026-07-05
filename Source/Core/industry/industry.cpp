@@ -7,6 +7,9 @@
 #include "industry/product.h"
 #include "player/player.h"
 
+#include <functional>
+#include <unordered_set>
+
 
 using namespace std;
 
@@ -145,6 +148,37 @@ void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles,
 void Industry::Init(Map* map) {
 	Destroy();
 
+	// 对所有启用产品的ingredient/byproduct依赖图进行无环检测
+	auto enabledProducts = Config::GetEnables("product");
+	unordered_map<string, vector<string>> depGraph;
+	for (auto& productId : enabledProducts) {
+		Product tmp(productFactory, productId);
+		for (auto& [ingredient, _] : tmp.GetIngredients()) {
+			depGraph[productId].push_back(ingredient);
+		}
+		for (auto& [byproduct, _] : tmp.GetByproducts()) {
+			depGraph[productId].push_back(byproduct);
+		}
+	}
+	unordered_set<string> visited, inStack;
+	function<void(const string&)> dfs = [&](const string& node) {
+		if (inStack.count(node)) {
+			THROW_EXCEPTION(RuntimeException, "Product dependency cycle detected at: " + node + ".\n");
+		}
+		if (visited.count(node)) return;
+		visited.insert(node);
+		inStack.insert(node);
+		for (auto& dep : depGraph[node]) {
+			if (depGraph.count(dep)) {
+				dfs(dep);
+			}
+		}
+		inStack.erase(node);
+	};
+	for (auto& productId : enabledProducts) {
+		dfs(productId);
+	}
+
 	auto rooms = map->GetRooms();
 
 	for (auto room : rooms) {
@@ -226,15 +260,7 @@ void Industry::Init(Map* map) {
 }
 
 void Industry::Destroy() {
-	for (auto manufacture : manufactures) {
-		delete manufacture;
-	}
-	manufactures.clear();
 
-	for (auto storage : storages) {
-		delete storage;
-	}
-	storages.clear();
 }
 
 void Industry::Tick(Player* player) {

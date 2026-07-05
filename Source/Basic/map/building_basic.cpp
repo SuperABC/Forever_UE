@@ -163,7 +163,7 @@ void ShopBuilding::LayoutBuilding(const Quad* quad) {
 	ArrangeRow(0, 1, "warehouse", 200.f, component, 0);
 	for (int i = 1; i < layers; i++) {
 		AssignFloor(i, direction, "lobby_linear_f-");
-		AssignRoom(i, 0, "shop", component, 0);
+		AssignRoom(i, 0, "residential", component, 0);
 		ArrangeRow(i, 0, "residential", 200.f, component, 0);
 		ArrangeRow(i, 1, "residential", 200.f, component, 0);
 	}
