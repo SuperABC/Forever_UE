@@ -226,7 +226,15 @@ void Industry::Init(Map* map) {
 }
 
 void Industry::Destroy() {
+	for (auto manufacture : manufactures) {
+		delete manufacture;
+	}
+	manufactures.clear();
 
+	for (auto storage : storages) {
+		delete storage;
+	}
+	storages.clear();
 }
 
 void Industry::Tick(Player* player) {

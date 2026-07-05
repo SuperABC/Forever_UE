@@ -129,24 +129,38 @@ unordered_map<string, float> Manufacture::GetByproducts() const {
 
 void Manufacture::WorkAccount() {
 	for (auto& [type, amount] : targets) {
-		outputCache->GetProduct(type)->IncreaseAmount(amount * currentWorkload);
+		auto product = outputCache->GetProduct(type);
+		if (!product)
+			THROW_EXCEPTION(NullPointerException, "WorkAccount: product " + type + " not found in outputCache.\n");
+		product->IncreaseAmount(amount * currentWorkload);
 	}
 	for (auto& [type, amount] : byproducts) {
-		outputCache->GetProduct(type)->IncreaseAmount(amount * currentWorkload);
+		auto product = outputCache->GetProduct(type);
+		if (!product)
+			THROW_EXCEPTION(NullPointerException, "WorkAccount: byproduct " + type + " not found in outputCache.\n");
+		product->IncreaseAmount(amount * currentWorkload);
 	}
 }
 
 void Manufacture::InitDelivery() {
 	for (auto& [output, storage] : outputCache->GetDownstreams()) {
-		float amount = outputCache->GetProduct(output)->GetAmount();
-		outputCache->OutputProduct(output, amount);
-		storage->InputProduct(output, amount);
+		auto product = outputCache->GetProduct(output);
+		if (!product) continue;
+		float available = product->GetAmount();
+		float space = max(storage->GetSpace(), 0.f);
+		float actual = min(available, space);
+		float out = outputCache->OutputProduct(output, actual);
+		storage->InputProduct(output, out);
 	}
 
 	for (auto& [input, storage] : inputCache->GetUpstreams()) {
-		float amount = min(storage->GetProduct(input)->GetAmount(), ingredients[input]);
-		storage->OutputProduct(input, amount);
-		inputCache->InputProduct(input, amount);
+		auto product = storage->GetProduct(input);
+		if (!product) continue;
+		float available = product->GetAmount();
+		float need = min(ingredients[input], max(inputCache->GetSpace(), 0.f));
+		float actual = min(available, need);
+		float out = storage->OutputProduct(input, actual);
+		inputCache->InputProduct(input, out);
 	}
 }
 

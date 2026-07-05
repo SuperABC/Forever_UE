@@ -98,33 +98,44 @@ unordered_map<string, Product*> Storage::GetProducts() const {
 }
 
 float Storage::InputProduct(const string& type, float amount) {
+	float actual = min(amount, max(GetSpace(), 0.f));
+	if (actual <= 0.f) return 0.f;
+
 	auto it = products.find(type);
 	if (it != products.end()) {
-		products[type]->IncreaseAmount(amount);
-		auto [find, temp] = room->GetParentComponent()->GetScript()->GetValue("system.storage." + type);
-		if (find) {
-			room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, get<double>(temp) + amount);
+		products[type]->IncreaseAmount(actual);
+		if (room && room->GetParentComponent() && room->GetParentComponent()->GetScript()) {
+			auto [find, temp] = room->GetParentComponent()->GetScript()->GetValue("system.storage." + type);
+			if (find) {
+				room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, get<double>(temp) + actual);
+			}
 		}
-		return amount;
+		return actual;
 	}
 
 	auto product = new Product(Industry::productFactory, type);
 	product->SetProperty();
-	product->SetAmount(amount);
+	product->SetAmount(actual);
 	products[type] = product;
-	room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, amount);
-	return amount;
+	if (room && room->GetParentComponent() && room->GetParentComponent()->GetScript()) {
+		room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, static_cast<double>(actual));
+	}
+	return actual;
 }
 
 float Storage::OutputProduct(const string& type, float amount) {
 	auto it = products.find(type);
 	if (it != products.end()) {
-		products[type]->DecreaseAmount(amount);
-		auto [find, temp] = room->GetParentComponent()->GetScript()->GetValue("system.storage." + type);
-		if (find) {
-			room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, get<double>(temp) - amount);
+		float actual = min(amount, max(it->second->GetAmount(), 0.f));
+		if (actual <= 0.f) return 0.f;
+		products[type]->DecreaseAmount(actual);
+		if (room && room->GetParentComponent() && room->GetParentComponent()->GetScript()) {
+			auto [find, temp] = room->GetParentComponent()->GetScript()->GetValue("system.storage." + type);
+			if (find) {
+				room->GetParentComponent()->GetScript()->SetValue("system.storage." + type, get<double>(temp) - actual);
+			}
 		}
-		return amount;
+		return actual;
 	}
 
 	return 0.f;
