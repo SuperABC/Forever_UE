@@ -58,8 +58,5 @@ private:
 	// 全部工坊
 	std::vector<Manufacture*> manufactures;
 
-	// 上一帧时间
-	Time lastTick;
-
 };
 

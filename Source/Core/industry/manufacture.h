@@ -29,6 +29,9 @@ public:
 	// 设置参数
 	void SetProperty(Room* room);
 
+	// 获取所在房间
+	Room* GetRoom() const;
+
 	// 获取输入暂存仓库
 	Storage* GetInput() const;
 
@@ -71,6 +74,9 @@ private:
 
 	// 工厂
 	ManufactureFactory* factory;
+
+	// 所在房间
+	Room* room;
 
 	// 工坊类型
 	std::string type;

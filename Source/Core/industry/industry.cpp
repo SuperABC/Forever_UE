@@ -19,8 +19,7 @@ ManufactureFactory* Industry::manufactureFactory = nullptr;
 
 Industry::Industry() :
 	storages(),
-	manufactures(),
-	lastTick() {
+	manufactures() {
 	if (!productFactory) {
 		productFactory = new ProductFactory();
 	}
@@ -179,8 +178,8 @@ void Industry::Init(Map* map) {
 		dfs(productId);
 	}
 
+	// 根据所有房间配置创建仓库和工坊
 	auto rooms = map->GetRooms();
-
 	for (auto room : rooms) {
 		if (room == nullptr) {
 			debugf("Warning: Null room in map rooms.\n");
@@ -205,6 +204,7 @@ void Industry::Init(Map* map) {
 		}
 	}
 
+	// 连接仓库和工坊上下游
 	unordered_map<string, vector<Storage*>> accepts;
 	for (auto storage : storages) {
 		if (!storage->GetAccept()) continue;
@@ -219,42 +219,98 @@ void Industry::Init(Map* map) {
 			provides[category].push_back(storage);
 		}
 	}
+
+	// 第一阶段：连接下游，将每个工坊一天的产出注入选定仓库
 	for (auto manufacture : manufactures) {
-		auto inputCache = manufacture->GetInput();
-		auto inputs = inputCache->GetProducts();
-		for (auto& [type, input] : inputs) {
-			vector<Storage*> suppliers;
-			for (auto catagory : input->GetCategories()) {
-				auto it = provides.find(catagory);
-				if (it == provides.end() || it->second.empty()) {
-					continue;
-				}
-				else {
-					suppliers.insert(suppliers.end(), it->second.begin(), it->second.end());
-				}
-			}
-			if (suppliers.size() <= 0)continue;
-			int r = GetRandom(static_cast<int>(suppliers.size()));
-			suppliers[r]->ConnectDownstream(type, manufacture->GetInput());
-			manufacture->ConnectUpstream(type, suppliers[r]);
-		}
+		auto manufactureRoom = manufacture->GetRoom();
+		auto [centerX, centerY] = manufactureRoom
+			? manufactureRoom->GetPosition(manufactureRoom->GetSizeX() / 2, manufactureRoom->GetSizeY() / 2)
+			: make_pair(0.f, 0.f);
 		auto outputCache = manufacture->GetOutput();
-		auto outputs = outputCache->GetProducts();
-		for (auto& [type, output] : outputs) {
-			vector<Storage*> buyers;
-			for (auto catagory : output->GetCategories()) {
-				auto it = accepts.find(catagory);
-				if (it == accepts.end() || it->second.empty()) {
-					continue;
-				}
-				else {
-					buyers.insert(buyers.end(), it->second.begin(), it->second.end());
+		for (auto& [type, output] : outputCache->GetProducts()) {
+			float amount = output->GetAmount();
+			unordered_set<Storage*> seen;
+			vector<Storage*> candidates;
+			for (auto category : output->GetCategories()) {
+				auto it = accepts.find(category);
+				if (it == accepts.end()) continue;
+				for (auto storage : it->second) {
+					if (seen.insert(storage).second) candidates.push_back(storage);
 				}
 			}
-			if (buyers.size() <= 0)continue;
-			int r = GetRandom(static_cast<int>(buyers.size()));
-			buyers[r]->ConnectUpstream(type, manufacture->GetOutput());
-			manufacture->ConnectDownstream(type, buyers[r]);
+			if (candidates.empty()) continue;
+			Storage* best = nullptr;
+			float bestScore = -1.f;
+			for (auto storage : candidates) {
+				if (storage->GetSpace() < amount) continue;
+				auto storageRoom = storage->GetRoom();
+				float distanceSquared = 0.f;
+				if (manufactureRoom && storageRoom) {
+					auto [storageCenterX, storageCenterY] = storageRoom->GetPosition(storageRoom->GetSizeX() / 2, storageRoom->GetSizeY() / 2);
+					float diffX = centerX - storageCenterX, diffY = centerY - storageCenterY;
+					distanceSquared = diffX * diffX + diffY * diffY;
+				}
+				float score = storage->GetSpace() / (distanceSquared + 1.f);
+				if (score > bestScore) { bestScore = score; best = storage; }
+			}
+			if (!best) {
+				float maxSpace = -1.f;
+				for (auto storage : candidates) {
+					if (storage->GetSpace() > maxSpace) { maxSpace = storage->GetSpace(); best = storage; }
+				}
+			}
+			best->ConnectUpstream(type, outputCache);
+			manufacture->ConnectDownstream(type, best);
+			best->InputProduct(type, amount);
+		}
+	}
+
+	// 第二阶段：连接上游，从选定仓库提取每个工坊一天的原材料消耗
+	for (auto manufacture : manufactures) {
+		auto manufactureRoom = manufacture->GetRoom();
+		auto [centerX, centerY] = manufactureRoom
+			? manufactureRoom->GetPosition(manufactureRoom->GetSizeX() / 2, manufactureRoom->GetSizeY() / 2)
+			: make_pair(0.f, 0.f);
+		auto inputCache = manufacture->GetInput();
+		for (auto& [type, input] : inputCache->GetProducts()) {
+			float amount = input->GetAmount();
+			unordered_set<Storage*> seen;
+			vector<Storage*> candidates;
+			for (auto category : input->GetCategories()) {
+				auto it = provides.find(category);
+				if (it == provides.end()) continue;
+				for (auto storage : it->second) {
+					if (seen.insert(storage).second) candidates.push_back(storage);
+				}
+			}
+			if (candidates.empty()) continue;
+			Storage* best = nullptr;
+			float bestScore = -1.f;
+			for (auto storage : candidates) {
+				auto product = storage->GetProduct(type);
+				float stock = product ? product->GetAmount() : 0.f;
+				if (stock < amount) continue;
+				auto storageRoom = storage->GetRoom();
+				float distanceSquared = 0.f;
+				if (manufactureRoom && storageRoom) {
+					auto [storageCenterX, storageCenterY] = storageRoom->GetPosition(storageRoom->GetSizeX() / 2, storageRoom->GetSizeY() / 2);
+					float diffX = centerX - storageCenterX, diffY = centerY - storageCenterY;
+					distanceSquared = diffX * diffX + diffY * diffY;
+				}
+				float score = stock / (distanceSquared + 1.f);
+				if (score > bestScore) { bestScore = score; best = storage; }
+			}
+			if (!best) {
+				float maxStock = -1.f;
+				for (auto storage : candidates) {
+					auto product = storage->GetProduct(type);
+					float stock = product ? product->GetAmount() : 0.f;
+					if (stock > maxStock) { maxStock = stock; best = storage; }
+				}
+			}
+			best->ConnectDownstream(type, inputCache);
+			manufacture->ConnectUpstream(type, best);
+			best->OutputProduct(type, amount);
 		}
 	}
 }
@@ -265,20 +321,9 @@ void Industry::Destroy() {
 
 void Industry::Tick(Player* player) {
 	auto time = player->GetTime();
+	auto cross = player->CrossDay();
 
-	bool update = false;
-	if (time->GetDay() != lastTick.GetDay()) {
-		update = true;
-	}
-	if (time->GetMonth() != lastTick.GetMonth()) {
-		update = true;
-	}
-	if(time->GetYear() != lastTick.GetYear()) {
-		update = true;
-	}
-	lastTick = *time;
-
-	if (update) {
+	if (cross) {
 		for (auto manufacture : manufactures) {
 			manufacture->WorkAccount();
 		}

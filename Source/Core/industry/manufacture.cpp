@@ -13,6 +13,7 @@ using namespace std;
 Manufacture::Manufacture(ManufactureFactory* factory, const string& manufacture) :
 	mod(factory->CreateManufacture(manufacture)),
 	factory(factory),
+	room(nullptr),
 	type(),
 	name(),
 	inputCache(nullptr),
@@ -44,6 +45,7 @@ string Manufacture::GetName() const {
 }
 
 void Manufacture::SetProperty(Room* room) {
+	this->room = room;
 	mod->SetTargets();
 
 	if (mod->targets.empty()) {
@@ -141,6 +143,10 @@ void Manufacture::SetProperty(Room* room) {
 	for (auto& [product, total] : outputProducts) {
 		outputCache->InputProduct(product, total);
 	}
+}
+
+Room* Manufacture::GetRoom() const {
+	return room;
 }
 
 Storage* Manufacture::GetInput() const {

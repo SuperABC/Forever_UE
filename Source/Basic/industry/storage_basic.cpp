@@ -27,7 +27,7 @@ const char* ShopStorage::GetName() {
 }
 
 void ShopStorage::SetProperty() {
-	catagories = { "empty" };
+	catagories = { "" };
 	density = 1.f;
 	accept = true;
 	provide = false;

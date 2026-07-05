@@ -201,5 +201,5 @@ const char* EmptyStorage::GetName() {
 }
 
 void EmptyStorage::SetProperty() {
-	catagories = { "all" };
+	catagories = { "" };
 }
