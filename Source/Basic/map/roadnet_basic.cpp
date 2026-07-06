@@ -57,34 +57,58 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		intersections.emplace_back(x, y);
 		horizontalNode1w.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 	}
+	intersections.pop_back();
 	for (float x = northEast.GetX() + dirCos, y = northEast.GetY() + dirSin; string(get(static_cast<int>(x), static_cast<int>(y))) != ""; x += dirCos, y += dirSin) {
 		intersections.emplace_back(x, y);
 		horizontalNode1e.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 	}
+	intersections.pop_back();
 	for (float x = southWest.GetX() - dirCos, y = southWest.GetY() - dirSin; string(get(static_cast<int>(x), static_cast<int>(y))) != ""; x -= dirCos, y -= dirSin) {
 		intersections.emplace_back(x, y);
 		horizontalNode2w.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 	}
+	intersections.pop_back();
 	for (float x = southEast.GetX() + dirCos, y = southEast.GetY() + dirSin; string(get(static_cast<int>(x), static_cast<int>(y))) != ""; x += dirCos, y += dirSin) {
 		intersections.emplace_back(x, y);
 		horizontalNode2e.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 	}
+	intersections.pop_back();
 	for (float x = northWest.GetX() + dirSin, y = northWest.GetY() - dirCos; string(get(static_cast<int>(x), static_cast<int>(y))) != ""; x += dirSin, y -= dirCos) {
 		intersections.emplace_back(x, y);
 		verticalNode1n.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 	}
+	intersections.pop_back();
 	for (float x = southWest.GetX() - dirSin, y = southWest.GetY() + dirCos; string(get(static_cast<int>(x), static_cast<int>(y))) != ""; x -= dirSin, y += dirCos) {
 		intersections.emplace_back(x, y);
 		verticalNode1s.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 	}
+	intersections.pop_back();
 	for (float x = northEast.GetX() + dirSin, y = northEast.GetY() - dirCos; string(get(static_cast<int>(x), static_cast<int>(y))) != ""; x += dirSin, y -= dirCos) {
 		intersections.emplace_back(x, y);
 		verticalNode2n.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 	}
+	intersections.pop_back();
 	for (float x = southEast.GetX() - dirSin, y = southEast.GetY() + dirCos; string(get(static_cast<int>(x), static_cast<int>(y))) != ""; x -= dirSin, y += dirCos) {
 		intersections.emplace_back(x, y);
 		verticalNode2s.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 	}
+	intersections.pop_back();
+	externs.emplace_back(horizontalNode1w.back().first);
+	horizontalNode1w.pop_back();
+	externs.emplace_back(horizontalNode1e.back().first);
+	horizontalNode1e.pop_back();
+	externs.emplace_back(horizontalNode2w.back().first);
+	horizontalNode2w.pop_back();
+	externs.emplace_back(horizontalNode2e.back().first);
+	horizontalNode2e.pop_back();
+	externs.emplace_back(verticalNode1n.back().first);
+	verticalNode1n.pop_back();
+	externs.emplace_back(verticalNode1s.back().first);
+	verticalNode1s.pop_back();
+	externs.emplace_back(verticalNode2n.back().first);
+	verticalNode2n.pop_back();
+	externs.emplace_back(verticalNode2s.back().first);
+	verticalNode2s.pop_back();
 
 	roads.emplace_back("中山北路", intersections[0], intersections[1], meshPath);
 	roads.emplace_back("中山东路", intersections[1], intersections[3], meshPath);
@@ -99,6 +123,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [node2, idx2] = horizontalNode1w[i - 1];
 		roads.emplace_back("城西北路", intersections[idx1], intersections[idx2], meshPath);
 	}
+	roads.emplace_back("城西北路", intersections[horizontalNode1w.back().second], externs[0], meshPath);
 	if (horizontalNode1e.size() > 0) {
 		roads.emplace_back("城东北路", intersections[1], intersections[horizontalNode1e[0].second], meshPath);
 	}
@@ -107,6 +132,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [node2, idx2] = horizontalNode1e[i - 1];
 		roads.emplace_back("城东北路", intersections[idx1], intersections[idx2], meshPath);
 	}
+	roads.emplace_back("城东北路", intersections[horizontalNode1e.back().second], externs[1], meshPath);
 	if (horizontalNode2w.size() > 0) {
 		roads.emplace_back("城西南路", intersections[2], intersections[horizontalNode2w[0].second], meshPath);
 	}
@@ -115,6 +141,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [node2, idx2] = horizontalNode2w[i - 1];
 		roads.emplace_back("城西南路", intersections[idx1], intersections[idx2], meshPath);
 	}
+	roads.emplace_back("城西南路", intersections[horizontalNode2w.back().second], externs[2], meshPath);
 	if (horizontalNode2e.size() > 0) {
 		roads.emplace_back("城东南路", intersections[3], intersections[horizontalNode2e[0].second], meshPath);
 	}
@@ -123,6 +150,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [node2, idx2] = horizontalNode2e[i - 1];
 		roads.emplace_back("城东南路", intersections[idx1], intersections[idx2], meshPath);
 	}
+	roads.emplace_back("城东南路", intersections[horizontalNode2e.back().second], externs[3], meshPath);
 	if (verticalNode1n.size() > 0) {
 		roads.emplace_back("城北西路", intersections[0], intersections[verticalNode1n[0].second], meshPath);
 	}
@@ -131,6 +159,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [node2, idx2] = verticalNode1n[i - 1];
 		roads.emplace_back("城北西路", intersections[idx1], intersections[idx2], meshPath);
 	}
+	roads.emplace_back("城北西路", intersections[verticalNode1n.back().second], externs[4], meshPath);
 	if (verticalNode1s.size() > 0) {
 		roads.emplace_back("城南西路", intersections[2], intersections[verticalNode1s[0].second], meshPath);
 	}
@@ -139,6 +168,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [node2, idx2] = verticalNode1s[i - 1];
 		roads.emplace_back("城南西路", intersections[idx1], intersections[idx2], meshPath);
 	}
+	roads.emplace_back("城南西路", intersections[verticalNode1s.back().second], externs[5], meshPath);
 	if (verticalNode2n.size() > 0) {
 		roads.emplace_back("城北东路", intersections[1], intersections[verticalNode2n[0].second], meshPath);
 	}
@@ -147,6 +177,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [node2, idx2] = verticalNode2n[i - 1];
 		roads.emplace_back("城北东路", intersections[idx1], intersections[idx2], meshPath);
 	}
+	roads.emplace_back("城北东路", intersections[verticalNode2n.back().second], externs[6], meshPath);
 	if (verticalNode2s.size() > 0) {
 		roads.emplace_back("城南东路", intersections[3], intersections[verticalNode2s[0].second], meshPath);
 	}
@@ -155,6 +186,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [node2, idx2] = verticalNode2s[i - 1];
 		roads.emplace_back("城南东路", intersections[idx1], intersections[idx2], meshPath);
 	}
+	roads.emplace_back("城南东路", intersections[verticalNode2s.back().second], externs[7], meshPath);
 
 	lots.emplace_back(Lot(northWest, northEast, southEast, southWest, { 0.5f, 0.5f, 0.5f, 0.5f }),
 		vector<pair<Road, float>>({

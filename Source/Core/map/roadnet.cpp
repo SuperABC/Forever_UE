@@ -12,6 +12,7 @@ Roadnet::Roadnet(RoadnetFactory* factory, const string& roadnet) :
 	factory(factory),
 	type(),
 	name(),
+	externs(),
 	intersections(),
 	roads(),
 	blocks(),
@@ -25,6 +26,10 @@ Roadnet::Roadnet(RoadnetFactory* factory, const string& roadnet) :
 
 Roadnet::~Roadnet() {
 	factory->DestroyRoadnet(mod);
+	for(auto ext : externs) {
+		delete ext;
+	}
+	externs.clear();
 	for (auto intersection : intersections) {
 		delete intersection;
 	}
@@ -51,6 +56,9 @@ void Roadnet::DistributeRoadnet(int width, int height,
 	const function<string(int, int)>& get) {
 	mod->DistributeRoadnet(width, height, get);
 
+	for(auto& ext : mod->externs) {
+		externs.push_back(new Node(ext));
+	}
 	for (auto& intersection : mod->intersections) {
 		intersections.push_back(new Intersection(intersection));
 	}
@@ -66,6 +74,10 @@ void Roadnet::DistributeRoadnet(int width, int height,
 		block->SetRoads(blockRoads);
 		blocks.push_back(block);
 	}
+}
+
+const std::vector<Node*>& Roadnet::GetExterns() const {
+	return externs;
 }
 
 const vector<Intersection*>& Roadnet::GetIntersections() const {

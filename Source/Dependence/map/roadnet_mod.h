@@ -48,6 +48,9 @@ public:
 	COSTOM_INIT virtual void DistributeRoadnet(int width, int height,
 		const std::function<std::string(int, int)>& get) = 0;
 
+	// 外部连接
+	std::vector<Node> externs;
+
 	// 路口
 	std::vector<Intersection> intersections;
 

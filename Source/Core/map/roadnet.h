@@ -47,6 +47,11 @@ public:
 		const std::function<std::string(int, int)>& get);
 
 	/*
+	* 获取所有外界连接点
+	*/
+	const std::vector<Node*>& GetExterns() const;
+
+	/*
 	* 获取所有节点
 	*/
 	const std::vector<Intersection*>& GetIntersections() const;
@@ -85,6 +90,9 @@ private:
 
 	// 路网名称
 	std::string name;
+
+	// 外界连接点
+	OBJECT_HOLDER std::vector<Node*> externs;
 
 	// 节点
 	OBJECT_HOLDER std::vector<Intersection*> intersections;
