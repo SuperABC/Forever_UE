@@ -34,7 +34,7 @@ public:
 	std::string buildingType;
 
 	// 建筑面积
-	int buildingAcreage;
+	float buildingAcreage;
 
 	// 接口向量
 	std::vector<std::pair<std::string, std::vector<float>>> interfaces;

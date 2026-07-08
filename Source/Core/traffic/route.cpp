@@ -48,8 +48,9 @@ string Route::GetName() const {
 }
 
 void Route::LayoutRoute(
-	const unordered_map<string, vector<vector<vector<float>>>>& interfaces) {
-	mod->LayoutRoute(interfaces);
+	const unordered_map<string, vector<vector<vector<float>>>>& interfaces,
+	int nodeStaticCount) {
+	mod->LayoutRoute(interfaces, nodeStaticCount);
 
 	for(auto& ext : mod->externs) {
 		externs.push_back(new Node(ext));
@@ -86,8 +87,9 @@ const char* EmptyRoute::GetName() {
 }
 
 void EmptyRoute::LayoutRoute(
-	const unordered_map<string, vector<vector<vector<float>>>>& interfaces) {
-
+	const unordered_map<string, vector<vector<vector<float>>>>& interfaces,
+	int nodeStaticCount) {
+	Node::SetCount(nodeStaticCount);
 }
 
 

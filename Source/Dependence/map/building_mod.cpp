@@ -80,7 +80,7 @@ void BuildingMod::AddDecoration(string path,
 }
 
 void BuildingMod::AddPivot(vector<float> point, int face) {
-	if (face < 0 || face >= FACE_DIRECTION_COUNT) {
+	if (face < 0 || face >= 4) {
 		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
 	}
 	if (point.size() != POINT_PARAM_COUNT) {

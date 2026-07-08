@@ -514,6 +514,16 @@ public:
 	void ApplyDivideResult(const std::vector<Node*>& newNodes,
 		const std::vector<Connection*>& newConnections, const std::vector<Connection*>& removedConnections);
 
+	/*
+	* 获取所有导航节点
+	*/
+	const std::vector<Node*> GetNavigationNodes() const;
+
+	/*
+	* 获取所有导航连接
+	*/
+	const std::unordered_set<Connection*> GetNavigationConnections() const;
+
 	// 地形工厂
 	static TerrainFactory* terrainFactory;
 

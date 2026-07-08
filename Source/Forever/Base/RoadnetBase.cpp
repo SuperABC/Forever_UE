@@ -54,3 +54,19 @@ TArray<FRoad> ARoadnetBase::GetRoadnet() {
 
 	return roads;
 }
+
+void ARoadnetBase::GetNavigations(TArray<FNode>& nodes, TArray<FConnection>& connections) {
+	Map* map = global->GetMap();
+	if (!map)return;
+
+	auto navigationNodes = map->GetNavigationNodes();
+	for (auto node : navigationNodes) {
+		nodes.Add(FNode(FVector(node->GetX(), node->GetY(), node->GetZ()),FString(node->GetCategory().data())));
+	}
+
+	auto navigationConnections = map->GetNavigationConnections();
+	for (auto connection : navigationConnections) {
+		connections.Add(FConnection(FVector(connection->GetStart().GetX(), connection->GetStart().GetY(), connection->GetStart().GetZ()),
+			FVector(connection->GetEnd().GetX(), connection->GetEnd().GetY(), connection->GetEnd().GetZ())));
+	}
+}

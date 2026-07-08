@@ -557,7 +557,7 @@ void Map::InitBlocks(int chunkX, int chunkY) {
 	if (!roadnet) {
 		THROW_EXCEPTION(RuntimeException, "No enabled roadnet in config.\n");
 	}
-	roadnet->DistributeRoadnet(width, height, getTerrain);
+	roadnet->DistributeRoadnet(width, height, getTerrain, Node::GetCount());
 	roadnet->AllocateAddress();
 
 	debugf("Log: Initializing navigation graph.\n");
@@ -1611,15 +1611,6 @@ void Map::InitNavigationGraph() {
 		navigationGraph[v2].emplace_back(v1, road);
 	}
 
-	for (auto block : roadnet->GetBlocks()) {
-		if (!block) continue;
-		for (auto& [road, node] : block->GetRoads()) {
-			if (!road || !node) continue;
-
-			AddNode(node, road->GetStart().GetId());
-			AddNode(node, road->GetEnd().GetId());
-		}
-	}
 }
 
 void Map::ApplyDivideResult(const vector<Node*>& newNodes,
@@ -1664,6 +1655,24 @@ void Map::ApplyDivideResult(const vector<Node*>& newNodes,
 		navigationGraph[v2].emplace_back(v1, connection);
 		navigationConnections.push_back(connection);
 	}
+}
+
+const vector<Node*> Map::GetNavigationNodes() const {
+	vector<Node*> nodes;
+	for(auto& [id, node] : navigationNodes) {
+		if (node)nodes.push_back(node);
+	}
+	return nodes;
+}
+
+const unordered_set<Connection*> Map::GetNavigationConnections() const {
+	unordered_set<Connection*> connections;
+	for (auto& [id, neighbors] : navigationGraph) {
+		for (auto& [_, connection] : neighbors) {
+			if (connection) connections.insert(connection);
+		}
+	}
+	return connections;
 }
 
 bool Map::CheckXY(int x, int y) const {
@@ -1734,20 +1743,15 @@ void Map::ArrangeBlocks() {
 
 		if (elements.empty()) continue;
 
-		auto [bottomLeftX, bottomLeftY] = block->GetVertex(3);
-		auto [bottomRightX, bottomRightY] = block->GetVertex(4);
-		auto [topRightX, topRightY] = block->GetVertex(1);
-		auto [topLeftX, topLeftY] = block->GetVertex(2);
-
 		QuadBoundary blockBoundary;
-		blockBoundary.corners[0] = new Node(bottomLeftX, bottomLeftY);
-		blockBoundary.corners[1] = new Node(bottomRightX, bottomRightY);
-		blockBoundary.corners[2] = new Node(topRightX, topRightY);
-		blockBoundary.corners[3] = new Node(topLeftX, topLeftY);
-		blockBoundary.edges[0] = new Connection(*blockBoundary.corners[0], *blockBoundary.corners[1]);
-		blockBoundary.edges[1] = new Connection(*blockBoundary.corners[1], *blockBoundary.corners[2]);
-		blockBoundary.edges[2] = new Connection(*blockBoundary.corners[2], *blockBoundary.corners[3]);
-		blockBoundary.edges[3] = new Connection(*blockBoundary.corners[3], *blockBoundary.corners[0]);
+		for (int i = 0; i < 4; ++i) {
+			auto [x, y] = block->GetVertex(i);
+			blockBoundary.corners[i] = new Node("block", x, y);
+		}
+		blockBoundary.edges[FACE_WEST]  = new Connection(*blockBoundary.corners[0], *blockBoundary.corners[3]);
+		blockBoundary.edges[FACE_EAST]  = new Connection(*blockBoundary.corners[1], *blockBoundary.corners[2]);
+		blockBoundary.edges[FACE_NORTH] = new Connection(*blockBoundary.corners[0], *blockBoundary.corners[1]);
+		blockBoundary.edges[FACE_SOUTH] = new Connection(*blockBoundary.corners[3], *blockBoundary.corners[2]);
 
 		vector<Node*> blockNodes(blockBoundary.corners, blockBoundary.corners + 4);
 		vector<Connection*> blockConnections(blockBoundary.edges, blockBoundary.edges + 4);
@@ -1762,7 +1766,7 @@ void Map::ArrangeBlocks() {
 		vector<Node*> newNodes;
 		vector<Connection*> newConnections, removedConnections;
 		unordered_map<Quad*, QuadBoundary> elementBoundaries;
-		container.DivideSpace(elements, blockBoundary, toWorld, newNodes, newConnections, removedConnections, elementBoundaries);
+		container.DivideSpace(elements, blockBoundary, toWorld, "block", newNodes, newConnections, removedConnections, elementBoundaries);
 
 		block->AddNodes(newNodes);
 		ApplyDivideResult(newNodes, newConnections, removedConnections);
@@ -1770,6 +1774,18 @@ void Map::ArrangeBlocks() {
 		// blockBoundary自身的边可能被本次划分切断，置空失效边，避免block持有悬空指针
 		blockBoundary.Invalidate(removedConnections);
 		block->SetBoundary(blockBoundary);
+
+		// 将block四角节点与对应路口相连，接入路网
+		auto& blockIntersections = block->GetIntersections();
+		for (int i = 0; i < 4; ++i) {
+			Intersection* inter = blockIntersections[i];
+			Node* corner = blockBoundary.corners[i];
+			if (!inter || !corner) continue;
+			Connection* c = new Connection(*inter, *corner);
+			navigationGraph[inter->GetId()].emplace_back(corner->GetId(), c);
+			navigationGraph[corner->GetId()].emplace_back(inter->GetId(), c);
+			navigationConnections.push_back(c);
+		}
 		for (auto& [elem, elemBoundary] : elementBoundaries) {
 			if (auto zone = dynamic_cast<Zone*>(elem)) {
 				zone->SetBoundary(elemBoundary);

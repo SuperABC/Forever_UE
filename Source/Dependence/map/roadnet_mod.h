@@ -7,6 +7,8 @@
 
 #include <string>
 #include <functional>
+#include <vector>
+#include <unordered_map>
 
 
 class RoadnetMod {
@@ -44,9 +46,10 @@ public:
 	* 构建路网
 	* @width, height: 地图分辨率
 	* @get: 获取地图element处地形类型
+	* @nodeStaticCount: 跨dll传Node::count（不要在mod里留下未传回的Node实例）
 	*/
 	COSTOM_INIT virtual void DistributeRoadnet(int width, int height,
-		const std::function<std::string(int, int)>& get) = 0;
+		const std::function<std::string(int, int)>& get, int nodeStaticCount) = 0;
 
 	// 外部连接
 	std::vector<Node> externs;
@@ -57,8 +60,8 @@ public:
 	// 道路
 	std::vector<Road> roads;
 
-	// 地块（关联道路Road及其连接点在路上的位置）
-	std::vector<std::pair<Lot, std::vector<std::pair<Road, float>>>> lots;
+	// 地块数据：Lot + 相邻道路(key为FACE_DIRECTION) + 角路口(key为CORNER_DIRECTION)
+	std::vector<std::pair<Lot, std::pair<std::unordered_map<int, Road>, std::unordered_map<int, Intersection>>>> lots;
 };
 
 class RoadnetFactory {

@@ -124,6 +124,4 @@ protected:
 	APopulaceBase* populaceActor;
 	AStoryBase* storyActor;
 	ATrafficBase* trafficActor;
-
-	std::unordered_map<std::string, std::unordered_map<std::string, std::string>> virtualPaths;
 };

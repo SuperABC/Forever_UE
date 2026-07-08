@@ -24,6 +24,26 @@ struct FRoad {
 	FString type;
 };
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FNode {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Node")
+	FVector pos;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Node")
+	FString category;
+};
+
+USTRUCT(Blueprintable, BlueprintType)
+struct FConnection {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector start;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Connection")
+	FVector end;
+};
+
 UCLASS()
 class FOREVER_API ARoadnetBase : public AActor {
 	GENERATED_BODY()
@@ -42,6 +62,9 @@ public:
 	void UpdateRoadnet();
 	UFUNCTION(BlueprintCallable, Category = "World")
 	TArray<FRoad> GetRoadnet();
+
+	UFUNCTION(BlueprintCallable, Category = "World")
+	void GetNavigations(TArray<FNode>& nodes, TArray<FConnection>& connections);
 
 protected:
 	virtual void BeginPlay() override;

@@ -162,7 +162,7 @@ void Room::PlacePivots(Quad* room) {
 	mod->PlacePivots(room);
 
 	for (auto& pivot : mod->pivots) {
-		pivots.push_back(new Node(pivot[0] * room->GetSizeX() + pivot[1], pivot[2] * room->GetSizeY() + pivot[3]));
+		pivots.push_back(new Node("room", pivot[0] * room->GetSizeX() + pivot[1], pivot[2] * room->GetSizeY() + pivot[3]));
 	}
 }
 

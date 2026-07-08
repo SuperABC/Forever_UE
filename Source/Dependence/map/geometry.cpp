@@ -26,11 +26,12 @@ public:
 
 int Node::count = 0;
 
-Node::Node(float x, float y, float z) :
+Node::Node(string category, float x, float y, float z) :
 	id(count++),
 	posX(x),
 	posY(y),
-	posZ(z) {
+	posZ(z),
+	category(category) {
 
 }
 
@@ -54,12 +55,27 @@ float Node::GetZ() const {
 	return posZ;
 }
 
+string Node::GetCategory() const {
+	return category;
+}
+
+int Node::GetCount() {
+	return count;
+}
+
+void Node::SetCount(int c) {
+	count = c;
+}
+
 Node::Node(const Node& other) :
 	id(other.id),
 	posX(other.posX),
 	posY(other.posY),
-	posZ(other.posZ) {
-
+	posZ(other.posZ),
+	category(other.category) {
+	if(count <= other.id) {
+		count = other.id + 1;
+	}
 }
 
 Node& Node::operator=(const Node& other) {
@@ -68,6 +84,10 @@ Node& Node::operator=(const Node& other) {
 		posY = other.posY;
 		posZ = other.posZ;
 		id = other.id;
+		category = other.category;	
+		if (count <= other.id) {
+			count = other.id + 1;
+		}
 	}
 	return *this;
 }
@@ -171,7 +191,7 @@ Node Connection::GetPoint(float f) const {
 		float x = x1 + f * (x2 - x1);
 		float y = y1 + f * (y2 - y1);
 		float z = z1 + f * (z2 - z1);
-		return Node(x, y, z);
+		return Node("", x, y, z);
 	}
 	else {
 		int n = static_cast<int>(controlVertices.size());
@@ -201,7 +221,7 @@ Node Connection::GetPoint(float f) const {
 			y /= sumWeight;
 			z /= sumWeight;
 		}
-		return Node(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+		return Node("", static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 	}
 }
 
@@ -231,7 +251,7 @@ float Connection::CalcDistance(float f1, float f2) const {
 	return ComputeLength(*this, f1, f2);
 }
 
-Intersection::Intersection(float x, float y, float z) : Node(x, y, z) {
+Intersection::Intersection(float x, float y, float z) : Node("roadnet", x, y, z) {
 
 }
 
@@ -396,7 +416,7 @@ void Quad::SetAcreage(float a) {
 }
 
 void QuadBoundary::Invalidate(const vector<Connection*>& removed) {
-	for (int i = 0; i < QUAD_VERTEX_COUNT; i++) {
+	for (int i = 0; i < 4; i++) {
 		if (find(removed.begin(), removed.end(), edges[i]) != removed.end()) {
 			edges[i] = nullptr;
 		}
@@ -420,7 +440,7 @@ void Quad::RecordBoundary(Quad* elem, const QuadBoundary& boundary, unordered_ma
 }
 
 void Quad::SplitInto(float left, float right, float bottom, float top, const QuadBoundary& boundary,
-	Quad* a, Quad* b, const function<pair<float, float>(float, float)>& toWorld,
+	Quad* a, Quad* b, const function<pair<float, float>(float, float)>& toWorld, string category,
 	vector<Node*>& outNewNodes, vector<Connection*>& outNewConnections, vector<Connection*>& outRemovedConnections,
 	unordered_map<Quad*, QuadBoundary>& outElementBoundaries) {
 
@@ -442,86 +462,86 @@ void Quad::SplitInto(float left, float right, float bottom, float top, const Qua
 
 		auto [bx, by] = toWorld(static_cast<float>(divX), bottom);
 		auto [tx, ty] = toWorld(static_cast<float>(divX), top);
-		Node* splitBottom = new Node(bx, by);
-		Node* splitTop = new Node(tx, ty);
+		Node* splitBottom = new Node(category, bx, by);
+		Node* splitTop = new Node(category, tx, ty);
 		outNewNodes.push_back(splitBottom);
 		outNewNodes.push_back(splitTop);
 
-		Connection* bottomLeftEdge = new Connection(*boundary.corners[0], *splitBottom);
-		Connection* bottomRightEdge = new Connection(*splitBottom, *boundary.corners[1]);
-		Connection* topRightEdge = new Connection(*boundary.corners[2], *splitTop);
-		Connection* topLeftEdge = new Connection(*splitTop, *boundary.corners[3]);
+		Connection* topLeftEdge = new Connection(*boundary.corners[3], *splitTop);
+		Connection* topRightEdge = new Connection(*splitTop, *boundary.corners[2]);
+		Connection* bottomLeftEdge = new Connection(*splitBottom, *boundary.corners[0]);
+		Connection* bottomRightEdge = new Connection(*boundary.corners[1], *splitBottom);
 		Connection* dividerEdge = new Connection(*splitBottom, *splitTop);
+		outNewConnections.push_back(topLeftEdge);
+		outNewConnections.push_back(topRightEdge);
 		outNewConnections.push_back(bottomLeftEdge);
 		outNewConnections.push_back(bottomRightEdge);
-		outNewConnections.push_back(topRightEdge);
-		outNewConnections.push_back(topLeftEdge);
 		outNewConnections.push_back(dividerEdge);
-		if (boundary.edges[0]) outRemovedConnections.push_back(boundary.edges[0]);
+		if (boundary.edges[3]) outRemovedConnections.push_back(boundary.edges[3]);
 		if (boundary.edges[2]) outRemovedConnections.push_back(boundary.edges[2]);
 
 		lowerBoundary.corners[0] = boundary.corners[0];
 		lowerBoundary.corners[1] = splitBottom;
 		lowerBoundary.corners[2] = splitTop;
 		lowerBoundary.corners[3] = boundary.corners[3];
-		lowerBoundary.edges[0] = bottomLeftEdge;
+		lowerBoundary.edges[0] = boundary.edges[0];
 		lowerBoundary.edges[1] = dividerEdge;
-		lowerBoundary.edges[2] = topLeftEdge;
-		lowerBoundary.edges[3] = boundary.edges[3];
+		lowerBoundary.edges[2] = bottomLeftEdge;
+		lowerBoundary.edges[3] = topLeftEdge;
 
 		upperBoundary.corners[0] = splitBottom;
 		upperBoundary.corners[1] = boundary.corners[1];
 		upperBoundary.corners[2] = boundary.corners[2];
 		upperBoundary.corners[3] = splitTop;
-		upperBoundary.edges[0] = bottomRightEdge;
+		upperBoundary.edges[0] = dividerEdge;
 		upperBoundary.edges[1] = boundary.edges[1];
-		upperBoundary.edges[2] = topRightEdge;
-		upperBoundary.edges[3] = dividerEdge;
+		upperBoundary.edges[2] = bottomRightEdge;
+		upperBoundary.edges[3] = topRightEdge;
 	}
 	else {
 		int divY = static_cast<int>(bottom + (top - bottom) * lowerAcreage / totalAcreage);
 		if (abs(divY - bottom) < 2) divY = static_cast<int>(bottom);
 		if (abs(divY - top) < 2) divY = static_cast<int>(top);
-		lowerElem->SetVertices(left, bottom, right, static_cast<float>(divY));
-		upperElem->SetVertices(left, static_cast<float>(divY), right, top);
+		lowerElem->SetVertices(left, static_cast<float>(divY), right, top);
+		upperElem->SetVertices(left, bottom, right, static_cast<float>(divY));
 
 		auto [lx, ly] = toWorld(left, static_cast<float>(divY));
 		auto [rx, ry] = toWorld(right, static_cast<float>(divY));
-		Node* splitLeft = new Node(lx, ly);
-		Node* splitRight = new Node(rx, ry);
+		Node* splitLeft = new Node(category, lx, ly);
+		Node* splitRight = new Node(category, rx, ry);
 		outNewNodes.push_back(splitLeft);
 		outNewNodes.push_back(splitRight);
 
-		Connection* leftBottomEdge = new Connection(*splitLeft, *boundary.corners[0]);
 		Connection* leftTopEdge = new Connection(*boundary.corners[3], *splitLeft);
-		Connection* rightBottomEdge = new Connection(*boundary.corners[1], *splitRight);
-		Connection* rightTopEdge = new Connection(*splitRight, *boundary.corners[2]);
+		Connection* leftBottomEdge = new Connection(*splitLeft, *boundary.corners[0]);
+		Connection* rightTopEdge = new Connection(*boundary.corners[2], *splitRight);
+		Connection* rightBottomEdge = new Connection(*splitRight, *boundary.corners[1]);
 		Connection* dividerEdge = new Connection(*splitLeft, *splitRight);
-		outNewConnections.push_back(leftBottomEdge);
 		outNewConnections.push_back(leftTopEdge);
-		outNewConnections.push_back(rightBottomEdge);
+		outNewConnections.push_back(leftBottomEdge);
 		outNewConnections.push_back(rightTopEdge);
+		outNewConnections.push_back(rightBottomEdge);
 		outNewConnections.push_back(dividerEdge);
 		if (boundary.edges[1]) outRemovedConnections.push_back(boundary.edges[1]);
-		if (boundary.edges[3]) outRemovedConnections.push_back(boundary.edges[3]);
+		if (boundary.edges[0]) outRemovedConnections.push_back(boundary.edges[0]);
 
-		lowerBoundary.corners[0] = boundary.corners[0];
-		lowerBoundary.corners[1] = boundary.corners[1];
-		lowerBoundary.corners[2] = splitRight;
-		lowerBoundary.corners[3] = splitLeft;
-		lowerBoundary.edges[0] = boundary.edges[0];
-		lowerBoundary.edges[1] = rightBottomEdge;
+		lowerBoundary.corners[0] = splitLeft;
+		lowerBoundary.corners[1] = splitRight;
+		lowerBoundary.corners[2] = boundary.corners[2];
+		lowerBoundary.corners[3] = boundary.corners[3];
+		lowerBoundary.edges[0] = leftTopEdge;
+		lowerBoundary.edges[1] = rightTopEdge;
 		lowerBoundary.edges[2] = dividerEdge;
-		lowerBoundary.edges[3] = leftBottomEdge;
+		lowerBoundary.edges[3] = boundary.edges[3];
 
-		upperBoundary.corners[0] = splitLeft;
-		upperBoundary.corners[1] = splitRight;
-		upperBoundary.corners[2] = boundary.corners[2];
-		upperBoundary.corners[3] = boundary.corners[3];
-		upperBoundary.edges[0] = dividerEdge;
-		upperBoundary.edges[1] = rightTopEdge;
+		upperBoundary.corners[0] = boundary.corners[0];
+		upperBoundary.corners[1] = boundary.corners[1];
+		upperBoundary.corners[2] = splitRight;
+		upperBoundary.corners[3] = splitLeft;
+		upperBoundary.edges[0] = leftBottomEdge;
+		upperBoundary.edges[1] = rightBottomEdge;
 		upperBoundary.edges[2] = boundary.edges[2];
-		upperBoundary.edges[3] = leftTopEdge;
+		upperBoundary.edges[3] = dividerEdge;
 	}
 
 	RecordBoundary(lowerElem, lowerBoundary, outElementBoundaries);
@@ -529,12 +549,12 @@ void Quad::SplitInto(float left, float right, float bottom, float top, const Qua
 }
 
 void Quad::DivideSpace(vector<Quad*>& elements, const QuadBoundary& boundary,
-	const function<pair<float, float>(float, float)>& toWorld,
+	const function<pair<float, float>(float, float)>& toWorld, string category,
 	vector<Node*>& outNewNodes, vector<Connection*>& outNewConnections,
 	vector<Connection*>& outRemovedConnections, unordered_map<Quad*, QuadBoundary>& outElementBoundaries) {
 	if (elements.empty()) return;
 
-	for (int i = 0; i < QUAD_VERTEX_COUNT; i++) {
+	for (int i = 0; i < 4; i++) {
 		if (!boundary.corners[i] || !boundary.edges[i]) {
 			THROW_EXCEPTION(NullPointerException, "DivideSpace boundary must have 4 valid corners and edges.\n");
 		}
@@ -567,7 +587,7 @@ void Quad::DivideSpace(vector<Quad*>& elements, const QuadBoundary& boundary,
 	}
 
 	SplitInto(GetLeft(), GetRight(), GetBottom(), GetTop(), boundary, elements[0], elements[1], toWorld,
-		outNewNodes, outNewConnections, outRemovedConnections, outElementBoundaries);
+		category, outNewNodes, outNewConnections, outRemovedConnections, outElementBoundaries);
 
 	while (!elements.empty()) {
 		auto tmp = elements.back();
@@ -578,7 +598,7 @@ void Quad::DivideSpace(vector<Quad*>& elements, const QuadBoundary& boundary,
 
 			if (tmp->GetAcreage() > 0) {
 				SplitInto(tmp->GetLeft(), tmp->GetRight(), tmp->GetBottom(), tmp->GetTop(), chunk->boundary, rect1, rect2, toWorld,
-					outNewNodes, outNewConnections, outRemovedConnections, outElementBoundaries);
+					category, outNewNodes, outNewConnections, outRemovedConnections, outElementBoundaries);
 
 				if (dynamic_cast<Space*>(rect1)) elements.push_back(rect1);
 				if (dynamic_cast<Space*>(rect2)) elements.push_back(rect2);
@@ -637,7 +657,7 @@ void Lot::SetArea(AREA_TYPE a) {
 }
 
 pair<float, float> Lot::GetVertex(int idx) const {
-	if (idx < 1 || idx > 4) {
+	if (idx < 0 || idx > 3) {
 		THROW_EXCEPTION(OutOfRangeException, "Block vertex out of range [0, 3].\n");
 	}
 
@@ -647,14 +667,14 @@ pair<float, float> Lot::GetVertex(int idx) const {
 	float s = sin(rotation);
 
 	switch (idx) {
-	case 1: // 右上
-		return { posX + hx * c - hy * s, posY + hx * s + hy * c };
-	case 2: // 左上
-		return { posX - hx * c - hy * s, posY - hx * s + hy * c };
-	case 3: // 左下
+	case 0: // 左上
 		return { posX - hx * c + hy * s, posY - hx * s - hy * c };
-	case 4: // 右下
+	case 1: // 右上
 		return { posX + hx * c + hy * s, posY + hx * s - hy * c };
+	case 2: // 右下
+		return { posX + hx * c - hy * s, posY + hx * s + hy * c };
+	case 3: // 左下
+		return { posX - hx * c - hy * s, posY - hx * s + hy * c };
 	default:
 		return { 0.f, 0.f };
 	}
@@ -674,7 +694,7 @@ pair<float, float> Lot::GetPosition(float x, float y) const {
 }
 
 void Lot::SetPosition(Node n1, Node n2, Node n3, const vector<float>& margin) {
-	if (margin.size() != FACE_DIRECTION_COUNT) {
+	if (margin.size() != 4) {
 		THROW_EXCEPTION(InvalidArgumentException, "Block must have 4 margins.\n");
 	}
 
@@ -722,7 +742,7 @@ void Lot::SetPosition(Node n1, Node n2, Node n3, const vector<float>& margin) {
 }
 
 void Lot::SetPosition(Node n1, Node n2, Node n3, Node n4, const vector<float>& margin) {
-	if (margin.size() != FACE_DIRECTION_COUNT) {
+	if (margin.size() != 4) {
 		THROW_EXCEPTION(InvalidArgumentException, "Block must have 4 margins.\n");
 	}
 
@@ -786,12 +806,12 @@ void Lot::SetPosition(Node n1, Node n2, Node n3, Node n4, const vector<float>& m
 	float rot = atan2(u1y, u1x);
 
 	// 应用边距
-	sx -= margin[1] + margin[3];
-	sy -= margin[0] + margin[2];
-	cx += (margin[3] - margin[1]) * u1x / (2.0f * sx)
-		+ (margin[2] - margin[0]) * u2x / (2.0f * sy);
-	cy += (margin[3] - margin[1]) * u1y / (2.0f * sx)
-		+ (margin[2] - margin[0]) * u2y / (2.0f * sy);
+	sx -= margin[1] + margin[0];
+	sy -= margin[2] + margin[3];
+	cx += (margin[0] - margin[1]) * u1x / (2.0f * sx)
+		+ (margin[3] - margin[2]) * u2x / (2.0f * sy);
+	cy += (margin[0] - margin[1]) * u1y / (2.0f * sx)
+		+ (margin[3] - margin[2]) * u2y / (2.0f * sy);
 
 	// 更新成员变量
 	posX = cx;

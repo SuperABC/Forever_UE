@@ -53,8 +53,8 @@ string Roadnet::GetName() const {
 }
 
 void Roadnet::DistributeRoadnet(int width, int height,
-	const function<string(int, int)>& get) {
-	mod->DistributeRoadnet(width, height, get);
+	const function<string(int, int)>& get, int nodeStaticCount) {
+	mod->DistributeRoadnet(width, height, get, nodeStaticCount);
 
 	for(auto& ext : mod->externs) {
 		externs.push_back(new Node(ext));
@@ -65,13 +65,24 @@ void Roadnet::DistributeRoadnet(int width, int height,
 	for (auto& road : mod->roads) {
 		roads.push_back(new Road(road));
 	}
-	for (auto& [lot, lotRoads] : mod->lots) {
+	for (auto& [lot, lotData] : mod->lots) {
 		auto block = new Block(lot);
-		vector<pair<Road*, float>> blockRoads;
-		for (auto& [road, position] : lotRoads) {
-			blockRoads.emplace_back(new Road(road), position);
-		}
+		auto& [lotRoads, lotIntersections] = lotData;
+
+		vector<Road*> blockRoads(4, nullptr);
+		if(lotRoads.find(0) != lotRoads.end()) blockRoads[0] = new Road(lotRoads.at(0));
+		if(lotRoads.find(1) != lotRoads.end()) blockRoads[1] = new Road(lotRoads.at(1));
+		if(lotRoads.find(2) != lotRoads.end()) blockRoads[2] = new Road(lotRoads.at(2));
+		if(lotRoads.find(3) != lotRoads.end()) blockRoads[3] = new Road(lotRoads.at(3));
 		block->SetRoads(blockRoads);
+
+		vector<Intersection*> blockIntersections(4, nullptr);
+		if (lotIntersections.find(0) != lotIntersections.end()) blockIntersections[0] = new Intersection(lotIntersections.at(0));
+		if (lotIntersections.find(1) != lotIntersections.end()) blockIntersections[1] = new Intersection(lotIntersections.at(1));
+		if (lotIntersections.find(2) != lotIntersections.end()) blockIntersections[2] = new Intersection(lotIntersections.at(2));
+		if (lotIntersections.find(3) != lotIntersections.end()) blockIntersections[3] = new Intersection(lotIntersections.at(3));
+		block->SetIntersections(blockIntersections);
+
 		blocks.push_back(block);
 	}
 }
@@ -96,10 +107,10 @@ void Roadnet::AllocateAddress() {
 	addresses.clear();
 
 	for (auto& block : blocks) {
-		auto blockRoads = block->GetRoads();
-		for (const auto& road : blockRoads) {
-			addresses[road.first->GetName()].push_back(block);
-			block->SetAddress(road.first->GetName(), static_cast<int>(addresses[road.first->GetName()].size()) - 1);
+		for (auto road : block->GetRoads()) {
+			if (!road) continue;
+			addresses[road->GetName()].push_back(block);
+			block->SetAddress(road->GetName(), static_cast<int>(addresses[road->GetName()].size()) - 1);
 		}
 	}
 }
@@ -139,6 +150,6 @@ const char* EmptyRoadnet::GetName() {
 }
 
 void EmptyRoadnet::DistributeRoadnet(int width, int height,
-	const function<string(int, int)>& get) {
-
+	const function<string(int, int)>& get, int nodeStaticCount) {
+	Node::SetCount(nodeStaticCount);
 }

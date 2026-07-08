@@ -30,20 +30,26 @@ public:
 	virtual ~Block();
 
 	/*
-	* 获取街区相连路线及连接点
+	* 获取街区四个方向（FACE_DIRECTION）相邻的道路，某方向无路则为null
 	*/
-	const std::vector<std::pair<Road*, Node*>>& GetRoads() const;
+	const std::vector<Road*>& GetRoads() const;
 
 	/*
-	* 设置街区相连路线及连接点位置（按位置创建并持有连接点Node）
-	* @roads: 相连路线及其在路线上的位置
+	* 设置街区四个方向相邻道路（size为4，按FACE_DIRECTION顺序，无路方向设null）
+	* @roads: 四个方向的Road指针
 	*/
-	void SetRoads(const std::vector<std::pair<Road*, float>>& roads);
+	void SetRoads(const std::vector<Road*>& roads);
 
 	/*
-	* 随机获取一个相连道路连接点
+	* 获取街区四个角（CORNER_DIRECTION）对应的路口，某角无路口则为null
 	*/
-	Node* GetRandomRoadNode() const;
+	const std::vector<Intersection*>& GetIntersections() const;
+
+	/*
+	* 设置街区四个角对应的路口（size为4，按CORNER_DIRECTION顺序，无路口则设null）
+	* @intersections: 四个角的Intersection指针
+	*/
+	void SetIntersections(const std::vector<Intersection*>& intersections);
 
 	/*
 	* 获取街区内部划分（DivideSpace）产生的导航节点
@@ -125,8 +131,11 @@ public:
 	std::string GetAddress() const;
 
 protected:
-	// 相连道路
-	OBJECT_HOLDER std::vector<std::pair<Road*, Node*>> roads;
+	// 四方向相邻道路
+	OBJECT_HOLDER std::vector<Road*> roads;
+
+	// 四角对应路口
+	OBJECT_HOLDER std::vector<Intersection*> intersections;
 
 	// 内部划分产生的导航节点
 	OBJECT_HOLDER std::vector<Node*> nodes;

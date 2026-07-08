@@ -44,7 +44,7 @@ public:
 	* @get: 获取地图element处地形类型
 	*/
 	void DistributeRoadnet(int width, int height,
-		const std::function<std::string(int, int)>& get);
+		const std::function<std::string(int, int)>& get, int nodeStaticCount);
 
 	/*
 	* 获取所有外界连接点
@@ -145,7 +145,7 @@ public:
 	* @get: 获取地图element处地形类型
 	*/
 	virtual void DistributeRoadnet(int width, int height,
-		const std::function<std::string(int, int)>& get) override;
+		const std::function<std::string(int, int)>& get, int nodeStaticCount) override;
 
 private:
 	// 总实例数量

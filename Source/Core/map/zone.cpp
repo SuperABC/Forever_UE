@@ -257,7 +257,7 @@ void Zone::ArrangeBuildings(Map* map) {
 	vector<Node*> newNodes;
 	vector<Connection*> newConnections, removedConnections;
 	unordered_map<Quad*, QuadBoundary> elementBoundaries;
-	container.DivideSpace(elements, boundary, toWorld, newNodes, newConnections, removedConnections, elementBoundaries);
+	container.DivideSpace(elements, boundary, toWorld, "zone", newNodes, newConnections, removedConnections, elementBoundaries);
 
 	AddNodes(newNodes);
 	if (map) {
@@ -297,7 +297,7 @@ void Zone::PlacePivots(Quad* zone) {
 	mod->PlacePivots(zone);
 
 	for (auto& pivot : mod->pivots) {
-		pivots.push_back(new Node(pivot[0] * zone->GetSizeX() + pivot[1], pivot[2] * zone->GetSizeY() + pivot[3]));
+		pivots.push_back(new Node("zone", pivot[0] * zone->GetSizeX() + pivot[1], pivot[2] * zone->GetSizeY() + pivot[3]));
 	}
 }
 

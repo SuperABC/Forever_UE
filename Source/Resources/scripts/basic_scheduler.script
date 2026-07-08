@@ -5,9 +5,10 @@
 	"triggers": [{"type": "game_start"}],
 	"dialogs": [],
 	"changes": [
-		{"type": "add_option", "name": "$$self.name", "option": "你好"}
+		{"type": "add_option", "name": "$$self.name", "option": "你好"},
+		{"type": "add_option", "name": "$$self.name", "option": "测试"}
 	],
-	"subsequences": ["default_hello"]
+	"subsequences": ["default_hello", "default_test"]
 },
 {
 	"milestone": "default_hello",
@@ -16,6 +17,17 @@
 	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "你好"}],
 	"dialogs": [{"list":[{"content": "你好。"}]}],
 	"changes": [],
+	"subsequences": []
+},
+{
+	"milestone": "default_test",
+	"visible": false,
+	"drop": "false",
+	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "测试"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "npc_navigate", "name": "$$self.name", "destination": "\"中山西路 0 yuanshen 00000\""}
+	],
 	"subsequences": []
 }
 ]

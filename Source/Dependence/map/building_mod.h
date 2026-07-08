@@ -12,14 +12,6 @@
 #include <unordered_set>
 
 
-// 建筑方向
-enum FACE_DIRECTION : int {
-	FACE_WEST,
-	FACE_EAST,
-	FACE_NORTH,
-	FACE_SOUTH
-};
-
 // 点位相对参数的固定长度（xRatio, xOffset, yRatio, yOffset）
 #define POINT_PARAM_COUNT 4
 

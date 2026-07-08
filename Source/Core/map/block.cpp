@@ -13,6 +13,8 @@ using namespace std;
 
 Block::Block() :
 	Lot(),
+	roads(),
+	intersections(),
 	nodes(),
 	boundary(),
 	address(),
@@ -23,6 +25,8 @@ Block::Block() :
 
 Block::Block(Lot lot) :
 	Lot(lot),
+	roads(),
+	intersections(),
 	nodes(),
 	boundary(),
 	address(),
@@ -32,10 +36,14 @@ Block::Block(Lot lot) :
 }
 
 Block::~Block() {
-	for (auto& [_, node] : roads) {
-		delete node;
+	for(auto road : roads) {
+		delete road;
 	}
 	roads.clear();
+	for(auto intersection : intersections) {
+		delete intersection;
+	}
+	intersections.clear();
 	for (auto node : nodes) {
 		delete node;
 	}
@@ -50,28 +58,20 @@ Block::~Block() {
 	buildings.clear();
 }
 
-const vector<pair<Road*, Node*>>& Block::GetRoads() const {
+const vector<Road*>& Block::GetRoads() const {
 	return roads;
 }
 
-void Block::SetRoads(const vector<pair<Road*, float>>& r) {
-	for (auto& [_, node] : roads) {
-		delete node;
-	}
-	roads.clear();
-
-	for (auto& [road, position] : r) {
-		if (road == nullptr) {
-			THROW_EXCEPTION(NullPointerException, "Road is null when setting block roads.\n");
-		}
-		roads.emplace_back(road, new Node(road->GetPoint(position)));
-	}
+void Block::SetRoads(const vector<Road*>& r) {
+	roads = r;
 }
 
-Node* Block::GetRandomRoadNode() const {
-	if (roads.empty()) return nullptr;
-	int idx = GetRandom(static_cast<int>(roads.size()));
-	return roads[idx].second;
+const vector<Intersection*>& Block::GetIntersections() const {
+	return intersections;
+}
+
+void Block::SetIntersections(const vector<Intersection*>& i) {
+	intersections = i;
 }
 
 const vector<Node*>& Block::GetNodes() const {

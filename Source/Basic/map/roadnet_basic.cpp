@@ -27,7 +27,9 @@ const char* JingRoadnet::GetName() {
 }
 
 void JingRoadnet::DistributeRoadnet(int width, int height,
-	const function<string(int, int)>& get) {
+	const function<string(int, int)>& get, int nodeStaticCount) {
+	Node::SetCount(nodeStaticCount);
+
 	string meshPath = "/Game/Asset/Meshes/default_1_1.default_1_1";
 
 	vector<pair<Node, int>> horizontalNode1w;
@@ -43,12 +45,12 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 	Intersection northWest(width / 2.f + 16.f * (sin(theta) - cos(theta)), height / 2.f + 16.f * (-cos(theta) - sin(theta)));
 	Intersection northEast(width / 2.f + 16.f * (sin(theta) + cos(theta)), height / 2.f + 16.f * (-cos(theta) + sin(theta)));
-	Intersection southWest(width / 2.f + 16.f * (-sin(theta) - cos(theta)), height / 2.f + 16.f * (cos(theta) - sin(theta)));
 	Intersection southEast(width / 2.f + 16.f * (-sin(theta) + cos(theta)), height / 2.f + 16.f * (cos(theta) + sin(theta)));
+	Intersection southWest(width / 2.f + 16.f * (-sin(theta) - cos(theta)), height / 2.f + 16.f * (cos(theta) - sin(theta)));
 	intersections.push_back(northWest);
 	intersections.push_back(northEast);
-	intersections.push_back(southWest);
 	intersections.push_back(southEast);
+	intersections.push_back(southWest);
 
 	float dirSin = northEast.GetY() - northWest.GetY();
 	float dirCos = northEast.GetX() - northWest.GetX();
@@ -110,10 +112,10 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	externs.emplace_back(verticalNode2s.back().first);
 	verticalNode2s.pop_back();
 
+	roads.emplace_back("中山西路", intersections[0], intersections[3], meshPath);
+	roads.emplace_back("中山东路", intersections[1], intersections[2], meshPath);
 	roads.emplace_back("中山北路", intersections[0], intersections[1], meshPath);
-	roads.emplace_back("中山东路", intersections[1], intersections[3], meshPath);
 	roads.emplace_back("中山南路", intersections[3], intersections[2], meshPath);
-	roads.emplace_back("中山西路", intersections[2], intersections[0], meshPath);
 
 	if (horizontalNode1w.size() > 0) {
 		roads.emplace_back("城西北路", intersections[0], intersections[horizontalNode1w[0].second], meshPath);
@@ -134,7 +136,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	}
 	roads.emplace_back("城东北路", intersections[horizontalNode1e.back().second], externs[1], meshPath);
 	if (horizontalNode2w.size() > 0) {
-		roads.emplace_back("城西南路", intersections[2], intersections[horizontalNode2w[0].second], meshPath);
+		roads.emplace_back("城西南路", intersections[3], intersections[horizontalNode2w[0].second], meshPath);
 	}
 	for (size_t i = 1; i < horizontalNode2w.size(); i++) {
 		const auto& [node1, idx1] = horizontalNode2w[i];
@@ -143,7 +145,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	}
 	roads.emplace_back("城西南路", intersections[horizontalNode2w.back().second], externs[2], meshPath);
 	if (horizontalNode2e.size() > 0) {
-		roads.emplace_back("城东南路", intersections[3], intersections[horizontalNode2e[0].second], meshPath);
+		roads.emplace_back("城东南路", intersections[2], intersections[horizontalNode2e[0].second], meshPath);
 	}
 	for (size_t i = 1; i < horizontalNode2e.size(); i++) {
 		const auto& [node1, idx1] = horizontalNode2e[i];
@@ -161,7 +163,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	}
 	roads.emplace_back("城北西路", intersections[verticalNode1n.back().second], externs[4], meshPath);
 	if (verticalNode1s.size() > 0) {
-		roads.emplace_back("城南西路", intersections[2], intersections[verticalNode1s[0].second], meshPath);
+		roads.emplace_back("城南西路", intersections[3], intersections[verticalNode1s[0].second], meshPath);
 	}
 	for (size_t i = 1; i < verticalNode1s.size(); i++) {
 		const auto& [node1, idx1] = verticalNode1s[i];
@@ -179,7 +181,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	}
 	roads.emplace_back("城北东路", intersections[verticalNode2n.back().second], externs[6], meshPath);
 	if (verticalNode2s.size() > 0) {
-		roads.emplace_back("城南东路", intersections[3], intersections[verticalNode2s[0].second], meshPath);
+		roads.emplace_back("城南东路", intersections[2], intersections[verticalNode2s[0].second], meshPath);
 	}
 	for (size_t i = 1; i < verticalNode2s.size(); i++) {
 		const auto& [node1, idx1] = verticalNode2s[i];
@@ -188,50 +190,73 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	}
 	roads.emplace_back("城南东路", intersections[verticalNode2s.back().second], externs[7], meshPath);
 
-	lots.emplace_back(Lot(northWest, northEast, southEast, southWest, { 0.5f, 0.5f, 0.5f, 0.5f }),
-		vector<pair<Road, float>>({
-		{roads[0], 0.5f},
-		{roads[1], 0.5f},
-		{roads[2], 0.5f},
-		{roads[3], 0.5f}
-	}));
+	lots.emplace_back(
+		Lot(northWest, northEast, southEast, southWest, { 0.5f, 0.5f, 0.5f, 0.5f }), make_pair(
+			unordered_map<int, Road>{ {0, roads[0]}, {1, roads[1]}, {2, roads[2]}, {3, roads[3]} },
+			unordered_map<int, Intersection>{ {0, intersections[0]}, {1, intersections[1]}, {2, intersections[2]}, {3, intersections[3]} }
+		)
+	);
 	lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
-	return;
+	//return;
 
 	if (horizontalNode1w.size() >= 1 && horizontalNode2w.size() >= 1) {
-		lots.emplace_back(Lot(horizontalNode1w[0].first, northWest, southWest, horizontalNode2w[0].first, { 0.5f, 0.5f, 0.5f, 0.0f }),
-			vector<pair<Road, float>>({
-					{Road("城西北路", intersections[horizontalNode1w[0].second], intersections[0], meshPath), 0.5f},
-					{roads[3], 0.5f},
-					{Road("城西南路", intersections[horizontalNode2w[0].second], intersections[2], meshPath), 0.5f},
-				}));
+		lots.emplace_back(Lot(horizontalNode1w[0].first, intersections[0], intersections[3], horizontalNode2w[0].first, { 0.0f, 0.5f, 0.5f, 0.5f }), make_pair(
+		unordered_map<int, Road>{
+			{ 1, roads[0] },
+			{ 2, Road("城西北路", intersections[horizontalNode1w[0].second], intersections[0], meshPath) },
+			{ 3, Road("城西南路", intersections[horizontalNode2w[0].second], intersections[3], meshPath) }
+		},
+		unordered_map<int, Intersection>{
+			{ 0, intersections[horizontalNode1w[0].second] },
+			{ 1, intersections[0] },
+			{ 2, intersections[3] },
+			{ 3, intersections[horizontalNode2w[0].second] }
+		}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 	if (horizontalNode1e.size() >= 1 && horizontalNode2e.size() >= 1) {
-		lots.emplace_back(Lot(northEast, horizontalNode1e[0].first, horizontalNode2e[0].first, southEast, { 0.5f, 0.0f, 0.5f, 0.5f }),
-			vector<pair<Road, float>>({
-					{Road("城东北路", intersections[horizontalNode1e[0].second], intersections[1], meshPath), 0.5f},
-					{roads[1], 0.5f},
-					{Road("城东南路", intersections[horizontalNode2e[0].second], intersections[3], meshPath), 0.5f},
-				}));
+		lots.emplace_back(Lot(intersections[1], horizontalNode1e[0].first, horizontalNode2e[0].first, intersections[2], { 0.5f, 0.0f, 0.5f, 0.5f }), make_pair(
+		unordered_map<int, Road>{
+			{ 0, roads[1] },
+			{ 2, Road("城东北路", intersections[horizontalNode1e[0].second], intersections[1], meshPath) },
+			{ 3, Road("城东南路", intersections[horizontalNode2e[0].second], intersections[2], meshPath) }
+		},
+		unordered_map<int, Intersection>{
+			{ 0, intersections[1] },
+			{ 1, intersections[horizontalNode1e[0].second] },
+			{ 2, intersections[horizontalNode2e[0].second] },
+			{ 3, intersections[2] }
+		}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 	if (verticalNode1n.size() >= 1 && verticalNode2n.size() >= 1) {
-		lots.emplace_back(Lot(verticalNode1n[0].first, verticalNode2n[0].first, northEast, northWest, { 0.5f, 0.5f, 0.0f, 0.5f }),
-			vector<pair<Road, float>>({
-					{Road("城北西路", intersections[verticalNode1n[0].second], intersections[0], meshPath), 0.5f},
-					{roads[1], 0.5f},
-					{Road("城北东路", intersections[verticalNode2n[0].second], intersections[1], meshPath), 0.5f},
-				}));
+		lots.emplace_back(Lot(verticalNode1n[0].first, verticalNode2n[0].first, intersections[1], intersections[0], { 0.5f, 0.5f, 0.0f, 0.5f }), make_pair(
+		unordered_map<int, Road>{
+			{ 0, Road("城北西路", intersections[verticalNode1n[0].second], intersections[0], meshPath) },
+			{ 1, Road("城北东路", intersections[verticalNode2n[0].second], intersections[1], meshPath) },
+			{ 3, roads[2] }
+		},
+		unordered_map<int, Intersection>{
+			{ 0, intersections[verticalNode1n[0].second] },
+			{ 1, intersections[verticalNode2n[0].second] },
+			{ 2, intersections[1] },
+			{ 3, intersections[0] }
+		}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 	if (verticalNode1s.size() >= 1 && verticalNode2s.size() >= 1) {
-		lots.emplace_back(Lot(southEast, southWest, verticalNode2s[0].first, verticalNode1s[0].first, { 0.0f, 0.5f, 0.5f, 0.5f }),
-			vector<pair<Road, float>>({
-					{Road("城南西路", intersections[verticalNode1s[0].second], intersections[2], meshPath), 0.5f},
-					{roads[1], 0.5f},
-					{Road("城南东路", intersections[verticalNode2s[0].second], intersections[3], meshPath), 0.5f},
-				}));
+		lots.emplace_back(Lot(intersections[3], intersections[2], verticalNode2s[0].first, verticalNode1s[0].first, { 0.5f, 0.5f, 0.5f, 0.0f }), make_pair(
+		unordered_map<int, Road>{
+			{ 0, Road("城南西路", intersections[verticalNode1s[0].second], intersections[3], meshPath) },
+			{ 1, Road("城南东路", intersections[verticalNode2s[0].second], intersections[2], meshPath) },
+			{ 2, roads[3] }
+		},
+		unordered_map<int, Intersection>{
+			{ 0, intersections[3] },
+			{ 1, intersections[2] },
+			{ 2, intersections[verticalNode2s[0].second] },
+			{ 3, intersections[verticalNode1s[0].second] }
+		}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 	return;
@@ -247,10 +272,16 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [seNode, seIdx] = horizontalNode2w[i - 1];
 		const auto& [swNode, swIdx] = horizontalNode2w[i];
 
-		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, 0.0f, 0.5f, 0.0f }),
-			vector<pair<Road, float>>({
-			{Road("城西北路", intersections[nwIdx], intersections[neIdx], meshPath), 0.5f},
-			{Road("城西南路", intersections[swIdx], intersections[seIdx], meshPath), 0.5f}
+		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.0f, 0.0f, 0.5f, 0.5f }), make_pair(
+		unordered_map<int, Road>{
+			{ 2, Road("城西北路", intersections[nwIdx], intersections[neIdx], meshPath) },
+			{ 3, Road("城西南路", intersections[swIdx], intersections[seIdx], meshPath) }
+		},
+		unordered_map<int, Intersection>{
+			{ 0, intersections[nwIdx] },
+			{ 1, intersections[neIdx] },
+			{ 2, intersections[seIdx] },
+			{ 3, intersections[swIdx] }
 		}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
@@ -266,11 +297,17 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [seNode, seIdx] = horizontalNode2e[i];
 		const auto& [swNode, swIdx] = horizontalNode2e[i - 1];
 
-		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, 0.0f, 0.5f, 0.0f }),
-			vector<pair<Road, float>>({
-			{Road("城东北路", intersections[neIdx], intersections[nwIdx], meshPath), 0.5f},
-			{Road("城东南路", intersections[seIdx], intersections[swIdx], meshPath), 0.5f}
-		}));
+		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.0f, 0.0f, 0.5f, 0.5f }), make_pair(
+			unordered_map<int, Road>{
+				{ 2, Road("城东北路", intersections[nwIdx], intersections[neIdx], meshPath) },
+				{ 3, Road("城东南路", intersections[swIdx], intersections[seIdx], meshPath) }
+			},
+			unordered_map<int, Intersection>{
+				{ 0, intersections[nwIdx] },
+				{ 1, intersections[neIdx] },
+				{ 2, intersections[seIdx] },
+				{ 3, intersections[swIdx] }
+			}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 
@@ -285,11 +322,17 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [seNode, seIdx] = verticalNode2n[i - 1];
 		const auto& [swNode, swIdx] = verticalNode1n[i - 1];
 
-		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.0f, 0.5f, 0.0f, 0.5f }),
-			vector<pair<Road, float>>({
-			{Road("城北西路", intersections[nwIdx], intersections[swIdx], meshPath), 0.5f},
-			{Road("城北东路", intersections[neIdx], intersections[seIdx], meshPath), 0.5f}
-		}));
+		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, 0.5f, 0.0f, 0.0f }), make_pair(
+			unordered_map<int, Road>{
+				{ 0, Road("城北西路", intersections[nwIdx], intersections[swIdx], meshPath) },
+				{ 1, Road("城北东路", intersections[neIdx], intersections[seIdx], meshPath) }
+			},
+			unordered_map<int, Intersection>{
+				{ 0, intersections[nwIdx] },
+				{ 1, intersections[neIdx] },
+				{ 2, intersections[seIdx] },
+				{ 3, intersections[swIdx] }
+			}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 
@@ -304,11 +347,17 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		const auto& [seNode, seIdx] = verticalNode2s[i];
 		const auto& [swNode, swIdx] = verticalNode1s[i];
 
-		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.0f, 0.5f, 0.0f, 0.5f }),
-			vector<pair<Road, float>>({
-			{Road("城南西路", intersections[swIdx], intersections[nwIdx], meshPath), 0.5f},
-			{Road("城南东路", intersections[seIdx], intersections[neIdx], meshPath), 0.5f}
-				}));
+		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, 0.5f, 0.0f, 0.0f }), make_pair(
+			unordered_map<int, Road>{
+				{ 0, Road("城南西路", intersections[nwIdx], intersections[swIdx], meshPath) },
+				{ 1, Road("城南东路", intersections[neIdx], intersections[seIdx], meshPath) }
+			},
+			unordered_map<int, Intersection>{
+				{ 0, intersections[nwIdx] },
+				{ 1, intersections[neIdx] },
+				{ 2, intersections[seIdx] },
+				{ 3, intersections[swIdx] }
+			}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
 }

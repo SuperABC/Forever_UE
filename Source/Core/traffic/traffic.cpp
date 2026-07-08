@@ -197,7 +197,7 @@ void Traffic::InitTraffic(Map* map, Populace* populace) {
 	auto types = routeFactory->GetRoutes();
 	for (auto type : types) {
 		auto route = new Route(routeFactory, type);
-		route->LayoutRoute(stationInterfaces);
+		route->LayoutRoute(stationInterfaces, Node::GetCount());
 		routes[route->GetName()] = route;
 	}
 

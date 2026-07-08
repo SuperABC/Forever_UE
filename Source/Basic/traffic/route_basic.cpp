@@ -27,6 +27,7 @@ const char* AirRoute::GetName() {
 }
 
 void AirRoute::LayoutRoute(
-	const unordered_map<string, vector<vector<vector<float>>>>& interfaces) {
-
+	const unordered_map<string, vector<vector<vector<float>>>>& interfaces,
+	int nodeStaticCount) {
+	Node::SetCount(nodeStaticCount);
 }
