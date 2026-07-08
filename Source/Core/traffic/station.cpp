@@ -32,11 +32,38 @@ string Station::GetBuilding() const {
 	return building;
 }
 
+void Station::LayoutStation(const Lot* block) {
+	mod->LayoutStation(block);
+}
+
+string Station::GetBuildingType() const {
+	return mod->buildingType;
+}
+
+float Station::GetBuildingAcreage() const {
+	return mod->buildingAcreage;
+}
+
+void Station::PlaceInterface(const Quad* building) {
+	mod->PlaceInterface(building);
+}
+
+vector<pair<string, vector<float>>> Station::GetInterfaces() const {
+	return mod->interfaces;
+}
+
 void Station::SetBuilding(string building) {
 	this->building = building;
 }
 
 int EmptyStation::count = 0;
+
+function<vector<int>& (const vector<Lot*>& blocks)> EmptyStation::StationAssigner =
+[](const vector<Lot*>& blocks) -> vector<int>& {
+	static vector<int> result;
+	result = vector<int>(blocks.size(), 0);
+	return result;
+};
 
 EmptyStation::EmptyStation() : id(count++) {
 
@@ -57,6 +84,14 @@ const char* EmptyStation::GetType() const {
 const char* EmptyStation::GetName() {
 	name = "空站点" + to_string(id);
 	return name.data();
+}
+
+void EmptyStation::LayoutStation(const Lot* block) {
+
+}
+
+void EmptyStation::PlaceInterface(const Quad* building) {
+
 }
 
 

@@ -27,7 +27,8 @@ public:
 	std::string GetName() const;
 
 	// 布局路线
-	void LayoutRoute(Map* map);
+	void LayoutRoute(
+		const std::unordered_map<std::string, std::vector<std::vector<std::vector<float>>>>& interfaces);
 
 private:
 	// 模组对象
@@ -42,8 +43,14 @@ private:
 	// 线路名称
 	std::string name;
 
-	// 全部站点
-	OBJECT_HOLDER std::unordered_map<std::string, Station*> stations;
+	// 外部连接
+	OBJECT_HOLDER std::vector<Node *> externs;
+
+	// 路线节点
+	OBJECT_HOLDER std::vector<Node *> nodes;
+
+	// 路线连接
+	OBJECT_HOLDER std::vector<Connection *> connections;
 };
 
 // 空线路
@@ -57,7 +64,7 @@ public:
 	virtual const char* GetName() override;
 
 	virtual void LayoutRoute(
-		const std::vector<Intersection*>& intersections, const std::vector<Road*>& roads, const std::vector<Lot*>& blocks);
+		const std::unordered_map<std::string, std::vector<std::vector<std::vector<float>>>>& interfaces);
 
 private:
 	static int count;

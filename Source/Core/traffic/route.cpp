@@ -14,8 +14,7 @@ Route::Route(RouteFactory* factory, const string& route) :
 	mod(factory->CreateRoute(route)),
 	factory(factory),
 	type(),
-	name(),
-	stations() {
+	name() {
 	if (!mod)
 		THROW_EXCEPTION(NullPointerException, "Route " + route + " mod is null.\n");
 
@@ -26,10 +25,18 @@ Route::Route(RouteFactory* factory, const string& route) :
 Route::~Route() {
 	factory->DestroyRoute(mod);
 
-	for (auto& [_, station] : stations) {
-		if (station)delete station;
-		station = nullptr;
+	for(auto ext : externs) {
+		delete ext;
 	}
+	externs.clear();
+	for(auto node : nodes) {
+		delete node;
+	}
+	nodes.clear();
+	for(auto connection : connections) {
+		delete connection;
+	}
+	connections.clear();
 }
 
 string Route::GetType() const {
@@ -40,26 +47,18 @@ string Route::GetName() const {
 	return name;
 }
 
-void Route::LayoutRoute(Map* map) {
-	auto roadnet = map->GetRoadnet();
+void Route::LayoutRoute(
+	const unordered_map<string, vector<vector<vector<float>>>>& interfaces) {
+	mod->LayoutRoute(interfaces);
 
-	vector<Lot*> blocks;
-	for(auto block : roadnet->GetBlocks()) {
-		blocks.push_back(static_cast<Lot*>(block));
+	for(auto& ext : mod->externs) {
+		externs.push_back(new Node(ext));
 	}
-	mod->LayoutRoute(roadnet->GetIntersections(), roadnet->GetRoads(), blocks);
-	for (auto& [id, acreage, stationType, buildingType] : mod->stations) {
-		auto block = roadnet->GetBlocks()[id];
-
-		auto building = new Building(Map::buildingFactory, buildingType);
-		building->SetParent(block);
-		building->SetAcreage(acreage);
-		block->AddBuilding(building->GetName(), building);
-		map->AddBuilding(building);
-
-		auto station = new Station(Traffic::stationFactory, stationType);
-		station->SetBuilding(building->GetName());
-		stations[station->GetName()] = station;
+	for(auto& node : mod->nodes) {
+		nodes.push_back(new Node(node));
+	}
+	for(auto& connection : mod->connections) {
+		connections.push_back(new Connection(connection));
 	}
 }
 
@@ -87,7 +86,7 @@ const char* EmptyRoute::GetName() {
 }
 
 void EmptyRoute::LayoutRoute(
-	const vector<Intersection*>& intersections, const vector<Road*>& roads, const vector<Lot*>& blocks) {
+	const unordered_map<string, vector<vector<vector<float>>>>& interfaces) {
 
 }
 

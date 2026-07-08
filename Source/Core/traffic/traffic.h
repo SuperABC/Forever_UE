@@ -29,11 +29,11 @@ public:
 	void InitRoutes(std::unordered_map<std::string, HMODULE>& modHandles,
 		const std::vector<std::string>& dlls);
 
-	// 初始化公共交通
-	void InitPublic(Map* map);
+	// 初始化站点建筑
+	void InitBuildings(Map* map);
 
 	// 初始化车辆
-	void InitPrivate(Map* map, Populace* populace);
+	void InitTraffic(Map* map, Populace* populace);
 
 	// 释放空间
 	void Destroy();
@@ -69,6 +69,9 @@ public:
 private:
 	// 全部路线
 	OBJECT_HOLDER std::unordered_map<std::string, Route*> routes;
+
+	// 全部站点
+	OBJECT_HOLDER std::unordered_map<std::string, Station*> stations;
 
 	// 全部载具
 	OBJECT_HOLDER std::unordered_map<std::string, Vehicle*> vehicles;

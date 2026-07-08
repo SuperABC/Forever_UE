@@ -4,8 +4,9 @@
 using namespace std;
 
 RouteMod::RouteMod() :
-	stations(),
-	lines() {
+	externs(),
+	nodes(),
+	connections() {
 
 }
 

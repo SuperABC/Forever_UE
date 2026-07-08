@@ -29,6 +29,21 @@ public:
 	// 获取地址
 	std::string GetBuilding() const;
 
+	// 布局站点
+	void LayoutStation(const Lot* block);
+
+	// 获取建筑类型
+	std::string GetBuildingType() const;
+
+	// 获取建筑面积
+	float GetBuildingAcreage() const;
+
+	// 放置接口
+	void PlaceInterface(const Quad* building);
+
+	// 获取接口
+	std::vector<std::pair<std::string, std::vector<float>>> GetInterfaces() const;
+
 	// 设置所在建筑
 	void SetBuilding(std::string building);
 
@@ -59,6 +74,12 @@ public:
 	static const char* GetId();
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
+
+	static std::function<std::vector<int>& (const std::vector<Lot*>& blocks)> StationAssigner;
+
+	virtual void LayoutStation(const Lot* block);
+
+	virtual void PlaceInterface(const Quad* building);
 
 private:
 	static int count;

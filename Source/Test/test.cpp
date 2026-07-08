@@ -416,11 +416,11 @@ int main() {
 
 				player->Init();
 				::map->InitBlocks(size, size);
-				traffic->InitPublic(::map);
+				traffic->InitBuildings(::map);
 				int accomodation = ::map->InitContents();
 				populace->Init(accomodation, player);
 				::map->Checkin(populace, player);
-				traffic->InitPrivate(::map, populace);
+				traffic->InitTraffic(::map, populace);
 				society->Init(::map, populace, player);
 				story->Init(::map, populace, player);
 				industry->Init(::map);

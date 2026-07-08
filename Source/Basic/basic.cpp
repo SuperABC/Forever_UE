@@ -299,7 +299,7 @@ extern "C" __declspec(dllexport) void* GetModStations() {
 }
 
 extern "C" __declspec(dllexport) void RegisterModStations(StationFactory* factory) {
-	factory->RegisterStation(AirportStation::GetId(),
+	factory->RegisterStation(AirportStation::GetId(), AirportStation::StationAssigner,
 		[]() { return new AirportStation(); },
 		[](StationMod* station) { delete station; }
 	);

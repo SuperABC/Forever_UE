@@ -3,7 +3,10 @@
 
 using namespace std;
 
-StationMod::StationMod() {
+StationMod::StationMod() :
+	buildingType(),
+	buildingAcreage(),
+	interfaces() {
 
 }
 
@@ -12,8 +15,10 @@ StationMod::~StationMod() {
 }
 
 void StationFactory::RegisterStation(const string& id,
+	function<vector<int>& (const vector<Lot*>& blocks)> assigner,
 	function<StationMod* ()> creator, function<void(StationMod*)> deleter) {
 	registries[id] = { creator, deleter };
+	assigners[id] = assigner;
 }
 
 void StationFactory::RemoveAll() {
@@ -51,6 +56,33 @@ bool StationFactory::CheckRegistered(const string& id) const {
 
 void StationFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
+}
+
+vector<string> StationFactory::GetTypes() const {
+	vector<string> types;
+	for (const auto& [name, enabled] : configs) {
+		if (enabled) types.push_back(name);
+	}
+	return types;
+}
+
+vector<int> StationFactory::AssignStations(const string& type, const std::vector<Lot*>& blocks) const {
+	vector<int> result(blocks.size(), 0);
+	auto config = configs.find(type);
+	if (config == configs.end() || !config->second) {
+		debugf("Warning: Station %s not enabled when creating.\n", type.data());
+		return result;
+	}
+
+	auto assigner = assigners.find(type);
+	if (assigner == assigners.end()) {
+		debugf("Warning: Generator for station %s not found when creating.\n", type.data());
+		return result;
+	}
+
+	auto counts = assigner->second(blocks);
+	copy(counts.begin(), counts.end(), result.begin());
+	return result;
 }
 
 void StationFactory::DestroyStation(StationMod* stationMod) const {

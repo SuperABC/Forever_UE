@@ -4,6 +4,7 @@
 #include "story/condition.h"
 
 #include "map/map.h"
+#include "map/block.h"
 #include "map/roadnet.h"
 #include "map/building.h"
 #include "map/room.h"
@@ -22,6 +23,7 @@ RouteFactory* Traffic::routeFactory = nullptr;
 
 Traffic::Traffic() :
 	routes(),
+	stations(),
 	vehicles() {
 	if (!vehicleFactory) {
 		vehicleFactory = new VehicleFactory();
@@ -89,7 +91,7 @@ void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles,
 
 void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles,
 	const vector<string>& dlls) {
-	stationFactory->RegisterStation(EmptyStation::GetId(),
+	stationFactory->RegisterStation(EmptyStation::GetId(), EmptyStation::StationAssigner,
 		[]() { return new EmptyStation(); },
 		[](StationMod* station) { delete station; }
 	);
@@ -147,17 +149,58 @@ void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles,
 	}
 }
 
-void Traffic::InitPublic(Map* map) {
+void Traffic::InitBuildings(Map* map) {
 	Destroy();
 
-	auto routes = routeFactory->GetRoutes();
-	for (auto route : routes) {
-		this->routes[route] = new Route(routeFactory, route);
-		this->routes[route]->LayoutRoute(map);
+	auto roadnet = map->GetRoadnet();
+	vector<Lot*> blocks;
+	for (auto block : roadnet->GetBlocks()) {
+		blocks.emplace_back(block);
+	}
+	auto types = stationFactory->GetTypes();
+	for(auto type : types) {
+		auto counts = stationFactory->AssignStations(type, blocks);
+		for(int i = 0; i < counts.size(); ++i) {
+			if(counts[i] <= 0) {
+				continue;
+			}
+			auto block = static_cast<Block*>(blocks[i]);
+			for(int j = 0; j < counts[i]; ++j) {
+				auto station = new Station(Traffic::stationFactory, type);
+				station->LayoutStation(block);
+
+				auto building = new Building(Map::buildingFactory, station->GetBuildingType());
+				building->SetParent(block);
+				building->SetAcreage(station->GetBuildingAcreage());
+				block->AddBuilding(building->GetName(), building);
+				map->AddBuilding(building);
+				station->SetBuilding(building->GetName());
+				stations[station->GetName()] = station;
+			}
+		}
 	}
 }
 
-void Traffic::InitPrivate(Map* map, Populace* populace) {
+void Traffic::InitTraffic(Map* map, Populace* populace) {
+	unordered_map<string, vector<vector<vector<float>>>> stationInterfaces;
+	for(auto& [_, station] : stations) {
+		unordered_map<string, vector<vector<float>>> interfaces;
+		station->PlaceInterface(map->GetBuilding(station->GetBuilding()));
+		for(auto& [type, inter] : station->GetInterfaces()) {
+			interfaces[type].push_back(inter);
+		}
+		for(auto & [type, inters] : interfaces) {
+			stationInterfaces[type].push_back(inters);
+		}
+	}
+
+	auto types = routeFactory->GetRoutes();
+	for (auto type : types) {
+		auto route = new Route(routeFactory, type);
+		route->LayoutRoute(stationInterfaces);
+		routes[route->GetName()] = route;
+	}
+
 	vector<pair<Quad, Room*>> parkings;
 	for (auto& room : map->GetRooms()) {
 		if (room->IsParking()) {

@@ -27,6 +27,6 @@ const char* AirRoute::GetName() {
 }
 
 void AirRoute::LayoutRoute(
-	const vector<Intersection*>& intersections, const vector<Road*>& roads, const vector<Lot*>& blocks) {
-	stations.push_back({ 0, 25600.f, "airport", "airport" });
+	const unordered_map<string, vector<vector<vector<float>>>>& interfaces) {
+
 }

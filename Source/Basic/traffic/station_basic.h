@@ -14,6 +14,12 @@ public:
 	virtual const char* GetType() const override;
 	virtual const char* GetName() override;
 
+	static std::function<std::vector<int>& (const std::vector<Lot*>& blocks)> StationAssigner;
+
+	virtual void LayoutStation(const Lot* block);
+
+	virtual void PlaceInterface(const Quad* building);
+
 private:
 	static int count;
 

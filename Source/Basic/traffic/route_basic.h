@@ -14,7 +14,7 @@ public:
 	virtual const char* GetName() override;
 
 	virtual void LayoutRoute(
-		const std::vector<Intersection*>& intersections, const std::vector<Road*>& roads, const std::vector<Lot*>& blocks);
+		const std::unordered_map<std::string, std::vector<std::vector<std::vector<float>>>>& interfaces);
 
 private:
 	static int count;

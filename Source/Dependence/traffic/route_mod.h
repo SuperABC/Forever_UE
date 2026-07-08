@@ -22,14 +22,17 @@ public:
 	virtual const char* GetName() = 0;
 
 	// 布局路线
-	virtual void LayoutRoute(
-		const std::vector<Intersection*>& intersections, const std::vector<Road*>& roads, const std::vector<Lot*>& blocks) = 0;
+	COSTOM_INIT virtual void LayoutRoute(
+		const std::unordered_map<std::string, std::vector<std::vector<std::vector<float>>>>& interfaces) = 0;
 
-	// 车站所在地块及面积、车站类型、建筑类型
-	std::vector<std::tuple<int, float, std::string, std::string>> stations;
+	// 外部连接
+	std::vector<Node> externs;
 
-	// 车站连线
-	std::vector<std::pair<int, int>> lines;
+	// 路线节点
+	std::vector<Node> nodes;
+
+	// 路线连接
+	std::vector<Connection> connections;
 };
 
 class RouteFactory {

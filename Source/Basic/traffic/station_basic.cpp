@@ -5,6 +5,14 @@ using namespace std;
 
 int AirportStation::count = 0;
 
+function<vector<int>& (const vector<Lot*>& blocks)> AirportStation::StationAssigner =
+[](const vector<Lot*>& blocks) -> vector<int>&{
+	static vector<int> result;
+	result = vector<int>(blocks.size(), 0);
+	result[0] = 1;
+	return result;
+};
+
 AirportStation::AirportStation() : id(count++) {
 
 }
@@ -24,6 +32,15 @@ const char* AirportStation::GetType() const {
 const char* AirportStation::GetName() {
 	name = "机场站点" + to_string(id);
 	return name.data();
+}
+
+void AirportStation::LayoutStation(const Lot* block) {
+	buildingType = "airport";
+	buildingAcreage = 25600.f;
+}
+
+void AirportStation::PlaceInterface(const Quad* building) {
+
 }
 
 int AirportBuilding::count = 0;
