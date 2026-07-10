@@ -234,13 +234,13 @@ void Traffic::InitTraffic(Map* map, Populace* populace) {
 
 void Traffic::Destroy() {
 	for (auto& [_, route] : routes) {
-		if (route)delete route;
+		if (route) delete route;
 		route = nullptr;
 	}
 	routes.clear();
 
 	for (auto& [_, vehicle] : vehicles) {
-		if (vehicle)delete vehicle;
+		if (vehicle) delete vehicle;
 		vehicle = nullptr;
 	}
 	vehicles.clear();
@@ -328,7 +328,7 @@ void Traffic::RemoveVehicle(string name) {
 		debugf("Warning: Vehicle with name %s does not exist.\n", name.data());
 		return;
 	}
-	if (it->second)delete it->second;
+	if (it->second) delete it->second;
 	it->second = nullptr;
 	vehicles.erase(it);
 }

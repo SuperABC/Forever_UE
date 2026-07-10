@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "traffic/route_mod.h"
 
@@ -11,22 +11,39 @@ typedef void (*RegisterModRoutesFunc)(RouteFactory* factory);
 // 线路实体
 class Route {
 public:
-	// 禁止默认构造
+	/*
+	* 禁止默认构造
+	*/
 	Route() = delete;
 
-	// 通过类型从工厂构造
+	/*
+	* 通过类型从工厂构造
+	* @factory: 线路工厂
+	* @route: 线路类型标识
+	*/
 	Route(RouteFactory* factory, const std::string& route);
 
-	// 析构线路
+	/*
+	* 析构线路
+	*/
 	~Route();
 
-	// 获取类型
+	/*
+	* 获取线路类型
+	*/
 	std::string GetType() const;
 
-	// 获取名称
+	/*
+	* 获取线路名称
+	*/
 	std::string GetName() const;
 
-	// 布局路线
+	/*
+	* 布局路线
+	* @interfaces: 按交通类型分组的站点接口集合
+	* @sizeX, sizeY: 地图尺寸
+	* @nodeStaticCount: 节点静态计数起点
+	*/
 	void LayoutRoute(
 		const std::unordered_map<std::string, std::vector<std::pair<std::vector<Node*>, std::vector<std::pair<Node*, Node*>>>>>& interfaces,
 		int sizeX, int sizeY, int nodeStaticCount);
@@ -57,21 +74,52 @@ private:
 // 空线路
 class EmptyRoute : public RouteMod {
 public:
+	/*
+	* 构造空线路
+	*/
 	EmptyRoute();
+
+	/*
+	* 析构空线路
+	*/
 	virtual ~EmptyRoute();
 
+	/*
+	* Override
+	* 统一类型标识
+	*/
 	static const char* GetId();
+
+	/*
+	* Override
+	* 获取实例类型
+	*/
 	virtual const char* GetType() const override;
+
+	/*
+	* Override
+	* 获取实例名称
+	*/
 	virtual const char* GetName() override;
 
+	/*
+	* Override
+	* 布局路线（空实现）
+	* @interfaces: 按交通类型分组的站点接口集合
+	* @sizeX, sizeY: 地图尺寸
+	* @nodeStaticCount: 节点静态计数起点
+	*/
 	virtual void LayoutRoute(
 		const std::unordered_map<std::string, std::vector<std::pair<std::vector<Node*>, std::vector<std::pair<Node*, Node*>>>>>& interfaces,
 		int sizeX, int sizeY, int nodeStaticCount);
 
 private:
+	// 总实例数量
 	static int count;
 
+	// 实例编号
 	int id;
+
+	// 名称缓存
 	std::string name;
 };
-

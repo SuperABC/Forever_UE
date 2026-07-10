@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "traffic/station_mod.h"
 
@@ -11,43 +11,75 @@ typedef void (*RegisterModStationsFunc)(StationFactory* factory);
 // 站点实体
 class Station {
 public:
-	// 禁止默认构造
+	/*
+	* 禁止默认构造
+	*/
 	Station() = delete;
 
-	// 通过类型从工厂构造
+	/*
+	* 通过类型从工厂构造
+	* @factory: 站点工厂
+	* @station: 站点类型标识
+	*/
 	Station(StationFactory* factory, const std::string& station);
 
-	// 析构站点
+	/*
+	* 析构站点
+	*/
 	~Station();
 
-	// 获取类型
+	/*
+	* 获取站点类型
+	*/
 	std::string GetType() const;
 
-	// 获取名称
+	/*
+	* 获取站点名称
+	*/
 	std::string GetName() const;
 
-	// 获取所在建筑
+	/*
+	* 获取所在建筑名称
+	*/
 	std::string GetBuilding() const;
 
-	// 设置所在建筑
+	/*
+	* 设置所在建筑名称
+	* @building: 建筑名称
+	*/
 	void SetBuilding(std::string building);
 
-	// 布局站点
+	/*
+	* 布局站点
+	* @block: 所在地块
+	*/
 	void LayoutStation(const Lot* block);
 
-	// 获取建筑类型
+	/*
+	* 获取建筑类型
+	*/
 	std::string GetBuildingType() const;
 
-	// 获取建筑面积
+	/*
+	* 获取建筑面积
+	*/
 	float GetBuildingAcreage() const;
 
-	// 放置接口
+	/*
+	* 放置接口节点
+	* @building: 所在建筑的几何形状
+	* @pivots: 建筑的关键点集合
+	*/
 	void PlaceInterface(const Quad* building, const std::vector<Node*>& pivots);
 
-	// 获取接口
+	/*
+	* 获取接口向量
+	*/
 	std::vector<std::pair<std::string, std::pair<Node*, Node*>>> GetInterfaces() const;
 
-	// 获取站点节点
+	/*
+	* 获取站点节点
+	*/
 	std::vector<Node*> GetNodes() const;
 
 private:
@@ -68,29 +100,64 @@ private:
 
 	// 站点节点
 	std::vector<Node*> nodes;
-
 };
 
 // 空站点
 class EmptyStation : public StationMod {
 public:
+	/*
+	* 构造空站点
+	*/
 	EmptyStation();
+
+	/*
+	* 析构空站点
+	*/
 	virtual ~EmptyStation();
 
+	/*
+	* Override
+	* 统一类型标识
+	*/
 	static const char* GetId();
+
+	/*
+	* Override
+	* 获取实例类型
+	*/
 	virtual const char* GetType() const override;
+
+	/*
+	* Override
+	* 获取实例名称
+	*/
 	virtual const char* GetName() override;
 
+	// 站点分配器
 	static std::function<std::vector<int>& (const std::vector<Lot*>& blocks)> StationAssigner;
 
+	/*
+	* Override
+	* 布局站点（空实现）
+	* @block: 所在地块
+	*/
 	virtual void LayoutStation(const Lot* block);
 
+	/*
+	* Override
+	* 放置接口节点（空实现）
+	* @building: 所在建筑的几何形状
+	* @pivots: 建筑的关键点集合
+	*/
 	virtual void PlaceInterface(const Quad* building, const std::vector<Node*>& pivots);
 
 private:
+	// 总实例数量
 	static int count;
 
+	// 实例编号
 	int id;
+
+	// 名称缓存
 	std::string name;
 };
-
