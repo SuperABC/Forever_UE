@@ -1706,4 +1706,67 @@ bool PolicyChangeEvent::GetStatus() {
 	return status;
 }
 
+NpcArriveEvent::NpcArriveEvent(string name, string address)
+	: name(name), address(address) {
+
+}
+
+NpcArriveEvent::~NpcArriveEvent() {
+
+}
+
+string NpcArriveEvent::GetType() const {
+	return "npc_arrive";
+}
+
+bool NpcArriveEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<NpcArriveEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto nameValue = get_if<string>(&value)) {
+			result = (result && *nameValue == other->name);
+		}
+		else {
+			result = (result && name == other->name);
+		}
+	}
+	if (address.size() > 0 && other->address.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(address);
+		auto value = condition.EvaluateValue(getValues);
+		if (auto addrValue = get_if<string>(&value)) {
+			result = (result && *addrValue == other->address);
+		}
+		else {
+			result = (result && address == other->address);
+		}
+	}
+	return result;
+}
+
+void NpcArriveEvent::SetName(string name) {
+	this->name = name;
+}
+
+string NpcArriveEvent::GetName() const {
+	return name;
+}
+
+void NpcArriveEvent::SetAddress(string address) {
+	this->address = address;
+}
+
+string NpcArriveEvent::GetAddress() const {
+	return address;
+}
+
 

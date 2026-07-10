@@ -539,6 +539,14 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 			}
 			event = new PolicyChangeEvent(policy.AsString(), status.AsBool());
 		}
+		else if (type == "npc_arrive") {
+			auto name = obj["name"];
+			auto address = obj["address"];
+			if (name.IsNull() || address.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing name or address for npc_arrive event.\n");
+			}
+			event = new NpcArriveEvent(name.AsString(), address.AsString());
+		}
 
 		if (!event) {
 			THROW_EXCEPTION(RuntimeException, "Invalid event type: " + type + ".\n");

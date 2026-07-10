@@ -41,7 +41,7 @@ Person::Person() :
 	currentBuilding(nullptr),
 	currentRoom(nullptr),
 	currentCommute(nullptr),
-	statusChanged(false) {
+	statusChanged() {
 
 }
 
@@ -346,7 +346,7 @@ unordered_set<string> Person::GetOptions() const {
 	return options;
 }
 
-void Person::SetStatus(Zone* zone) {
+void Person::SetStatus(Zone* zone, bool notify) {
 	if (zone == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Zone is null.\n");
 	}
@@ -357,10 +357,10 @@ void Person::SetStatus(Zone* zone) {
 	if (currentCommute)delete currentCommute;
 	currentCommute = nullptr;
 	
-	statusChanged = true;
+	if (notify)statusChanged = zone->GetAddress();
 }
 
-void Person::SetStatus(Building* building) {
+void Person::SetStatus(Building* building, bool notify) {
 	if (building == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Building is null.\n");
 	}
@@ -371,10 +371,10 @@ void Person::SetStatus(Building* building) {
 	if (currentCommute)delete currentCommute;
 	currentCommute = nullptr;
 
-	statusChanged = true;
+	if (notify)statusChanged = building->GetAddress();
 }
 
-void Person::SetStatus(Room* room) {
+void Person::SetStatus(Room* room, bool notify) {
 	if (room == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Room is null.\n");
 	}
@@ -385,7 +385,7 @@ void Person::SetStatus(Room* room) {
 	if (currentCommute)delete currentCommute;
 	currentCommute = nullptr;
 
-	statusChanged = true;
+	if (notify)statusChanged = room->GetAddress();
 }
 
 void Person::SetStatus(Room* target, const vector<Connection*>& paths, const Time& time) {
@@ -422,9 +422,9 @@ Commute* Person::GetCurrentCommute() const {
 	return currentCommute;
 }
 
-bool Person::PopChange() {
-	bool change = statusChanged;
-	statusChanged = false;
+string Person::PopChange() {
+	string change = statusChanged;
+	statusChanged = "";
 	return change;
 }
 

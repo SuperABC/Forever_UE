@@ -1,12 +1,19 @@
 #include "PopulaceBase.h"
 
 #include "GlobalBase.h"
+#include "StoryBase.h"
 
+#include "map/map.h"
 #include "map/building.h"
 #include "map/room.h"
 #include "populace/populace.h"
 #include "populace/person.h"
+#include "populace/scheduler.h"
 #include "populace/commute.h"
+#include "society/job.h"
+#include "story/story.h"
+#include "story/event.h"
+#include "story/script.h"
 
 
 using namespace std;
@@ -40,7 +47,12 @@ void APopulaceBase::Tick(float DeltaTime) {
 		if (personInstances.find(citizen->GetName()) != personInstances.end()) {
 			continue;
 		}
-		citizen->PopChange();
+		auto destination = citizen->PopChange();
+		if (!destination.empty()) {
+			global->GetStoryActor()->NpcArrive(
+				UTF8_TO_TCHAR(citizen->GetName().data()), UTF8_TO_TCHAR(destination.data()));
+		}
+
 		FPerson citizenInfo;
 		citizenInfo.name = UTF8_TO_TCHAR(citizen->GetName().data());
 		citizenInfo.avatar = UTF8_TO_TCHAR(citizen->GetAvatar().data());
@@ -58,9 +70,13 @@ void APopulaceBase::Tick(float DeltaTime) {
 
 	TArray<FString> removes;
 	for(auto &[name, instance] : personInstances) {
-		auto change = populace->GetCitizen(name)->PopChange();
+		auto destination = populace->GetCitizen(name)->PopChange();
+		if (!destination.empty()) {
+			global->GetStoryActor()->NpcArrive(
+				UTF8_TO_TCHAR(name.data()), UTF8_TO_TCHAR(destination.data()));
+		}
 		auto pos = instance->GetActorLocation() / 1000.f;
-		if(change || (pos - location).Size() > 4.f || fabs(pos.Z - location.Z) > 0.8f) {
+		if(!destination.empty() ||(pos - location).Size() > 4.f || fabs(pos.Z - location.Z) > 0.8f) {
 			removes.Add(UTF8_TO_TCHAR(name.data()));
 		}
 	}

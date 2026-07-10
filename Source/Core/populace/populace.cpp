@@ -397,7 +397,7 @@ void Populace::ApplyChange(Map* map, Change* change,
 		}
 
 		auto path = map->AutoNavigation(startNode->GetId(), endNode->GetId());
-		person->SetStatus(room, path, currentTime);
+		if(path.size() > 0)person->SetStatus(room, path, currentTime);
 	}
 }
 

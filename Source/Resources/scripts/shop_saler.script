@@ -29,9 +29,19 @@
 	"triggers": [{"type": "time_up", "name": "$$(self.name)_$$(self.idx)_begin_work"}],
 	"dialogs": [],
 	"changes": [
-		{"type": "add_option", "name": "$$self.name", "option": "购物"},
-		{"type": "add_option", "name": "$$self.name", "option": "免单挑战"},
 		{"type": "npc_navigate", "name": "$$self.name", "destination": "$$self.work_address"}
+	],
+	"subsequences": ["arrive_work"]
+},
+{
+	"milestone": "arrive_work",
+	"visible": false,
+	"drop": "true",
+	"triggers": [{"type": "npc_arrive", "name": "$$self.name", "address": "$$self.work_address"}],
+	"dialogs": [],
+	"changes": [
+		{"type": "add_option", "name": "$$self.name", "option": "购物"},
+		{"type": "add_option", "name": "$$self.name", "option": "免单挑战"}
 	],
 	"subsequences": []
 },

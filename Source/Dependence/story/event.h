@@ -1668,6 +1668,61 @@ private:
 	std::string weather;
 };
 
+// NPC抵达
+class NpcArriveEvent : public Event {
+public:
+	/*
+	* 构造导航抵达事件
+	* @name, address: 抵达者姓名与目标地址
+	*/
+	NpcArriveEvent(std::string name, std::string address);
+
+	/*
+	* 析构导航抵达事件
+	*/
+	virtual ~NpcArriveEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置抵达者姓名
+	* @name: 姓名
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取抵达者姓名
+	*/
+	std::string GetName() const;
+
+	/*
+	* 设置目标地址
+	* @address: 地址
+	*/
+	void SetAddress(std::string address);
+
+	/*
+	* 获取目标地址
+	*/
+	std::string GetAddress() const;
+
+private:
+	std::string name;
+
+	std::string address;
+};
+
 // 政策变化
 class PolicyChangeEvent : public Event {
 public:

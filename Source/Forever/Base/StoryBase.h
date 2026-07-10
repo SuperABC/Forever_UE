@@ -73,6 +73,8 @@ public:
 	void GetTask(FString& task);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	FString GetHistory();
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void SetStatus(const FString& name, const FString& destination);
 
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void GameStart();
@@ -88,6 +90,8 @@ public:
 	void BattleLose(FString enemy);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void PuzzleResult(int result);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void NpcArrive(const FString& name, const FString& destination);
 
 	/*
 	* 应用调度节点产出的变化列表（内部负责释放传入的Change对象）

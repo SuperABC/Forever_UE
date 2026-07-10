@@ -329,20 +329,23 @@ public:
 	/*
 	* 设置所在园区
 	* @zone: 园区对象
+	* @notify: 是否记录变化
 	*/
-	void SetStatus(Zone* zone);
+	void SetStatus(Zone* zone, bool notify = true);
 
 	/*
 	* 设置所在建筑
 	* @building: 建筑对象
+	* @notify: 是否记录变化
 	*/
-	void SetStatus(Building* building);
+	void SetStatus(Building* building, bool notify = true);
 
 	/*
 	* 设置所在房间
 	* @room: 房间对象
+	* @notify: 是否记录变化
 	*/
-	void SetStatus(Room* room);
+	void SetStatus(Room* room, bool notify = true);
 
 	/*
 	* 设置通勤
@@ -378,7 +381,7 @@ public:
 	/*
 	* 读取并重置状态变化
 	*/
-	bool PopChange();
+	std::string PopChange();
 
 private:
 	// 标识符
@@ -459,6 +462,6 @@ private:
 	// 当前通勤
 	OBJECT_HOLDER Commute* currentCommute;
 
-	// 状态是否已变化
-	bool statusChanged;
+	// 位置状态是否已变化
+	std::string statusChanged;
 };

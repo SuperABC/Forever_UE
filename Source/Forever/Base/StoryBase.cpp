@@ -245,6 +245,8 @@ void AStoryBase::ApplyChange(Change* change,
 		Condition condition;
 		condition.ParseCondition(obj->GetName());
 		string name = ToString(condition.EvaluateValue(getValues));
+		condition.ParseCondition(obj->GetDestination());
+		string destination = ToString(condition.EvaluateValue(getValues));
 		auto person = global->GetPopulace()->GetCitizen(name);
 		if (!person) {
 			debugf("Warning: Target citizen %s not found.\n", name.data());
@@ -267,7 +269,8 @@ void AStoryBase::ApplyChange(Change* change,
 					}
 				}
 
-				if (global->GetPopulaceActor()->NpcNavigate(UTF8_TO_TCHAR(name.data()), nodes)) {
+				if (global->GetPopulaceActor()->NpcNavigate(
+					UTF8_TO_TCHAR(name.data()), nodes, UTF8_TO_TCHAR(destination.data()))) {
 					commute->StartVisible();
 				}
 			}
@@ -483,6 +486,14 @@ FString AStoryBase::GetHistory() {
 		}
 	}
 	return UTF8_TO_TCHAR(result.data());
+}
+
+void AStoryBase::SetStatus(const FString& name, const FString& destination) {
+	auto citizen = global->GetPopulace()->GetCitizen(TCHAR_TO_UTF8(*name));
+	if (!citizen) return;
+	auto room = global->GetMap()->LocateRoom(TCHAR_TO_UTF8(*destination));
+	if (!room) return;
+	citizen->SetStatus(room, false);
 }
 
 void AStoryBase::GameStart() {
@@ -979,6 +990,42 @@ void AStoryBase::PuzzleResult(int result) {
 	}
 
 	delete local;
+	delete event;
+}
+
+void AStoryBase::NpcArrive(const FString& name, const FString& destination) {
+	auto story = global->GetStory();
+
+	auto event = new NpcArriveEvent(TCHAR_TO_UTF8(*name), TCHAR_TO_UTF8(*destination));
+
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](const string& n) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(n);
+		}
+	};
+	MatchEvent(event, story->GetScript(), getValues);
+
+	auto citizen = global->GetPopulace()->GetCitizen(TCHAR_TO_UTF8(*name));
+	if (citizen) {
+		auto schedulerScript = citizen->GetScheduler()->GetScript();
+		getValues.push_back(
+			[&](const string& n) -> pair<bool, ValueType> {
+				return schedulerScript->GetValue(n);
+			});
+		MatchEvent(event, schedulerScript, getValues);
+		getValues.pop_back();
+
+		for (auto job : citizen->GetJobs()) {
+			auto jobScript = job->GetScript();
+			getValues.push_back(
+				[&](const string& n) -> pair<bool, ValueType> {
+					return jobScript->GetValue(n);
+				});
+			MatchEvent(event, jobScript, getValues);
+			getValues.pop_back();
+		}
+	}
+
 	delete event;
 }
 
