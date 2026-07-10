@@ -28,8 +28,8 @@ public:
 
 	// 布局路线
 	void LayoutRoute(
-		const std::unordered_map<std::string, std::vector<std::vector<std::vector<float>>>>& interfaces,
-		int nodeStaticCount);
+		const std::unordered_map<std::string, std::vector<std::pair<std::vector<Node*>, std::vector<std::pair<Node*, Node*>>>>>& interfaces,
+		int sizeX, int sizeY, int nodeStaticCount);
 
 private:
 	// 模组对象
@@ -65,8 +65,8 @@ public:
 	virtual const char* GetName() override;
 
 	virtual void LayoutRoute(
-		const std::unordered_map<std::string, std::vector<std::vector<std::vector<float>>>>& interfaces,
-		int nodeStaticCount);
+		const std::unordered_map<std::string, std::vector<std::pair<std::vector<Node*>, std::vector<std::pair<Node*, Node*>>>>>& interfaces,
+		int sizeX, int sizeY, int nodeStaticCount);
 
 private:
 	static int count;

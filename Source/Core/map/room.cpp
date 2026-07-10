@@ -162,7 +162,10 @@ void Room::PlacePivots(Quad* room) {
 	mod->PlacePivots(room);
 
 	for (auto& pivot : mod->pivots) {
-		pivots.push_back(new Node("room", pivot[0] * room->GetSizeX() + pivot[1], pivot[2] * room->GetSizeY() + pivot[3]));
+		float x = pivot[0] * room->GetSizeX() + pivot[1];
+		float y = pivot[2] * room->GetSizeY() + pivot[3];
+		auto [wx, wy] = GetPosition(x, y);
+		pivots.push_back(new Node("room", wx, wy));
 	}
 }
 
@@ -173,6 +176,10 @@ Node* Room::GetNavigationNode() const {
 void Room::SetNavigationNode(Node* node) {
 	delete navigationNode;
 	navigationNode = node;
+}
+
+pair<float, float> Room::GetPosition() const {
+	return GetPosition(GetSizeX() / 2.f, GetSizeY() / 2.f);
 }
 
 pair<float, float> Room::GetPosition(float x, float y) const {

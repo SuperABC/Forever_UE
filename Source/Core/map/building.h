@@ -916,7 +916,7 @@ public:
 	/*
 	* 获取寻址锚点
 	*/
-	const std::vector<Node*> GetPivots();
+	const std::vector<Node*>& GetPivots();
 
 	/*
 	* 获取建筑自身的四角四边（非持有引用）
@@ -998,10 +998,15 @@ public:
 	float GetAcreageMax();
 
 	/*
-	* 获取建筑中心世界位置
-	* @x, y: 输出的世界坐标
+	* 获取建筑中心世界坐标
 	*/
-	void GetPosition(float& x, float& y) const;
+	std::pair<float, float> GetPosition() const;
+
+	/*
+	* 将楼层局部坐标转换为世界坐标
+	* @x, y: construction 局部坐标
+	*/
+	std::pair<float, float> GetPosition(float x, float y) const;
 
 	/*
 	* 布局内部对象
@@ -1075,11 +1080,6 @@ private:
 	void ArrangeRow(int level, int slot, const std::string& name, float acreage,
 		Component* component, RoomFactory* factory);
 
-	/*
-	* 将楼层局部坐标（construction局部坐标系）转换为世界坐标
-	* @x, y: 楼层局部坐标
-	*/
-	std::pair<float, float> ToWorldXY(float x, float y) const;
 
 	/*
 	* 根据各楼层的navigation模板构建建筑内部导航图，并接入地图导航图

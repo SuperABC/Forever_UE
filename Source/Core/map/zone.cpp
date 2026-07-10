@@ -137,13 +137,20 @@ Script* Zone::GetScript() const {
 	return script;
 }
 
-void Zone::GetPosition(float& x, float& y) const {
+pair<float, float> Zone::GetPosition() const {
 	auto block = GetParent();
-	if (block) {
-		auto center = block->GetPosition(GetPosX(), GetPosY());
-		x = center.first;
-		y = center.second;
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Zone's parent block is null.\n");
 	}
+	return block->GetPosition(GetPosX(), GetPosY());
+}
+
+pair<float, float> Zone::GetPosition(float x, float y) const {
+	auto block = GetParent();
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Zone's parent block is null.\n");
+	}
+	return block->GetPosition(GetPosX() - GetSizeX() / 2.f + x, GetPosY() - GetSizeY() / 2.f + y);
 }
 
 void Zone::LayoutZone(const Lot* block) {
@@ -297,7 +304,10 @@ void Zone::PlacePivots(Quad* zone) {
 	mod->PlacePivots(zone);
 
 	for (auto& pivot : mod->pivots) {
-		pivots.push_back(new Node("zone", pivot[0] * zone->GetSizeX() + pivot[1], pivot[2] * zone->GetSizeY() + pivot[3]));
+		float x = pivot[0] * zone->GetSizeX() + pivot[1];
+		float y = pivot[2] * zone->GetSizeY() + pivot[3];
+		auto [wx, wy] = GetPosition(x, y);
+		pivots.push_back(new Node("zone", wx, wy));
 	}
 }
 

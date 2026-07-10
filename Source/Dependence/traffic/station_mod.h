@@ -28,7 +28,7 @@ public:
 	COSTOM_INIT virtual void LayoutStation(const Lot* block) = 0;
 
 	// 布局站点
-	COSTOM_INIT virtual void PlaceInterface(const Quad* building) = 0;
+	COSTOM_INIT virtual void PlaceInterface(const Quad* building, const std::vector<Node*>& pivots) = 0;
 
 	// 建筑类型
 	std::string buildingType;
@@ -36,8 +36,11 @@ public:
 	// 建筑面积
 	float buildingAcreage;
 
+	// 站点节点
+	std::vector<Node*> nodes;
+
 	// 接口向量
-	std::vector<std::pair<std::string, std::vector<float>>> interfaces;
+	std::vector<std::pair<std::string, std::pair<Node*, Node*>>> interfaces;
 
 };
 

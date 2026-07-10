@@ -26,8 +26,11 @@ public:
 	// 获取名称
 	std::string GetName() const;
 
-	// 获取地址
+	// 获取所在建筑
 	std::string GetBuilding() const;
+
+	// 设置所在建筑
+	void SetBuilding(std::string building);
 
 	// 布局站点
 	void LayoutStation(const Lot* block);
@@ -39,13 +42,13 @@ public:
 	float GetBuildingAcreage() const;
 
 	// 放置接口
-	void PlaceInterface(const Quad* building);
+	void PlaceInterface(const Quad* building, const std::vector<Node*>& pivots);
 
 	// 获取接口
-	std::vector<std::pair<std::string, std::vector<float>>> GetInterfaces() const;
+	std::vector<std::pair<std::string, std::pair<Node*, Node*>>> GetInterfaces() const;
 
-	// 设置所在建筑
-	void SetBuilding(std::string building);
+	// 获取站点节点
+	std::vector<Node*> GetNodes() const;
 
 private:
 	// 模组对象
@@ -63,6 +66,9 @@ private:
 	// 所在建筑名称
 	std::string building;
 
+	// 站点节点
+	std::vector<Node*> nodes;
+
 };
 
 // 空站点
@@ -79,7 +85,7 @@ public:
 
 	virtual void LayoutStation(const Lot* block);
 
-	virtual void PlaceInterface(const Quad* building);
+	virtual void PlaceInterface(const Quad* building, const std::vector<Node*>& pivots);
 
 private:
 	static int count;

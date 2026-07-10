@@ -39,14 +39,17 @@ void AirportStation::LayoutStation(const Lot* block) {
 	buildingAcreage = 25600.f;
 }
 
-void AirportStation::PlaceInterface(const Quad* building) {
-
+void AirportStation::PlaceInterface(const Quad* building, const vector<Node*>& pivots) {
+	if (pivots.size() != 5)return;
+	nodes = { pivots[0] };
+	interfaces.push_back({ "air", {pivots[1], pivots[2]} });
+	interfaces.push_back({ "air", {pivots[3], pivots[4]} });
 }
 
 int AirportBuilding::count = 0;
 
 AirportBuilding::AirportBuilding() : id(count++) {
-
+	direction = GetRandom(4);
 }
 
 AirportBuilding::~AirportBuilding() {
@@ -84,8 +87,6 @@ void AirportBuilding::LayoutBuilding(const Quad* quad) {
 	height = 2.0f;
 	wallTexture = "/Game/Asset/Materials/White.White";
 
-	int direction = GetRandom(4);
-
 	string component = "empty";
 	AssignFloor(0, direction, "single_room_f^");
 	AssignRoom(0, 0, "empty", component, 0);
@@ -94,9 +95,28 @@ void AirportBuilding::LayoutBuilding(const Quad* quad) {
 }
 
 void AirportBuilding::PlaceConstruction() {
-	construction = Quad(0.3f, 0.5f, 0.4f, 0.8f);
+	switch (direction) {
+	case 0:
+		construction = Quad(0.3f, 0.5f, 0.4f, 0.8f);
+		break;
+	case 1:
+		construction = Quad(0.7f, 0.5f, 0.4f, 0.8f);
+		break;
+	case 2:
+		construction = Quad(0.5f, 0.3f, 0.8f, 0.4f);
+		break;
+	case 3:
+		construction = Quad(0.5f, 0.7f, 0.8f, 0.4f);
+		break;
+	default:
+		break;
+	}
 }
 
 void AirportBuilding::PlacePivots(Quad* building) {
-
+	AddPivot({ 0.5f, 0.0f, 0.8f, 0.0f }, direction);
+	AddPivot({ 0.2f, 0.0f, 0.8f, 0.0f }, direction);
+	AddPivot({ 0.1f, 0.0f, 0.8f, 0.0f }, direction);
+	AddPivot({ 0.8f, 0.0f, 0.8f, 0.0f }, direction);
+	AddPivot({ 0.9f, 0.0f, 0.8f, 0.0f }, direction);
 }

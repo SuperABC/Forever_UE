@@ -120,10 +120,15 @@ public:
 	Script* GetScript() const;
 
 	/*
-	* 获取园区中心世界位置
-	* @x, y: 输出的世界坐标
+	* 获取园区中心世界坐标
 	*/
-	void GetPosition(float& x, float& y) const;
+	std::pair<float, float> GetPosition() const;
+
+	/*
+	* 将园区局部坐标转换为世界坐标
+	* @x, y: 园区局部坐标（左下角为原点）
+	*/
+	std::pair<float, float> GetPosition(float x, float y) const;
 
 	/*
 	* 设计园区

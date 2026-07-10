@@ -66,7 +66,7 @@ vector<string> StationFactory::GetTypes() const {
 	return types;
 }
 
-vector<int> StationFactory::AssignStations(const string& type, const std::vector<Lot*>& blocks) const {
+vector<int> StationFactory::AssignStations(const string& type, const vector<Lot*>& blocks) const {
 	vector<int> result(blocks.size(), 0);
 	auto config = configs.find(type);
 	if (config == configs.end() || !config->second) {

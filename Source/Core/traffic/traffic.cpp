@@ -182,22 +182,23 @@ void Traffic::InitBuildings(Map* map) {
 }
 
 void Traffic::InitTraffic(Map* map, Populace* populace) {
-	unordered_map<string, vector<vector<vector<float>>>> stationInterfaces;
+	unordered_map<string, vector<pair<vector<Node*>, vector<pair<Node*, Node*>>>>> stationInterfaces;
 	for(auto& [_, station] : stations) {
-		unordered_map<string, vector<vector<float>>> interfaces;
-		station->PlaceInterface(map->GetBuilding(station->GetBuilding()));
-		for(auto& [type, inter] : station->GetInterfaces()) {
-			interfaces[type].push_back(inter);
+		unordered_map<string, vector<pair<Node*, Node*>>> interfaces;
+		auto building = map->GetBuilding(station->GetBuilding());
+		station->PlaceInterface(building, building->GetPivots());
+		for(auto& [type, ray] : station->GetInterfaces()) {
+			interfaces[type].push_back(ray);
 		}
-		for(auto & [type, inters] : interfaces) {
-			stationInterfaces[type].push_back(inters);
+		for(auto & [type, rays] : interfaces) {
+			stationInterfaces[type].push_back({ station->GetNodes(), rays });
 		}
 	}
 
 	auto types = routeFactory->GetRoutes();
 	for (auto type : types) {
 		auto route = new Route(routeFactory, type);
-		route->LayoutRoute(stationInterfaces, Node::GetCount());
+		route->LayoutRoute(stationInterfaces, map->GetSize().first, map->GetSize().second, Node::GetCount());
 		routes[route->GetName()] = route;
 	}
 

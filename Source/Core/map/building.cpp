@@ -701,7 +701,7 @@ string Building::GetAddress() {
 	}
 }
 
-const vector<Node*> Building::GetPivots() {
+const vector<Node*>& Building::GetPivots() {
 	return pivots;
 }
 
@@ -768,7 +768,7 @@ float Building::GetAcreageMax() {
 	return mod->maxAcreage;
 }
 
-void Building::GetPosition(float& x, float& y) const {
+pair<float, float> Building::GetPosition() const {
 	auto block = GetParentBlock();
 	if (!block) {
 		THROW_EXCEPTION(NullPointerException, "Building parent block is null.\n");
@@ -776,16 +776,23 @@ void Building::GetPosition(float& x, float& y) const {
 
 	auto zone = GetParentZone();
 	if (zone) {
-		auto center = block->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f + GetPosX(),
+		return block->GetPosition(zone->GetPosX() - zone->GetSizeX() / 2.f + GetPosX(),
 			zone->GetPosY() - zone->GetSizeY() / 2.f + GetPosY());
-		x = center.first;
-		y = center.second;
 	}
-	else {
-		auto center = block->GetPosition(GetPosX(), GetPosY());
-		x = center.first;
-		y = center.second;
+	return block->GetPosition(GetPosX(), GetPosY());
+}
+
+pair<float, float> Building::GetPosition(float x, float y) const {
+	auto block = GetParentBlock();
+	if (!block) {
+		THROW_EXCEPTION(NullPointerException, "Building parent block is null.\n");
 	}
+
+	auto zone = GetParentZone();
+	float offsetX = zone ? zone->GetLeft() : 0.f;
+	float offsetY = zone ? zone->GetBottom() : 0.f;
+	return block->GetPosition(offsetX + GetLeft() + construction.GetLeft() + x,
+		offsetY + GetBottom() + construction.GetBottom() + y);
 }
 
 void Building::LayoutBuilding(Layout* layout, Map* map) {
@@ -851,7 +858,7 @@ void Building::LayoutBuilding(Layout* layout, Map* map) {
 		room->ConfigRoom();
 		room->PlacePivots(room);
 
-		auto [wx, wy] = ToWorldXY(room->GetPosX(), room->GetPosY());
+		auto [wx, wy] = GetPosition(room->GetPosX(), room->GetPosY());
 		room->SetNavigationNode(new Node("room", wx, wy, height * room->GetLayer()));
 	}
 
@@ -868,7 +875,10 @@ void Building::PlacePivots(Quad* building) {
 	mod->PlacePivots(building);
 
 	for (auto& pivot : mod->pivots) {
-		pivots.push_back(new Node("building", pivot[0] * building->GetSizeX() + pivot[1], pivot[2] * building->GetSizeY() + pivot[3]));
+		float x = pivot[0] * building->GetSizeX() + pivot[1];
+		float y = pivot[2] * building->GetSizeY() + pivot[3];
+		auto [wx, wy] = GetPosition(x, y);
+		pivots.push_back(new Node("building", wx, wy));
 	}
 }
 
@@ -1482,18 +1492,6 @@ vector<float> Building::InversePoint(const vector<float>& point, int face) {
 	}
 }
 
-pair<float, float> Building::ToWorldXY(float x, float y) const {
-	auto block = GetParentBlock();
-	if (!block) {
-		THROW_EXCEPTION(NullPointerException, "Building parent block is null.\n");
-	}
-
-	auto zone = GetParentZone();
-	float offsetX = zone ? zone->GetLeft() : 0.f;
-	float offsetY = zone ? zone->GetBottom() : 0.f;
-	return block->GetPosition(offsetX + GetLeft() + construction.GetLeft() + x,
-		offsetY + GetBottom() + construction.GetBottom() + y);
-}
 
 // line的运行期状态：固定端点缓存 + 沿line收集到的锚点（用于排序后串成走廊骨架）
 struct LineRuntime {
@@ -1542,7 +1540,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 		auto instantiate = [this, floorWidth, floorHeight, z](const vector<float>& position) -> Node* {
 			float lx = position[0] * floorWidth + position[1];
 			float ly = position[2] * floorHeight + position[3];
-			auto [wx, wy] = ToWorldXY(lx, ly);
+			auto [wx, wy] = GetPosition(lx, ly);
 			return new Node("building", wx, wy, z);
 		};
 
@@ -1597,7 +1595,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 				auto& line = lineRuntimes[endpoint.idx];
 				if (endpoint.vertex == 0) {
 					if (!line.nodeAt0) {
-						auto [wx, wy] = ToWorldXY(line.beginX, line.beginY);
+						auto [wx, wy] = GetPosition(line.beginX, line.beginY);
 						line.nodeAt0 = new Node("building", wx, wy, height * level);
 						nodes.push_back(line.nodeAt0);
 						newNodes.push_back(line.nodeAt0);
@@ -1607,7 +1605,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 				}
 				else if (endpoint.vertex == 1) {
 					if (!line.nodeAt1) {
-						auto [wx, wy] = ToWorldXY(line.endX, line.endY);
+						auto [wx, wy] = GetPosition(line.endX, line.endY);
 						line.nodeAt1 = new Node("building", wx, wy, height * level);
 						nodes.push_back(line.nodeAt1);
 						newNodes.push_back(line.nodeAt1);
@@ -1657,7 +1655,7 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 						line.beginX, line.beginY, line.endX, line.endY);
 					float px = line.beginX + t * (line.endX - line.beginX);
 					float py = line.beginY + t * (line.endY - line.beginY);
-					auto [wx, wy] = ToWorldXY(px, py);
+					auto [wx, wy] = GetPosition(px, py);
 					Node* projected = new Node("building", wx, wy, height * level);
 					nodes.push_back(projected);
 					newNodes.push_back(projected);

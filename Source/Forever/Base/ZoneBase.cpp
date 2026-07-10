@@ -48,8 +48,7 @@ void AZoneBase::Tick(float DeltaTime) {
 			auto zone = blockZone.second;
 			FZone zoneInfo;
 			zoneInfo.name = UTF8_TO_TCHAR(blockZone.first.data());
-			float x, y;
-			zone->GetPosition(x, y);
+			auto [x, y] = zone->GetPosition();
 			zoneInfo.center = FVector(x, y, 0.f);
 			zoneInfo.size = FVector(zone->GetSizeX(), zone->GetSizeY(), 100.f);
 			zoneInfo.rotation = block->GetRotation();

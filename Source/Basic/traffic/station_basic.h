@@ -18,7 +18,7 @@ public:
 
 	virtual void LayoutStation(const Lot* block);
 
-	virtual void PlaceInterface(const Quad* building);
+	virtual void PlaceInterface(const Quad* building, const std::vector<Node*>& pivots);
 
 private:
 	static int count;
@@ -51,4 +51,6 @@ private:
 
 	int id;
 	std::string name;
+
+	int direction;
 };

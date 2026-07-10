@@ -23,8 +23,8 @@ public:
 
 	// 布局路线
 	COSTOM_INIT virtual void LayoutRoute(
-		const std::unordered_map<std::string, std::vector<std::vector<std::vector<float>>>>& interfaces,
-		int nodeStaticCount) = 0;
+		const std::unordered_map<std::string, std::vector<std::pair<std::vector<Node*>, std::vector<std::pair<Node*, Node*>>>>>& interfaces,
+		int sizeX, int sizeY, int nodeStaticCount) = 0;
 
 	// 外部连接
 	std::vector<Node> externs;

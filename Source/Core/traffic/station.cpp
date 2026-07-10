@@ -44,12 +44,17 @@ float Station::GetBuildingAcreage() const {
 	return mod->buildingAcreage;
 }
 
-void Station::PlaceInterface(const Quad* building) {
-	mod->PlaceInterface(building);
+void Station::PlaceInterface(const Quad* building, const vector<Node*>& pivots) {
+	mod->PlaceInterface(building, pivots);
+	nodes = mod->nodes;
 }
 
-vector<pair<string, vector<float>>> Station::GetInterfaces() const {
+vector<pair<string, pair<Node*, Node*>>> Station::GetInterfaces() const {
 	return mod->interfaces;
+}
+
+vector<Node*> Station::GetNodes() const {
+	return mod->nodes;
 }
 
 void Station::SetBuilding(string building) {
@@ -90,7 +95,7 @@ void EmptyStation::LayoutStation(const Lot* block) {
 
 }
 
-void EmptyStation::PlaceInterface(const Quad* building) {
+void EmptyStation::PlaceInterface(const Quad* building, const vector<Node*>& pivots) {
 
 }
 

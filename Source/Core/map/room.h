@@ -155,8 +155,13 @@ public:
 	void SetNavigationNode(Node* node);
 
 	/*
-	* 获取世界坐标
-	* @x, y: 房间局部坐标
+	* 获取房间中心世界坐标
+	*/
+	std::pair<float, float> GetPosition() const;
+
+	/*
+	* 将房间局部坐标转换为世界坐标
+	* @x, y: 房间局部坐标（左下角为原点）
 	*/
 	std::pair<float, float> GetPosition(float x, float y) const;
 
