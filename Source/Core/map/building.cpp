@@ -1,6 +1,5 @@
 ﻿#include "building.h"
 
-#include "trivial.h"
 #include "json.h"
 
 #include "map/map.h"
@@ -1822,4 +1821,14 @@ void EmptyBuilding::PlaceConstruction() {
 
 void EmptyBuilding::PlacePivots(Quad* building) {
 
+}
+
+float Building::ProjectOntoLine(float px, float py, float ax, float ay, float bx, float by) {
+	float dx = bx - ax, dy = by - ay;
+	float lenSq = dx * dx + dy * dy;
+	if (lenSq <= 0.f) return 0.f;
+	float t = ((px - ax) * dx + (py - ay) * dy) / lenSq;
+	if (t < 0.f) t = 0.f;
+	if (t > 1.f) t = 1.f;
+	return t;
 }

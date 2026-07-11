@@ -1,7 +1,5 @@
 ﻿#include "populace.h"
 
-#include "trivial.h"
-
 #include "map/map.h"
 #include "map/roadnet.h"
 #include "map/block.h"
@@ -1374,5 +1372,25 @@ void Populace::GenerateEmotions(Time* time) {
 
 void Populace::GenerateJobs() {
 	debugf("Log: Generate jobs.\n");
+}
+
+Node* Populace::ResolveNavigationNode(Room* room, Building* building, Zone* zone, Block* block) {
+	if (room) return room->GetNavigationNode();
+	if (building) {
+		for (auto corner : building->GetBoundary().corners) {
+			if (corner) return corner;
+		}
+	}
+	if (zone) {
+		for (auto corner : zone->GetBoundary().corners) {
+			if (corner) return corner;
+		}
+	}
+	if (block) {
+		for (auto corner : block->GetBoundary().corners) {
+			if (corner) return corner;
+		}
+	}
+	return nullptr;
 }
 

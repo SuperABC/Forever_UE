@@ -1096,6 +1096,13 @@ private:
 	static std::vector<float> InverseParams(const std::vector<float>& params, int face);
 
 	/*
+	* 计算点在线段上的最近投影参数t（已裁剪至[0,1]）
+	* @px, py: 待投影的点
+	* @ax, ay, bx, by: 线段两端点
+	*/
+	static float ProjectOntoLine(float px, float py, float ax, float ay, float bx, float by);
+
+	/*
 	* 根据转向修改朝向参数
 	* @direction: 朝向
 	* @face: 转向

@@ -75,6 +75,12 @@ public:
 	*/
 	Person* GetCitizen(const std::string& name);
 
+	/*
+	* 按精细程度从房间到地块依次取第一个可用的导航节点
+	* @room, building, zone, block: 候选位置，按精细程度从高到低传入
+	*/
+	static Node* ResolveNavigationNode(Room* room, Building* building, Zone* zone, Block* block);
+
 	static NameFactory* nameFactory; // 姓名工厂
 
 	static SchedulerFactory* schedulerFactory; // 调度工厂
