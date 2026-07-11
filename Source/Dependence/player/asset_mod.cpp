@@ -3,7 +3,13 @@
 
 using namespace std;
 
-AssetMod::AssetMod() {
+AssetMod::AssetMod() :
+	asset(),
+	mobility(ASSET_ESTATE),
+	weight(-1.f),
+	size(-1.f), 
+	volume(-1.f),
+	backpack(false) {
 
 }
 
@@ -51,6 +57,35 @@ bool AssetFactory::CheckRegistered(const string& id) const {
 
 void AssetFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
+}
+
+void AssetMod::DefineEstate() {
+	mobility = ASSET_ESTATE;
+}
+
+void AssetMod::DefineVehicle() {
+	mobility = ASSET_VEHICLE;
+}
+
+void AssetMod::DefineObject(float weight, float size, bool backpack) {
+	mobility = ASSET_OBJECT;
+	this->weight = weight;
+	this->size = size;
+	this->backpack = backpack;
+}
+
+void AssetMod::DefineContainer(float weight, float size, float volume, bool backpack) {
+	mobility = ASSET_OBJECT;
+	this->weight = weight;
+	this->size = size;
+	this->volume = volume;
+	this->backpack = backpack;
+}
+
+void AssetMod::DefineContainee(float weight, float size) {
+	mobility = ASSET_CONTAINEE;
+	this->weight = weight;
+	this->size = size;
 }
 
 void AssetFactory::DestroyAsset(AssetMod* assetMod) const {

@@ -3,6 +3,7 @@
 #include "map/map.h"
 #include "map/roadnet.h"
 #include "map/block.h"
+#include "map/zone.h"
 #include "map/building.h"
 #include "map/room.h"
 #include "populace/person.h"

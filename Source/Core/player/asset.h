@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "player/asset_mod.h"
 
@@ -11,29 +11,96 @@ typedef void (*RegisterModAssetsFunc)(AssetFactory* factory);
 // 资产实体
 class Asset {
 public:
-	// 禁止默认构造
+	/*
+	* 禁止默认构造
+	*/
 	Asset() = delete;
 
-	// 通过类型从工厂构造
+	/*
+	* 通过类型从工厂构造
+	* @factory: 资产工厂
+	* @asset: 资产类型标识符
+	*/
 	Asset(AssetFactory* factory, const std::string& asset);
 
-	// 析构资产
+	/*
+	* 析构资产
+	*/
 	~Asset();
 
-	// 获取类型
+	/*
+	* 获取资产类型
+	*/
 	std::string GetType() const;
 
-	// 获取名称
+	/*
+	* 获取资产名称
+	*/
 	std::string GetName() const;
 
-	// 定义资产
+	/*
+	* 调用模组的DefineAsset并同步各属性字段
+	*/
 	void DefineAsset();
 
-	// 获取资产描述
+	/*
+	* 获取资产描述文本
+	*/
 	std::string GetAsset();
 
-	// 设置资产描述
+	/*
+	* 设置资产描述文本
+	* @asset: 描述文本
+	*/
 	void SetAsset(const std::string& asset);
+
+	/*
+	* 获取资产移动性
+	*/
+	ASSET_MOBILITY GetMobility() const;
+
+	/*
+	* 获取资产重量
+	*/
+	float GetWeight() const;
+
+	/*
+	* 获取资产体积
+	*/
+	float GetSize() const;
+
+	/*
+	* 获取资产容积
+	*/
+	float GetVolume() const;
+
+	/*
+	* 向容器中添加内容（超容量时拒绝并返回false）
+	* @name: 内容名称
+	* @content: 内容资产
+	*/
+	bool AddContent(const std::string& name, Asset* content);
+
+	/*
+	* 从容器中按名称删除内容
+	* @name: 内容名称
+	*/
+	void RemoveContent(const std::string& name);
+
+	/*
+	* 获取容器剩余空间
+	*/
+	float GetSpace() const;
+
+	/*
+	* 获取容器当前所有内容
+	*/
+	const std::unordered_map<std::string, Asset*>& GetContents() const;
+
+	/*
+	* 是否可背在身上
+	*/
+	bool GetBackpack() const;
 
 private:
 	// 模组对象
@@ -47,27 +114,66 @@ private:
 
 	// 资产名称
 	std::string name;
-	
+
 	// 资产描述
 	std::string asset;
+
+	// 资产移动性
+	ASSET_MOBILITY mobility;
+
+	// 资产重量
+	float weight;
+
+	// 资产体积
+	float size;
+
+	// 资产容积
+	float volume;
+
+	// 资产空间
+	float space;
+
+	// 容器内容
+	std::unordered_map<std::string, Asset*> contents;
+
+	// 是否可背
+	bool backpack;
 };
 
 // 空资产
 class EmptyAsset : public AssetMod {
 public:
+	/*
+	* 构造空资产
+	*/
 	EmptyAsset();
+
+	/*
+	* 析构空资产
+	*/
 	virtual ~EmptyAsset();
 
+	/*
+	* 类型标识符
+	*/
 	static const char* GetId();
+
+	/* Override */
 	virtual const char* GetType() const override;
+
+	/* Override */
 	virtual const char* GetName() override;
 
+	/* Override */
 	virtual void DefineAsset() override;
 
 private:
+	// 总实例数量
 	static int count;
 
+	// 实例编号
 	int id;
+
+	// 名称缓存
 	std::string name;
 };
-

@@ -27,7 +27,7 @@ const char* ZoneAsset::GetName() {
 }
 
 void ZoneAsset::DefineAsset() {
-	
+	DefineEstate();
 }
 
 int BuildingAsset::count = 0;
@@ -52,7 +52,7 @@ const char* BuildingAsset::GetName() {
 }
 
 void BuildingAsset::DefineAsset() {
-
+	DefineEstate();
 }
 
 int RoomAsset::count = 0;
@@ -77,6 +77,6 @@ const char* RoomAsset::GetName() {
 }
 
 void RoomAsset::DefineAsset() {
-
+	DefineEstate();
 }
 

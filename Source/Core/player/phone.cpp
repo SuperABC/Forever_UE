@@ -7,23 +7,28 @@
 
 using namespace std;
 
-static const int GRID_COLS = 4;
-static const int CELL_W = 120;
-static const int CELL_H = 90;
-static const int ICON_W = 60;
-static const int ICON_H = 60;
-static const int GRID_START_Y = 50;
+static const int gridCols = 4;
+static const int cellWidth = 120;
+static const int cellHeight = 90;
+static const int iconWidth = 60;
+static const int iconHeight = 60;
+static const int gridStartY = 50;
 
-static const int TASK_COLS = 2;
-static const int THUMB_W = 120;
-static const int THUMB_H = 160;
-static const int TASK_CELL_W = 240;
-static const int TASK_CELL_H = 200;
-static const int TASK_START_Y = 50;
+static const int taskCols = 2;
+static const int thumbWidth = 120;
+static const int thumbHeight = 160;
+static const int taskCellWidth = 240;
+static const int taskCellHeight = 200;
+static const int taskStartY = 50;
 
 
-Phone::Phone() {
-
+Phone::Phone() :
+	width(480),
+	height(640),
+	barY(600),
+	state(Home),
+	homeSelection(0),
+	taskSelection(0) {
 }
 
 Phone::~Phone() {
@@ -31,9 +36,9 @@ Phone::~Phone() {
 }
 
 void Phone::Init(int width, int height) {
-	W = width;
-	H = height;
-	state = HOME;
+	this->width = width;
+	this->height = height;
+	state = Home;
 	homeSelection = 0;
 	taskSelection = 0;
 	entries.clear();
@@ -62,7 +67,7 @@ int Phone::FindEntry(const string& type) const {
 void Phone::OpenApp(Canvas* canvas, int entryIdx) {
 	if (entryIdx < 0 || entryIdx >= (int)entries.size()) return;
 	currentAppType = entries[entryIdx].type;
-	state = IN_APP;
+	state = InApp;
 
 	if (!entries[entryIdx].initialized) {
 		canvas->ClearBuffer();
@@ -98,9 +103,9 @@ void Phone::HandleHomeKeys(Canvas* canvas) {
 		} else if (key == leftCode && n > 0) {
 			homeSelection = (homeSelection - 1 + n) % n;
 		} else if (key == downCode && n > 0) {
-			homeSelection = min(homeSelection + GRID_COLS, n - 1);
+			homeSelection = min(homeSelection + gridCols, n - 1);
 		} else if (key == upCode && n > 0) {
-			homeSelection = max(homeSelection - GRID_COLS, 0);
+			homeSelection = max(homeSelection - gridCols, 0);
 		} else if (key == enterCode && n > 0) {
 			string type = appTypes[homeSelection];
 			int idx = FindEntry(type);
@@ -110,7 +115,7 @@ void Phone::HandleHomeKeys(Canvas* canvas) {
 			}
 			OpenApp(canvas, idx);
 		} else if (key == tabCode) {
-			state = TASKLIST;
+			state = TaskList;
 			taskSelection = max(0, min(taskSelection, (int)entries.size() - 1));
 		}
 	}
@@ -136,14 +141,14 @@ void Phone::HandleInAppKeys(Canvas* canvas) {
 			}
 		} else if (isPress && code == homeCode) {
 			if (entryIdx >= 0) SaveSnapshot(canvas, entryIdx);
-			state = HOME;
+			state = Home;
 			keepPassthrough = false;
 		} else if (isPress && code == taskCode) {
 			if (entryIdx >= 0) {
 				SaveSnapshot(canvas, entryIdx);
 				taskSelection = entryIdx;
 			}
-			state = TASKLIST;
+			state = TaskList;
 			keepPassthrough = false;
 		} else {
 			passthrough.push_back(key);
@@ -187,12 +192,12 @@ void Phone::HandleTaskKeys(Canvas* canvas) {
 			n = (int)entries.size();
 			if (n == 0) {
 				taskSelection = 0;
-				state = HOME;
+				state = Home;
 			} else {
 				taskSelection = min(taskSelection, n - 1);
 			}
 		} else if (key == homeCode || key == tabCode) {
-			state = HOME;
+			state = Home;
 		}
 	}
 }
@@ -202,33 +207,33 @@ void Phone::RenderHome(Canvas* canvas) {
 	canvas->SetAlpha(255);
 
 	canvas->SetColor(20, 20, 40);
-	canvas->PutRect(0, 0, W - 1, BAR_Y - 1, true);
+	canvas->PutRect(0, 0, width - 1, barY - 1, true);
 
 	canvas->SetColor(200, 200, 220);
 	canvas->SetFontSize(24);
 	canvas->PutString("桌面", 216, 10);
 
 	for (int i = 0; i < (int)appTypes.size(); i++) {
-		int col = i % GRID_COLS;
-		int row = i / GRID_COLS;
-		int x = col * CELL_W + (CELL_W - ICON_W) / 2;
-		int y = GRID_START_Y + row * CELL_H;
+		int x = i % gridCols;
+		int y = i / gridCols;
+		int px = x * cellWidth + (cellWidth - iconWidth) / 2;
+		int py = gridStartY + y * cellHeight;
 
-		if (y + CELL_H > BAR_Y) break;
+		if (py + cellHeight > barY) break;
 
 		bool sel = (i == homeSelection);
 
 		if (sel) {
 			canvas->SetColor(60, 140, 255);
-			canvas->PutRect(x - 3, y - 3, x + ICON_W + 3, y + ICON_H + 3, true);
+			canvas->PutRect(px - 3, py - 3, px + iconWidth + 3, py + iconHeight + 3, true);
 		}
 
 		canvas->SetColor(220, 220, 220);
-		canvas->PutRect(x, y, x + ICON_W, y + ICON_H, true);
+		canvas->PutRect(px, py, px + iconWidth, py + iconHeight, true);
 
 		canvas->SetColor(200, 200, 220);
 		canvas->SetFontSize(20);
-		canvas->PutString(appTypes[i], x, y + ICON_H + 3);
+		canvas->PutString(appTypes[i], px, py + iconHeight + 3);
 	}
 
 	RenderBottomBar(canvas);
@@ -239,7 +244,7 @@ void Phone::RenderTaskList(Canvas* canvas) {
 	canvas->SetAlpha(255);
 
 	canvas->SetColor(15, 15, 25);
-	canvas->PutRect(0, 0, W - 1, BAR_Y - 1, true);
+	canvas->PutRect(0, 0, width - 1, barY - 1, true);
 
 	canvas->SetColor(200, 200, 220);
 	canvas->SetFontSize(24);
@@ -251,32 +256,32 @@ void Phone::RenderTaskList(Canvas* canvas) {
 		canvas->PutString("无运行中的应用", 160, 280);
 	} else {
 		for (int i = 0; i < (int)entries.size(); i++) {
-			int col = i % TASK_COLS;
-			int row = i / TASK_COLS;
-			int cellY = TASK_START_Y + row * TASK_CELL_H;
+			int x = i % taskCols;
+			int y = i / taskCols;
+			int cellY = taskStartY + y * taskCellHeight;
 
-			if (cellY + TASK_CELL_H > BAR_Y) break;
+			if (cellY + taskCellHeight > barY) break;
 
-			int thumbX = col * TASK_CELL_W + (TASK_CELL_W - THUMB_W) / 2;
+			int thumbX = x * taskCellWidth + (taskCellWidth - thumbWidth) / 2;
 			int thumbY = cellY + 10;
 
 			if (!entries[i].snapshot.empty()) {
-				canvas->PutRawImage(entries[i].snapshot.data(), W, H,
-					thumbX, thumbY, THUMB_W, THUMB_H);
+				canvas->PutRawImage(entries[i].snapshot.data(), width, height,
+					thumbX, thumbY, thumbWidth, thumbHeight);
 			} else {
 				canvas->SetColor(50, 50, 70);
-				canvas->PutRect(thumbX, thumbY, thumbX + THUMB_W, thumbY + THUMB_H, true);
+				canvas->PutRect(thumbX, thumbY, thumbX + thumbWidth, thumbY + thumbHeight, true);
 			}
 
 			if (i == taskSelection) {
 				canvas->SetColor(60, 140, 255);
 				canvas->PutRect(thumbX - 2, thumbY - 2,
-					thumbX + THUMB_W + 2, thumbY + THUMB_H + 2, false);
+					thumbX + thumbWidth + 2, thumbY + thumbHeight + 2, false);
 			}
 
 			canvas->SetColor(180, 180, 200);
 			canvas->SetFontSize(12);
-			canvas->PutString(entries[i].type, thumbX, thumbY + THUMB_H + 4);
+			canvas->PutString(entries[i].type, thumbX, thumbY + thumbHeight + 4);
 		}
 	}
 
@@ -286,38 +291,38 @@ void Phone::RenderTaskList(Canvas* canvas) {
 void Phone::RenderBottomBar(Canvas* canvas) {
 	canvas->SetAlpha(255);
 	canvas->SetColor(25, 25, 35);
-	canvas->PutRect(0, BAR_Y, W - 1, H - 1, true);
+	canvas->PutRect(0, barY, width - 1, height - 1, true);
 
 	canvas->SetColor(160, 160, 170);
 
-	// Back: "<"
+	// 返回按钮："<"
 	canvas->SetFontSize(26);
-	canvas->PutString("<", 66, BAR_Y + 7);
+	canvas->PutString("<", 66, barY + 7);
 
-	// Home: circle
-	canvas->PutCircle(240, BAR_Y + 20, 13, false);
+	// 主页按钮：圆圈
+	canvas->PutCircle(240, barY + 20, 13, false);
 
-	// Task: two overlapping squares
-	canvas->PutRect(386, BAR_Y + 11, 402, BAR_Y + 27, false);
-	canvas->PutRect(392, BAR_Y + 6, 408, BAR_Y + 22, false);
+	// 任务按钮：两个重叠方块
+	canvas->PutRect(386, barY + 11, 402, barY + 27, false);
+	canvas->PutRect(392, barY + 6, 408, barY + 22, false);
 }
 
 int Phone::Loop(Canvas* canvas, int ms) {
 	if (!canvas) return 0;
 
-	// Phase 1: handle keys (may change state)
+	// 第一阶段：处理按键（可能改变当前状态）
 	switch (state) {
-	case HOME: HandleHomeKeys(canvas); break;
-	case IN_APP: HandleInAppKeys(canvas); break;
-	case TASKLIST: HandleTaskKeys(canvas); break;
+	case Home: HandleHomeKeys(canvas); break;
+	case InApp: HandleInAppKeys(canvas); break;
+	case TaskList: HandleTaskKeys(canvas); break;
 	}
 
-	// Phase 2: render current state
+	// 第二阶段：渲染当前界面
 	switch (state) {
-	case HOME:
+	case Home:
 		RenderHome(canvas);
 		break;
-	case IN_APP: {
+	case InApp: {
 		int idx = FindEntry(currentAppType);
 		if (idx >= 0) {
 			Player::appFactory->LoopApp(entries[idx].type, canvas, ms);
@@ -327,7 +332,7 @@ int Phone::Loop(Canvas* canvas, int ms) {
 		RenderBottomBar(canvas);
 		break;
 	}
-	case TASKLIST:
+	case TaskList:
 		RenderTaskList(canvas);
 		break;
 	}
