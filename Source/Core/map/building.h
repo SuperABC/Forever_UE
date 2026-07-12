@@ -945,6 +945,13 @@ public:
 	std::vector<Room*>& GetRooms();
 
 	/*
+	* 按门牌号查找房间
+	* @number: 门牌号字符串
+	* @return: 对应房间，未找到则返回 nullptr
+	*/
+	Room* GetRoom(const std::string& number) const;
+
+	/*
 	* 按楼层编号获取楼层
 	* @level: 楼层编号
 	*/

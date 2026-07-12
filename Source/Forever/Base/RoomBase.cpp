@@ -67,6 +67,7 @@ void ARoomBase::EnterRoom(FString room) {
 	if (!story) return;
 	auto storyScript = story->GetScript();
 	if (!storyScript) return;
+	storyScript->SetValue("system.player.room", TCHAR_TO_UTF8(*room));
 	auto zone = storyScript->GetValue("player.zone").second;
 	auto building = storyScript->GetValue("player.building").second;
 	Event* event;
@@ -108,6 +109,7 @@ void ARoomBase::LeaveRoom(FString room) {
 	if (!story) return;
 	auto storyScript = story->GetScript();
 	if (!storyScript) return;
+	storyScript->SetValue("system.player.room", "");
 	auto zone = storyScript->GetValue("player.zone").second;
 	auto building = storyScript->GetValue("player.building").second;
 	Event* event;

@@ -145,26 +145,6 @@ extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
 	);
 }
 
-extern "C" __declspec(dllexport) void* GetModAssets() {
-	static vector<string> mods = { "zone", "building", "room" };
-	return static_cast<void*>(&mods);
-}
-
-extern "C" __declspec(dllexport) void RegisterModAssets(AssetFactory* factory) {
-	factory->RegisterAsset(ZoneAsset::GetId(),
-		[]() { return new ZoneAsset(); },
-		[](AssetMod* asset) { delete asset; }
-	);
-	factory->RegisterAsset(BuildingAsset::GetId(),
-		[]() { return new BuildingAsset(); },
-		[](AssetMod* asset) { delete asset; }
-	);
-	factory->RegisterAsset(RoomAsset::GetId(),
-		[]() { return new RoomAsset(); },
-		[](AssetMod* asset) { delete asset; }
-	);
-}
-
 extern "C" __declspec(dllexport) void* GetModNames() {
 	static vector<string> mods = { "chinese" };
 	return static_cast<void*>(&mods);
@@ -314,6 +294,30 @@ extern "C" __declspec(dllexport) void RegisterModRoutes(RouteFactory* factory) {
 	factory->RegisterRoute(AirRoute::GetId(),
 		[]() { return new AirRoute(); },
 		[](RouteMod* station) { delete station; }
+	);
+}
+
+extern "C" __declspec(dllexport) void* GetModAssets() {
+	static vector<string> mods = { "zone", "building", "room", "container"};
+	return static_cast<void*>(&mods);
+}
+
+extern "C" __declspec(dllexport) void RegisterModAssets(AssetFactory* factory) {
+	factory->RegisterAsset(ZoneAsset::GetId(),
+		[]() { return new ZoneAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
+	factory->RegisterAsset(BuildingAsset::GetId(),
+		[]() { return new BuildingAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
+	factory->RegisterAsset(RoomAsset::GetId(),
+		[]() { return new RoomAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
+	factory->RegisterAsset(ContainerAsset::GetId(),
+		[]() { return new ContainerAsset(); },
+		[](AssetMod* asset) { delete asset; }
 	);
 }
 

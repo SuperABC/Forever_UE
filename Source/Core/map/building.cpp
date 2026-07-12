@@ -724,6 +724,13 @@ vector<Room*>& Building::GetRooms() {
 	return rooms;
 }
 
+Room* Building::GetRoom(const string& number) const {
+	for (auto room : rooms) {
+		if (room->GetNumber() == number) return room;
+	}
+	return nullptr;
+}
+
 Floor* Building::GetFloor(int level) const {
 	int idx = basements + level;
 	if (idx >= 0 && idx < floors.size())

@@ -8,6 +8,7 @@
 #include "populace/person.h"
 #include "industry/storage.h"
 #include "industry/manufacture.h"
+#include "player/asset.h"
 
 #include <sstream>
 #include <iomanip>
@@ -362,6 +363,30 @@ void Room::RemoveVehicle(Vehicle* vehicle) {
 
 void Room::ClearVehicles() {
 	vehicles.clear();
+}
+
+const vector<Asset*>& Room::GetAssets() const {
+	return assets;
+}
+
+void Room::AddAsset(Asset* asset) {
+	assets.push_back(asset);
+}
+
+Asset* Room::RemoveAsset(const string& name) {
+	for (auto it = assets.begin(); it != assets.end(); ++it) {
+		if ((*it)->GetName() == name) {
+			Asset* removed = *it;
+			assets.erase(it);
+			return removed;
+		}
+	}
+	return nullptr;
+}
+
+void Room::ClearAssets() {
+	for (auto asset : assets) delete asset;
+	assets.clear();
 }
 
 int EmptyRoom::count = 0;

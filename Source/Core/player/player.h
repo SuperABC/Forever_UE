@@ -99,6 +99,69 @@ public:
 	*/
 	void AddDeposit(int amount);
 
+	/*
+	* 添加登记资产，仅接受不动产和载具类别
+	* @asset: 待登记的资产
+	* @return: 是否添加成功，类别不符或已登记则返回 false
+	*/
+	bool AddSystemAsset(Asset* asset);
+
+	/*
+	* 转移登记资产所有权给调用方，从登记列表移除
+	* @asset: 待转移的资产
+	* @return: 资产指针，未登记则返回 nullptr
+	*/
+	Asset* TransferSystemAsset(Asset* asset);
+
+	/*
+	* 归还并析构登记资产，从登记列表移除
+	* @asset: 待析构的资产
+	*/
+	void DestroySystemAsset(Asset* asset);
+
+	/*
+	* 获取所有登记资产
+	* @return: 登记资产列表
+	*/
+	const std::vector<Asset*>& GetSystemAssets() const;
+
+	/*
+	* 检查资产是否已登记
+	* @asset: 待检查的资产
+	* @return: 是否已在登记列表中
+	*/
+	bool HasSystemAsset(Asset* asset) const;
+
+	/*
+	* 按路径获取资产，路径格式为 root/容器1/.../asset名称，root 可为 left/right/back/room
+	* @path: 资产路径，room 暂不支持，返回 nullptr
+	* @return: 目标资产，路径无效或未找到则返回 nullptr
+	*/
+	Asset* GetByPath(const std::string& path);
+
+	/*
+	* 按路径移除资产并转移所有权给调用方，路径格式为 root/容器1/.../asset名称，root 可为 left/right/back/room
+	* @path: 资产路径
+	* @return: 被移除的资产，路径无效或未找到则返回 nullptr
+	*/
+	Asset* RemoveByPath(const std::string& path);
+
+	/*
+	* 按路径将资产添加到指定容器或槽位，路径格式为 root/容器1/.../asset名称，root 可为 left/right/back/room
+	* @path: 容器路径
+	* @asset: 待添加的资产
+	* @return: 是否添加成功
+	*/
+	bool AddByPath(const std::string& path, Asset* asset);
+
+	/*
+	* 分割路径字符串，按 '/' 切分，忽略空段
+	* @path: 待分割路径
+	* @return: 路径各段列表
+	*/
+	static std::vector<std::string> SplitPath(const std::string& path);
+
+
 	// 资产工厂
 	static AssetFactory* assetFactory;
 
@@ -120,4 +183,16 @@ private:
 
 	// 银行存款余额
 	int deposit;
+
+	// 系统登记资产
+	std::vector<Asset*> systemAsset;
+
+	// 左手资产
+	OBJECT_HOLDER Asset* leftHand;
+
+	// 右手资产
+	OBJECT_HOLDER Asset* rightHand;
+
+	// 背包资产
+	OBJECT_HOLDER Asset* backPack;
 };

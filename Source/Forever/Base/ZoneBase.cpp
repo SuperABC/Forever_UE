@@ -97,6 +97,7 @@ void AZoneBase::EnterZone(FString zone) {
 	if (!story) return;
 	auto storyScript = story->GetScript();
 	if (!storyScript) return;
+	storyScript->SetValue("system.player.zone", TCHAR_TO_UTF8(*zone));
 	auto event = new EnterZoneEvent(TCHAR_TO_UTF8(*zone));
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
@@ -106,9 +107,9 @@ void AZoneBase::EnterZone(FString zone) {
 	};
 	storyBase->MatchEvent(event, storyScript, getValues);
 
-	auto mapPtr = global->GetMap();
-	if (mapPtr) {
-		auto z = mapPtr->GetZone(TCHAR_TO_UTF8(*zone));
+	auto map = global->GetMap();
+	if (map) {
+		auto z = map->GetZone(TCHAR_TO_UTF8(*zone));
 		if (z) {
 			getValues.push_back(
 				[&](const string& name) -> pair<bool, ValueType> {
@@ -129,6 +130,7 @@ void AZoneBase::LeaveZone(FString zone) {
 	if (!story) return;
 	auto storyScript = story->GetScript();
 	if (!storyScript) return;
+	storyScript->SetValue("system.player.zone", "");
 	auto event = new LeaveZoneEvent(TCHAR_TO_UTF8(*zone));
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {

@@ -80,3 +80,28 @@ void RoomAsset::DefineAsset() {
 	DefineEstate();
 }
 
+int ContainerAsset::count = 0;
+
+ContainerAsset::ContainerAsset() : id(count++) {
+}
+
+ContainerAsset::~ContainerAsset() {
+}
+
+const char* ContainerAsset::GetId() {
+	return "container";
+}
+
+const char* ContainerAsset::GetType() const {
+	return "container";
+}
+
+const char* ContainerAsset::GetName() {
+	name = "容器" + std::to_string(id);
+	return name.data();
+}
+
+void ContainerAsset::DefineAsset() {
+	DefineContainer(1.0f, 1.0f, 10.0f, true);
+}
+

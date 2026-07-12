@@ -15,7 +15,9 @@ Asset::Asset(AssetFactory* factory, const string& asset) :
 	volume(-1.f),
 	space(0.f),
 	contents(),
-	backpack(false) {
+	backpack(false),
+	icon(),
+	mesh() {
 	if (!mod)
 		THROW_EXCEPTION(NullPointerException, "Asset " + asset + " mod is null.\n");
 
@@ -25,6 +27,11 @@ Asset::Asset(AssetFactory* factory, const string& asset) :
 
 Asset::~Asset() {
 	factory->DestroyAsset(mod);
+
+	for (auto& [_, content] : contents) {
+		delete content;
+	}
+	contents.clear();
 }
 
 string Asset::GetType() const {
@@ -43,10 +50,11 @@ void Asset::DefineAsset() {
 	size = mod->size;
 	volume = mod->volume;
 
-	// 有容积时将其初始化为可用空间
 	if (volume > 0.f) {
 		space = volume;
 	}
+	icon = mod->icon;
+	mesh = mod->mesh;
 }
 
 string Asset::GetAsset() {
@@ -77,13 +85,21 @@ bool Asset::GetBackpack() const {
 	return backpack;
 }
 
+string Asset::GetIcon() const {
+	return icon;
+}
+
+string Asset::GetMesh() const {
+	return mesh;
+}
+
 bool Asset::AddContent(const string& name, Asset* content) {
 	if (!content) {
 		debugf("Warning: AddContent called with null content.\n");
 		return false;
 	}
-	// 检查内容体积是否超出剩余空间
 	if (content->size > space) return false;
+
 	space -= content->size;
 	weight += content->weight;
 	contents[name] = content;
@@ -92,11 +108,20 @@ bool Asset::AddContent(const string& name, Asset* content) {
 
 void Asset::RemoveContent(const string& name) {
 	auto it = contents.find(name);
-	// 若未找到对应内容则直接返回
 	if (it == contents.end()) return;
+
 	space += it->second->size;
 	weight -= it->second->weight;
 	contents.erase(it);
+}
+
+void Asset::RemoveContents() {
+	for (auto& pair : contents) {
+		space += pair.second->size;
+		weight -= pair.second->weight;
+		delete pair.second;
+	}
+	contents.clear();
 }
 
 float Asset::GetSpace() const {

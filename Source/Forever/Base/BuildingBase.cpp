@@ -129,6 +129,7 @@ void ABuildingBase::EnterBuilding(FString building) {
 	if (!story) return;
 	auto storyScript = story->GetScript();
 	if (!storyScript) return;
+	storyScript->SetValue("system.player.building", TCHAR_TO_UTF8(*building));
 	auto zone = storyScript->GetValue("player.zone").second;
 	Event* event;
 	if (holds_alternative<string>(zone)) {
@@ -178,6 +179,7 @@ void ABuildingBase::LeaveBuilding(FString building) {
 	if (!story) return;
 	auto storyScript = story->GetScript();
 	if (!storyScript) return;
+	storyScript->SetValue("system.player.building", "");
 	auto zone = storyScript->GetValue("player.zone").second;
 	Event* event;
 	if (holds_alternative<string>(zone)) {

@@ -1,5 +1,8 @@
 ﻿#include "story.h"
 
+#include "map/map.h"
+#include "map/zone.h"
+#include "map/building.h"
 #include "story/script.h"
 #include "story/event.h"
 #include "story/dialog.h"
@@ -201,5 +204,21 @@ vector<tuple<string, string, string>> Story::PopExpiredTimers(const Time& now, i
 	}
 
 	return result;
+}
+
+Room* Story::GetCurrentRoom(Map* map) {
+	auto zone = map->GetZone(ToString(script->GetValue("system.player.zone").second));
+	if (zone) {
+		auto building = zone->GetBuilding(ToString(script->GetValue("system.player.building").second));
+		if (!building) return nullptr;
+		return building->GetRoom(ToString(script->GetValue("system.player.room").second));
+	}
+	else {
+		auto building = map->GetBuilding(ToString(script->GetValue("system.player.building").second));
+		if (!building) return nullptr;
+		return building->GetRoom(ToString(script->GetValue("system.player.room").second));
+	}
+
+	return nullptr;
 }
 

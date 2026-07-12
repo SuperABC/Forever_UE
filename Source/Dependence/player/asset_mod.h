@@ -107,6 +107,12 @@ public:
 
 	// 是否可背
 	bool backpack;
+
+	// 资产图标路径
+	std::string icon;
+
+	// 资产模型路径
+	std::string mesh;
 };
 
 class AssetFactory {

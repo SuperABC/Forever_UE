@@ -96,6 +96,9 @@ public:
 	*/
 	std::vector<std::tuple<std::string, std::string, std::string>> PopExpiredTimers(const Time& now, int maxCount);
 
+	// 获取玩家当前房间
+	Room* GetCurrentRoom(Map* map);
+
 	// 脚本工厂
 	static ScriptFactory* scriptFactory;
 

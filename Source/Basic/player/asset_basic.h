@@ -143,3 +143,50 @@ private:
 	// 名称缓存
 	std::string name;
 };
+
+// 容器资产
+class ContainerAsset : public AssetMod {
+public:
+	/*
+	* 构造容器资产
+	*/
+	ContainerAsset();
+
+	/*
+	* 析构容器资产
+	*/
+	virtual ~ContainerAsset();
+
+	/*
+	* 容器资产静态类型标识
+	* @return: 静态类型标识
+	*/
+	static const char* GetId();
+
+	/*
+	* 容器资产动态类型标识
+	* @return: 动态类型标识
+	*/
+	virtual const char* GetType() const override;
+
+	/*
+	* 容器资产实例唯一名称
+	* @return: 实例唯一名称
+	*/
+	virtual const char* GetName() override;
+
+	/*
+	* 定义资产属性
+	*/
+	virtual void DefineAsset() override;
+
+private:
+	// 总实例数量
+	static int count;
+
+	// 实例编号
+	int id;
+
+	// 名称缓存
+	std::string name;
+};

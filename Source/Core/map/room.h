@@ -330,6 +330,29 @@ public:
 	*/
 	void ClearVehicles();
 
+	/*
+	* 获取屋内所有资产
+	*/
+	const std::vector<Asset*>& GetAssets() const;
+
+	/*
+	* 将资产放入房间
+	* @asset: 待放入的资产
+	*/
+	void AddAsset(Asset* asset);
+
+	/*
+	* 按名称从房间移除资产并转移所有权给调用方
+	* @name: 资产名称
+	* @return: 被移除的资产，未找到则返回 nullptr
+	*/
+	Asset* RemoveAsset(const std::string& name);
+
+	/*
+	* 清空并析构房间内所有资产
+	*/
+	void ClearAssets();
+
 private:
 	// 模组对象
 	OBJECT_HOLDER RoomMod* mod;
@@ -393,6 +416,9 @@ private:
 
 	// 屋内车辆
 	std::vector<Vehicle*> vehicles;
+
+	// 屋内资产
+	std::vector<Asset*> assets;
 };
 
 // 空房间

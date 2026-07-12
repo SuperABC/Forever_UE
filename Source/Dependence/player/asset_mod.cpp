@@ -9,7 +9,9 @@ AssetMod::AssetMod() :
 	weight(-1.f),
 	size(-1.f), 
 	volume(-1.f),
-	backpack(false) {
+	backpack(false),
+	icon(),
+	mesh() {
 
 }
 

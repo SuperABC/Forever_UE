@@ -96,6 +96,11 @@ public:
 	void RemoveContent(const std::string& name);
 
 	/*
+	* 析构容器内的全部直接子资产并清空容器
+	*/
+	void RemoveContents();
+
+	/*
 	* 获取容器剩余空间
 	* @return: 容器剩余空间
 	*/
@@ -112,6 +117,18 @@ public:
 	* @return: 是否可背在身上
 	*/
 	bool GetBackpack() const;
+
+	/*
+	* 获取资产图标路径
+	* @return: 资产图标路径
+	*/
+	std::string GetIcon() const;
+
+	/*
+	* 获取资产模型路径
+	* @return: 资产模型路径
+	*/
+	std::string GetMesh() const;
 
 private:
 	// 模组对象
@@ -145,10 +162,16 @@ private:
 	float space;
 
 	// 容器内容
-	std::unordered_map<std::string, Asset*> contents;
+	OBJECT_HOLDER std::unordered_map<std::string, Asset*> contents;
 
 	// 是否可背
 	bool backpack;
+
+	// 资产图标路径
+	std::string icon;
+
+	// 资产模型路径
+	std::string mesh;
 };
 
 // 空资产

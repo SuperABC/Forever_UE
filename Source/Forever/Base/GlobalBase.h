@@ -26,6 +26,7 @@ class ARoomBase;
 class APopulaceBase;
 class AStoryBase;
 class ATrafficBase;
+class AAssetBase;
 
 USTRUCT(Blueprintable, BlueprintType)
 struct FStatus {
@@ -64,6 +65,7 @@ public:
 	APopulaceBase* GetPopulaceActor();
 	AStoryBase* GetStoryActor();
 	ATrafficBase* GetTrafficActor();
+	AAssetBase* GetAssetActor();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> TerrainClass;
@@ -81,6 +83,8 @@ public:
 	TSubclassOf<AActor> StoryClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> TrafficClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
+	TSubclassOf<AActor> AssetClass;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "World")
 	void GetLocation(FVector& location);
@@ -124,4 +128,5 @@ protected:
 	APopulaceBase* populaceActor;
 	AStoryBase* storyActor;
 	ATrafficBase* trafficActor;
+	AAssetBase* assetActor;
 };

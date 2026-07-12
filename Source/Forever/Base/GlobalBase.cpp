@@ -11,6 +11,7 @@
 #include "PopulaceBase.h"
 #include "StoryBase.h"
 #include "TrafficBase.h"
+#include "AssetBase.h"
 
 #include "map/map.h"
 #include "map/terrain.h"
@@ -185,6 +186,8 @@ void AGlobalBase::BeginPlay() {
 		storyActor->SetGlobal(this);
 		trafficActor = GetWorld()->SpawnActor<ATrafficBase>(TrafficClass, Location, Rotation);
 		trafficActor->SetGlobal(this);
+		assetActor = GetWorld()->SpawnActor<AAssetBase>(AssetClass, Location, Rotation);
+		assetActor->SetGlobal(this);
 
 		auto pos = map->GetPlayerPos();
 		SetLocation(FVector(pos.first, pos.second, 20.f));
@@ -271,6 +274,10 @@ AStoryBase* AGlobalBase::GetStoryActor() {
 
 ATrafficBase* AGlobalBase::GetTrafficActor() {
 	return trafficActor;
+}
+
+AAssetBase* AGlobalBase::GetAssetActor() {
+	return assetActor;
 }
 
 void AGlobalBase::GlobalPause() {
