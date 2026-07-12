@@ -21,6 +21,8 @@ public:
 	void InitCanvas(int width, int height);
 	UFUNCTION(BlueprintCallable, Category = "CanvasBuffer")
 	FVector2D ApplyImage(UImage* image);
+	UFUNCTION(BlueprintCallable, Category = "CanvasBuffer")
+	UTexture2D* GetTexture();
 
 	UFUNCTION(BlueprintCallable, Category = "CanvasBuffer")
 	void SetColor(uint8 r, uint8 g, uint8 b);

@@ -39,8 +39,6 @@ FVector2D UCanvasBuffer::ApplyImage(UImage* image) {
 	int width = canvas.GetWidth();
 	int height = canvas.GetHeight();
 
-	if (!image) return FVector2D(width, height);
-
 	if (!tex || tex->GetSizeX() != width || tex->GetSizeY() != height) {
 		tex = UTexture2D::CreateTransient(width, height);
 		if (!tex) return FVector2D(width, height);
@@ -51,8 +49,12 @@ FVector2D UCanvasBuffer::ApplyImage(UImage* image) {
 	tex->GetPlatformData()->Mips[0].BulkData.Unlock();
 
 	tex->UpdateResource();
-	image->SetBrushFromTexture(tex, true);
+	if(image)image->SetBrushFromTexture(tex, true);
 	return FVector2D(width, height);
+}
+
+UTexture2D* UCanvasBuffer::GetTexture() {
+	return tex;
 }
 
 void UCanvasBuffer::SetColor(uint8 r, uint8 g, uint8 b) {
