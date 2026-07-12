@@ -40,6 +40,7 @@ void AirportStation::LayoutStation(const Lot* block) {
 }
 
 void AirportStation::PlaceInterface(const Quad* building, const vector<Node*>& pivots) {
+	// 机场站点需要5个节点：1个入口节点 + 2组跑道接口（各2个节点）
 	if (pivots.size() != 5)return;
 	nodes = { pivots[0] };
 	interfaces.push_back({ "air", {pivots[1], pivots[2]} });

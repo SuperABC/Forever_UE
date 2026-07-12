@@ -1,4 +1,4 @@
-#include "StartBase.h"
+﻿#include "StartBase.h"
 #include "DesktopPlatformModule.h"
 
 
@@ -26,7 +26,14 @@ FString AStartBase::SelectFolder() {
 	FString SelectedPath;
 	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
 	if (DesktopPlatform) {
-		void* ParentWindowHandle = FSlateApplication::Get().GetActiveTopLevelWindow()->GetNativeWindow()->GetOSWindowHandle();
+		void* ParentWindowHandle = nullptr;
+		auto TopLevelWindow = FSlateApplication::Get().GetActiveTopLevelWindow();
+		if (TopLevelWindow.IsValid()) {
+			auto NativeWindow = TopLevelWindow->GetNativeWindow();
+			if (NativeWindow.IsValid()) {
+				ParentWindowHandle = NativeWindow->GetOSWindowHandle();
+			}
+		}
 		DesktopPlatform->OpenDirectoryDialog(
 			ParentWindowHandle,
 			TEXT("Select Folder"),
@@ -40,7 +47,14 @@ FString AStartBase::SelectFile() {
 	FString SelectedFilePath;
 	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
 	if (DesktopPlatform) {
-		void* ParentWindowHandle = FSlateApplication::Get().GetActiveTopLevelWindow()->GetNativeWindow()->GetOSWindowHandle();
+		void* ParentWindowHandle = nullptr;
+		auto TopLevelWindow = FSlateApplication::Get().GetActiveTopLevelWindow();
+		if (TopLevelWindow.IsValid()) {
+			auto NativeWindow = TopLevelWindow->GetNativeWindow();
+			if (NativeWindow.IsValid()) {
+				ParentWindowHandle = NativeWindow->GetOSWindowHandle();
+			}
+		}
 		TArray<FString> OutFiles;
 		DesktopPlatform->OpenFileDialog(
 			ParentWindowHandle,

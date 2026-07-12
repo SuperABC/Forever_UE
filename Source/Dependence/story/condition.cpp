@@ -156,10 +156,10 @@ bool UnaryExpression::ConvertToBool(const ValueType& value) const {
 		}, value);
 }
 
-BinaryExpression::BinaryExpression(shared_ptr<Expression> l,
-	shared_ptr<Expression> r,
+BinaryExpression::BinaryExpression(shared_ptr<Expression> left,
+	shared_ptr<Expression> right,
 	BinaryOperator op)
-	: left(move(l)), right(move(r)), operand(op) {
+	: left(move(left)), right(move(right)), operand(op) {
 }
 
 BinaryExpression::~BinaryExpression() {
@@ -410,10 +410,10 @@ ValueType Condition::EvaluateValue(vector<function<pair<bool, ValueType>(const s
 	return root->Evaluate(getValues);
 }
 
-static size_t FindMatchingQuote(const std::string& expr, size_t start) {
+static size_t FindMatchingQuote(const string& expr, size_t start) {
 	char quote = expr[start];
 	if (quote != '"' && quote != '\'')
-		return std::string::npos;
+		return string::npos;
 	for (size_t i = start + 1; i < expr.length(); i++) {
 		if (expr[i] == '\\') {
 			i++;
@@ -422,12 +422,12 @@ static size_t FindMatchingQuote(const std::string& expr, size_t start) {
 		if (expr[i] == quote)
 			return i;
 	}
-	return std::string::npos;
+	return string::npos;
 }
 
-std::vector<std::string> Condition::Tokenize(const std::string& expr) {
-	std::vector<std::string> tokens;
-	std::string current;
+vector<string> Condition::Tokenize(const string& expr) {
+	vector<string> tokens;
+	string current;
 	size_t i = 0;
 	while (i < expr.length()) {
 		char c = expr[i];
@@ -445,10 +445,10 @@ std::vector<std::string> Condition::Tokenize(const std::string& expr) {
 				current.clear();
 			}
 			size_t end = FindMatchingQuote(expr, i);
-			if (end == std::string::npos) {
+			if (end == string::npos) {
 				THROW_EXCEPTION(RuntimeException, "Unmatched quote in expression");
 			}
-			std::string quoted = expr.substr(i, end - i + 1);
+			string quoted = expr.substr(i, end - i + 1);
 			tokens.push_back(quoted);
 			i = end + 1;
 		}
@@ -477,11 +477,11 @@ std::vector<std::string> Condition::Tokenize(const std::string& expr) {
 				(c == '!' && i + 1 < expr.length() && expr[i + 1] == '=') ||
 				(c == '<' && i + 1 < expr.length() && expr[i + 1] == '=') ||
 				(c == '>' && i + 1 < expr.length() && expr[i + 1] == '=')) {
-				tokens.push_back(std::string(1, c) + std::string(1, expr[i + 1]));
+				tokens.push_back(string(1, c) + string(1, expr[i + 1]));
 				i += 2;
 			}
 			else {
-				tokens.push_back(std::string(1, c));
+				tokens.push_back(string(1, c));
 				++i;
 			}
 		}
@@ -695,7 +695,7 @@ BinaryOperator Condition::GetOperator(const string& token) {
 	else if (token == "^") return BinaryOperator::EXPONENT;
 	else if (token == "&&") return BinaryOperator::LOGICAL_AND;
 	else if (token == "||") return BinaryOperator::LOGICAL_OR;
-	else throw runtime_error("Unknown operator: " + token);
+	else THROW_EXCEPTION(RuntimeException, "Unknown operator: " + token);
 }
 
 shared_ptr<Expression> Condition::ParseOperand(const string& token) {

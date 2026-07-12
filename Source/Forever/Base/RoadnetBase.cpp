@@ -1,4 +1,4 @@
-#include "RoadnetBase.h"
+﻿#include "RoadnetBase.h"
 
 #include "GlobalBase.h"
 
@@ -8,9 +8,9 @@
 
 using namespace std;
 
-ARoadnetBase::ARoadnetBase() {
+ARoadnetBase::ARoadnetBase() :
+	dirty(true) {
 	PrimaryActorTick.bCanEverTick = true;
-	dirty = true;
 }
 
 ARoadnetBase::~ARoadnetBase() {

@@ -73,7 +73,7 @@ void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModProductsFunc)GetProcAddress(modHandle, "RegisterModProducts");
+			auto registerFunc = reinterpret_cast<RegisterModProductsFunc>(GetProcAddress(modHandle, "RegisterModProducts"));
 			if (registerFunc) {
 				registerFunc(productFactory);
 			}
@@ -103,7 +103,7 @@ void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModStoragesFunc)GetProcAddress(modHandle, "RegisterModStorages");
+			auto registerFunc = reinterpret_cast<RegisterModStoragesFunc>(GetProcAddress(modHandle, "RegisterModStorages"));
 			if (registerFunc) {
 				registerFunc(storageFactory);
 			}
@@ -133,7 +133,7 @@ void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModManufacturesFunc)GetProcAddress(modHandle, "RegisterModManufactures");
+			auto registerFunc = reinterpret_cast<RegisterModManufacturesFunc>(GetProcAddress(modHandle, "RegisterModManufactures"));
 			if (registerFunc) {
 				registerFunc(manufactureFactory);
 			}

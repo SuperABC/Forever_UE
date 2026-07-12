@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../common/utility.h"
 #include "../common/error.h"
@@ -8,33 +8,37 @@
 #include <functional>
 
 
+// 路线Mod基类
 class RouteMod {
 public:
 	/*
-	* 构造路线模组
+	* 构造路线
 	*/
 	RouteMod();
 
 	/*
-	* 析构路线模组
+	* 析构路线
 	*/
 	virtual ~RouteMod();
 
 	/*
 	* Override
-	* 统一类型标识
+	* 路线静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
-	* 获取实例类型
+	* 路线动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
-	* 获取实例名称
+	* 路线实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -62,33 +66,33 @@ public:
 class RouteFactory {
 public:
 	/*
-	* 注册线路类型
-	* @id: 类型标识
-	* @creator, deleter: 创建与析构函数
+	* 注册路线
+	* @id: 路线类型
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterRoute(const std::string& id,
 		std::function<RouteMod* ()> creator, std::function<void(RouteMod*)> deleter);
 
 	/*
-	* 清空注册表
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 按类型创建线路对象
-	* @id: 类型标识
+	* 创建路线
+	* @id: 路线类型
 	*/
 	RouteMod* CreateRoute(const std::string& id) const;
 
 	/*
-	* 检查类型是否已注册
-	* @id: 类型标识
+	* 检查路线是否已注册
+	* @id: 路线类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置启用配置
-	* @name: 类型名称
+	* 设置路线启用配置
+	* @name: 路线类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
@@ -99,18 +103,18 @@ public:
 	std::vector<std::string> GetRoutes() const;
 
 	/*
-	* 析构线路对象
-	* @routeMod: 待析构的线路对象
+	* 析构路线
+	* @routeMod: 待析构的路线
 	*/
 	void DestroyRoute(RouteMod* routeMod) const;
 
 private:
-	// 注册表（类型标识 → 创建/析构函数对）
+	// 注册表
 	std::unordered_map<
 		std::string,
 		std::pair<std::function<RouteMod* ()>, std::function<void(RouteMod*)>>
 	> registries;
 
-	// 启用配置（类型标识 → 是否启用）
+	// 启用配置
 	std::unordered_map<std::string, bool> configs;
 };

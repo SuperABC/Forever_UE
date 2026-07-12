@@ -1,4 +1,4 @@
-#include "RoomBase.h"
+﻿#include "RoomBase.h"
 
 #include "GlobalBase.h"
 #include "StoryBase.h"
@@ -61,10 +61,14 @@ void ARoomBase::RemoveInstance(FString name) {
 }
 
 void ARoomBase::EnterRoom(FString room) {
+	if (!global) return;
 	auto storyBase = global->GetStoryActor();
 	auto story = global->GetStory();
-	auto zone = global->GetStory()->GetScript()->GetValue("player.zone").second;
-	auto building = global->GetStory()->GetScript()->GetValue("player.building").second;
+	if (!story) return;
+	auto storyScript = story->GetScript();
+	if (!storyScript) return;
+	auto zone = storyScript->GetValue("player.zone").second;
+	auto building = storyScript->GetValue("player.building").second;
 	Event* event;
 	if (holds_alternative<string>(zone)) {
 		if (holds_alternative<string>(building)) {
@@ -89,19 +93,23 @@ void ARoomBase::EnterRoom(FString room) {
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
+			return storyScript->GetValue(name);
 		}
 	};
-	storyBase->MatchEvent(event, story->GetScript(), getValues);
+	storyBase->MatchEvent(event, storyScript, getValues);
 
 	delete event;
 }
 
 void ARoomBase::LeaveRoom(FString room) {
+	if (!global) return;
 	auto storyBase = global->GetStoryActor();
 	auto story = global->GetStory();
-	auto zone = global->GetStory()->GetScript()->GetValue("player.zone").second;
-	auto building = global->GetStory()->GetScript()->GetValue("player.building").second;
+	if (!story) return;
+	auto storyScript = story->GetScript();
+	if (!storyScript) return;
+	auto zone = storyScript->GetValue("player.zone").second;
+	auto building = storyScript->GetValue("player.building").second;
 	Event* event;
 	if (holds_alternative<string>(zone)) {
 		if (holds_alternative<string>(building)) {
@@ -126,10 +134,10 @@ void ARoomBase::LeaveRoom(FString room) {
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
+			return storyScript->GetValue(name);
 		}
 	};
-	storyBase->MatchEvent(event, story->GetScript(), getValues);
+	storyBase->MatchEvent(event, storyScript, getValues);
 
 	delete event;
 }

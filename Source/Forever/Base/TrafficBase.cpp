@@ -1,4 +1,4 @@
-#include "TrafficBase.h"
+﻿#include "TrafficBase.h"
 
 #include "GlobalBase.h"
 
@@ -28,12 +28,15 @@ void ATrafficBase::Tick(float DeltaTime) {
 	static int step = 0;
 	static int stride = 20;
 
+	if (!global) return;
+
 	FVector location = FVector(0.f, 0.f, 0.f);
 	global->GetLocation(location);
 	location /= 1000.f;
 
 	TArray<FVehicle> adds;
 	auto traffic = global->GetTraffic();
+	if (!traffic) return;
 	for (int j = step; j < traffic->GetVehicles().size(); j += stride) {
 		auto vehicle = traffic->GetVehicles()[j];
 		if (vehicleInstances.find(vehicle->GetName()) != vehicleInstances.end()) {

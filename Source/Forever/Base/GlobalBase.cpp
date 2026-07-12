@@ -32,23 +32,24 @@ using namespace std;
 
 unordered_map<string, HMODULE> AGlobalBase::modHandles = {};
 
-AGlobalBase::AGlobalBase() {
+AGlobalBase::AGlobalBase() :
+	map(nullptr),
+	populace(nullptr),
+	society(nullptr),
+	story(nullptr),
+	industry(nullptr),
+	traffic(nullptr),
+	player(nullptr),
+	terrainActor(nullptr),
+	roadnetActor(nullptr),
+	zoneActor(nullptr),
+	buildingActor(nullptr),
+	roomActor(nullptr),
+	populaceActor(nullptr),
+	storyActor(nullptr),
+	trafficActor(nullptr)
+{
 	PrimaryActorTick.bCanEverTick = true;
-	map = nullptr;
-	populace = nullptr;
-	society = nullptr;
-	story = nullptr;
-	industry = nullptr;
-	traffic = nullptr;
-	player = nullptr;
-	terrainActor = nullptr;
-	roadnetActor = nullptr;
-	zoneActor = nullptr;
-	buildingActor = nullptr;
-	roomActor = nullptr;
-	populaceActor = nullptr;
-	storyActor = nullptr;
-	trafficActor = nullptr;
 }
 
 AGlobalBase::~AGlobalBase() {

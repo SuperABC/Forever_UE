@@ -1,4 +1,4 @@
-#include "roadnet.h"
+﻿#include "roadnet.h"
 
 #include "map/block.h"
 
@@ -87,7 +87,7 @@ void Roadnet::DistributeRoadnet(int width, int height,
 	}
 }
 
-const std::vector<Node*>& Roadnet::GetExterns() const {
+const vector<Node*>& Roadnet::GetExterns() const {
 	return externs;
 }
 

@@ -22,7 +22,7 @@ unordered_map<string, vector<string>> Config::actionPaths = {};
 unordered_map<string, vector<string>> Config::pluginPaths = {};
 unordered_set<string> Config::storyPaths = {};
 
-bool CheckFileFormat(const filesystem::path& filePath, const string& format) {
+bool Config::CheckFileFormat(const filesystem::path& filePath, const string& format) {
 	if (!filesystem::is_regular_file(filePath))
 		return false;
 	string ext = filePath.extension().string();

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "story/script_mod.h"
 

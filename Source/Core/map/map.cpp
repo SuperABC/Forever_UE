@@ -313,7 +313,7 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModTerrainsFunc)GetProcAddress(modHandle, "RegisterModTerrains");
+			auto registerFunc = reinterpret_cast<RegisterModTerrainsFunc>(GetProcAddress(modHandle, "RegisterModTerrains"));
 			if (registerFunc) {
 				registerFunc(terrainFactory);
 			}
@@ -342,7 +342,7 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModRoadnetsFunc)GetProcAddress(modHandle, "RegisterModRoadnets");
+			auto registerFunc = reinterpret_cast<RegisterModRoadnetsFunc>(GetProcAddress(modHandle, "RegisterModRoadnets"));
 			if (registerFunc) {
 				registerFunc(roadnetFactory);
 			}
@@ -372,7 +372,7 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModZonesFunc)GetProcAddress(modHandle, "RegisterModZones");
+			auto registerFunc = reinterpret_cast<RegisterModZonesFunc>(GetProcAddress(modHandle, "RegisterModZones"));
 			if (registerFunc) {
 				registerFunc(zoneFactory);
 			}
@@ -403,7 +403,7 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModBuildingsFunc)GetProcAddress(modHandle, "RegisterModBuildings");
+			auto registerFunc = reinterpret_cast<RegisterModBuildingsFunc>(GetProcAddress(modHandle, "RegisterModBuildings"));
 			if (registerFunc) {
 				registerFunc(buildingFactory);
 			}
@@ -433,7 +433,7 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModComponentsFunc)GetProcAddress(modHandle, "RegisterModComponents");
+			auto registerFunc = reinterpret_cast<RegisterModComponentsFunc>(GetProcAddress(modHandle, "RegisterModComponents"));
 			if (registerFunc) {
 				registerFunc(componentFactory);
 			}
@@ -463,7 +463,7 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles,
 		if (modHandle) {
 			debugf("Log: %s loaded successfully.\n", dll.data());
 
-			auto registerFunc = (RegisterModRoomsFunc)GetProcAddress(modHandle, "RegisterModRooms");
+			auto registerFunc = reinterpret_cast<RegisterModRoomsFunc>(GetProcAddress(modHandle, "RegisterModRooms"));
 			if (registerFunc) {
 				registerFunc(roomFactory);
 			}

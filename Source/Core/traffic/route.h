@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "traffic/route_mod.h"
 
@@ -29,12 +29,14 @@ public:
 	~Route();
 
 	/*
-	* 获取线路类型
+	* 线路动态类型标识
+	* @return: 动态类型标识
 	*/
 	std::string GetType() const;
 
 	/*
-	* 获取线路名称
+	* 线路实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	std::string GetName() const;
 
@@ -85,26 +87,25 @@ public:
 	virtual ~EmptyRoute();
 
 	/*
-	* Override
-	* 统一类型标识
+	* 空线路静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
-	* Override
-	* 获取实例类型
+	* 空线路动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const override;
 
 	/*
-	* Override
-	* 获取实例名称
+	* 空线路实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() override;
 
 	/*
-	* Override
-	* 布局路线（空实现）
+	* 布局路线
 	* @interfaces: 按交通类型分组的站点接口集合
 	* @sizeX, sizeY: 地图尺寸
 	* @nodeStaticCount: 节点静态计数起点

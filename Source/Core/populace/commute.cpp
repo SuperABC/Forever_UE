@@ -1,4 +1,4 @@
-#include "commute.h"
+﻿#include "commute.h"
 
 
 using namespace std;
@@ -33,6 +33,7 @@ void Commute::SetPaths(const vector<Connection*>& paths) {
 
 	// 根据相邻连接共享的端点，推算每段连接的实际通行方向（第一段默认按其自身起点->终点方向通行）
 	for (size_t i = 1; i < currentPaths.size(); i++) {
+		if (!currentPaths[i - 1].first || !currentPaths[i].first) continue;
 		int previousExit = currentPaths[i - 1].second ?
 			currentPaths[i - 1].first->GetStart().GetId() : currentPaths[i - 1].first->GetEnd().GetId();
 		if (currentPaths[i].first->GetEnd().GetId() == previousExit) {
@@ -48,6 +49,10 @@ const vector<pair<Connection*, bool>>& Commute::GetPaths() const {
 void Commute::SetTime(const Time& start) {
 	if (currentPaths.size() == 0) {
 		debugf("Warning: commute paths is empty when assigning start time.\n");
+		return;
+	}
+	if (!currentPaths[0].first) {
+		debugf("Warning: commute first path connection is null.\n");
 		return;
 	}
 
@@ -86,6 +91,9 @@ bool Commute::Tick(const Time& time) {
 		if (currentIdx >= currentPaths.size()) {
 			return true;
 		}
+		if (!currentPaths[currentIdx].first) {
+			return true;
+		}
 
 		float dist = currentPaths[currentIdx].first->CalcDistance();
 		int seconds = (int)(dist * 1); //为测试方便，几乎瞬间完成通勤
@@ -100,6 +108,9 @@ Connection* Commute::NextRoad(const Time& time) {
 	if (currentIdx >= currentPaths.size()) {
 		return nullptr;
 	}
+	if (!currentPaths[currentIdx].first) {
+		return nullptr;
+	}
 
 	float dist = currentPaths[currentIdx].first->CalcDistance();
 	int seconds = (int)(dist * 10);
@@ -109,6 +120,9 @@ Connection* Commute::NextRoad(const Time& time) {
 }
 
 pair<Connection*, float> Commute::RealtimeRoad(const Time& time) {
+	if (!currentPaths[currentIdx].first) {
+		return { nullptr, 0.f };
+	}
 	float dist = currentPaths[currentIdx].first->CalcDistance();
 	float remaining = (currentEnd - time).GetOnlySecond() * 0.1f / dist;
 	if (!currentPaths[currentIdx].second) {

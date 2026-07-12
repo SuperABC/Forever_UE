@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "class.h"
 #include "utility.h"

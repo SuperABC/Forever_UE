@@ -1,4 +1,4 @@
-#include "StoryBase.h"
+﻿#include "StoryBase.h"
 
 #include "GlobalBase.h"
 #include "BuildingBase.h"
@@ -33,9 +33,9 @@
 
 using namespace std;
 
-AStoryBase::AStoryBase() {
+AStoryBase::AStoryBase() :
+	interacting(false) {
 	PrimaryActorTick.bCanEverTick = true;
-	interacting = false;
 }
 
 AStoryBase::~AStoryBase() {
@@ -146,9 +146,12 @@ void AStoryBase::ApplyChanges(const vector<Change*>& changes,
 
 void AStoryBase::ApplySchedulerChanges(vector<Change*>& changes) {
 	auto story = global->GetStory();
+	if (!story) return;
+	auto storyScript = story->GetScript();
+	if (!storyScript) return;
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& valueName) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(valueName);
+			return storyScript->GetValue(valueName);
 		}
 	};
 	ApplyChanges(changes, getValues, nullptr);

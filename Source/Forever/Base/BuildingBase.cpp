@@ -1,4 +1,4 @@
-#include "BuildingBase.h"
+﻿#include "BuildingBase.h"
 
 #include "GlobalBase.h"
 #include "RoomBase.h"
@@ -32,12 +32,18 @@ void ABuildingBase::BeginPlay() {
 void ABuildingBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
+	if (!global) return;
+
 	FVector location = FVector(0.f, 0.f, 0.f);
 	global->GetLocation(location);
 	location /= 1000.f;
 
 	TArray<FBuilding> buildings;
-	auto blocks = global->GetMap()->GetRoadnet()->GetBlocks();
+	auto map = global->GetMap();
+	if (!map) return;
+	auto roadnet = map->GetRoadnet();
+	if (!roadnet) return;
+	auto blocks = roadnet->GetBlocks();
 	for (auto block : blocks) {
 		FVector blockLocation = FVector(block->GetPosX(), block->GetPosY(), 0.f);
 		if ((location - blockLocation).Size() > 64.f) {
@@ -45,6 +51,7 @@ void ABuildingBase::Tick(float DeltaTime) {
 		}
 		auto blockBuildings = block->GetBuildings();
 		for (auto& [blockBuildingName, building] : blockBuildings) {
+			// 跳过面积为零的建筑，此类建筑无有效占地，不需要生成实例
 			if (building->GetAcreage() <= 0.f)continue;
 			if (buildingInstances.find(blockBuildingName) != buildingInstances.end()) {
 				continue;
@@ -69,6 +76,7 @@ void ABuildingBase::Tick(float DeltaTime) {
 		auto blockZones = block->GetZones();
 		for (auto& [_, zone] : blockZones) {
 			for (auto& [zoneBuildingName, building] : zone->GetBuildings()) {
+				// 跳过面积为零的建筑，此类建筑无有效占地，不需要生成实例
 				if (building->GetAcreage() <= 0.f)continue;
 				if (buildingInstances.find(zoneBuildingName) != buildingInstances.end()) {
 					continue;
@@ -115,9 +123,13 @@ AActor* ABuildingBase::GetInstance(FString name) {
 }
 
 void ABuildingBase::EnterBuilding(FString building) {
+	if (!global) return;
 	auto storyBase = global->GetStoryActor();
 	auto story = global->GetStory();
-	auto zone = global->GetStory()->GetScript()->GetValue("player.zone").second;
+	if (!story) return;
+	auto storyScript = story->GetScript();
+	if (!storyScript) return;
+	auto zone = storyScript->GetValue("player.zone").second;
 	Event* event;
 	if (holds_alternative<string>(zone)) {
 		event = new EnterBuildingEvent(TCHAR_TO_UTF8(get<string>(zone).data()), TCHAR_TO_UTF8(*building));
@@ -128,10 +140,10 @@ void ABuildingBase::EnterBuilding(FString building) {
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
+			return storyScript->GetValue(name);
 		}
 	};
-	storyBase->MatchEvent(event, story->GetScript(), getValues);
+	storyBase->MatchEvent(event, storyScript, getValues);
 
 	auto b = global->GetMap()->GetBuilding(TCHAR_TO_UTF8(*building));
 	if (b) {
@@ -160,9 +172,13 @@ void ABuildingBase::EnterBuilding(FString building) {
 }
 
 void ABuildingBase::LeaveBuilding(FString building) {
+	if (!global) return;
 	auto storyBase = global->GetStoryActor();
 	auto story = global->GetStory();
-	auto zone = global->GetStory()->GetScript()->GetValue("player.zone").second;
+	if (!story) return;
+	auto storyScript = story->GetScript();
+	if (!storyScript) return;
+	auto zone = storyScript->GetValue("player.zone").second;
 	Event* event;
 	if (holds_alternative<string>(zone)) {
 		event = new LeaveBuildingEvent(TCHAR_TO_UTF8(get<string>(zone).data()), TCHAR_TO_UTF8(*building));
@@ -173,10 +189,10 @@ void ABuildingBase::LeaveBuilding(FString building) {
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
+			return storyScript->GetValue(name);
 		}
 	};
-	storyBase->MatchEvent(event, story->GetScript(), getValues);
+	storyBase->MatchEvent(event, storyScript, getValues);
 
 	auto b = global->GetMap()->GetBuilding(TCHAR_TO_UTF8(*building));
 	if (b) {

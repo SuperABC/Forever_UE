@@ -7,33 +7,37 @@
 #include <functional>
 
 
+// 姓名Mod基类
 class NameMod {
 public:
 	/*
-	* 无构造
+	* 构造姓名
 	*/
 	NameMod();
 
 	/*
-	* 无析构
+	* 析构姓名
 	*/
 	virtual ~NameMod();
 
 	/*
 	* Override
 	* 姓名静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 姓名动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
 	* 姓名实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -70,32 +74,32 @@ class NameFactory {
 public:
 	/*
 	* 注册姓名
-	* @id: 姓名静态类型标识
-	* @creator, deleter: 构造与析构方法
+	* @id: 姓名类型
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterName(const std::string& id,
 		std::function<NameMod* ()> creator, std::function<void(NameMod*)> deleter);
 
 	/*
-	* 清空注册
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
 	* 创建姓名
-	* @id: 姓名静态类型标识
+	* @id: 姓名类型
 	*/
 	NameMod* CreateName(const std::string& id) const;
 
 	/*
-	* 检查是否注册
-	* @id: 姓名静态类型标识
+	* 检查姓名是否已注册
+	* @id: 姓名类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置启用配置
-	* @name: 姓名静态类型标识
+	* 设置姓名启用配置
+	* @name: 姓名类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
@@ -107,7 +111,7 @@ public:
 
 	/*
 	* 析构姓名
-	* @nameMod: 待析构的姓名模组对象
+	* @nameMod: 待析构的姓名
 	*/
 	void DestroyName(NameMod* nameMod) const;
 

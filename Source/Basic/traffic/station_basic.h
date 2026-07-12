@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "map/building_mod.h"
 #include "traffic/station_mod.h"

@@ -241,8 +241,15 @@ void Person::AddJob(Job* job) {
 	if (job == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Job is null.\n");
 	}
-	job->GetScript()->SetValue("self.work_address", job->GetPosition()->GetAddress());
-	job->GetScript()->SetValue("self.home_address", GetHome()->GetAddress());
+	if (!job->GetScript()) {
+		THROW_EXCEPTION(NullPointerException, "Job script is null.\n");
+	}
+	if (job->GetPosition()) {
+		job->GetScript()->SetValue("self.work_address", job->GetPosition()->GetAddress());
+	}
+	if (home) {
+		job->GetScript()->SetValue("self.home_address", home->GetAddress());
+	}
 	jobs.push_back(job);
 }
 
@@ -265,7 +272,9 @@ Room* Person::GetHome() const {
 
 void Person::SetHome(Room* room) {
 	home = room;
-	scheduler->GetScript()->SetValue("self.home_address", room->GetAddress());
+	if (scheduler) {
+		scheduler->GetScript()->SetValue("self.home_address", room->GetAddress());
+	}
 }
 
 void Person::RemoveHome() {

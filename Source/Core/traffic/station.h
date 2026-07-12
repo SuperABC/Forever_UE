@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "traffic/station_mod.h"
 
@@ -29,17 +29,20 @@ public:
 	~Station();
 
 	/*
-	* 获取站点类型
+	* 站点动态类型标识
+	* @return: 动态类型标识
 	*/
 	std::string GetType() const;
 
 	/*
-	* 获取站点名称
+	* 站点实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	std::string GetName() const;
 
 	/*
 	* 获取所在建筑名称
+	* @return: 所在建筑名称
 	*/
 	std::string GetBuilding() const;
 
@@ -57,11 +60,13 @@ public:
 
 	/*
 	* 获取建筑类型
+	* @return: 建筑类型
 	*/
 	std::string GetBuildingType() const;
 
 	/*
 	* 获取建筑面积
+	* @return: 建筑面积
 	*/
 	float GetBuildingAcreage() const;
 
@@ -74,11 +79,13 @@ public:
 
 	/*
 	* 获取接口向量
+	* @return: 接口向量
 	*/
 	std::vector<std::pair<std::string, std::pair<Node*, Node*>>> GetInterfaces() const;
 
 	/*
 	* 获取站点节点
+	* @return: 站点节点
 	*/
 	std::vector<Node*> GetNodes() const;
 
@@ -116,36 +123,38 @@ public:
 	virtual ~EmptyStation();
 
 	/*
-	* Override
-	* 统一类型标识
+	* 空站点静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
-	* Override
-	* 获取实例类型
+	* 空站点动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const override;
 
 	/*
-	* Override
-	* 获取实例名称
+	* 空站点实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() override;
 
-	// 站点分配器
+	/*
+	* 分配站点
+	* @blocks: 地图全部地块
+	* @return: 每个地块分配的站点数量
+	*/
 	static std::function<std::vector<int>& (const std::vector<Lot*>& blocks)> StationAssigner;
 
 	/*
-	* Override
-	* 布局站点（空实现）
+	* 布局站点
 	* @block: 所在地块
 	*/
 	virtual void LayoutStation(const Lot* block);
 
 	/*
-	* Override
-	* 放置接口节点（空实现）
+	* 放置接口节点
 	* @building: 所在建筑的几何形状
 	* @pivots: 建筑的关键点集合
 	*/

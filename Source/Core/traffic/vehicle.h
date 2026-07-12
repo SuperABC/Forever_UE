@@ -13,52 +13,103 @@ typedef void (*RegisterModVehiclesFunc)(VehicleFactory* factory);
 // 载具实体
 class Vehicle {
 public:
-	// 禁止默认构造
+	/*
+	* 禁止默认构造
+	*/
 	Vehicle() = delete;
 
 	// 通过标签从工厂构造
+	/*
+	* 构造载具实体
+	* @factory: 载具工厂
+	* @label: 载具类型
+	*/
 	Vehicle(VehicleFactory* factory, const std::string& label);
 
-	// 析构载具
+	/*
+	* 析构载具实体
+	*/
 	~Vehicle();
 
-	// 获取类型
+	/*
+	* 载具动态类型标识
+	* @return: 动态类型标识
+	*/
 	std::string GetType() const;
 
-	// 获取名称
+	/*
+	* 载具实例唯一名称
+	* @return: 实例唯一名称
+	*/
 	std::string GetName() const;
 
-	// 获取资产路径
+	/*
+	* 获取载具资产路径
+	* @return: 资产路径
+	*/
 	std::string GetPath() const;
 
-	// 获取所在房间
+	/*
+	* 获取载具当前所在房间
+	* @return: 房间指针
+	*/
 	Room* GetRoom() const;
 
-	// 获取位置
+	/*
+	* 获取载具当前位置（）
+	* @return: x/y/z/rotation
+	*/
 	std::vector<float> GetPosition() const;
 
-	// 进入房间
+	/*
+	* 将载具移入指定房间
+	* @room: 目标房间
+	*/
 	void EnterRoom(Room* room);
 
-	// 离开房间
+	/*
+	* 将载具从当前房间移出
+	*/
 	void LeaveRoom();
 
-	// 设置位置
+	/*
+	* 设置载具位置和朝向
+	* @x: X坐标
+	* @y: Y坐标
+	* @z: Z坐标
+	* @r: 旋转角度
+	*/
 	void SetPosition(float x, float y, float z, float r);
 
-	// 定义载具
+	/*
+	* 定义载具属性
+	*/
 	void SetupVehicle();
 
-	// 获取剧本
+	/*
+	* 获取载具剧情脚本
+	* @return: 剧情脚本
+	*/
 	Script* GetScript() const;
 
-	// 添加选项
+	/*
+	* 添加交互选项
+	* @option: 选项名称
+	* @return: 添加成功返回true，已存在返回false
+	*/
 	bool AddOption(const std::string& option);
 
-	// 移除选项
+	/*
+	* 移除交互选项
+	* @option: 选项名称
+	* @return: 移除成功返回true，不存在返回false
+	*/
 	bool RemoveOption(const std::string& option);
 
-	// 获取选项
+	/*
+	* 获取所有交互选项集合
+	* @return: 选项名称集合
+	*/
 	std::unordered_set<std::string> GetOptions() const;
 
 private:
@@ -105,21 +156,52 @@ private:
 // 空载具
 class EmptyVehicle : public VehicleMod {
 public:
+	/*
+	* 构造空载具
+	*/
 	EmptyVehicle();
+	
+	/*
+	* 析构空载具
+	*/
 	virtual ~EmptyVehicle();
 
+	/*
+	* 空载具静态类型标识
+	* @return: 静态类型标识
+	*/
 	static const char* GetId();
+
+	/*
+	* 空载具动态类型标识
+	* @return: 动态类型标识
+	*/
 	virtual const char* GetType() const override;
+
+	/*
+	* 空载具实例唯一名称
+	* @return: 实例唯一名称
+	*/
 	virtual const char* GetName() override;
 
+	/*
+	* 自定义载具标签
+	* @return: 载具标签
+	*/
 	static std::string GetLabel();
 
-	virtual void SetupVehicle()override;
+	/*
+	* 定义载具属性
+	*/
+	virtual void SetupVehicle() override;
 
 private:
+	// 空载具实例计数器
 	static int count;
 
+	// 实例唯一ID
 	int id;
+	
+	// 实例名称
 	std::string name;
 };
-

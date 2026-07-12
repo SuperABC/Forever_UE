@@ -4,7 +4,7 @@
 using namespace std;
 
 StorageMod::StorageMod() :
-	catagories(),
+	categories(),
 	density(1.f),
 	accept(true),
 	provide(true) {

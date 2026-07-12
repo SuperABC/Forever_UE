@@ -23,6 +23,7 @@ void AssetFactory::RegisterAsset(const string& id,
 }
 
 void AssetFactory::RemoveAll() {
+	// 禁用所有已注册的资产类型
 	for (auto& [_, enabled] : configs) {
 		enabled = false;
 	}
@@ -30,22 +31,25 @@ void AssetFactory::RemoveAll() {
 
 AssetMod* AssetFactory::CreateAsset(const string& id) const {
 	auto config = configs.find(id);
+	// 检查资产类型是否已启用
 	if (config == configs.end() || !config->second) {
 		debugf("Warning: Asset %s not enabled when creating.\n", id.data());
 		return nullptr;
 	}
 
 	auto it = registries.find(id);
+	// 检查资产类型是否已注册
 	if (it == registries.end()) {
 		debugf("Warning: Asset %s not registered when creating.\n", id.data());
 		return nullptr;
 	}
 
+	// 调用注册的构造函数
 	if (it->second.first) {
 		return it->second.first();
 	}
 	else {
-		THROW_EXCEPTION(NullPointerException, "Asset " + id + " creater is null.\n");
+		THROW_EXCEPTION(NullPointerException, "Asset " + id + " creator is null.\n");
 	}
 
 	return nullptr;
@@ -89,17 +93,20 @@ void AssetMod::DefineContainee(float weight, float size) {
 }
 
 void AssetFactory::DestroyAsset(AssetMod* assetMod) const {
+	// 检查待析构对象是否为空
 	if (!assetMod) {
 		debugf("Warning: Asset is null when deleting.\n");
 		return;
 	}
 
 	auto it = registries.find(assetMod->GetType());
+	// 检查资产类型是否已注册
 	if (it == registries.end()) {
 		debugf("Warning: Asset %s not registered when deleting.\n", assetMod->GetType());
 		return;
 	}
 
+	// 调用注册的析构函数
 	if (it->second.second) {
 		it->second.second(assetMod);
 	}

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../common/utility.h"
 #include "../common/error.h"
@@ -11,39 +11,44 @@
 #include <variant>
 #include <functional>
 
+
 class Event;
 class Dialog;
 class Change;
 
 using ScriptAction = std::variant<Dialog*, Change*>;
 
+// 脚本Mod基类
 class ScriptMod {
 public:
 	/*
-	* 无构造
+	* 构造脚本
 	*/
 	ScriptMod();
 
 	/*
-	* 无析构
+	* 析构脚本
 	*/
 	virtual ~ScriptMod();
 
 	/*
 	* Override
 	* 脚本静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 脚本动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
-	* 脚本实例名称
+	* 脚本实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -80,33 +85,33 @@ class ScriptFactory {
 public:
 	/*
 	* 注册脚本
-	* @id: 脚本静态类型标识
+	* @id: 脚本类型
 	* @main: 是否为主线剧情脚本
-	* @creator, deleter: 构造与析构方法
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterScript(const std::string& id, bool main,
 		std::function<ScriptMod* ()> creator, std::function<void(ScriptMod*)> deleter);
 
 	/*
-	* 清空注册
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
 	* 创建脚本
-	* @id: 脚本静态类型标识
+	* @id: 脚本类型
 	*/
 	ScriptMod* CreateScript(const std::string& id) const;
 
 	/*
-	* 检查是否注册
-	* @id: 脚本静态类型标识
+	* 检查脚本是否已注册
+	* @id: 脚本类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置启用配置
-	* @name: 脚本静态类型标识
+	* 设置脚本启用配置
+	* @name: 脚本类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
@@ -118,7 +123,7 @@ public:
 
 	/*
 	* 析构脚本
-	* @scriptMod: 待析构的脚本模组对象
+	* @scriptMod: 待析构的脚本
 	*/
 	void DestroyScript(ScriptMod* scriptMod) const;
 

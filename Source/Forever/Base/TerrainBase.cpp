@@ -1,4 +1,4 @@
-#include "TerrainBase.h"
+﻿#include "TerrainBase.h"
 
 #include "GlobalBase.h"
 #include "Utility/AssetLoader.h"
@@ -39,18 +39,18 @@ void ATerrainBase::Tick(float DeltaTime) {
 
 	auto mapSize = global->GetMap()->GetSize();
 	TArray<FCoordinate> adds;
-	for (auto row = FMath::Clamp(int(location.Y - 6), 0, mapSize.second - 1); row <= FMath::Clamp(int(location.Y + 6), 0, mapSize.second - 1); row++)
-		for (auto col = FMath::Clamp(int(location.X - 6), 0, mapSize.first - 1); col <= FMath::Clamp(int(location.X + 6), 0, mapSize.first - 1); col++)
-			if (terrainInstances[row][col].Num() == 0)
-				adds.Add(FCoordinate(col, row));
+	for (auto y = FMath::Clamp(int(location.Y - 6), 0, mapSize.second - 1); y <= FMath::Clamp(int(location.Y + 6), 0, mapSize.second - 1); y++)
+		for (auto x = FMath::Clamp(int(location.X - 6), 0, mapSize.first - 1); x <= FMath::Clamp(int(location.X + 6), 0, mapSize.first - 1); x++)
+			if (terrainInstances[y][x].Num() == 0)
+				adds.Add(FCoordinate(x, y));
 
 	TArray<FCoordinate> removes;
-	for (int row = 0; row < (int)terrainInstances.size(); row++)
-		for (int col = 0; col < (int)terrainInstances[row].size(); col++)
-			if (terrainInstances[row][col].Num() > 0)
-				if (row < FMath::Clamp(int(location.Y - 6), 0, mapSize.second - 1) || row > FMath::Clamp(int(location.Y + 6), 0, mapSize.second - 1) ||
-					col < FMath::Clamp(int(location.X - 6), 0, mapSize.first - 1) || col > FMath::Clamp(int(location.X + 6), 0, mapSize.first - 1))
-					removes.Add(FCoordinate(col, row));
+	for (int y = 0; y < (int)terrainInstances.size(); y++)
+		for (int x = 0; x < (int)terrainInstances[y].size(); x++)
+			if (terrainInstances[y][x].Num() > 0)
+				if (y < FMath::Clamp(int(location.Y - 6), 0, mapSize.second - 1) || y > FMath::Clamp(int(location.Y + 6), 0, mapSize.second - 1) ||
+					x < FMath::Clamp(int(location.X - 6), 0, mapSize.first - 1) || x > FMath::Clamp(int(location.X + 6), 0, mapSize.first - 1))
+					removes.Add(FCoordinate(x, y));
 
 	UpdateTerrain(adds, removes);
 
@@ -175,14 +175,14 @@ void ATerrainBase::InitInstances(int width, int height) {
 
 	FTexture2DMipMap& indexMip = terrainIndexMap->GetPlatformData()->Mips[0];
 	uint8* indexPixels = (uint8*)indexMip.BulkData.Lock(LOCK_READ_WRITE);
-	for (int row = 0; row < mapHeight; row++)
-		for (int col = 0; col < mapWidth; col++) {
-			const std::string& terrainName = map->GetTerrain(col, row);
+	for (int y = 0; y < mapHeight; y++)
+		for (int x = 0; x < mapWidth; x++) {
+			const std::string& terrainName = map->GetTerrain(x, y);
 			uint8 terrainIndex = 0;
 			auto terrainIter = terrainTextures.find(terrainName);
 			if (terrainIter != terrainTextures.end())
 				terrainIndex = (uint8)FMath::Min(terrainIter->second.first, 255);
-			indexPixels[row * mapWidth + col] = terrainIndex;
+			indexPixels[y * mapWidth + x] = terrainIndex;
 		}
 	indexMip.BulkData.Unlock();
 	terrainIndexMap->UpdateResource();

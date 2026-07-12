@@ -7,33 +7,37 @@
 #include <functional>
 
 
+// 组合Mod基类
 class ComponentMod {
 public:
 	/*
-	* 无构造
+	* 构造组合
 	*/
 	ComponentMod();
 
 	/*
-	* 无析构
+	* 析构组合
 	*/
 	virtual ~ComponentMod();
 
 	/*
 	* Override
 	* 组合静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 组合动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
 	* 组合实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -50,40 +54,40 @@ public:
 class ComponentFactory {
 public:
 	/*
-	* 注册组合及其创建与销毁方式
-	* @id: 组合静态类型标识
-	* @creator, deleter: 创建/销毁组合实例的方法
+	* 注册组合
+	* @id: 组合类型
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterComponent(const std::string& id,
 		std::function<ComponentMod* ()> creator, std::function<void(ComponentMod*)> deleter);
 
 	/*
-	* 清空所有启用的组合配置
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 按静态类型标识创建组合实例
-	* @id: 组合静态类型标识
+	* 创建组合
+	* @id: 组合类型
 	*/
 	ComponentMod* CreateComponent(const std::string& id) const;
 
 	/*
 	* 检查组合是否已注册
-	* @id: 组合静态类型标识
+	* @id: 组合类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置组合的启用配置
-	* @name: 组合静态类型标识
+	* 设置组合启用配置
+	* @name: 组合类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
 
 	/*
-	* 销毁组合实例
-	* @componentMod: 待销毁的组合实例
+	* 析构组合
+	* @componentMod: 待析构的组合
 	*/
 	void DestroyComponent(ComponentMod* componentMod) const;
 

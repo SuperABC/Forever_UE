@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../common/utility.h"
 #include "../common/error.h"
@@ -48,6 +48,7 @@ public:
 	void SetCondition(const Condition& condition);
 
 private:
+	// 控制条件
 	Condition condition;
 };
 
@@ -120,6 +121,7 @@ public:
 	std::string GetMessage() const;
 
 private:
+	// 消息内容
 	std::string message;
 };
 
@@ -190,10 +192,13 @@ public:
 	std::string GetOption() const;
 
 private:
+	// 选项索引
 	int idx;
 
+	// 选项名称
 	std::string name;
 
+	// 选项文本
 	std::string option;
 };
 
@@ -236,6 +241,7 @@ public:
 	std::string GetLabel() const;
 
 private:
+	// 对话标签
 	std::string label;
 };
 
@@ -278,6 +284,7 @@ public:
 	std::string GetZone() const;
 
 private:
+	// 园区名称
 	std::string zone;
 };
 
@@ -320,6 +327,7 @@ public:
 	std::string GetZone() const;
 
 private:
+	// 园区名称
 	std::string zone;
 };
 
@@ -373,8 +381,10 @@ public:
 	std::string GetBuilding() const;
 
 private:
+	// 园区名称
 	std::string zone;
 
+	// 建筑名称
 	std::string building;
 };
 
@@ -428,8 +438,10 @@ public:
 	std::string GetBuilding() const;
 
 private:
+	// 园区名称
 	std::string zone;
 
+	// 建筑名称
 	std::string building;
 };
 
@@ -494,10 +506,13 @@ public:
 	std::string GetRoom() const;
 
 private:
+	// 园区名称
 	std::string zone;
 
+	// 建筑名称
 	std::string building;
 
+	// 房间名称
 	std::string room;
 };
 
@@ -562,10 +577,13 @@ public:
 	std::string GetRoom() const;
 
 private:
+	// 园区名称
 	std::string zone;
 
+	// 建筑名称
 	std::string building;
 
+	// 房间名称
 	std::string room;
 };
 
@@ -608,6 +626,7 @@ public:
 	int GetResult() const;
 
 private:
+	// 小游戏结果值
 	int result;
 };
 
@@ -650,6 +669,7 @@ public:
 	std::string GetNPC() const;
 
 private:
+	// NPC名称
 	std::string npc;
 };
 
@@ -692,6 +712,7 @@ public:
 	std::string GetName() const;
 
 private:
+	// 市民姓名
 	std::string name;
 };
 
@@ -745,8 +766,10 @@ public:
 	std::string GetReason() const;
 
 private:
+	// 市民姓名
 	std::string name;
 
+	// 死亡原因
 	std::string reason;
 };
 
@@ -800,8 +823,10 @@ public:
 	int GetDelta();
 
 private:
+	// 变化后余额
 	int result;
 
+	// 变化量
 	int delta;
 };
 
@@ -855,8 +880,10 @@ public:
 	int GetDelta();
 
 private:
+	// 变化后余额
 	int result;
 
+	// 变化量
 	int delta;
 };
 
@@ -910,8 +937,10 @@ public:
 	int GetNum();
 
 private:
+	// 物品名称
 	std::string item;
 
+	// 物品数量
 	int num;
 };
 
@@ -965,8 +994,10 @@ public:
 	int GetNum();
 
 private:
+	// 物品名称
 	std::string item;
 
+	// 物品数量
 	int num;
 };
 
@@ -1009,6 +1040,7 @@ public:
 	std::string GetWound() const;
 
 private:
+	// 伤势描述
 	std::string wound;
 };
 
@@ -1051,6 +1083,7 @@ public:
 	std::string GetWound() const;
 
 private:
+	// 痊愈的伤势
 	std::string wound;
 };
 
@@ -1093,6 +1126,7 @@ public:
 	std::string GetIllness() const;
 
 private:
+	// 病症描述
 	std::string illness;
 };
 
@@ -1135,6 +1169,7 @@ public:
 	std::string GetIllness() const;
 
 private:
+	// 康复的病症
 	std::string illness;
 };
 
@@ -1177,6 +1212,7 @@ public:
 	int GetMinute();
 
 private:
+	// 休息时长（分钟）
 	int minute;
 };
 
@@ -1219,6 +1255,7 @@ public:
 	int GetHour();
 
 private:
+	// 睡眠时长（小时）
 	int hour;
 };
 
@@ -1261,6 +1298,7 @@ public:
 	std::string GetName() const;
 
 private:
+	// 计时器名称
 	std::string name;
 };
 
@@ -1303,6 +1341,7 @@ public:
 	std::string GetEnemy() const;
 
 private:
+	// 敌人名称
 	std::string enemy;
 };
 
@@ -1345,6 +1384,7 @@ public:
 	std::string GetEnemy() const;
 
 private:
+	// 敌人名称
 	std::string enemy;
 };
 
@@ -1387,6 +1427,7 @@ public:
 	std::string GetEnemy() const;
 
 private:
+	// 敌人名称
 	std::string enemy;
 };
 
@@ -1429,6 +1470,7 @@ public:
 	std::string GetEnemy() const;
 
 private:
+	// 敌人名称
 	std::string enemy;
 };
 
@@ -1482,8 +1524,10 @@ public:
 	int GetLevel();
 
 private:
+	// 修炼方式
 	std::string method;
 
+	// 修炼等级
 	int level;
 };
 
@@ -1537,8 +1581,10 @@ public:
 	int GetLevel();
 
 private:
+	// 通缉原因
 	std::string reason;
 
+	// 通缉等级
 	int level;
 };
 
@@ -1581,6 +1627,7 @@ public:
 	std::string GetReason() const;
 
 private:
+	// 被捕原因
 	std::string reason;
 };
 
@@ -1623,6 +1670,7 @@ public:
 	std::string GetReason() const;
 
 private:
+	// 释放原因
 	std::string reason;
 };
 
@@ -1665,6 +1713,7 @@ public:
 	std::string GetWeather() const;
 
 private:
+	// 天气类型
 	std::string weather;
 };
 
@@ -1718,8 +1767,10 @@ public:
 	std::string GetAddress() const;
 
 private:
+	// 抵达者姓名
 	std::string name;
 
+	// 目标地址
 	std::string address;
 };
 
@@ -1773,7 +1824,9 @@ public:
 	bool GetStatus();
 
 private:
+	// 政策名称
 	std::string policy;
 
+	// 是否启用
 	bool status;
 };

@@ -1,4 +1,4 @@
-#include "ChronodeManager.h"
+﻿#include "ChronodeManager.h"
 
 #include "Engine/DirectionalLight.h"
 #include "Components/DirectionalLightComponent.h"
@@ -67,14 +67,19 @@ void AChronodeManager::UpdateSunLight(float chronode) {
 	sunComponent->SetIntensity(FMath::Clamp(FMath::Sin(chronode * PI), 0.0f, 1.0f) * 100000.0f);
 
 	FLinearColor lightColor;
+	// 凌晨至清晨（0~0.2）：橙红色朝霞，太阳刚升起时的低角度暖色调
 	if (chronode < 0.2f)
 		lightColor = FLinearColor(1.0f, 0.5f, 0.2f);
+	// 清晨过渡段（0.2~0.3）：橙黄色，日出后光线逐渐变暖变亮
 	else if (chronode < 0.3f)
 		lightColor = FLinearColor(1.0f, 0.7f, 0.3f);
+	// 白天正午段（0.3~0.7）：接近白色的暖白光，模拟正午日光
 	else if (chronode < 0.7f)
 		lightColor = FLinearColor(1.0f, 0.95f, 0.9f);
+	// 黄昏过渡段（0.7~0.8）：橙红色夕阳，与清晨对称的低角度暖色调
 	else if (chronode < 0.8f)
 		lightColor = FLinearColor(1.0f, 0.5f, 0.2f);
+	// 夜间（0.8~1.0）：偏蓝紫色的月光/环境光，模拟夜间低照度冷色调
 	else
 		lightColor = FLinearColor(0.5f, 0.5f, 0.8f);
 	sunComponent->SetLightColor(lightColor);

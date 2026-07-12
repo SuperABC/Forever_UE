@@ -15,15 +15,15 @@ Milestone::Milestone(string name, vector<Event*> triggers, bool visible, Conditi
 }
 
 Milestone::~Milestone() {
-	for(auto &trigger : triggers) {
+	for (auto &trigger : triggers) {
 		delete trigger;
 	}
 	triggers.clear();
-	for(auto &dialog : dialogs) {
+	for (auto &dialog : dialogs) {
 		delete dialog;
 	}
 	dialogs.clear();
-	for(auto &change : changes) {
+	for (auto &change : changes) {
 		delete change;
 	}
 	changes.clear();
@@ -46,8 +46,9 @@ bool Milestone::MatchTrigger(Event* e,
 	if (triggers.size() <= 0)return false;
 	if (!e)return false;
 
-	for(auto trigger : triggers) {
-		if (trigger->GetType() != e->GetType())continue;
+	for (auto trigger : triggers) {
+		if (!trigger) continue;
+		if (trigger->GetType() != e->GetType()) continue;
 		if (trigger->Match(e, getValues)) {
 			return true;
 		}
@@ -84,11 +85,15 @@ vector<string> Milestone::GetSubsequences() {
 	return subsequences;
 }
 
-MilestoneNode::MilestoneNode() : content(nullptr) {
+MilestoneNode::MilestoneNode() :
+	content(nullptr),
+	premise(0) {
 
 }
 
-MilestoneNode::MilestoneNode(Milestone* milestone) : content(milestone) {
+MilestoneNode::MilestoneNode(Milestone* milestone) :
+	content(milestone),
+	premise(0) {
 
 }
 

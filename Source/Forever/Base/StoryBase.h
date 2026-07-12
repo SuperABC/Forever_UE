@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define NOMINMAX
 
@@ -93,32 +93,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void NpcArrive(const FString& name, const FString& destination);
 
-	/*
-	* 应用调度节点产出的变化列表（内部负责释放传入的Change对象）
-	* @changes: 调度节点产出的变化列表
-	*/
 	void ApplySchedulerChanges(std::vector<Change*>& changes);
 
 protected:
 	virtual void BeginPlay() override;
 
-	// 检查所有计时器，对已到时的计时器触发time_up事件
 	void CheckTimers();
 
-	/*
-	* 对一组Change逐一执行完整的系统级分发（地图/人口/剧情等），供MatchEvent和ApplySchedulerChanges复用
-	* @changes: 待应用的变化列表
-	* @getValues: 用于条件求值的变量查找链
-	* @ownerScript: 触发这组Change的脚本（用于deactivate_milestone等场景），无则传nullptr
-	*/
 	void ApplyChanges(const std::vector<Change*>& changes,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		Script* ownerScript = nullptr);
 
-	/*
-	* 按名称查找电梯轿厢（遍历所有建筑，包括园区内的建筑）
-	* @name: 轿厢名称
-	*/
 	Cabin* FindCabin(const std::string& name);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")

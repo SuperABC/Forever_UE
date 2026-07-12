@@ -4,7 +4,7 @@
 using namespace std;
 
 ProductMod::ProductMod() :
-	catagories(),
+	categories(),
 	price(0.f),
 	ingredients(),
 	byproducts() {

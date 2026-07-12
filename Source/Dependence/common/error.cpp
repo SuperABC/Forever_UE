@@ -4,32 +4,30 @@
 using namespace std;
 
 ExceptionBase::ExceptionBase(const string& message,
-	const string& file,
-	int line,
-	const string& function) noexcept
-	: m_message(message)
-	, m_file(file)
-	, m_line(line)
-	, m_function(function) {
-	formatWhat();
+	const string& file, int line, const string& function) noexcept :
+	message(message), 
+	file(file), 
+	line(line), 
+	function(function) {
+	FormatWhat();
 }
 
 const char* ExceptionBase::what() const noexcept {
-	return m_what.data();
+	return whatCache.data();
 }
 
 string ExceptionBase::GetDetailedInfo() const {
 	ostringstream oss;
-	oss << "Exception: " << m_message << "\n"
-		<< "File: " << m_file << "\n"
-		<< "Line: " << m_line << "\n"
-		<< "Function: " << (m_function.empty() ? "Unknown" : m_function);
+	oss << "Exception: " << message << "\n"
+		<< "File: " << file << "\n"
+		<< "Line: " << line << "\n"
+		<< "Function: " << (function.empty() ? "Unknown" : function);
 	return oss.str();
 }
 
-void ExceptionBase::formatWhat() {
-	m_what = m_message + " [at " + m_file + ":" + to_string(m_line) + "]";
-	if (!m_function.empty()) {
-		m_what += " in " + m_function;
+void ExceptionBase::FormatWhat() {
+	whatCache = message + " [at " + file + ":" + to_string(line) + "]";
+	if (!function.empty()) {
+		whatCache += " in " + function;
 	}
 }

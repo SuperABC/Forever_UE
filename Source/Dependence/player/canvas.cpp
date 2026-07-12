@@ -1,4 +1,4 @@
-#include "canvas.h"
+﻿#include "canvas.h"
 
 #include <algorithm>
 #include <cmath>
@@ -12,8 +12,17 @@ using namespace std;
 
 static constexpr float kPI = 3.14159265358979f;
 
-Canvas::Canvas() {
-
+Canvas::Canvas() :
+	width(0),
+	height(0),
+	brushR(255),
+	brushG(255),
+	brushB(255),
+	brushA(255),
+	fontSize(16),
+	fontBold(false),
+	fontItalic(false),
+	fontUnderline(false) {
 }
 
 void Canvas::Init(int w, int h) {
@@ -103,8 +112,10 @@ void Canvas::FastLine(int x1, int x2, int y) {
 }
 
 void Canvas::PutPixel(int x, int y) {
+	// 坐标越界则直接跳过
 	if (x < 0 || x >= width || y < 0 || y >= height) return;
 	int idx = (y * width + x) * 4;
+	// 完全不透明时直接覆盖，否则进行Alpha混合
 	if (brushA == 255) {
 		buffer[idx] = brushB;
 		buffer[idx + 1] = brushG;
@@ -145,6 +156,7 @@ void Canvas::PutLine(int x1, int y1, int x2, int y2) {
 }
 
 void Canvas::PutRect(int x1, int y1, int x2, int y2, bool fill) {
+	// 填充模式：逐行绘制水平线；空心模式：绘制四条边
 	if (fill) {
 		for (int y = min(y1, y2); y <= max(y1, y2); y++)
 			FastLine(x1, x2, y);
@@ -158,6 +170,7 @@ void Canvas::PutRect(int x1, int y1, int x2, int y2, bool fill) {
 }
 
 void Canvas::PutTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool fill) {
+	// 空心三角形：直接绘制三条边
 	if (!fill) {
 		PutLine(x1, y1, x2, y2);
 		PutLine(x2, y2, x3, y3);
@@ -179,7 +192,9 @@ void Canvas::PutTriangle(int x1, int y1, int x2, int y2, int x3, int y3, bool fi
 }
 
 void Canvas::PutCircle(int cx, int cy, int radius, bool fill) {
+	// 半径无效时退化为单点
 	if (radius <= 0) { PutPixel(cx, cy); return; }
+	// 填充模式：对每一行计算水平跨度并调用FastLine
 	if (fill) {
 		for (int dy = -radius; dy <= radius; dy++) {
 			int dx = static_cast<int>(sqrt(static_cast<float>(radius * radius - dy * dy)));
@@ -256,7 +271,7 @@ void Canvas::PutString(const string& text, int x, int y) {
 		OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS,
 		DEFAULT_QUALITY, FF_MODERN,
 		wfont.c_str());
-	HFONT oldFont = (HFONT)SelectObject(memDC, hFont);
+	HFONT oldFont = reinterpret_cast<HFONT>(SelectObject(memDC, hFont));
 
 	// 量测文字尺寸
 	SIZE sz;
@@ -279,11 +294,11 @@ void Canvas::PutString(const string& text, int x, int y) {
 	bi.biCompression = BI_RGB;
 
 	HBITMAP hbm = CreateCompatibleBitmap(screenDC, sz.cx, sz.cy);
-	HBITMAP oldBm = (HBITMAP)SelectObject(memDC, hbm);
+	HBITMAP oldBm = reinterpret_cast<HBITMAP>(SelectObject(memDC, hbm));
 
 	// 黑底白字
 	RECT rc = { 0, 0, sz.cx, sz.cy };
-	FillRect(memDC, &rc, (HBRUSH)GetStockObject(BLACK_BRUSH));
+	FillRect(memDC, &rc, reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
 	SetTextColor(memDC, RGB(255, 255, 255));
 	SetBkMode(memDC, TRANSPARENT);
 	TextOutW(memDC, 0, 0, wtext.data(), charCount);
@@ -291,7 +306,7 @@ void Canvas::PutString(const string& text, int x, int y) {
 	// 读回像素（24-bit BGR，自底向上）
 	int rowStride = ((sz.cx * 3 + 3) & ~3);
 	vector<uint8_t> bits(static_cast<size_t>(rowStride) * sz.cy);
-	GetDIBits(memDC, hbm, 0, sz.cy, bits.data(), (BITMAPINFO*)&bi, DIB_RGB_COLORS);
+	GetDIBits(memDC, hbm, 0, sz.cy, bits.data(), reinterpret_cast<BITMAPINFO*>(&bi), DIB_RGB_COLORS);
 
 	// 合成到 canvas buffer
 	for (int row = 0; row < sz.cy; row++) {
@@ -340,6 +355,7 @@ void Canvas::PushKey(int key) {
 }
 
 int Canvas::BiosKey(int cmd) {
+	// cmd=0：弹出队首键值；cmd=1：查询队列是否非空
 	if (cmd == 0) {
 		if (keyQueue.empty()) return 0;
 		int key = keyQueue.front();
@@ -380,6 +396,7 @@ MouseState Canvas::MouseStatus() const {
 }
 
 int Canvas::BiosMouse(int cmd) {
+	// cmd=0：弹出队首鼠标事件；cmd=1：查询队列是否非空
 	if (cmd == 0) {
 		if (mouseQueue.empty()) return -1;
 		int event = mouseQueue.front();

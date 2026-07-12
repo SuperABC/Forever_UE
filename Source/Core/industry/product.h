@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "industry/product_mod.h"
 
@@ -106,7 +106,7 @@ private:
 	std::string name;
 
 	// 所属分类
-	std::vector<std::string> catagories;
+	std::vector<std::string> categories;
 
 	// 指导价
 	float price;

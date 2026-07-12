@@ -1,4 +1,4 @@
-#include "PopulaceBase.h"
+﻿#include "PopulaceBase.h"
 
 #include "GlobalBase.h"
 #include "StoryBase.h"

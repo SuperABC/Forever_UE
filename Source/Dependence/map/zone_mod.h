@@ -9,33 +9,37 @@
 #include <functional>
 
 
+// 园区Mod基类
 class ZoneMod {
 public:
 	/*
-	* 无构造
+	* 构造园区
 	*/
 	ZoneMod();
 
 	/*
-	* 无析构
+	* 析构园区
 	*/
 	virtual ~ZoneMod();
 
 	/*
 	* Override
 	* 园区静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 园区动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
 	* 园区实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -76,34 +80,34 @@ public:
 class ZoneFactory {
 public:
 	/*
-	* 注册园区及其数量生成器、创建与销毁方式
-	* @id: 园区静态类型标识
+	* 注册园区
+	* @id: 园区类型
 	* @assigner: 按地块计算应生成的园区数量的方法
-	* @creator, deleter: 创建/销毁园区实例的方法
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterZone(const std::string& id, std::function<int(const Lot*)> assigner,
 		std::function<ZoneMod* ()> creator, std::function<void(ZoneMod*)> deleter);
 
 	/*
-	* 清空所有启用的园区配置
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 按静态类型标识创建园区实例
-	* @id: 园区静态类型标识
+	* 创建园区
+	* @id: 园区类型
 	*/
 	ZoneMod* CreateZone(const std::string& id) const;
 
 	/*
 	* 检查园区是否已注册
-	* @id: 园区静态类型标识
+	* @id: 园区类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置园区的启用配置
-	* @name: 园区静态类型标识
+	* 设置园区启用配置
+	* @name: 园区类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
@@ -121,8 +125,8 @@ public:
 	std::vector<ZoneMod*> CreateZones(const std::string& type, const Lot* lot) const;
 
 	/*
-	* 销毁园区实例
-	* @zoneMod: 待销毁的园区实例
+	* 析构园区
+	* @zoneMod: 待析构的园区
 	*/
 	void DestroyZone(ZoneMod* zoneMod) const;
 

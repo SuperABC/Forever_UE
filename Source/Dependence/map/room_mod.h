@@ -9,36 +9,40 @@
 #include <functional>
 
 
-// 建筑方向（完整定义见building_mod.h）
+// 建筑方向（定义在building_mod.h）
 enum FACE_DIRECTION : int;
 
+// 房间Mod基类
 class RoomMod {
 public:
 	/*
-	* 无构造
+	* 构造房间
 	*/
 	RoomMod();
 
 	/*
-	* 无析构
+	* 析构房间
 	*/
 	virtual ~RoomMod();
 
 	/*
 	* Override
 	* 房间静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 房间动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
 	* 房间实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -102,40 +106,40 @@ public:
 class RoomFactory {
 public:
 	/*
-	* 注册房间及其创建与销毁方式
-	* @id: 房间静态类型标识
-	* @creator, deleter: 创建/销毁房间实例的方法
+	* 注册房间
+	* @id: 房间类型
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterRoom(const std::string& id,
 		std::function<RoomMod* ()> creator, std::function<void(RoomMod*)> deleter);
 
 	/*
-	* 清空所有启用的房间配置
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 按静态类型标识创建房间实例
-	* @id: 房间静态类型标识
+	* 创建房间
+	* @id: 房间类型
 	*/
 	RoomMod* CreateRoom(const std::string& id) const;
 
 	/*
 	* 检查房间是否已注册
-	* @id: 房间静态类型标识
+	* @id: 房间类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置房间的启用配置
-	* @name: 房间静态类型标识
+	* 设置房间启用配置
+	* @name: 房间类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
 
 	/*
-	* 销毁房间实例
-	* @roomMod: 待销毁的房间实例
+	* 析构房间
+	* @roomMod: 待析构的房间
 	*/
 	void DestroyRoom(RoomMod* roomMod) const;
 

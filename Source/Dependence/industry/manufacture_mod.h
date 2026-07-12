@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../common/utility.h"
 #include "../common/error.h"
@@ -7,33 +7,37 @@
 #include <functional>
 
 
+// 工坊Mod基类
 class ManufactureMod {
 public:
 	/*
-	* 构造工坊模组基类
+	* 构造工坊
 	*/
 	ManufactureMod();
 
 	/*
-	* 析构工坊模组基类
+	* 析构工坊
 	*/
 	virtual ~ManufactureMod();
 
 	/*
 	* Override
 	* 工坊静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 工坊动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
-	* 工坊实例名称
+	* 工坊实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -52,40 +56,39 @@ class ManufactureFactory {
 public:
 	/*
 	* 注册工坊
-	* @id: 工坊静态类型标识
-	* @creator: 创建函数
-	* @deleter: 析构函数
+	* @id: 工坊类型
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterManufacture(const std::string& id,
 		std::function<ManufactureMod* ()> creator, std::function<void(ManufactureMod*)> deleter);
 
 	/*
-	* 清空启用配置
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 创建工坊实例
-	* @id: 工坊静态类型标识
+	* 创建工坊
+	* @id: 工坊类型
 	*/
 	ManufactureMod* CreateManufacture(const std::string& id) const;
 
 	/*
-	* 检查是否已注册
-	* @id: 工坊静态类型标识
+	* 检查工坊是否已注册
+	* @id: 工坊类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置启用配置
-	* @name: 工坊静态类型标识
+	* 设置工坊启用配置
+	* @name: 工坊类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
 
 	/*
-	* 析构工坊实例
-	* @manufactureMod: 待析构的工坊模组
+	* 析构工坊
+	* @manufactureMod: 待析构的工坊
 	*/
 	void DestroyManufacture(ManufactureMod* manufactureMod) const;
 

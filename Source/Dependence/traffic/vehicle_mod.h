@@ -7,23 +7,51 @@
 #include <functional>
 
 
+// 载具Mod基类
 class VehicleMod {
 public:
-	// 无构造
+	/*
+	* 构造载具
+	*/
 	VehicleMod();
 
-	// 无析构
+	/*
+	* 析构载具
+	*/
 	virtual ~VehicleMod();
 
-	// 统一类型定义
+	/*
+	* Override
+	* 载具静态类型标识
+	* @return: 静态类型标识
+	*/
 	static const char* GetId();
+
+	/*
+	* Override
+	* 载具动态类型标识
+	* @return: 动态类型标识
+	*/
 	virtual const char* GetType() const = 0;
+
+	/*
+	* Override
+	* 载具实例唯一名称
+	* @return: 实例唯一名称
+	*/
 	virtual const char* GetName() = 0;
 
-	// 自定义载具
+	/*
+	* Override
+	* 自定义载具标签
+	* @return: 载具标签
+	*/
 	COSTOM_INIT static std::string GetLabel();
-
-	// 自定义载具
+	
+	/*
+	* Override
+	* 自定义载具属性
+	*/
 	COSTOM_INIT virtual void SetupVehicle() = 0;
 
 	// 载具资产路径
@@ -41,23 +69,43 @@ public:
 
 class VehicleFactory {
 public:
-	// 注册载具
+	/*
+	* 注册载具
+	* @id: 载具类型
+	* @label: 载具标签
+	* @creator, deleter: 构造与析构函数
+	*/
 	void RegisterVehicle(const std::string& id, std::string label,
 		std::function<VehicleMod* ()> creator, std::function<void(VehicleMod*)> deleter);
 
-	// 清空注册
+	/*
+	* 清空所有注册
+	*/
 	void RemoveAll();
 
-	// 创建载具
+	/*
+	* 创建载具
+	* @label: 载具标签
+	*/
 	VehicleMod* CreateVehicle(const std::string& label) const;
 
-	// 检查是否注册
+	/*
+	* 检查载具是否已注册
+	* @id: 载具类型
+	*/
 	bool CheckRegistered(const std::string& id) const;
 
-	// 设置启用配置
+	/*
+	* 设置载具启用配置
+	* @name: 载具类型
+	* @config: 是否启用
+	*/
 	void SetConfig(const std::string& name, bool config);
 
-	// 析构载具
+	/*
+	* 析构载具
+	* @vehicleMod: 待析构的载具
+	*/
 	void DestroyVehicle(VehicleMod* vehicleMod) const;
 
 private:

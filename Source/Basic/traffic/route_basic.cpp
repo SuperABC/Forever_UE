@@ -34,6 +34,7 @@ void AirRoute::LayoutRoute(
 
 	auto airports = interfaces.find("air")->second;
 	for (auto& [pivots, rays] : airports) {
+		// 每个机场接口必须恰好有1个枢纽节点，否则跳过
 		if (pivots.size() != 1)continue;
 		for(auto& ray : rays) {
 			nodes.push_back(Node(*pivots[0]));

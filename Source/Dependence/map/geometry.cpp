@@ -92,18 +92,18 @@ Node& Node::operator=(const Node& other) {
 	return *this;
 }
 
-static int binomial(int n, int k) {
+static int Binomial(int n, int k) {
 	if (k < 0 || k > n) return 0;
 	if (k == 0 || k == n) return 1;
-	long long res = 1;
+	long long result = 1;
 	for (int i = 1; i <= k; i++) {
-		res = res * (n - i + 1) / i;
+		result = result * (n - i + 1) / i;
 	}
-	return static_cast<int>(res);
+	return static_cast<int>(result);
 }
 
-static double bernstein(int n, int i, double t) {
-	return binomial(n, i) * pow(t, i) * pow(1.0 - t, n - i);
+static double Bernstein(int n, int i, double t) {
+	return Binomial(n, i) * pow(t, i) * pow(1.0 - t, n - i);
 }
 
 Connection::Connection(Node n1, Node n2, float begin, float end) :
@@ -208,7 +208,7 @@ Node Connection::GetPoint(float f) const {
 		double x = 0.0, y = 0.0, z = 0.0;
 
 		for (int i = 0; i <= m; i++) {
-			double B = bernstein(m, i, f);
+			double B = Bernstein(m, i, f);
 			double w = allPoints[i].second;
 			sumWeight += B * w;
 			x += B * w * allPoints[i].first->GetX();

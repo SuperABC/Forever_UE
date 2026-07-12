@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../common/utility.h"
 #include "../common/error.h"
@@ -14,56 +14,68 @@ enum ASSET_MOBILITY {
 	ASSET_CONTAINEE
 };
 
+// 资产Mod基类
 class AssetMod {
 public:
 	/*
-	* 构造资产模组
+	* 构造资产
 	*/
 	AssetMod();
 
 	/*
-	* 析构资产模组
+	* 析构资产
 	*/
 	virtual ~AssetMod();
 
 	/*
-	* 统一类型标识符
+	* Override
+	* 资产静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
-	* 获取资产类型
+	* Override
+	* 资产动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
-	* 获取资产名称
+	* Override
+	* 资产实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
 	/*
-	* 填写资产属性
+	* Override
+	* 定义资产属性
 	*/
 	COSTOM_INIT virtual void DefineAsset() = 0;
 
 	/*
+	* Tool
 	* 定义为不动产
 	*/
 	void DefineEstate();
 
 	/*
+	* Tool
 	* 定义为载具
 	*/
 	void DefineVehicle();
 
 	/*
-	* 定义为普通物体（非容器）
+	* Tool
+	* 定义为普通物体
 	* @weight, size: 重量与体积
 	* @backpack: 是否可背
 	*/
 	void DefineObject(float weight, float size, bool backpack = false);
 
 	/*
+	* Tool
 	* 定义为容器物体
 	* @weight, size: 自身重量与体积
 	* @volume: 容积
@@ -72,6 +84,7 @@ public:
 	void DefineContainer(float weight, float size, float volume, bool backpack = false);
 
 	/*
+	* Tool
 	* 定义为容器内容物
 	* @weight, size: 重量与占用容积
 	*/
@@ -99,40 +112,40 @@ public:
 class AssetFactory {
 public:
 	/*
-	* 注册资产类型
-	* @id: 类型标识符
+	* 注册资产
+	* @id: 资产类型
 	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterAsset(const std::string& id,
 		std::function<AssetMod* ()> creator, std::function<void(AssetMod*)> deleter);
 
 	/*
-	* 清空所有类型的启用配置
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 创建指定类型的资产模组
-	* @id: 类型标识符
+	* 创建资产
+	* @id: 资产类型
 	*/
 	AssetMod* CreateAsset(const std::string& id) const;
 
 	/*
-	* 检查指定类型是否已注册
-	* @id: 类型标识符
+	* 检查资产是否已注册
+	* @id: 资产类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置类型的启用配置
-	* @name: 类型标识符
+	* 设置资产启用配置
+	* @name: 资产类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
 
 	/*
-	* 析构资产模组对象
-	* @assetMod: 待析构的模组对象
+	* 析构资产
+	* @assetMod: 待析构的资产
 	*/
 	void DestroyAsset(AssetMod* assetMod) const;
 

@@ -26,33 +26,37 @@ struct PairHash {
 	}
 };
 
+// 建筑Mod基类
 class BuildingMod {
 public:
 	/*
-	* 无构造
+	* 构造建筑
 	*/
 	BuildingMod();
 
 	/*
-	* 无析构
+	* 析构建筑
 	*/
 	virtual ~BuildingMod();
 
 	/*
 	* Override
 	* 建筑静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 建筑动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
 	* 建筑实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -98,11 +102,13 @@ public:
 	COSTOM_INIT virtual void PlacePivots(Quad* building) = 0;
 
 	/*
+	* Tool
 	* 根据地上地下层数分配楼层模板空间
 	*/
 	void AllocateFloors();
 
 	/*
+	* Tool
 	* 添加电梯
 	* @name: 电梯名称
 	* @temp: 电梯温度
@@ -114,6 +120,7 @@ public:
 	void AddElevator(std::string name, int temp, int idx, int from, int to, std::string script, std::vector<std::string> paths);
 
 	/*
+	* Tool
 	* 根据模板生成一层楼层
 	* @level: 楼层编号
 	* @face: 模板朝向
@@ -122,6 +129,7 @@ public:
 	void AssignFloor(int level, int face, std::string layout);
 
 	/*
+	* Tool
 	* 按照单一模板生成所有楼层
 	* @face: 模板朝向
 	* @layout: 楼层模板名称
@@ -129,6 +137,7 @@ public:
 	void AssignFloors(int face, std::string layout);
 
 	/*
+	* Tool
 	* 按照层数个模板生成所有楼层
 	* @face: 模板朝向
 	* @layouts: 每层对应的楼层模板名称
@@ -136,6 +145,7 @@ public:
 	void AssignFloors(int face, std::vector<std::string> layouts);
 
 	/*
+	* Tool
 	* 为模板中第slot个独立房间生成房间，按id并入component
 	* @level: 楼层编号
 	* @slot: 独立房间在模板中的序号
@@ -146,6 +156,7 @@ public:
 	void AssignRoom(int level, int slot, std::string room, std::string component, int id);
 
 	/*
+	* Tool
 	* 为模板中第slot个联排房间生成房间，按id并入component
 	* @level: 楼层编号
 	* @slot: 联排房间在模板中的序号
@@ -157,6 +168,7 @@ public:
 	void ArrangeRow(int level, int slot, std::string room, float acreage, std::string component, int id);
 
 	/*
+	* Tool
 	* 添加装饰
 	* @path: 装饰资源路径
 	* @px, py, pz: 装饰位置
@@ -229,36 +241,36 @@ public:
 class BuildingFactory {
 public:
 	/*
-	* 注册建筑及其权重、数量生成器、创建与销毁方式
-	* @id: 建筑静态类型标识
+	* 注册建筑
+	* @id: 建筑类型
 	* @power: 建筑在各功能分区的生成权重
 	* @assigner: 按地块计算应生成的建筑数量的方法
-	* @creator, deleter: 创建/销毁建筑实例的方法
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterBuilding(const std::string& id,
 		const std::vector<float>& power, std::function<int(const Lot*, int, int)> assigner,
 		std::function<BuildingMod* ()> creator, std::function<void(BuildingMod*)> deleter);
 
 	/*
-	* 清空所有启用的建筑配置
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 按静态类型标识创建建筑实例
-	* @id: 建筑静态类型标识
+	* 创建建筑
+	* @id: 建筑类型
 	*/
 	BuildingMod* CreateBuilding(const std::string& id) const;
 
 	/*
 	* 检查建筑是否已注册
-	* @id: 建筑静态类型标识
+	* @id: 建筑类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置建筑的启用配置
-	* @name: 建筑静态类型标识
+	* 设置建筑启用配置
+	* @name: 建筑类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
@@ -278,8 +290,8 @@ public:
 	std::vector<std::string> CreateBuildings(const std::string& type, const Lot* lot, int idx, int total) const;
 
 	/*
-	* 销毁建筑实例
-	* @buildingMod: 待销毁的建筑实例
+	* 析构建筑
+	* @buildingMod: 待析构的建筑
 	*/
 	void DestroyBuilding(BuildingMod* buildingMod) const;
 

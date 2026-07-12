@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "player/asset_mod.h"
 
@@ -17,9 +17,9 @@ public:
 	Asset() = delete;
 
 	/*
-	* 通过类型从工厂构造
+	* 构造资产实体
 	* @factory: 资产工厂
-	* @asset: 资产类型标识符
+	* @asset: 资产类型
 	*/
 	Asset(AssetFactory* factory, const std::string& asset);
 
@@ -29,22 +29,25 @@ public:
 	~Asset();
 
 	/*
-	* 获取资产类型
+	* 应用动态类型标识
+	* @return: 动态类型标识
 	*/
 	std::string GetType() const;
 
 	/*
-	* 获取资产名称
+	* 应用实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	std::string GetName() const;
 
 	/*
-	* 调用模组的DefineAsset并同步各属性字段
+	* 定义资产属性
 	*/
 	void DefineAsset();
 
 	/*
 	* 获取资产描述文本
+	* @return: 描述文本
 	*/
 	std::string GetAsset();
 
@@ -56,49 +59,57 @@ public:
 
 	/*
 	* 获取资产移动性
+	* @return: 资产移动性
 	*/
 	ASSET_MOBILITY GetMobility() const;
 
 	/*
 	* 获取资产重量
+	* @return: 资产重量
 	*/
 	float GetWeight() const;
 
 	/*
 	* 获取资产体积
+	* @return: 资产体积
 	*/
 	float GetSize() const;
 
 	/*
 	* 获取资产容积
+	* @return: 资产容积
 	*/
 	float GetVolume() const;
 
 	/*
-	* 向容器中添加内容（超容量时拒绝并返回false）
+	* 向容器中添加内容
 	* @name: 内容名称
 	* @content: 内容资产
+	* @return: 是否超容量，超容量的话拒绝添加
 	*/
 	bool AddContent(const std::string& name, Asset* content);
 
 	/*
-	* 从容器中按名称删除内容
+	* 按名称删除内容
 	* @name: 内容名称
 	*/
 	void RemoveContent(const std::string& name);
 
 	/*
 	* 获取容器剩余空间
+	* @return: 容器剩余空间
 	*/
 	float GetSpace() const;
 
 	/*
 	* 获取容器当前所有内容
+	* @return: 当前所有内容
 	*/
 	const std::unordered_map<std::string, Asset*>& GetContents() const;
 
 	/*
 	* 是否可背在身上
+	* @return: 是否可背在身上
 	*/
 	bool GetBackpack() const;
 
@@ -154,17 +165,26 @@ public:
 	virtual ~EmptyAsset();
 
 	/*
-	* 类型标识符
+	* 空资产静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
-	/* Override */
+	/*
+	* 空资产动态类型标识
+	* @return: 动态类型标识
+	*/
 	virtual const char* GetType() const override;
 
-	/* Override */
+	/*
+	* 空资产实例唯一名称
+	* @return: 实例唯一名称
+	*/
 	virtual const char* GetName() override;
 
-	/* Override */
+	/*
+	* 定义资产属性
+	*/
 	virtual void DefineAsset() override;
 
 private:

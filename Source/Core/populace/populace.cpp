@@ -357,7 +357,7 @@ void Populace::ApplyChange(Map* map, Change* change,
 		if (!room) {
 			debugf("Warning: Destination room %s not found.\n", destination.data());
 		}
-		else {
+		else if (person) {
 			person->SetStatus(room);
 		}
 	}

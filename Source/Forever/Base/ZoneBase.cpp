@@ -1,4 +1,4 @@
-#include "ZoneBase.h"
+﻿#include "ZoneBase.h"
 
 #include "GlobalBase.h"
 #include "StoryBase.h"
@@ -29,12 +29,19 @@ void AZoneBase::BeginPlay() {
 void AZoneBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
+	if (!global) return;
+
 	FVector location = FVector(0.f, 0.f, 0.f);
 	global->GetLocation(location);
 	location /= 1000.f;
 
 	TArray<FZone> zones;
-	auto blocks = global->GetMap()->GetRoadnet()->GetBlocks();
+	auto map = global->GetMap();
+	if (!map) return;
+	auto roadnet = map->GetRoadnet();
+	if (!roadnet) return;
+	auto blocks = roadnet->GetBlocks();
+	// 遍历所有道路网格块，收集玩家附近尚未实例化的地块区域信息，提交渲染
 	for(auto block : blocks) {
 		FVector blockLocation = FVector(block->GetPosX(), block->GetPosY(), 0.f);
 		if((location - blockLocation).Size() > 64.f) {
@@ -84,48 +91,64 @@ void AZoneBase::SetInstance(FString name, AActor* actor) {
 }
 
 void AZoneBase::EnterZone(FString zone) {
+	if (!global) return;
 	auto storyBase = global->GetStoryActor();
 	auto story = global->GetStory();
+	if (!story) return;
+	auto storyScript = story->GetScript();
+	if (!storyScript) return;
 	auto event = new EnterZoneEvent(TCHAR_TO_UTF8(*zone));
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
+			return storyScript->GetValue(name);
 		}
 	};
-	storyBase->MatchEvent(event, story->GetScript(), getValues);
+	storyBase->MatchEvent(event, storyScript, getValues);
 
-	auto z = global->GetMap()->GetZone(TCHAR_TO_UTF8(*zone));
-	getValues.push_back(
-		[&](const string& name) -> pair<bool, ValueType> {
-			return z->GetScript()->GetValue(name);
-		});
-	storyBase->MatchEvent(event, z->GetScript(), getValues);
-	getValues.pop_back();
-	
+	auto mapPtr = global->GetMap();
+	if (mapPtr) {
+		auto z = mapPtr->GetZone(TCHAR_TO_UTF8(*zone));
+		if (z) {
+			getValues.push_back(
+				[&](const string& name) -> pair<bool, ValueType> {
+					return z->GetScript()->GetValue(name);
+				});
+			storyBase->MatchEvent(event, z->GetScript(), getValues);
+			getValues.pop_back();
+		}
+	}
+
 	delete event;
 }
 
 void AZoneBase::LeaveZone(FString zone) {
+	if (!global) return;
 	auto storyBase = global->GetStoryActor();
 	auto story = global->GetStory();
+	if (!story) return;
+	auto storyScript = story->GetScript();
+	if (!storyScript) return;
 	auto event = new LeaveZoneEvent(TCHAR_TO_UTF8(*zone));
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {
-			return story->GetScript()->GetValue(name);
+			return storyScript->GetValue(name);
 		}
 	};
-	storyBase->MatchEvent(event, story->GetScript(), getValues);
+	storyBase->MatchEvent(event, storyScript, getValues);
 
-	auto zones = global->GetMap()->GetZones();
-	for (auto [_, z] : zones) {
-		getValues.push_back(
-			[&](const string& name) -> pair<bool, ValueType> {
-				return z->GetScript()->GetValue(name);
-			});
-		storyBase->MatchEvent(event, z->GetScript(), getValues);
-		getValues.pop_back();
+	auto mapPtr = global->GetMap();
+	if (mapPtr) {
+		auto zones = mapPtr->GetZones();
+		for (auto [_, z] : zones) {
+			getValues.push_back(
+				[&](const string& name) -> pair<bool, ValueType> {
+					return z->GetScript()->GetValue(name);
+				});
+			storyBase->MatchEvent(event, z->GetScript(), getValues);
+			getValues.pop_back();
+		}
 	}
 
 	delete event;

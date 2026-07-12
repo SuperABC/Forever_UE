@@ -47,6 +47,7 @@ void ShopOrganization::ArrageVacancies(const unordered_map<string, int>& compone
 
 void ShopOrganization::ArrageRoom(vector<pair<string, int>>& arrangements,
 	const vector<string>& rooms) {
+	// 若无可用房间则无需排布，直接返回
 	if (rooms.size() == 0)return;
 	for (auto& [_, room] : arrangements) {
 		room = 0;

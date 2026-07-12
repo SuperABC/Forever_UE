@@ -7,33 +7,37 @@
 #include <functional>
 
 
+// 地形Mod基类
 class TerrainMod {
 public:
 	/*
-	* 无构造
+	* 构造地形
 	*/
 	TerrainMod();
 
 	/*
-	* 无析构
+	* 析构地形
 	*/
 	virtual ~TerrainMod();
 
 	/*
 	* Override
 	* 地形静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 地形动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
 	* 地形实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -85,33 +89,33 @@ public:
 class TerrainFactory {
 public:
 	/*
-	* 注册地形及其创建与销毁方式
-	* @id: 地形静态类型标识
-	* @creator, deleter: 创建/销毁地形实例的方法
+	* 注册地形
+	* @id: 地形类型
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterTerrain(const std::string& id,
 		std::function<TerrainMod* ()> creator, std::function<void(TerrainMod*)> deleter);
 
 	/*
-	* 清空所有启用的地形配置
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 按静态类型标识创建地形实例
-	* @id: 地形静态类型标识
+	* 创建地形
+	* @id: 地形类型
 	*/
 	TerrainMod* CreateTerrain(const std::string& id) const;
 
 	/*
 	* 检查地形是否已注册
-	* @id: 地形静态类型标识
+	* @id: 地形类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置地形的启用配置
-	* @id: 地形静态类型标识
+	* 设置地形启用配置
+	* @id: 地形类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& id, bool config);
@@ -122,8 +126,8 @@ public:
 	std::vector<std::string> GetTerrains() const;
 
 	/*
-	* 销毁地形实例
-	* @terrainMod: 待销毁的地形实例
+	* 析构地形
+	* @terrainMod: 待析构的地形
 	*/
 	void DestroyTerrain(TerrainMod* terrainMod) const;
 

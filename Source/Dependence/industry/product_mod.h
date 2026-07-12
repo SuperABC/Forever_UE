@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../common/utility.h"
 #include "../common/error.h"
@@ -7,33 +7,37 @@
 #include <functional>
 
 
+// 产品Mod基类
 class ProductMod {
 public:
 	/*
-	* 构造产品模组基类
+	* 构造产品
 	*/
 	ProductMod();
 
 	/*
-	* 析构产品模组基类
+	* 析构产品
 	*/
 	virtual ~ProductMod();
 
 	/*
 	* Override
 	* 产品静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 产品动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
-	* 产品实例名称
+	* 产品实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -44,7 +48,7 @@ public:
 	COSTOM_INIT virtual void SetProperty() = 0;
 
 	// 所属分类
-	std::vector<std::string> catagories;
+	std::vector<std::string> categories;
 
 	// 指导价
 	float price;
@@ -61,40 +65,39 @@ class ProductFactory {
 public:
 	/*
 	* 注册产品
-	* @id: 产品静态类型标识
-	* @creator: 创建函数
-	* @deleter: 析构函数
+	* @id: 产品类型
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterProduct(const std::string& id,
 		std::function<ProductMod* ()> creator, std::function<void(ProductMod*)> deleter);
 
 	/*
-	* 清空启用配置
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
-	* 创建产品实例
-	* @id: 产品静态类型标识
+	* 创建产品
+	* @id: 产品类型
 	*/
 	ProductMod* CreateProduct(const std::string& id) const;
 
 	/*
-	* 检查是否已注册
-	* @id: 产品静态类型标识
+	* 检查产品是否已注册
+	* @id: 产品类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置启用配置
-	* @name: 产品静态类型标识
+	* 设置产品启用配置
+	* @name: 产品类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
 
 	/*
-	* 析构产品实例
-	* @productMod: 待析构的产品模组
+	* 析构产品
+	* @productMod: 待析构的产品
 	*/
 	void DestroyProduct(ProductMod* productMod) const;
 

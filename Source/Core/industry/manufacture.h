@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "industry/manufacture_mod.h"
 

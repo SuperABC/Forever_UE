@@ -1,4 +1,5 @@
 ﻿#include "utility.h"
+#include "error.h"
 
 #include <ctime>
 #include <chrono>
@@ -16,13 +17,14 @@ void debugf(LPCSTR format, ...) {
 	va_list args;
 	va_start(args, format);
 	int len = _vscprintf(format, args);
-	vector<char> buf(len + 1);
-	vsprintf_s(buf.data(), buf.size(), format, args);
-	OutputDebugStringA(buf.data());
+	vector<char> buffer(len + 1);
+	vsprintf_s(buffer.data(), buffer.size(), format, args);
+	OutputDebugStringA(buffer.data());
 	va_end(args);
 }
 
 int GetRandom(int range) {
+	// 范围无效时直接返回0
 	if (range <= 0)return 0;
 
 	mt19937 rng(random_device{}());
@@ -43,7 +45,14 @@ Time::Time() :
 
 }
 
-Time::Time(bool online) {
+Time::Time(bool online) :
+	year(0),
+	month(1),
+	day(1),
+	hour(0),
+	minute(0),
+	second(0),
+	millisecond(0) {
 	if (online) {
 		SetToCurrentTime();
 	}
@@ -54,10 +63,18 @@ Time::Time(int y, int mon, int d, int h, int min, int s, int ms)
 	NormalizeTime();
 }
 
-Time::Time(string time) {
+Time::Time(string time) :
+	year(0),
+	month(1),
+	day(1),
+	hour(0),
+	minute(0),
+	second(0),
+	millisecond(0) {
 	time.erase(0, time.find_first_not_of(" \t\n\r\f\v"));
 	time.erase(time.find_last_not_of(" \t\n\r\f\v") + 1);
 
+	// 去除首尾空白后若为空串则直接返回
 	if (time.empty()) {
 		return;
 	}
@@ -156,7 +173,7 @@ Time::Time(string time) {
 	}
 
 	// 如果所有格式都不匹配，抛出异常
-	throw invalid_argument("无法解析时间字符串: " + time);
+	THROW_EXCEPTION(InvalidArgumentException, "无法解析时间字符串: " + time);
 }
 
 bool Time::IsValid() const {
@@ -228,6 +245,7 @@ void Time::SetToCurrentTime() {
 
 	struct tm tm;
 	time_t t = time(nullptr);
+	// 成功获取本地时间时写入各字段
 	if (localtime_s(&tm, &t) == 0) {
 		year = tm.tm_year + 1900;
 		month = tm.tm_mon + 1;
@@ -245,10 +263,12 @@ void Time::AddYears(int years) {
 
 void Time::AddMonths(int months) {
 	month += months;
+	// 向前进位：月份超过12时年份加一
 	while (month > 12) {
 		month -= 12;
 		year++;
 	}
+	// 向后进位：月份小于1时年份减一
 	while (month < 1) {
 		month += 12;
 		year--;
@@ -257,10 +277,12 @@ void Time::AddMonths(int months) {
 
 void Time::AddDays(int days) {
 	day += days;
+	// 天数超出当月上限时进位到下一月
 	while (day > DaysInMonth(year, month)) {
 		day -= DaysInMonth(year, month);
 		AddMonths(1);
 	}
+	// 天数小于1时借位到上一月
 	while (day < 1) {
 		AddMonths(-1);
 		day += DaysInMonth(year, month);
@@ -288,64 +310,65 @@ void Time::AddMilliseconds(int ms) {
 }
 
 string Time::ToString(bool showDate, bool showTime) const {
-	string fmt;
-	if (showDate) fmt += "YYYY-MM-DD";
-	if (showDate && showTime) fmt += " ";
-	if (showTime) fmt += "HH:mm:ss.zzz";
-	return Format(fmt);
+	string format;
+	// 根据参数拼接日期/时间格式字符串
+	if (showDate) format += "YYYY-MM-DD";
+	if (showDate && showTime) format += " ";
+	if (showTime) format += "HH:mm:ss.zzz";
+	return Format(format);
 }
 
-string Time::Format(const string& fmt) const {
+string Time::Format(const string& format) const {
 	ostringstream oss;
-	for (size_t i = 0; i < fmt.size(); i++) {
-		if (fmt[i] == 'Y') {
-			if (fmt.substr(i, 4) == "YYYY") {
+	for (size_t i = 0; i < format.size(); i++) {
+		if (format[i] == 'Y') {
+			if (format.substr(i, 4) == "YYYY") {
 				oss << setw(4) << setfill('0') << year;
 				i += 3;
 			}
-			else if (fmt.substr(i, 2) == "YY") {
+			else if (format.substr(i, 2) == "YY") {
 				oss << setw(2) << setfill('0') << (year % 100);
 				i += 1;
 			}
 		}
-		else if (fmt[i] == 'M') {
-			if (fmt.substr(i, 2) == "MM") {
+		else if (format[i] == 'M') {
+			if (format.substr(i, 2) == "MM") {
 				oss << setw(2) << setfill('0') << month;
 				i += 1;
 			}
 		}
-		else if (fmt[i] == 'D') {
-			if (fmt.substr(i, 2) == "DD") {
+		else if (format[i] == 'D') {
+			if (format.substr(i, 2) == "DD") {
 				oss << setw(2) << setfill('0') << day;
 				i += 1;
 			}
 		}
-		else if (fmt[i] == 'H') {
-			if (fmt.substr(i, 2) == "HH") {
+		else if (format[i] == 'H') {
+			if (format.substr(i, 2) == "HH") {
 				oss << setw(2) << setfill('0') << hour;
 				i += 1;
 			}
 		}
-		else if (fmt[i] == 'm') {
-			if (fmt.substr(i, 2) == "mm") {
+		else if (format[i] == 'm') {
+			if (format.substr(i, 2) == "mm") {
 				oss << setw(2) << setfill('0') << minute;
 				i += 1;
 			}
 		}
-		else if (fmt[i] == 's') {
-			if (fmt.substr(i, 2) == "ss") {
+		else if (format[i] == 's') {
+			if (format.substr(i, 2) == "ss") {
 				oss << setw(2) << setfill('0') << second;
 				i += 1;
 			}
 		}
-		else if (fmt[i] == 'z') {
-			if (fmt.substr(i, 3) == "zzz") {
+		else if (format[i] == 'z') {
+			if (format.substr(i, 3) == "zzz") {
 				oss << setw(3) << setfill('0') << millisecond;
 				i += 2;
 			}
 		}
 		else {
-			oss << fmt[i];
+			oss << format[i];
 		}
 	}
 	return oss.str();
@@ -416,6 +439,7 @@ double Time::DifferenceInSeconds(const Time& other) const {
 	const Time* earlier = this;
 	const Time* later = &other;
 	bool inverted = false;
+	// 确保 earlier <= later，记录是否发生了反转
 	if (*this > other) {
 		earlier = &other;
 		later = this;
@@ -423,6 +447,7 @@ double Time::DifferenceInSeconds(const Time& other) const {
 	}
 
 	int yearDays = 0;
+	// 若跨年则先累计年份间的总天数
 	if (earlier->year != later->year) {
 		yearDays = DaysBetweenYears(earlier->year, later->year);
 	}
@@ -449,6 +474,7 @@ bool Time::IsLeapYear() const {
 int Time::DayOfWeek() const {
 	int m = month;
 	int y = year;
+	// Zeller公式：1月和2月当作上一年的13、14月处理
 	if (m < 3) {
 		m += 12;
 		y--;
@@ -469,18 +495,24 @@ string Time::DayOfWeekName() const {
 }
 
 void Time::Validate() const {
+	// 校验月份范围
 	if (month < 1 || month > 12)
-		throw out_of_range("Month must be between 1-12.\n");
+		THROW_EXCEPTION(OutOfRangeException, "Month must be between 1-12.");
+	// 校验日期范围
 	if (day < 1 || day > DaysInMonth(year, month))
-		throw out_of_range("Invalid day for given month and year.\n");
+		THROW_EXCEPTION(OutOfRangeException, "Invalid day for given month and year.");
+	// 校验小时范围
 	if (hour < 0 || hour > 23)
-		throw out_of_range("Hour must be between 0-23.\n");
+		THROW_EXCEPTION(OutOfRangeException, "Hour must be between 0-23.");
+	// 校验分钟范围
 	if (minute < 0 || minute > 59)
-		throw out_of_range("Minute must be between 0-59.\n");
+		THROW_EXCEPTION(OutOfRangeException, "Minute must be between 0-59.");
+	// 校验秒数范围
 	if (second < 0 || second > 59)
-		throw out_of_range("Second must be between 0-59.\n");
+		THROW_EXCEPTION(OutOfRangeException, "Second must be between 0-59.");
+	// 校验毫秒范围
 	if (millisecond < 0 || millisecond > 999)
-		throw out_of_range("Millisecond must be between 0-999.\n");
+		THROW_EXCEPTION(OutOfRangeException, "Millisecond must be between 0-999.");
 }
 
 int Time::DaysInMonth(int year, int month) {
@@ -498,6 +530,7 @@ int Time::DaysInYear(int year) {
 }
 
 int Time::DaysBetweenYears(int startYear, int endYear) {
+	// 起始年大于结束年时递归反转计算
 	if (startYear > endYear) return -DaysBetweenYears(endYear, startYear);
 
 	int totalDays = 0;
@@ -531,6 +564,7 @@ int Time::DaysBetween(const Time& start, const Time& end) {
 }
 
 void Time::NormalizeTime() {
+	// 毫秒进位/借位到秒
 	while (millisecond >= 1000) {
 		millisecond -= 1000;
 		second++;
@@ -540,6 +574,7 @@ void Time::NormalizeTime() {
 		second--;
 	}
 
+	// 秒进位/借位到分钟
 	while (second >= 60) {
 		second -= 60;
 		minute++;
@@ -549,6 +584,7 @@ void Time::NormalizeTime() {
 		minute--;
 	}
 
+	// 分钟进位/借位到小时
 	while (minute >= 60) {
 		minute -= 60;
 		hour++;
@@ -558,6 +594,7 @@ void Time::NormalizeTime() {
 		hour--;
 	}
 
+	// 小时进位/借位到天
 	while (hour >= 24) {
 		hour -= 24;
 		day++;
@@ -567,6 +604,7 @@ void Time::NormalizeTime() {
 		day--;
 	}
 
+	// 月份进位/借位到年
 	while (month > 12) {
 		month -= 12;
 		year++;
@@ -576,16 +614,20 @@ void Time::NormalizeTime() {
 		year--;
 	}
 
+	// 天数超出当月天数时进位到下一月
 	while (day > DaysInMonth(year, month)) {
 		day -= DaysInMonth(year, month);
 		month++;
+		// 月份满12时进位到年
 		if (month > 12) {
 			month = 1;
 			year++;
 		}
 	}
+	// 天数小于1时借位到上一月
 	while (day < 1) {
 		month--;
+		// 月份小于1时借位到年
 		if (month < 1) {
 			month = 12;
 			year--;
@@ -634,7 +676,7 @@ Counter::Counter(int count) : num(count) {
 
 }
 
-bool Counter::count() {
+bool Counter::Count() {
 	return --num <= 0;
 }
 
@@ -703,10 +745,12 @@ string ToString(const ValueType& value) {
 }
 
 ValueType FromString(const string& s) {
+	// 空字符串直接返回空string
 	if (s.empty()) {
 		return string("");
 	}
 
+	// 识别布尔字面量
 	if (s == "true") {
 		return true;
 	}
@@ -715,12 +759,14 @@ ValueType FromString(const string& s) {
 		return false;
 	}
 
+	// 识别引号包裹的字符串字面量
 	if (s.length() >= 2 &&
 		((s.front() == '"' && s.back() == '"') ||
 			(s.front() == '\'' && s.back() == '\''))) {
 		return s.substr(1, s.length() - 2);
 	}
 
+	// 含非ASCII字符时直接返回字符串
 	for (char c : s) {
 		if (static_cast<unsigned char>(c) > 127) {
 			return s;
@@ -745,6 +791,7 @@ ValueType FromString(const string& s) {
 	}
 	catch (const exception&) {}
 
+	// 判断是否纯数字字符串
 	bool is_all_digit = !s.empty();
 	for (char c : s) {
 		if (!isdigit(static_cast<unsigned char>(c))) {
@@ -753,6 +800,7 @@ ValueType FromString(const string& s) {
 		}
 	}
 
+	// 纯数字：尝试解析为int，过长或前导零则保留为string
 	if (is_all_digit) {
 		if ((s.length() > 1 && s[0] == '0') || s.length() > 10) {
 			return s;
@@ -765,6 +813,7 @@ ValueType FromString(const string& s) {
 		}
 	}
 
+	// 数字开头：尝试识别浮点数格式
 	if (!s.empty() && isdigit(static_cast<unsigned char>(s[0]))) {
 		bool has_non_digit = false;
 		bool has_dot = false;

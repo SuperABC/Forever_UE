@@ -14,33 +14,37 @@
 class Script;
 
 
+// 组织Mod基类
 class OrganizationMod {
 public:
 	/*
-	* 无构造
+	* 构造组织
 	*/
 	OrganizationMod();
 
 	/*
-	* 无析构
+	* 析构组织
 	*/
 	virtual ~OrganizationMod();
 
 	/*
 	* Override
 	* 组织静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 组织动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
 	* 组织实例唯一名称
+	* @return: 实例唯一名称
 	*/
 	virtual const char* GetName() = 0;
 
@@ -115,33 +119,33 @@ class OrganizationFactory {
 public:
 	/*
 	* 注册组织
-	* @id: 组织静态类型标识
+	* @id: 组织类型
 	* @power: 分配权重
-	* @creator, deleter: 构造与析构方法
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterOrganization(const std::string& id, float power,
 		std::function<OrganizationMod* ()> creator, std::function<void(OrganizationMod*)> deleter);
 
 	/*
-	* 清空注册
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
 	* 创建组织
-	* @id: 组织静态类型标识
+	* @id: 组织类型
 	*/
 	OrganizationMod* CreateOrganization(const std::string& id) const;
 
 	/*
-	* 检查是否注册
-	* @id: 组织静态类型标识
+	* 检查组织是否已注册
+	* @id: 组织类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置启用配置
-	* @name: 组织静态类型标识
+	* 设置组织启用配置
+	* @name: 组织类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
@@ -153,7 +157,7 @@ public:
 
 	/*
 	* 析构组织
-	* @organizationMod: 待析构的组织模组对象
+	* @organizationMod: 待析构的组织
 	*/
 	void DestroyOrganization(OrganizationMod* organizationMod) const;
 

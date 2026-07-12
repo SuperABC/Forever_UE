@@ -1,4 +1,4 @@
-#include "puzzle_war.h"
+﻿#include "puzzle_war.h"
 #include "player/canvas.h"
 
 #include <algorithm>
@@ -83,15 +83,15 @@ void WarPuzzle::ComputeLayout() {
 void WarPuzzle::GetCells(int si, int rot, int ar, int ac, int out[][2], int& cnt) {
 	int rows = SHAPES[si][0], cols = SHAPES[si][1];
 	cnt = 0;
-	for (int r = 0; r < rows; r++) {
-		for (int c = 0; c < cols; c++) {
+	for (int y = 0; y < rows; y++) {
+		for (int x = 0; x < cols; x++) {
 			if (rot == 0) {
-				out[cnt][0] = ar + r;
-				out[cnt][1] = ac + c;
+				out[cnt][0] = ar + y;
+				out[cnt][1] = ac + x;
 			} else {
 				// 90° CW: new_r=old_c, new_c=(rows-1)-old_r
-				out[cnt][0] = ar + c;
-				out[cnt][1] = ac + (rows - 1 - r);
+				out[cnt][0] = ar + x;
+				out[cnt][1] = ac + (rows - 1 - y);
 			}
 			cnt++;
 		}
@@ -102,9 +102,9 @@ bool WarPuzzle::CanPlace(BoardState& b, int si, int rot, int ar, int ac) {
 	int cells[MAX_CELLS][2]; int cnt;
 	GetCells(si, rot, ar, ac, cells, cnt);
 	for (int i = 0; i < cnt; i++) {
-		int r = cells[i][0], c = cells[i][1];
-		if (r < 0 || r >= BOARD || c < 0 || c >= BOARD) return false;
-		if (b.grid[r][c] != -1) return false;
+		int y = cells[i][0], x = cells[i][1];
+		if (y < 0 || y >= BOARD || x < 0 || x >= BOARD) return false;
+		if (b.grid[y][x] != -1) return false;
 	}
 	return true;
 }
@@ -115,10 +115,10 @@ void WarPuzzle::PlaceShip(BoardState& b, int si, int rot, int ar, int ac) {
 	b.ships[si].cellCount = cnt;
 	b.ships[si].sunk = false;
 	for (int i = 0; i < cnt; i++) {
-		int r = cells[i][0], c = cells[i][1];
-		b.grid[r][c] = si;
-		b.ships[si].cells[i][0] = r;
-		b.ships[si].cells[i][1] = c;
+		int y = cells[i][0], x = cells[i][1];
+		b.grid[y][x] = si;
+		b.ships[si].cells[i][0] = y;
+		b.ships[si].cells[i][1] = x;
 	}
 }
 
@@ -167,11 +167,11 @@ bool WarPuzzle::AllSunk(const BoardState& b) {
 
 void WarPuzzle::AIFire() {
 	int cands[BOARD * BOARD][2]; int cnt = 0;
-	for (int r = 0; r < BOARD; r++)
-		for (int c = 0; c < BOARD; c++)
-			if (!playerBoard.hit[r][c]) {
-				cands[cnt][0] = r;
-				cands[cnt][1] = c;
+	for (int y = 0; y < BOARD; y++)
+		for (int x = 0; x < BOARD; x++)
+			if (!playerBoard.hit[y][x]) {
+				cands[cnt][0] = y;
+				cands[cnt][1] = x;
 				cnt++;
 			}
 	if (cnt == 0) return;
@@ -200,10 +200,10 @@ void WarPuzzle::Init(int width, int height) {
 
 	memset(&playerBoard, 0, sizeof(playerBoard));
 	memset(&aiBoard, 0, sizeof(aiBoard));
-	for (int r = 0; r < BOARD; r++)
-		for (int c = 0; c < BOARD; c++) {
-			playerBoard.grid[r][c] = -1;
-			aiBoard.grid[r][c] = -1;
+	for (int y = 0; y < BOARD; y++)
+		for (int x = 0; x < BOARD; x++) {
+			playerBoard.grid[y][x] = -1;
+			aiBoard.grid[y][x] = -1;
 		}
 	for (int i = 0; i < SHIP_COUNT; i++) {
 		playerBoard.ships[i].cellCount = 0;
@@ -238,11 +238,11 @@ void WarPuzzle::DrawNumber(Canvas* canvas, int num, int x, int y, int scale) {
 	}
 	for (int d = 0; d < len; d++) {
 		int dx = x + d * (4 * scale);
-		for (int row = 0; row < 5; row++)
-			for (int col = 0; col < 3; col++)
-				if (DIGIT_FONT[static_cast<int>(digits[d])][row] & (1 << (2 - col)))
-					canvas->PutRect(dx + col * scale, y + row * scale,
-									dx + col * scale + scale - 1, y + row * scale + scale - 1, true);
+		for (int fy = 0; fy < 5; fy++)
+			for (int fx = 0; fx < 3; fx++)
+				if (DIGIT_FONT[static_cast<int>(digits[d])][fy] & (1 << (2 - fx)))
+					canvas->PutRect(dx + fx * scale, y + fy * scale,
+									dx + fx * scale + scale - 1, y + fy * scale + scale - 1, true);
 	}
 }
 
@@ -257,15 +257,15 @@ void WarPuzzle::DrawBoard(Canvas* canvas, const BoardState& b,
 	canvas->PutRect(bx - 1, by - 1, bx + boardPx, by + boardPx, true);
 
 	// cells
-	for (int r = 0; r < BOARD; r++) {
-		for (int c = 0; c < BOARD; c++) {
-			int px = bx + c * cellSize + 1;
-			int py = by + r * cellSize + 1;
+	for (int y = 0; y < BOARD; y++) {
+		for (int x = 0; x < BOARD; x++) {
+			int px = bx + x * cellSize + 1;
+			int py = by + y * cellSize + 1;
 			int x2 = px + cellSize - 3;
 			int y2 = py + cellSize - 3;
 
-			int si = b.grid[r][c];
-			bool wasHit = b.hit[r][c];
+			int si = b.grid[y][x];
+			bool wasHit = b.hit[y][x];
 			bool isSunk = (si >= 0 && b.ships[si].sunk);
 
 			if (wasHit) {
@@ -331,10 +331,10 @@ void WarPuzzle::DrawGhost(Canvas* canvas, int bx, int by,
 	else canvas->SetColor(210, 50, 50);
 
 	for (int i = 0; i < cnt; i++) {
-		int r = cells[i][0], c = cells[i][1];
-		if (r < 0 || r >= BOARD || c < 0 || c >= BOARD) continue;
-		int px = bx + c * cellSize + 1;
-		int py = by + r * cellSize + 1;
+		int y = cells[i][0], x = cells[i][1];
+		if (y < 0 || y >= BOARD || x < 0 || x >= BOARD) continue;
+		int px = bx + x * cellSize + 1;
+		int py = by + y * cellSize + 1;
 		canvas->PutRect(px, py, px + cellSize - 3, py + cellSize - 3, true);
 	}
 	canvas->SetAlpha(255);
@@ -353,10 +353,10 @@ void WarPuzzle::DrawShipList(Canvas* canvas, int x, int y, int availH) {
 		int cols = SHAPES[si][1]; // use horizontal display (always)
 		int rows = SHAPES[si][0];
 
-		for (int r = 0; r < rows; r++) {
-			for (int c = 0; c < cols; c++) {
-				int px = x + c * (dotSz + 2);
-				int py = sy + r * (dotSz + 2);
+		for (int y = 0; y < rows; y++) {
+			for (int x2 = 0; x2 < cols; x2++) {
+				int px = x + x2 * (dotSz + 2);
+				int py = sy + y * (dotSz + 2);
 				if (placed) {
 					canvas->SetColor(60, 60, 70);
 				} else if (current) {

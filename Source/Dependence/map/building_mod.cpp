@@ -31,7 +31,7 @@ void BuildingMod::AllocateFloors() {
 	templates.resize(basements + layers);
 }
 
-void BuildingMod::AddElevator(std::string name, int temp, int idx, int from, int to, string script, vector<string> paths) {
+void BuildingMod::AddElevator(string name, int temp, int idx, int from, int to, string script, vector<string> paths) {
 	elevators.push_back({ name, temp, idx, from, to, script, paths });
 }
 

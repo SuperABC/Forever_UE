@@ -1,4 +1,4 @@
-#include "terrain_basic.h"
+﻿#include "terrain_basic.h"
 
 #include <vector>
 #include <cmath>
@@ -345,7 +345,7 @@ void MountainTerrain::DistributeTerrain(int width, int height,
 		// 必须落在平原且远离地图中心
 		if (getTerrain(centerX, centerY) != "plain" ||
 			sqrt(pow(centerX - width / 2, 2) + pow(centerY - height / 2, 2)) < centerExcludeRadius) {
-			if (!counter.count())
+			if (!counter.Count())
 				attempt--;
 			continue;
 		}

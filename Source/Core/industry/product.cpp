@@ -8,7 +8,7 @@ Product::Product(ProductFactory* factory, const string& product) :
 	factory(factory),
 	type(),
 	name(),
-	catagories(),
+	categories(),
 	price(0.f),
 	amount(0.f),
 	ingredients(),
@@ -34,14 +34,14 @@ string Product::GetName() const {
 
 void Product::SetProperty() {
 	mod->SetProperty();
-	catagories = mod->catagories;
+	categories = mod->categories;
 	price = mod->price;
 	ingredients = mod->ingredients;
 	byproducts = mod->byproducts;
 }
 
 vector<string> Product::GetCategories() const {
-	return catagories;
+	return categories;
 }
 
 float Product::GetPrice() const {

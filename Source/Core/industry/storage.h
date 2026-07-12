@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "industry/storage_mod.h"
 
@@ -169,7 +169,7 @@ private:
 	Room* room;
 
 	// 支持产品类型
-	std::vector<std::string> catagories;
+	std::vector<std::string> categories;
 
 	// 是否接入系统物流输入
 	bool accept;

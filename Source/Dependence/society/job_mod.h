@@ -14,35 +14,39 @@
 class Script;
 
 
+// 职业Mod基类
 class JobMod {
 public:
 	/*
-	* 无构造
+	* 构造职业
 	*/
 	JobMod();
 
 	/*
-	* 无析构
+	* 析构职业
 	*/
 	virtual ~JobMod();
 
 	/*
 	* Override
 	* 职业静态类型标识
+	* @return: 静态类型标识
 	*/
 	static const char* GetId();
 
 	/*
 	* Override
 	* 职业动态类型标识
+	* @return: 动态类型标识
 	*/
 	virtual const char* GetType() const = 0;
 
 	/*
 	* Override
 	* 职业实例唯一名称
+	* @return: 实例唯一名称
 	*/
-	virtual const char* GetName() = 0; 
+	virtual const char* GetName() = 0;
 
 	/*
 	* Override
@@ -80,39 +84,39 @@ class JobFactory {
 public:
 	/*
 	* 注册职业
-	* @id: 职业静态类型标识
-	* @creator, deleter: 构造与析构方法
+	* @id: 职业类型
+	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterJob(const std::string& id,
 		std::function<JobMod* ()> creator, std::function<void(JobMod*)> deleter);
 
 	/*
-	* 清空注册
+	* 清空所有注册
 	*/
 	void RemoveAll();
 
 	/*
 	* 创建职业
-	* @id: 职业静态类型标识
+	* @id: 职业类型
 	*/
 	JobMod* CreateJob(const std::string& id) const;
 
 	/*
-	* 检查是否注册
-	* @id: 职业静态类型标识
+	* 检查职业是否已注册
+	* @id: 职业类型
 	*/
 	bool CheckRegistered(const std::string& id) const;
 
 	/*
-	* 设置启用配置
-	* @name: 职业静态类型标识
+	* 设置职业启用配置
+	* @name: 职业类型
 	* @config: 是否启用
 	*/
 	void SetConfig(const std::string& name, bool config);
 
 	/*
 	* 析构职业
-	* @jobMod: 待析构的职业模组对象
+	* @jobMod: 待析构的职业
 	*/
 	void DestroyJob(JobMod* jobMod) const;
 

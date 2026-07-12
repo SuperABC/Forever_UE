@@ -1,4 +1,4 @@
-#include "CanvasBuffer.h"
+﻿#include "CanvasBuffer.h"
 
 #include "Components/CanvasPanelSlot.h"
 #include "IImageWrapper.h"
@@ -36,14 +36,14 @@ void UCanvasBuffer::InitCanvas(int width, int height) {
 }
 
 FVector2D UCanvasBuffer::ApplyImage(UImage* image) {
-	int w = canvas.GetWidth();
-	int h = canvas.GetHeight();
+	int width = canvas.GetWidth();
+	int height = canvas.GetHeight();
 
-	if (!image) return FVector2D(w, h);
+	if (!image) return FVector2D(width, height);
 
-	if (!tex || tex->GetSizeX() != w || tex->GetSizeY() != h) {
-		tex = UTexture2D::CreateTransient(w, h);
-		if (!tex) return FVector2D(w, h);
+	if (!tex || tex->GetSizeX() != width || tex->GetSizeY() != height) {
+		tex = UTexture2D::CreateTransient(width, height);
+		if (!tex) return FVector2D(width, height);
 	}
 
 	void* data = tex->GetPlatformData()->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
@@ -52,7 +52,7 @@ FVector2D UCanvasBuffer::ApplyImage(UImage* image) {
 
 	tex->UpdateResource();
 	image->SetBrushFromTexture(tex, true);
-	return FVector2D(w, h);
+	return FVector2D(width, height);
 }
 
 void UCanvasBuffer::SetColor(uint8 r, uint8 g, uint8 b) {
@@ -107,21 +107,21 @@ void UCanvasBuffer::PutEllipse(int x, int y, int radiusX, int radiusY, bool fill
 	canvas.PutEllipse(x, y, radiusX, radiusY, fill);
 }
 
-void UCanvasBuffer::PutImage(const FString& file, int x, int y, int w, int h) {
+void UCanvasBuffer::PutImage(const FString& file, int x, int y, int width, int height) {
 	TArray<uint8> fileData;
 	if (!FFileHelper::LoadFileToArray(fileData, *file)) return;
 
-	IImageWrapperModule& mod = FModuleManager::LoadModuleChecked<IImageWrapperModule>("ImageWrapper");
-	EImageFormat fmt = mod.DetectImageFormat(fileData.GetData(), fileData.Num());
-	if (fmt == EImageFormat::Invalid) return;
+	IImageWrapperModule& imageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>("ImageWrapper");
+	EImageFormat imageFormat = imageWrapperModule.DetectImageFormat(fileData.GetData(), fileData.Num());
+	if (imageFormat == EImageFormat::Invalid) return;
 
-	TSharedPtr<IImageWrapper> wrapper = mod.CreateImageWrapper(fmt);
+	TSharedPtr<IImageWrapper> wrapper = imageWrapperModule.CreateImageWrapper(imageFormat);
 	if (!wrapper->SetCompressed(fileData.GetData(), fileData.Num())) return;
 
 	TArray<uint8> raw;
 	if (!wrapper->GetRaw(ERGBFormat::BGRA, 8, raw)) return;
 
-	canvas.PutRawImage(raw.GetData(), wrapper->GetWidth(), wrapper->GetHeight(), x, y, w, h);
+	canvas.PutRawImage(raw.GetData(), wrapper->GetWidth(), wrapper->GetHeight(), x, y, width, height);
 }
 
 void UCanvasBuffer::PutString(const FString& text, int x, int y) {

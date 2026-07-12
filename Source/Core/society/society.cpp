@@ -196,10 +196,12 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 		cdf /= sum;
 	}
 
+	// 反复随机生成组织，直到尝试次数耗尽
 	int attempt = 0;
 	while (attempt < MAX_ALLOCATION_ATTEMPTS) {
 		float r = GetRandom(1000) / 1000.f;
 		string selectedOrganization;
+		// 按概率分布选取组织类型
 		for (const auto& [id, cdf] : cdfs) {
 			if (r < cdf) {
 				selectedOrganization = id;
@@ -210,6 +212,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 
 		auto requirements = organization->ComponentRequirements();
 		bool valid = true;
+		// 校验地图中各类型组件数量是否满足最低需求
 		for (const auto& [type, range] : requirements) {
 			auto it = componentMap.find(type);
 			if (it == componentMap.end()) {
@@ -221,6 +224,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 				break;
 			}
 		}
+		// 组件不足则跳过本次尝试
 		if (!valid) {
 			attempt++;
 			delete organization;
@@ -286,6 +290,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 		if (citizen->GetAge(player->GetTime()) >= 60) continue;
 		adults.push_back(citizen);
 	}
+	// 依次为成年市民随机分配工作岗位
 	for (int i = 0; i < static_cast<int>(adults.size()); i++) {
 		if (temps.empty()) {
 			break;
@@ -295,6 +300,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 			THROW_EXCEPTION(OutOfRangeException, "Random index out of range in job assignment.\n");
 		}
 		Organization* organization = temps[r];
+		// 跳过无效组织并从候选列表移除
 		if (organization == nullptr) {
 			debugf("Warning: Null organization in temps.\n");
 			temps[r] = temps.back();
@@ -303,6 +309,7 @@ void Society::Init(Map* map, Populace* populace, Player* player) {
 			continue;
 		}
 		auto jobs = organization->EnrollEmployee({ adults[i] });
+		// 组织招满员则从候选列表移除
 		if (!jobs.empty()) {
 			jobs[0]->InitJob(adults[i]->GetName(), 0);
 			adults[i]->AddJob(jobs[0]);
@@ -330,6 +337,7 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 	auto cross = currentTime.GetYear() == 0 || player->CrossDay();
 	currentTime = *time;
 
+	// 每天开始时为所有组织和职位生成当日计划
 	if (cross) {
 		for (auto organization : organizations) {
 			if (!organization) continue;
@@ -337,6 +345,7 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 			for (auto& [node, timer] : organization->GetPlans()) {
 				timerSet.insert({ timer, nullptr, nullptr, organization, node });
 			}
+			// 为组织内各职位生成上下班时间及日计划
 			for (auto& [component, jobs] : organization->GetJobs()) {
 				for (auto& [job, person] : jobs) {
 					auto signin = job->GetCalendar()->SigninTime(*time);
@@ -354,12 +363,14 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 
 	vector<Change*> result;
 
+	// 每帧执行有限数量的到期计划节点
 	int count = 0;
 	while (count < MAX_TIMERS_PER_TICK && !timerSet.empty()) {
 		auto it = timerSet.begin();
 		auto& [target, job, person, organization, node] = *it;
 		if (currentTime < target) break;
 		vector<Change*> changes;
+		// 区分职位计划节点与组织计划节点分别执行
 		if (job) {
 			changes = job->ExecNode(node, story->GetScript(), person->GetScheduler()->GetScript());
 		}

@@ -16,7 +16,7 @@ Storage::Storage(StorageFactory* factory, const string& storage) :
 	type(),
 	name(),
 	room(nullptr),
-	catagories(),
+	categories(),
 	accept(true),
 	provide(true),
 	products(),
@@ -58,14 +58,14 @@ void Storage::SetRoom(Room* room) {
 
 void Storage::SetProperty(float acreage) {
 	mod->SetProperty();
-	catagories = mod->catagories;
+	categories = mod->categories;
 	accept = mod->accept;
 	provide = mod->provide;
 	volume = mod->density * acreage;
 }
 
 vector<string> Storage::GetCategories() const {
-	return catagories;
+	return categories;
 }
 
 bool Storage::GetAccept() const {
@@ -201,5 +201,5 @@ const char* EmptyStorage::GetName() {
 }
 
 void EmptyStorage::SetProperty() {
-	catagories = { "" };
+	categories = { "" };
 }

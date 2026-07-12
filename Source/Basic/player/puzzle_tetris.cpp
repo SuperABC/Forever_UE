@@ -1,4 +1,4 @@
-#include "puzzle_tetris.h"
+﻿#include "puzzle_tetris.h"
 #include "player/canvas.h"
 
 #include <algorithm>
@@ -148,17 +148,17 @@ void TetrisPuzzle::LockPiece() {
 
 int TetrisPuzzle::ClearLines() {
 	int cleared = 0;
-	for (int row = ROWS - 1; row >= 0; ) {
+	for (int y = ROWS - 1; y >= 0; ) {
 		bool full = true;
-		for (int col = 0; col < COLS; col++)
-			if (!board[row][col]) { full = false; break; }
+		for (int x = 0; x < COLS; x++)
+			if (!board[y][x]) { full = false; break; }
 		if (full) {
-			for (int r = row; r > 0; --r)
-				memcpy(board[r], board[r - 1], sizeof(board[0]));
+			for (int y2 = y; y2 > 0; --y2)
+				memcpy(board[y2], board[y2 - 1], sizeof(board[0]));
 			memset(board[0], 0, sizeof(board[0]));
 			++cleared;
 		} else {
-			--row;
+			--y;
 		}
 	}
 	return cleared;
@@ -212,11 +212,11 @@ void TetrisPuzzle::DrawNumber(Canvas* canvas, int num, int x, int y, int scale) 
 	}
 	for (int d = 0; d < len; d++) {
 		int dx = x + d * (3 * scale + scale);
-		for (int r = 0; r < 5; r++)
-			for (int c = 0; c < 3; c++)
-				if (DIGIT_FONT[static_cast<int>(digits[d])][r] & (1 << (2 - c)))
-					canvas->PutRect(dx + c * scale, y + r * scale,
-									dx + c * scale + scale - 1, y + r * scale + scale - 1, true);
+		for (int fy = 0; fy < 5; fy++)
+			for (int fx = 0; fx < 3; fx++)
+				if (DIGIT_FONT[static_cast<int>(digits[d])][fy] & (1 << (2 - fx)))
+					canvas->PutRect(dx + fx * scale, y + fy * scale,
+									dx + fx * scale + scale - 1, y + fy * scale + scale - 1, true);
 	}
 }
 
@@ -236,16 +236,16 @@ void TetrisPuzzle::DrawBoard(Canvas* canvas) {
 	// Grid lines
 	canvas->SetColor(40, 40, 40);
 	canvas->SetAlpha(255);
-	for (int c = 1; c < COLS; c++)
-		canvas->PutLine(boardX + c * cellSize, boardY, boardX + c * cellSize, boardY + boardH - 1);
-	for (int r = 1; r < ROWS; r++)
-		canvas->PutLine(boardX, boardY + r * cellSize, boardX + boardW - 1, boardY + r * cellSize);
+	for (int x = 1; x < COLS; x++)
+		canvas->PutLine(boardX + x * cellSize, boardY, boardX + x * cellSize, boardY + boardH - 1);
+	for (int y = 1; y < ROWS; y++)
+		canvas->PutLine(boardX, boardY + y * cellSize, boardX + boardW - 1, boardY + y * cellSize);
 
 	// Locked cells
-	for (int row = 0; row < ROWS; row++)
-		for (int col = 0; col < COLS; col++)
-			if (board[row][col])
-				DrawCell(canvas, col, row, board[row][col], 255);
+	for (int y = 0; y < ROWS; y++)
+		for (int x = 0; x < COLS; x++)
+			if (board[y][x])
+				DrawCell(canvas, x, y, board[y][x], 255);
 
 	// Ghost piece
 	int gy = GhostY();
