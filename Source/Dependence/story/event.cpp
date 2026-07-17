@@ -64,13 +64,7 @@ bool ScriptMessageEvent::Match(Event* e,
 	if (message.size() > 0 && other->message.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(message);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto messageValue = get_if<string>(&value)) {
-			result = (result && *messageValue == other->message);
-		}
-		else {
-			result = (result && message == other->message);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->message);
 	}
 
 	return result;
@@ -119,24 +113,12 @@ bool OptionDialogEvent::Match(Event* e,
 	if (name.size() > 0 && other->name.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(name);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto nameValue = get_if<string>(&value)) {
-			result = (result && *nameValue == other->name);
-		}
-		else {
-			result = (result && name == other->name);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
 	}
 	if (option.size() > 0 && other->option.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(option);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto optionValue = get_if<string>(&value)) {
-			result = (result && *optionValue == other->option);
-		}
-		else {
-			result = (result && option == other->option);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->option);
 	}
 
 	return result;
@@ -189,13 +171,7 @@ bool SpeakingFinishEvent::Match(Event* e,
 	if (label.size() > 0 && other->label.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(label);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto labelValue = get_if<string>(&value)) {
-			result = (result && *labelValue == other->label);
-		}
-		else {
-			result = (result && label == other->label);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->label);
 	}
 	else {
 		result = false;
@@ -236,13 +212,7 @@ bool EnterZoneEvent::Match(Event* e,
 	if (zone.size() > 0 && other->zone.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(zone);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto zoneValue = get_if<string>(&value)) {
-			result = (result && *zoneValue == other->zone);
-		}
-		else {
-			result = (result && zone == other->zone);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->zone);
 	}
 
 	return result;
@@ -281,13 +251,7 @@ bool LeaveZoneEvent::Match(Event* e,
 	if (zone.size() > 0 && other->zone.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(zone);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto zoneValue = get_if<string>(&value)) {
-			result = (result && *zoneValue == other->zone);
-		}
-		else {
-			result = (result && zone == other->zone);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->zone);
 	}
 	return result;
 }
@@ -325,24 +289,12 @@ bool EnterBuildingEvent::Match(Event* e,
 	if (zone.size() > 0 && other->zone.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(zone);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto zoneValue = get_if<string>(&value)) {
-			result = (result && *zoneValue == other->zone);
-		}
-		else {
-			result = (result && zone == other->zone);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->zone);
 	}
 	if (building.size() > 0 && other->building.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(building);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto buildingValue = get_if<string>(&value)) {
-			result = (result && *buildingValue == other->building);
-		}
-		else {
-			result = (result && building == other->building);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->building);
 	}
 	return result;
 }
@@ -388,24 +340,12 @@ bool LeaveBuildingEvent::Match(Event* e,
 	if (zone.size() > 0 && other->zone.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(zone);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto zoneValue = get_if<string>(&value)) {
-			result = (result && *zoneValue == other->zone);
-		}
-		else {
-			result = (result && zone == other->zone);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->zone);
 	}
 	if (building.size() > 0 && other->building.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(building);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto buildingValue = get_if<string>(&value)) {
-			result = (result && *buildingValue == other->building);
-		}
-		else {
-			result = (result && building == other->building);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->building);
 	}
 	return result;
 }
@@ -451,35 +391,17 @@ bool EnterRoomEvent::Match(Event* e,
 	if (zone.size() > 0 && other->zone.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(zone);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto zoneValue = get_if<string>(&value)) {
-			result = (result && *zoneValue == other->zone);
-		}
-		else {
-			result = (result && zone == other->zone);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->zone);
 	}
 	if (building.size() > 0 && other->building.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(building);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto buildingValue = get_if<string>(&value)) {
-			result = (result && *buildingValue == other->building);
-		}
-		else {
-			result = (result && building == other->building);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->building);
 	}
 	if (room.size() > 0 && other->room.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(room);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto roomValue = get_if<string>(&value)) {
-			result = (result && *roomValue == other->room);
-		}
-		else {
-			result = (result && room == other->room);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->room);
 	}
 	return result;
 }
@@ -533,35 +455,17 @@ bool LeaveRoomEvent::Match(Event* e,
 	if (zone.size() > 0 && other->zone.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(zone);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto zoneValue = get_if<string>(&value)) {
-			result = (result && *zoneValue == other->zone);
-		}
-		else {
-			result = (result && zone == other->zone);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->zone);
 	}
 	if (building.size() > 0 && other->building.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(building);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto buildingValue = get_if<string>(&value)) {
-			result = (result && *buildingValue == other->building);
-		}
-		else {
-			result = (result && building == other->building);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->building);
 	}
 	if (room.size() > 0 && other->room.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(room);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto roomValue = get_if<string>(&value)) {
-			result = (result && *roomValue == other->room);
-		}
-		else {
-			result = (result && room == other->room);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->room);
 	}
 	return result;
 }
@@ -645,13 +549,7 @@ bool NPCMeetEvent::Match(Event* e,
 	if (npc.size() > 0 && other->npc.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(npc);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto npcValue = get_if<string>(&value)) {
-			result = (result && *npcValue == other->npc);
-		}
-		else {
-			result = (result && npc == other->npc);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->npc);
 	}
 	return result;
 }
@@ -689,13 +587,7 @@ bool CitizenBornEvent::Match(Event* e,
 	if (name.size() > 0 && other->name.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(name);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto nameValue = get_if<string>(&value)) {
-			result = (result && *nameValue == other->name);
-		}
-		else {
-			result = (result && name == other->name);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
 	}
 	return result;
 }
@@ -733,24 +625,12 @@ bool CitizenDeceaseEvent::Match(Event* e,
 	if (name.size() > 0 && other->name.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(name);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto nameValue = get_if<string>(&value)) {
-			result = (result && *nameValue == other->name);
-		}
-		else {
-			result = (result && name == other->name);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
 	}
 	if (reason.size() > 0 && other->reason.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(reason);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto reasonValue = get_if<string>(&value)) {
-			result = (result && *reasonValue == other->reason);
-		}
-		else {
-			result = (result && reason == other->reason);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->reason);
 	}
 	return result;
 }
@@ -876,13 +756,7 @@ bool GetItemEvent::Match(Event* e,
 	if (item.size() > 0 && other->item.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(item);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto itemValue = get_if<string>(&value)) {
-			result = (result && *itemValue == other->item);
-		}
-		else {
-			result = (result && item == other->item);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->item);
 	}
 	if (num != 0) {
 		result = result && (num == other->num);
@@ -931,13 +805,7 @@ bool LoseItemEvent::Match(Event* e,
 	if (item.size() > 0 && other->item.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(item);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto itemValue = get_if<string>(&value)) {
-			result = (result && *itemValue == other->item);
-		}
-		else {
-			result = (result && item == other->item);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->item);
 	}
 	if (num != 0) {
 		result = result && (num == other->num);
@@ -986,13 +854,7 @@ bool PlayerInjuredEvent::Match(Event* e,
 	if (wound.size() > 0 && other->wound.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(wound);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto woundValue = get_if<string>(&value)) {
-			result = (result && *woundValue == other->wound);
-		}
-		else {
-			result = (result && wound == other->wound);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->wound);
 	}
 	return result;
 }
@@ -1030,13 +892,7 @@ bool PlayerCuredEvent::Match(Event* e,
 	if (wound.size() > 0 && other->wound.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(wound);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto woundValue = get_if<string>(&value)) {
-			result = (result && *woundValue == other->wound);
-		}
-		else {
-			result = (result && wound == other->wound);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->wound);
 	}
 	return result;
 }
@@ -1074,13 +930,7 @@ bool PlayerIllEvent::Match(Event* e,
 	if (illness.size() > 0 && other->illness.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(illness);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto illnessValue = get_if<string>(&value)) {
-			result = (result && *illnessValue == other->illness);
-		}
-		else {
-			result = (result && illness == other->illness);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->illness);
 	}
 	return result;
 }
@@ -1118,13 +968,7 @@ bool PlayerRecoverEvent::Match(Event* e,
 	if (illness.size() > 0 && other->illness.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(illness);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto illnessValue = get_if<string>(&value)) {
-			result = (result && *illnessValue == other->illness);
-		}
-		else {
-			result = (result && illness == other->illness);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->illness);
 	}
 	return result;
 }
@@ -1222,13 +1066,13 @@ bool TimeUpEvent::Match(Event* e,
 	auto other = dynamic_cast<TimeUpEvent*>(e);
 	if (!other) return false;
 
-	Condition condition;
-	condition.ParseCondition(name);
-	auto value = condition.EvaluateValue(getValues);
-	if (auto nameValue = get_if<string>(&value)) {
-		return *nameValue == other->name;
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
 	}
-	return name == other->name;
+	return result;
 }
 
 void TimeUpEvent::SetName(string name) {
@@ -1264,13 +1108,7 @@ bool BattleWinEvent::Match(Event* e,
 	if (enemy.size() > 0 && other->enemy.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(enemy);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto enemyValue = get_if<string>(&value)) {
-			result = (result && *enemyValue == other->enemy);
-		}
-		else {
-			result = (result && enemy == other->enemy);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
 	}
 	return result;
 }
@@ -1308,13 +1146,7 @@ bool BattleLoseEvent::Match(Event* e,
 	if (enemy.size() > 0 && other->enemy.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(enemy);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto enemyValue = get_if<string>(&value)) {
-			result = (result && *enemyValue == other->enemy);
-		}
-		else {
-			result = (result && enemy == other->enemy);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
 	}
 	return result;
 }
@@ -1352,13 +1184,7 @@ bool EscapeSuccessEvent::Match(Event* e,
 	if (enemy.size() > 0 && other->enemy.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(enemy);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto enemyValue = get_if<string>(&value)) {
-			result = (result && *enemyValue == other->enemy);
-		}
-		else {
-			result = (result && enemy == other->enemy);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
 	}
 	return result;
 }
@@ -1396,13 +1222,7 @@ bool EscapeFailEvent::Match(Event* e,
 	if (enemy.size() > 0 && other->enemy.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(enemy);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto enemyValue = get_if<string>(&value)) {
-			result = (result && *enemyValue == other->enemy);
-		}
-		else {
-			result = (result && enemy == other->enemy);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
 	}
 	return result;
 }
@@ -1440,13 +1260,7 @@ bool CultivationChangeEvent::Match(Event* e,
 	if (method.size() > 0 && other->method.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(method);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto methodValue = get_if<string>(&value)) {
-			result = (result && *methodValue == other->method);
-		}
-		else {
-			result = (result && method == other->method);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->method);
 	}
 	result = result && (level == other->level);
 	return result;
@@ -1493,13 +1307,7 @@ bool WantedChangeEvent::Match(Event* e,
 	if (reason.size() > 0 && other->reason.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(reason);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto reasonValue = get_if<string>(&value)) {
-			result = (result && *reasonValue == other->reason);
-		}
-		else {
-			result = (result && reason == other->reason);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->reason);
 	}
 	result = result && (level == other->level);
 	return result;
@@ -1546,13 +1354,7 @@ bool PlayerArrestedEvent::Match(Event* e,
 	if (reason.size() > 0 && other->reason.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(reason);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto reasonValue = get_if<string>(&value)) {
-			result = (result && *reasonValue == other->reason);
-		}
-		else {
-			result = (result && reason == other->reason);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->reason);
 	}
 	return result;
 }
@@ -1590,13 +1392,7 @@ bool PlayerReleasedEvent::Match(Event* e,
 	if (reason.size() > 0 && other->reason.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(reason);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto reasonValue = get_if<string>(&value)) {
-			result = (result && *reasonValue == other->reason);
-		}
-		else {
-			result = (result && reason == other->reason);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->reason);
 	}
 	return result;
 }
@@ -1634,13 +1430,7 @@ bool WeatherChangeEvent::Match(Event* e,
 	if (weather.size() > 0 && other->weather.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(weather);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto weatherValue = get_if<string>(&value)) {
-			result = (result && *weatherValue == other->weather);
-		}
-		else {
-			result = (result && weather == other->weather);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->weather);
 	}
 	return result;
 }
@@ -1678,13 +1468,7 @@ bool PolicyChangeEvent::Match(Event* e,
 	if (policy.size() > 0 && other->policy.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(policy);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto policyValue = get_if<string>(&value)) {
-			result = (result && *policyValue == other->policy);
-		}
-		else {
-			result = (result && policy == other->policy);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->policy);
 	}
 	result = result && (status == other->status);
 	return result;
@@ -1731,24 +1515,12 @@ bool NpcArriveEvent::Match(Event* e,
 	if (name.size() > 0 && other->name.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(name);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto nameValue = get_if<string>(&value)) {
-			result = (result && *nameValue == other->name);
-		}
-		else {
-			result = (result && name == other->name);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
 	}
 	if (address.size() > 0 && other->address.size() > 0) {
 		Condition condition;
 		condition.ParseCondition(address);
-		auto value = condition.EvaluateValue(getValues);
-		if (auto addrValue = get_if<string>(&value)) {
-			result = (result && *addrValue == other->address);
-		}
-		else {
-			result = (result && address == other->address);
-		}
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->address);
 	}
 	return result;
 }
@@ -1767,6 +1539,55 @@ void NpcArriveEvent::SetAddress(string address) {
 
 string NpcArriveEvent::GetAddress() const {
 	return address;
+}
+
+TransactionResultEvent::TransactionResultEvent(bool result, string name) :
+	result(result), name(name) {
+
+}
+
+TransactionResultEvent::~TransactionResultEvent() {
+
+}
+
+string TransactionResultEvent::GetType() const {
+	return "transaction_result";
+}
+
+bool TransactionResultEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<TransactionResultEvent*>(e);
+	if (!other) return false;
+
+	bool matched = result == other->result;
+	if (name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		matched = matched && (ToString(condition.EvaluateValue(getValues)) == other->name);
+	}
+	else {
+		matched = matched && other->name.empty();
+	}
+	return matched;
+}
+
+void TransactionResultEvent::SetResult(bool result) {
+	this->result = result;
+}
+
+bool TransactionResultEvent::GetResult() const {
+	return result;
+}
+
+void TransactionResultEvent::SetName(string name) {
+	this->name = name;
+}
+
+string TransactionResultEvent::GetName() const {
+	return name;
 }
 
 

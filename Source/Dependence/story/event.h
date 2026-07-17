@@ -1773,6 +1773,64 @@ private:
 	std::string address;
 };
 
+// 交易结果
+class TransactionResultEvent : public Event {
+public:
+	/*
+	* 构造交易结果事件
+	* @result: 是否成功
+	* @name: 交易对象姓名，为空代表玩家
+	*/
+	TransactionResultEvent(bool result, std::string name = "");
+
+	/*
+	* 析构交易结果事件
+	*/
+	virtual ~TransactionResultEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置交易结果
+	* @result: 是否成功
+	*/
+	void SetResult(bool result);
+
+	/*
+	* 获取交易结果
+	*/
+	bool GetResult() const;
+
+	/*
+	* 设置交易对象姓名
+	* @name: 姓名，为空代表玩家
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取交易对象姓名
+	*/
+	std::string GetName() const;
+
+private:
+	// 是否成功
+	bool result;
+
+	// 交易对象姓名，为空代表玩家
+	std::string name;
+};
+
 // 政策变化
 class PolicyChangeEvent : public Event {
 public:

@@ -547,6 +547,14 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 			}
 			event = new NpcArriveEvent(name.AsString(), address.AsString());
 		}
+		else if (type == "transaction_result") {
+			auto result = obj["result"];
+			if (result.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing result for transaction_result event.\n");
+			}
+			auto name = obj["name"];
+			event = new TransactionResultEvent(result.AsBool(), name.IsNull() ? "" : name.AsString());
+		}
 
 		if (!event) {
 			THROW_EXCEPTION(RuntimeException, "Invalid event type: " + type + ".\n");

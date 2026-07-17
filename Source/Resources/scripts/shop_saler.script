@@ -41,7 +41,7 @@
 	"dialogs": [],
 	"changes": [
 		{"type": "add_option", "name": "$$self.name", "option": "购物"},
-		{"type": "add_option", "name": "$$self.name", "option": "免单挑战"}
+		{"type": "add_option", "name": "$$self.name", "option": "挑战"}
 	],
 	"subsequences": []
 },
@@ -53,7 +53,7 @@
 	"dialogs": [],
 	"changes": [
 		{"type": "remove_option", "name": "$$self.name", "option": "购物"},
-		{"type": "remove_option", "name": "$$self.name", "option": "免单挑战"},
+		{"type": "remove_option", "name": "$$self.name", "option": "挑战"},
 		{"type": "npc_navigate", "name": "$$self.name", "destination": "$$self.home_address"}
 	],
 	"subsequences": []
@@ -73,11 +73,27 @@
 	"milestone": "free_challenge",
 	"visible": false,
 	"drop": "false",
-	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "免单挑战"}],
-	"dialogs": [],
-	"changes": [
-		{"type": "start_puzzle", "puzzle": "flappy"}
+	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "挑战"}],
+	"dialogs": [
+		{"list": [
+			{"speaker": "$$self.name", "content": "挑战规则：成功奖励100，失败惩罚100。"},
+			[
+				{
+					"option": "参加挑战",
+					"changes": [
+						{"type": "start_puzzle", "puzzle": "flappy"}
+					]
+				},
+				{
+					"option": "放弃",
+					"changes": [
+						{"type": "deactivate_milestone", "milestone": "challenge_result"}
+					]
+				}
+			]
+		]}
 	],
+	"changes": [],
 	"subsequences": ["challenge_result"]
 },
 {
@@ -86,13 +102,42 @@
 	"triggers": [{"type": "puzzle_result", "result": 0}],
 	"dialogs": [
 		{"condition": "$$local.result < 0", "list": [
-			{"content": "免单失败！"},
+			{"content": "挑战失败！"},
 		]},
 		{"condition": "$$local.result > 0", "list": [
-			{"content": "免单成功！"},
+			{"content": "挑战成功！"},
 		]}
 	],
-	"changes": [],
+	"changes": [
+		{"condition": "$$local.result < 0", "type": "bank_transaction", "amount": -100},
+		{"condition": "$$local.result > 0", "type": "bank_transaction", "amount": 100},
+	],
+	"subsequences": ["success_notify", "fail_penalty"]
+},
+{
+	"milestone": "success_notify",
+	"visible": false,
+	"triggers": [{"type": "transaction_result", "result": true}],
+	"dialogs": [],
+	"changes": [
+		{"type": "deactivate_milestone", "milestone": "success_notify"},
+		{"type": "deactivate_milestone", "milestone": "fail_penalty"},
+	],
+	"subsequences": []
+},
+{
+	"milestone": "fail_penalty",
+	"visible": false,
+	"triggers": [{"type": "transaction_result", "result": false}],
+	"dialogs": [
+		{"list": [
+			{"speaker": "$$self.name", "content": "一百块钱都没有，穷逼。"},
+		]}
+	],
+	"changes": [
+		{"type": "deactivate_milestone", "milestone": "success_notify"},
+		{"type": "deactivate_milestone", "milestone": "fail_penalty"},
+	],
 	"subsequences": []
 },
 ]

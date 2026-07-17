@@ -153,8 +153,12 @@ void Person::SetDeposit(int deposit) {
 	this->deposit = deposit;
 }
 
-void Person::AddDeposit(int amount) {
+bool Person::AddDeposit(int amount) {
+	if (amount < 0 && deposit + amount < 0) {
+		return false;
+	}
 	deposit += amount;
+	return true;
 }
 
 int Person::GetPhone() const {

@@ -16,6 +16,7 @@
 #include "story/story.h"
 #include "story/script.h"
 #include "story/change.h"
+#include "story/event.h"
 #include "player/player.h"
 
 #include <fstream>
@@ -403,15 +404,17 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Change* change,
 		auto obj = dynamic_cast<BankTransactionChange*>(change);
 		if (!obj) return result;
 
+		bool success = false;
 		if (obj->GetName().size() == 0) {
-			player->AddDeposit(obj->GetAmount());
+			success = player->AddDeposit(obj->GetAmount());
 		}
 		else {
 			auto citizen = GetCitizen(obj->GetName());
 			if (citizen) {
-				citizen->AddDeposit(obj->GetAmount());
+				success = citizen->AddDeposit(obj->GetAmount());
 			}
 		}
+		result.push_back(new TransactionResultEvent(success, obj->GetName()));
 	}
 	return result;
 }

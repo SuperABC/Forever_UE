@@ -226,8 +226,12 @@ int Player::GetDeposit() const {
 	return deposit;
 }
 
-void Player::AddDeposit(int amount) {
+bool Player::AddDeposit(int amount) {
+	if (amount < 0 && deposit + amount < 0) {
+		return false;
+	}
 	deposit += amount;
+	return true;
 }
 
 bool Player::AddSystemAsset(Asset* asset) {

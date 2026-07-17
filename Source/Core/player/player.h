@@ -94,10 +94,10 @@ public:
 	int GetDeposit() const;
 
 	/*
-	* 增减银行存款
+	* 增减银行存款，扣款时若余额不足则不执行并返回 false
 	* @amount: 变化量（负值为减少）
 	*/
-	void AddDeposit(int amount);
+	bool AddDeposit(int amount);
 
 	/*
 	* 添加登记资产，仅接受不动产和载具类别
