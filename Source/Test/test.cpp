@@ -315,7 +315,7 @@ bool PrintDialog(Dialog* dialog, vector<function<pair<bool, ValueType>(const str
 			for (auto change : selected.GetChanges()) {
 				if (!change->GetCondition().EvaluateBool(getValues))continue;
 				::map->ApplyChange(change, getValues);
-				populace->ApplyChange(::map, player, change, getValues);
+				populace->ApplyChange(::map, player, traffic, change, getValues);
 				society->ApplyChange(change, getValues);
 				story->ApplyChange(change, getValues);
 				industry->ApplyChange(change, getValues);
@@ -464,7 +464,7 @@ int main() {
 							auto* change = dynamic_cast<Change*>(ptr);
 							if (change->GetCondition().EvaluateBool(getValues)) {
 								::map->ApplyChange(change, getValues);
-								populace->ApplyChange(::map, player, change, getValues);
+								populace->ApplyChange(::map, player, traffic, change, getValues);
 								society->ApplyChange(change, getValues);
 								story->ApplyChange(change, getValues);
 								industry->ApplyChange(change, getValues);

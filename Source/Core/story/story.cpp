@@ -84,6 +84,7 @@ void Story::Destroy() {
 
 void Story::Tick(Player* player) {
 	currentTime = *player->GetTime();
+	if (!script)return;
 
 	script->SetValue("system.time.year", currentTime.GetYear());
 	script->SetValue("system.time.month", currentTime.GetMonth());

@@ -120,6 +120,7 @@
 	"triggers": [{"type": "transaction_result", "result": true}],
 	"dialogs": [],
 	"changes": [
+		{"type": "give_object", "object": "container"},
 		{"type": "deactivate_milestone", "milestone": "success_notify"},
 		{"type": "deactivate_milestone", "milestone": "fail_penalty"},
 	],

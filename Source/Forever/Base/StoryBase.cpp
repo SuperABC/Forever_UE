@@ -133,7 +133,7 @@ void AStoryBase::ApplyChanges(const vector<Change*>& changes,
 		if (change->GetCondition().EvaluateBool(getValues)) {
 			vector<Event*> events;
 			for (auto e : global->GetMap()->ApplyChange(change, getValues)) events.push_back(e);
-			for (auto e : global->GetPopulace()->ApplyChange(global->GetMap(), global->GetPlayer(), change, getValues)) events.push_back(e);
+			for (auto e : global->GetPopulace()->ApplyChange(global->GetMap(), global->GetPlayer(), global->GetTraffic(), change, getValues)) events.push_back(e);
 			for (auto e : global->GetSociety()->ApplyChange(change, getValues)) events.push_back(e);
 			for (auto e : global->GetStory()->ApplyChange(change, getValues, ownerScript)) events.push_back(e);
 			for (auto e : global->GetIndustry()->ApplyChange(change, getValues)) events.push_back(e);
@@ -162,7 +162,7 @@ void AStoryBase::ApplyChanges(const vector<pair<Change*, Script*>>& changes,
 		if (change->GetCondition().EvaluateBool(getValues)) {
 			vector<Event*> events;
 			for (auto e : global->GetMap()->ApplyChange(change, getValues)) events.push_back(e);
-			for (auto e : global->GetPopulace()->ApplyChange(global->GetMap(), global->GetPlayer(), change, getValues)) events.push_back(e);
+			for (auto e : global->GetPopulace()->ApplyChange(global->GetMap(), global->GetPlayer(), global->GetTraffic(), change, getValues)) events.push_back(e);
 			for (auto e : global->GetSociety()->ApplyChange(change, getValues)) events.push_back(e);
 			for (auto e : global->GetStory()->ApplyChange(change, getValues, ownerScript)) events.push_back(e);
 			for (auto e : global->GetIndustry()->ApplyChange(change, getValues)) events.push_back(e);

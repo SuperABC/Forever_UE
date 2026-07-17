@@ -211,21 +211,16 @@ public:
 	void AddAsset(Asset* asset);
 
 	/*
-	* 获取全部资产
-	*/
-	std::vector<Asset*>& GetAssets();
-
-	/*
-	* 获取一类全部资产
-	* @type: 资产类型
-	*/
-	std::vector<Asset*> GetAssets(const std::string& type) const;
-
-	/*
 	* 按名称查找资产
 	* @name: 资产名称
 	*/
 	Asset* GetAsset(const std::string& name) const;
+
+	/*
+	* 按名称移除并销毁资产
+	* @name: 资产名称
+	*/
+	void RemoveAsset(const std::string& name);
 
 	/*
 	* 获取全部工作
@@ -423,8 +418,8 @@ private:
 	// 熟人列表
 	std::vector<std::pair<std::string, Person*>> acquaintances;
 
-	// 持有资产列表
-	OBJECT_HOLDER std::vector<Asset*> assets;
+	// 持有房产与载具资产列表
+	OBJECT_HOLDER std::unordered_map<std::string, Asset*> assets;
 
 	// 居住房间
 	Room* home;

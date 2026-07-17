@@ -298,7 +298,7 @@ extern "C" __declspec(dllexport) void RegisterModRoutes(RouteFactory* factory) {
 }
 
 extern "C" __declspec(dllexport) void* GetModAssets() {
-	static vector<string> mods = { "zone", "building", "room", "container"};
+	static vector<string> mods = { "zone", "building", "room", "container", "vehicle" };
 	return static_cast<void*>(&mods);
 }
 
@@ -317,6 +317,10 @@ extern "C" __declspec(dllexport) void RegisterModAssets(AssetFactory* factory) {
 	);
 	factory->RegisterAsset(ContainerAsset::GetId(),
 		[]() { return new ContainerAsset(); },
+		[](AssetMod* asset) { delete asset; }
+	);
+	factory->RegisterAsset(VehicleAsset::GetId(),
+		[]() { return new VehicleAsset(); },
 		[](AssetMod* asset) { delete asset; }
 	);
 }

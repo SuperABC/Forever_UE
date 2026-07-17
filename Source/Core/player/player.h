@@ -102,22 +102,20 @@ public:
 	/*
 	* 添加登记资产，仅接受不动产和载具类别
 	* @asset: 待登记的资产
-	* @return: 是否添加成功，类别不符或已登记则返回 false
 	*/
-	bool AddSystemAsset(Asset* asset);
+	void AddAsset(Asset* asset);
 
 	/*
-	* 转移登记资产所有权给调用方，从登记列表移除
-	* @asset: 待转移的资产
-	* @return: 资产指针，未登记则返回 nullptr
+	* 按名称查找登记资产
+	* @name: 资产名称
 	*/
-	Asset* RemoveSystemAsset(Asset* asset);
+	Asset* GetAsset(const std::string& name) const;
 
 	/*
-	* 获取所有登记资产
-	* @return: 登记资产列表
+	* 按名称移除并销毁登记资产
+	* @name: 资产名称
 	*/
-	const std::vector<Asset*>& GetSystemAssets() const;
+	void RemoveAsset(const std::string& name);
 
 	/*
 	* 按路径获取资产，路径格式为 root/容器1/.../asset名称，root 可为 left/right/back/room
@@ -171,8 +169,8 @@ private:
 	// 银行存款余额
 	int deposit;
 
-	// 系统登记资产
-	std::vector<Asset*> systemAsset;
+	// 持有房产与载具资产列表
+	OBJECT_HOLDER std::unordered_map<std::string, Asset*> assets;
 
 	// 左手资产
 	OBJECT_HOLDER Asset* leftHand;

@@ -784,21 +784,63 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			string name = nameVal.IsNull() ? "" : nameVal.AsString();
 			change = new BankTransactionChange(name, amount.AsInt());
 		}
-		else if (type == "give_item") {
-			auto item = obj["item"];
-			auto num = obj["num"];
-			if (item.IsNull() || num.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing item or num for give_item change.\n");
+		else if (type == "give_estate") {
+			auto estate = obj["estate"];
+			if (estate.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing estate for give_estate change.\n");
 			}
-			change = new GiveItemChange(item.AsString(), num.AsInt());
+			auto nameVal = obj["name"];
+			auto forceVal = obj["force"];
+			change = new GiveEstateChange(estate.AsString(),
+				nameVal.IsNull() ? "" : nameVal.AsString(),
+				forceVal.IsNull() ? true : forceVal.AsBool());
 		}
-		else if (type == "remove_item") {
-			auto item = obj["item"];
-			auto num = obj["num"];
-			if (item.IsNull() || num.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing item or num for remove_item change.\n");
+		else if (type == "remove_estate") {
+			auto estate = obj["estate"];
+			if (estate.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing estate for remove_estate change.\n");
 			}
-			change = new RemoveItemChange(item.AsString(), num.AsInt());
+			auto nameVal = obj["name"];
+			change = new RemoveEstateChange(estate.AsString(),
+				nameVal.IsNull() ? "" : nameVal.AsString());
+		}
+		else if (type == "give_vehicle") {
+			auto vehicle = obj["vehicle"];
+			if (vehicle.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing vehicle for give_vehicle change.\n");
+			}
+			auto nameVal = obj["name"];
+			auto forceVal = obj["force"];
+			change = new GiveVehicleChange(vehicle.AsString(),
+				nameVal.IsNull() ? "" : nameVal.AsString(),
+				forceVal.IsNull() ? true : forceVal.AsBool());
+		}
+		else if (type == "remove_vehicle") {
+			auto vehicle = obj["vehicle"];
+			if (vehicle.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing vehicle for remove_vehicle change.\n");
+			}
+			auto nameVal = obj["name"];
+			change = new RemoveVehicleChange(vehicle.AsString(),
+				nameVal.IsNull() ? "" : nameVal.AsString());
+		}
+		else if (type == "give_object") {
+			auto object = obj["object"];
+			if (object.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing object for give_object change.\n");
+			}
+			auto num = obj["num"];
+			change = new GiveObjectChange(object.AsString(), num.IsNull() ? 1 : num.AsInt());
+		}
+		else if (type == "remove_object") {
+			auto object = obj["object"];
+			if (object.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing object for remove_object change.\n");
+			}
+			auto num = obj["num"];
+			auto forceVal = obj["force"];
+			change = new RemoveObjectChange(object.AsString(), num.IsNull() ? 1 : num.AsInt(),
+				forceVal.IsNull() ? false : forceVal.AsBool());
 		}
 		else if (type == "enter_battle") {
 			auto enemy = obj["enemy"];

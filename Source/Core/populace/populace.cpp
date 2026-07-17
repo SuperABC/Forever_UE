@@ -18,6 +18,9 @@
 #include "story/change.h"
 #include "story/event.h"
 #include "player/player.h"
+#include "player/asset.h"
+#include "traffic/traffic.h"
+#include "traffic/vehicle.h"
 
 #include <fstream>
 #include <filesystem>
@@ -208,7 +211,7 @@ vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* pl
 	return result;
 }
 
-vector<Event*> Populace::ApplyChange(Map* map, Player* player, Change* change,
+vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic, Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	vector<Event*> result;
 	if (!change) {
@@ -415,6 +418,164 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Change* change,
 			}
 		}
 		result.push_back(new TransactionResultEvent(success, obj->GetName()));
+	}
+	else if (type == "give_estate") {
+		auto obj = dynamic_cast<GiveEstateChange*>(change);
+		if (!obj) return result;
+
+		Condition estateCondition;
+		estateCondition.ParseCondition(obj->GetEstate());
+		string estateName = ToString(estateCondition.EvaluateValue(getValues));
+
+		Condition nameCondition;
+		nameCondition.ParseCondition(obj->GetName());
+		string recipientName = ToString(nameCondition.EvaluateValue(getValues));
+
+		Zone* zone = map->GetZone(estateName);
+		Building* building = zone ? nullptr : map->GetBuilding(estateName);
+		Room* room = nullptr;
+		if (!zone && !building) {
+			for (auto* r : map->GetRooms()) {
+				if (r && r->GetName() == estateName) { room = r; break; }
+			}
+		}
+		if (!zone && !building && !room) return result;
+
+		bool isOwned = zone ? !zone->GetStated() : building ? !building->GetStated() : !room->GetStated();
+		if (!obj->GetForce() && isOwned) return result;
+
+		if (isOwned) {
+			Person* currentOwner = zone ? zone->GetOwner() : building ? building->GetOwner() : room->GetOwner();
+			if (currentOwner) {
+				currentOwner->RemoveAsset(estateName);
+			}
+			else {
+				player->RemoveAsset(estateName);
+			}
+		}
+
+		string assetType = zone ? "zone" : building ? "building" : "room";
+		auto* estateAsset = new Asset(Player::assetFactory, assetType);
+		estateAsset->DefineAsset();
+		estateAsset->SetAsset(estateName);
+
+		if (recipientName.empty()) {
+			if (zone) { zone->SetStated(false); zone->SetOwner(nullptr); }
+			else if (building) { building->SetStated(false); building->SetOwner(nullptr); }
+			else { room->SetStated(false); room->SetOwner(nullptr); }
+			player->AddAsset(estateAsset);
+		}
+		else {
+			auto citizen = GetCitizen(recipientName);
+			if (!citizen) { delete estateAsset; return result; }
+			if (zone) { zone->SetStated(false); zone->SetOwner(citizen); }
+			else if (building) { building->SetStated(false); building->SetOwner(citizen); }
+			else { room->SetStated(false); room->SetOwner(citizen); }
+			citizen->AddAsset(estateAsset);
+		}
+	}
+	else if (type == "remove_estate") {
+		auto obj = dynamic_cast<RemoveEstateChange*>(change);
+		if (!obj) return result;
+
+		Condition estateCondition;
+		estateCondition.ParseCondition(obj->GetEstate());
+		string estateName = ToString(estateCondition.EvaluateValue(getValues));
+
+		Condition nameCondition;
+		nameCondition.ParseCondition(obj->GetName());
+		string ownerName = ToString(nameCondition.EvaluateValue(getValues));
+
+		Zone* zone = map->GetZone(estateName);
+		Building* building = zone ? nullptr : map->GetBuilding(estateName);
+		Room* room = nullptr;
+		if (!zone && !building) {
+			for (auto* r : map->GetRooms()) {
+				if (r && r->GetName() == estateName) { room = r; break; }
+			}
+		}
+		if (!zone && !building && !room) return result;
+
+		if (ownerName.empty()) {
+			player->RemoveAsset(estateName);
+		}
+		else {
+			auto citizen = GetCitizen(ownerName);
+			if (citizen) citizen->RemoveAsset(estateName);
+		}
+
+		if (zone) { zone->SetStated(true); zone->SetOwner(nullptr); }
+		else if (building) { building->SetStated(true); building->SetOwner(nullptr); }
+		else { room->SetStated(true); room->SetOwner(nullptr); }
+	}
+	else if (type == "give_vehicle") {
+		auto obj = dynamic_cast<GiveVehicleChange*>(change);
+		if (!obj) return result;
+
+		Condition vehicleCondition;
+		vehicleCondition.ParseCondition(obj->GetVehicle());
+		string vehicleName = ToString(vehicleCondition.EvaluateValue(getValues));
+
+		Condition nameCondition;
+		nameCondition.ParseCondition(obj->GetName());
+		string recipientName = ToString(nameCondition.EvaluateValue(getValues));
+
+		Vehicle* vehicle = traffic->GetVehicle(vehicleName);
+		if (!vehicle) return result;
+
+		bool isOwned = (vehicle->GetOwner() != nullptr) || (player->GetAsset(vehicleName) != nullptr);
+		if (!obj->GetForce() && isOwned) return result;
+
+		if (isOwned) {
+			Person* currentOwner = vehicle->GetOwner();
+			if (currentOwner) {
+				currentOwner->RemoveAsset(vehicleName);
+				vehicle->SetOwner(nullptr);
+			}
+			else {
+				player->RemoveAsset(vehicleName);
+			}
+		}
+
+		auto* vehicleAsset = new Asset(Player::assetFactory, "vehicle");
+		vehicleAsset->DefineAsset();
+		vehicleAsset->SetAsset(vehicleName);
+
+		if (recipientName.empty()) {
+			vehicle->SetOwner(nullptr);
+			player->AddAsset(vehicleAsset);
+		}
+		else {
+			auto citizen = GetCitizen(recipientName);
+			if (!citizen) { delete vehicleAsset; return result; }
+			vehicle->SetOwner(citizen);
+			citizen->AddAsset(vehicleAsset);
+		}
+	}
+	else if (type == "remove_vehicle") {
+		auto obj = dynamic_cast<RemoveVehicleChange*>(change);
+		if (!obj) return result;
+
+		Condition vehicleCondition;
+		vehicleCondition.ParseCondition(obj->GetVehicle());
+		string vehicleName = ToString(vehicleCondition.EvaluateValue(getValues));
+
+		Condition nameCondition;
+		nameCondition.ParseCondition(obj->GetName());
+		string ownerName = ToString(nameCondition.EvaluateValue(getValues));
+
+		Vehicle* vehicle = traffic->GetVehicle(vehicleName);
+		if (!vehicle) return result;
+
+		if (ownerName.empty()) {
+			player->RemoveAsset(vehicleName);
+		}
+		else {
+			auto citizen = GetCitizen(ownerName);
+			if (citizen) citizen->RemoveAsset(vehicleName);
+		}
+
+		vehicle->SetOwner(nullptr);
 	}
 	return result;
 }

@@ -769,74 +769,241 @@ int BankTransactionChange::GetAmount() const {
 	return amount;
 }
 
-GiveItemChange::GiveItemChange() :
-	item(),
+GiveEstateChange::GiveEstateChange() :
+	estate(),
+	name(),
+	force(true) {
+
+}
+
+GiveEstateChange::GiveEstateChange(string estate, string name, bool force) :
+	estate(estate), name(name), force(force) {
+
+}
+
+GiveEstateChange::~GiveEstateChange() {
+
+}
+
+string GiveEstateChange::GetType() const {
+	return "give_estate";
+}
+
+void GiveEstateChange::SetEstate(string estate) {
+	this->estate = estate;
+}
+
+string GiveEstateChange::GetEstate() const {
+	return estate;
+}
+
+void GiveEstateChange::SetName(string name) {
+	this->name = name;
+}
+
+string GiveEstateChange::GetName() const {
+	return name;
+}
+
+void GiveEstateChange::SetForce(bool force) {
+	this->force = force;
+}
+
+bool GiveEstateChange::GetForce() const {
+	return force;
+}
+
+RemoveEstateChange::RemoveEstateChange() :
+	estate(),
+	name() {
+
+}
+
+RemoveEstateChange::RemoveEstateChange(string estate, string name) :
+	estate(estate), name(name) {
+
+}
+
+RemoveEstateChange::~RemoveEstateChange() {
+
+}
+
+string RemoveEstateChange::GetType() const {
+	return "remove_estate";
+}
+
+void RemoveEstateChange::SetEstate(string estate) {
+	this->estate = estate;
+}
+
+string RemoveEstateChange::GetEstate() const {
+	return estate;
+}
+
+void RemoveEstateChange::SetName(string name) {
+	this->name = name;
+}
+
+string RemoveEstateChange::GetName() const {
+	return name;
+}
+
+GiveVehicleChange::GiveVehicleChange() :
+	vehicle(),
+	name(),
+	force(true) {
+
+}
+
+GiveVehicleChange::GiveVehicleChange(string vehicle, string name, bool force) :
+	vehicle(vehicle), name(name), force(force) {
+
+}
+
+GiveVehicleChange::~GiveVehicleChange() {
+
+}
+
+string GiveVehicleChange::GetType() const {
+	return "give_vehicle";
+}
+
+void GiveVehicleChange::SetVehicle(string vehicle) {
+	this->vehicle = vehicle;
+}
+
+string GiveVehicleChange::GetVehicle() const {
+	return vehicle;
+}
+
+void GiveVehicleChange::SetName(string name) {
+	this->name = name;
+}
+
+string GiveVehicleChange::GetName() const {
+	return name;
+}
+
+void GiveVehicleChange::SetForce(bool force) {
+	this->force = force;
+}
+
+bool GiveVehicleChange::GetForce() const {
+	return force;
+}
+
+RemoveVehicleChange::RemoveVehicleChange() :
+	vehicle(),
+	name() {
+
+}
+
+RemoveVehicleChange::RemoveVehicleChange(string vehicle, string name) :
+	vehicle(vehicle), name(name) {
+
+}
+
+RemoveVehicleChange::~RemoveVehicleChange() {
+
+}
+
+string RemoveVehicleChange::GetType() const {
+	return "remove_vehicle";
+}
+
+void RemoveVehicleChange::SetVehicle(string vehicle) {
+	this->vehicle = vehicle;
+}
+
+string RemoveVehicleChange::GetVehicle() const {
+	return vehicle;
+}
+
+void RemoveVehicleChange::SetName(string name) {
+	this->name = name;
+}
+
+string RemoveVehicleChange::GetName() const {
+	return name;
+}
+
+GiveObjectChange::GiveObjectChange() :
+	object(),
 	num(0) {
 
 }
 
-GiveItemChange::GiveItemChange(string item, int num) :
-	item(item), num(num) {
+GiveObjectChange::GiveObjectChange(string object, int num) :
+	object(object), num(num) {
 
 }
 
-GiveItemChange::~GiveItemChange() {
+GiveObjectChange::~GiveObjectChange() {
 
 }
 
-string GiveItemChange::GetType() const {
-	return "give_item";
+string GiveObjectChange::GetType() const {
+	return "give_object";
 }
 
-void GiveItemChange::SetItem(string item) {
-	this->item = item;
+void GiveObjectChange::SetObject(string object) {
+	this->object = object;
 }
 
-string GiveItemChange::GetItem() const {
-	return item;
+string GiveObjectChange::GetObject() const {
+	return object;
 }
 
-void GiveItemChange::SetNum(int num) {
+void GiveObjectChange::SetNum(int num) {
 	this->num = num;
 }
 
-int GiveItemChange::GetNum() {
+int GiveObjectChange::GetNum() const {
 	return num;
 }
 
-RemoveItemChange::RemoveItemChange() :
-	item(),
-	num(0) {
+RemoveObjectChange::RemoveObjectChange() :
+	object(),
+	num(0),
+	force(false) {
 
 }
 
-RemoveItemChange::RemoveItemChange(string item, int num) :
-	item(item), num(num) {
+RemoveObjectChange::RemoveObjectChange(string object, int num, bool force) :
+	object(object), num(num), force(force) {
 
 }
 
-RemoveItemChange::~RemoveItemChange() {
+RemoveObjectChange::~RemoveObjectChange() {
 
 }
 
-string RemoveItemChange::GetType() const {
-	return "remove_item";
+string RemoveObjectChange::GetType() const {
+	return "remove_object";
 }
 
-void RemoveItemChange::SetItem(string item) {
-	this->item = item;
+void RemoveObjectChange::SetObject(string object) {
+	this->object = object;
 }
 
-string RemoveItemChange::GetItem() const {
-	return item;
+string RemoveObjectChange::GetObject() const {
+	return object;
 }
 
-void RemoveItemChange::SetNum(int num) {
+void RemoveObjectChange::SetNum(int num) {
 	this->num = num;
 }
 
-int RemoveItemChange::GetNum() {
+int RemoveObjectChange::GetNum() const {
 	return num;
+}
+
+void RemoveObjectChange::SetForce(bool force) {
+	this->force = force;
+}
+
+bool RemoveObjectChange::GetForce() const {
+	return force;
 }
 
 PlayerInjuredChange::PlayerInjuredChange() :

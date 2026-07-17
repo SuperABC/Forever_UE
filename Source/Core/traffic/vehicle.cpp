@@ -91,6 +91,14 @@ Script* Vehicle::GetScript() const {
 	return script;
 }
 
+Person* Vehicle::GetOwner() const {
+	return owner;
+}
+
+void Vehicle::SetOwner(Person* person) {
+	owner = person;
+}
+
 bool Vehicle::AddOption(const string& option) {
 	if (options.find(option) == options.end()) {
 		options.insert(option);

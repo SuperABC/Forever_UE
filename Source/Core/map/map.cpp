@@ -806,7 +806,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 			zone->SetOwner(adults[index]);
 			auto asset = new Asset(Player::assetFactory, "zone");
 			if (asset) {
-				asset->SetAsset(zone->GetAddress());
+				asset->SetAsset(zone->GetName());
 				adults[index]->AddAsset(asset);
 			}
 			for (auto& buildingPair : zone->GetBuildings()) {
@@ -831,7 +831,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 					building->SetOwner(adults[index]);
 					auto asset = new Asset(Player::assetFactory, "building");
 					if (asset) {
-						asset->SetAsset(building->GetAddress());
+						asset->SetAsset(building->GetName());
 						adults[index]->AddAsset(asset);
 					}
 					for (auto room : building->GetRooms()) {
@@ -849,7 +849,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 						room->SetOwner(adults[index]);
 						auto asset = new Asset(Player::assetFactory, "room");
 						if (asset) {
-							asset->SetAsset(room->GetAddress());
+							asset->SetAsset(room->GetName());
 							adults[index]->AddAsset(asset);
 						}
 						if (room->IsResidential()) {
@@ -879,7 +879,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 			building->SetOwner(adults[index]);
 			auto asset = new Asset(Player::assetFactory, "building");
 			if (asset) {
-				asset->SetAsset(building->GetAddress());
+				asset->SetAsset(building->GetName());
 				adults[index]->AddAsset(asset);
 			}
 			for (auto room : building->GetRooms()) {
@@ -897,7 +897,7 @@ void Map::Checkin(Populace* populace, Player* player) const {
 				room->SetOwner(adults[index]);
 				auto asset = new Asset(Player::assetFactory, "room");
 				if (asset) {
-					asset->SetAsset(room->GetAddress());
+					asset->SetAsset(room->GetName());
 					adults[index]->AddAsset(asset);
 				}
 				if (room->IsResidential()) {

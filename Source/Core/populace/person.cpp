@@ -46,8 +46,8 @@ Person::Person() :
 }
 
 Person::~Person() {
-	for (auto& asset : assets) {
-		if (asset)delete asset;
+	for (auto& [_, asset] : assets) {
+		if (asset) delete asset;
 	}
 	assets.clear();
 
@@ -211,30 +211,20 @@ void Person::AddAsset(Asset* asset) {
 	if (asset == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Asset is null.\n");
 	}
-	assets.push_back(asset);
-}
-
-vector<Asset*>& Person::GetAssets() {
-	return assets;
-}
-
-vector<Asset*> Person::GetAssets(const string& type) const {
-	vector<Asset*> results;
-	for (const auto& asset : assets) {
-		if (asset->GetType() == type) {
-			results.push_back(asset);
-		}
-	}
-	return results;
+	const string& key = asset->GetAsset().empty() ? asset->GetName() : asset->GetAsset();
+	assets[key] = asset;
 }
 
 Asset* Person::GetAsset(const string& name) const {
-	for (const auto& asset : assets) {
-		if (asset->GetName() == name) {
-			return asset;
-		}
-	}
-	return nullptr;
+	auto it = assets.find(name);
+	return it != assets.end() ? it->second : nullptr;
+}
+
+void Person::RemoveAsset(const string& name) {
+	auto it = assets.find(name);
+	if (it == assets.end()) return;
+	if (it->second) delete it->second;
+	assets.erase(it);
 }
 
 const vector<Job*>& Person::GetJobs() const {

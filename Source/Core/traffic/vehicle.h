@@ -93,6 +93,18 @@ public:
 	Script* GetScript() const;
 
 	/*
+	* 获取载具拥有者
+	* @return: 拥有者指针，nullptr 表示玩家所有
+	*/
+	Person* GetOwner() const;
+
+	/*
+	* 设置载具拥有者
+	* @person: 拥有者指针，nullptr 表示玩家所有
+	*/
+	void SetOwner(Person* person);
+
+	/*
 	* 添加交互选项
 	* @option: 选项名称
 	* @return: 添加成功返回true，已存在返回false

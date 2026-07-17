@@ -8,6 +8,7 @@
 #include <string>
 
 #undef GetMessage
+#undef GetObject
 
 
 // 变化基类
@@ -1265,24 +1266,26 @@ private:
 
 };
 
-// 给予物品
-class GiveItemChange : public Change {
+// 给予房产（已实现）
+class GiveEstateChange : public Change {
 public:
 	/*
-	* 默认构造给予物品变化
+	* 默认构造给予房产变化
 	*/
-	GiveItemChange();
+	GiveEstateChange();
 
 	/*
-	* 构造给予物品变化
-	* @item, num: 物品名称与数量
+	* 构造给予房产变化
+	* @estate: 房产名称
+	* @name: 接收者姓名（空字符串表示玩家）
+	* @force: 是否强制覆盖已有归属
 	*/
-	GiveItemChange(std::string item, int num);
+	GiveEstateChange(std::string estate, std::string name, bool force = true);
 
 	/*
-	* 析构给予物品变化
+	* 析构给予房产变化
 	*/
-	virtual ~GiveItemChange();
+	virtual ~GiveEstateChange();
 
 	/*
 	* 变化类型
@@ -1290,15 +1293,268 @@ public:
 	virtual std::string GetType() const;
 
 	/*
-	* 设置物品名称
-	* @item: 名称
+	* 设置房产名称
+	* @estate: 名称
 	*/
-	void SetItem(std::string item);
+	void SetEstate(std::string estate);
 
 	/*
-	* 获取物品名称
+	* 获取房产名称
 	*/
-	std::string GetItem() const;
+	std::string GetEstate() const;
+
+	/*
+	* 设置接收者姓名
+	* @name: 姓名（空字符串表示玩家）
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取接收者姓名
+	*/
+	std::string GetName() const;
+
+	/*
+	* 设置是否强制转移
+	* @force: 是否强制
+	*/
+	void SetForce(bool force);
+
+	/*
+	* 获取是否强制转移
+	*/
+	bool GetForce() const;
+
+private:
+	// 房产名称
+	std::string estate;
+
+	// 接收者姓名（空字符串表示玩家）
+	std::string name;
+
+	// 是否强制覆盖已有归属
+	bool force;
+
+};
+
+// 移除房产（已实现）
+class RemoveEstateChange : public Change {
+public:
+	/*
+	* 默认构造移除房产变化
+	*/
+	RemoveEstateChange();
+
+	/*
+	* 构造移除房产变化
+	* @estate: 房产名称
+	* @name: 当前所有者姓名（空字符串表示玩家）
+	*/
+	RemoveEstateChange(std::string estate, std::string name);
+
+	/*
+	* 析构移除房产变化
+	*/
+	virtual ~RemoveEstateChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 设置房产名称
+	* @estate: 名称
+	*/
+	void SetEstate(std::string estate);
+
+	/*
+	* 获取房产名称
+	*/
+	std::string GetEstate() const;
+
+	/*
+	* 设置当前所有者姓名
+	* @name: 姓名（空字符串表示玩家）
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取当前所有者姓名
+	*/
+	std::string GetName() const;
+
+private:
+	// 房产名称
+	std::string estate;
+
+	// 当前所有者姓名（空字符串表示玩家）
+	std::string name;
+
+};
+
+// 给予载具（已实现）
+class GiveVehicleChange : public Change {
+public:
+	/*
+	* 默认构造给予载具变化
+	*/
+	GiveVehicleChange();
+
+	/*
+	* 构造给予载具变化
+	* @vehicle: 载具名称
+	* @name: 接收者姓名（空字符串表示玩家）
+	* @force: 是否强制覆盖已有归属
+	*/
+	GiveVehicleChange(std::string vehicle, std::string name, bool force = true);
+
+	/*
+	* 析构给予载具变化
+	*/
+	virtual ~GiveVehicleChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 设置载具名称
+	* @vehicle: 名称
+	*/
+	void SetVehicle(std::string vehicle);
+
+	/*
+	* 获取载具名称
+	*/
+	std::string GetVehicle() const;
+
+	/*
+	* 设置接收者姓名
+	* @name: 姓名（空字符串表示玩家）
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取接收者姓名
+	*/
+	std::string GetName() const;
+
+	/*
+	* 设置是否强制转移
+	* @force: 是否强制
+	*/
+	void SetForce(bool force);
+
+	/*
+	* 获取是否强制转移
+	*/
+	bool GetForce() const;
+
+private:
+	// 载具名称
+	std::string vehicle;
+
+	// 接收者姓名（空字符串表示玩家）
+	std::string name;
+
+	// 是否强制覆盖已有归属
+	bool force;
+
+};
+
+// 移除载具（已实现）
+class RemoveVehicleChange : public Change {
+public:
+	/*
+	* 默认构造移除载具变化
+	*/
+	RemoveVehicleChange();
+
+	/*
+	* 构造移除载具变化
+	* @vehicle: 载具名称
+	* @name: 当前所有者姓名（空字符串表示玩家）
+	*/
+	RemoveVehicleChange(std::string vehicle, std::string name);
+
+	/*
+	* 析构移除载具变化
+	*/
+	virtual ~RemoveVehicleChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 设置载具名称
+	* @vehicle: 名称
+	*/
+	void SetVehicle(std::string vehicle);
+
+	/*
+	* 获取载具名称
+	*/
+	std::string GetVehicle() const;
+
+	/*
+	* 设置当前所有者姓名
+	* @name: 姓名（空字符串表示玩家）
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取当前所有者姓名
+	*/
+	std::string GetName() const;
+
+private:
+	// 载具名称
+	std::string vehicle;
+
+	// 当前所有者姓名（空字符串表示玩家）
+	std::string name;
+
+};
+
+// 给予物品（已实现）
+class GiveObjectChange : public Change {
+public:
+	/*
+	* 默认构造给予物品资产变化
+	*/
+	GiveObjectChange();
+
+	/*
+	* 构造给予物品资产变化
+	* @object: 资产类型标识
+	* @num: 数量
+	*/
+	GiveObjectChange(std::string object, int num);
+
+	/*
+	* 析构给予物品资产变化
+	*/
+	virtual ~GiveObjectChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 设置资产类型标识
+	* @object: 标识
+	*/
+	void SetObject(std::string object);
+
+	/*
+	* 获取资产类型标识
+	*/
+	std::string GetObject() const;
 
 	/*
 	* 设置数量
@@ -1309,35 +1565,37 @@ public:
 	/*
 	* 获取数量
 	*/
-	int GetNum();
+	int GetNum() const;
 
 private:
-	// 物品名称
-	std::string item;
+	// 资产类型标识
+	std::string object;
 
 	// 数量
 	int num;
 
 };
 
-// 扣除物品
-class RemoveItemChange : public Change {
+// 移除物品（已实现）
+class RemoveObjectChange : public Change {
 public:
 	/*
-	* 默认构造扣除物品变化
+	* 默认构造移除物品资产变化
 	*/
-	RemoveItemChange();
+	RemoveObjectChange();
 
 	/*
-	* 构造扣除物品变化
-	* @item, num: 物品名称与数量
+	* 构造移除物品资产变化
+	* @object: 资产类型标识
+	* @num: 数量
+	* @force: 数量不足时是否删除已有数量
 	*/
-	RemoveItemChange(std::string item, int num);
+	RemoveObjectChange(std::string object, int num, bool force = false);
 
 	/*
-	* 析构扣除物品变化
+	* 析构移除物品资产变化
 	*/
-	virtual ~RemoveItemChange();
+	virtual ~RemoveObjectChange();
 
 	/*
 	* 变化类型
@@ -1345,15 +1603,15 @@ public:
 	virtual std::string GetType() const;
 
 	/*
-	* 设置物品名称
-	* @item: 名称
+	* 设置资产类型标识
+	* @object: 标识
 	*/
-	void SetItem(std::string item);
+	void SetObject(std::string object);
 
 	/*
-	* 获取物品名称
+	* 获取资产类型标识
 	*/
-	std::string GetItem() const;
+	std::string GetObject() const;
 
 	/*
 	* 设置数量
@@ -1364,14 +1622,28 @@ public:
 	/*
 	* 获取数量
 	*/
-	int GetNum();
+	int GetNum() const;
+
+	/*
+	* 设置数量不足时是否强制删除
+	* @force: 是否强制
+	*/
+	void SetForce(bool force);
+
+	/*
+	* 获取数量不足时是否强制删除
+	*/
+	bool GetForce() const;
 
 private:
-	// 物品名称
-	std::string item;
+	// 资产类型标识
+	std::string object;
 
 	// 数量
 	int num;
+
+	// 数量不足时是否强制删除已有数量
+	bool force;
 
 };
 
@@ -1835,8 +2107,12 @@ using ChangeValue = std::variant<
 	LaunchElevatorChange,
 	PlayVideoChange,
 	BankTransactionChange,
-	GiveItemChange,
-	RemoveItemChange,
+	GiveEstateChange,
+	RemoveEstateChange,
+	GiveVehicleChange,
+	RemoveVehicleChange,
+	GiveObjectChange,
+	RemoveObjectChange,
 	PlayerInjuredChange,
 	PlayerCuredChange,
 	PlayerIllChange,

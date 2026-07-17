@@ -105,3 +105,28 @@ void ContainerAsset::DefineAsset() {
 	DefineContainer(1.0f, 1.0f, 10.0f, true);
 }
 
+int VehicleAsset::count = 0;
+
+VehicleAsset::VehicleAsset() : id(count++) {
+}
+
+VehicleAsset::~VehicleAsset() {
+}
+
+const char* VehicleAsset::GetId() {
+	return "vehicle";
+}
+
+const char* VehicleAsset::GetType() const {
+	return "vehicle";
+}
+
+const char* VehicleAsset::GetName() {
+	name = "载具资产" + to_string(id);
+	return name.data();
+}
+
+void VehicleAsset::DefineAsset() {
+	DefineVehicle();
+}
+

@@ -61,7 +61,7 @@ public:
 	* 应用剧情变化
 	* @map, change, getValues: 地图、变化对象、值获取回调列表
 	*/
-	std::vector<Event*> ApplyChange(Map* map, Player* player, Change* change,
+	std::vector<Event*> ApplyChange(Map* map, Player* player, Traffic* traffic, Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	/*

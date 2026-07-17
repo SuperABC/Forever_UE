@@ -10,6 +10,8 @@
 #include "map/room.h"
 #include "populace/populace.h"
 #include "populace/person.h"
+#include "player/asset.h"
+#include "player/player.h"
 #include "traffic/vehicle.h"
 #include "traffic/station.h"
 #include "traffic/route.h"
@@ -229,6 +231,12 @@ void Traffic::InitTraffic(Map* map, Populace* populace) {
 		parkings.pop_back();
 
 		AddVehicle(vehicle->GetName(), vehicle);
+
+		auto* vehicleAsset = new Asset(Player::assetFactory, "vehicle");
+		vehicleAsset->DefineAsset();
+		vehicleAsset->SetAsset(vehicle->GetName());
+		vehicle->SetOwner(citizen);
+		citizen->AddAsset(vehicleAsset);
 	}
 }
 

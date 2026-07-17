@@ -3,6 +3,7 @@
 #include "player/asset.h"
 #include "player/puzzle.h"
 #include "player/app.h"
+#include "story/change.h"
 
 
 using namespace std;
@@ -164,12 +165,12 @@ void Player::Init() {
 	leftHand->DefineAsset();
 	rightHand = new Asset(assetFactory, "container");
 	rightHand->DefineAsset();
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 8; i++) {
 		auto asset = new Asset(assetFactory, "container");
 		asset->DefineAsset();
 		leftHand->AddContent(asset->GetName(), asset);
 	}
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 8; i++) {
 		auto asset = new Asset(assetFactory, "container");
 		asset->DefineAsset();
 		rightHand->AddContent(asset->GetName(), asset);
@@ -193,10 +194,10 @@ void Player::Destroy() {
 		delete backPack;
 		backPack = nullptr;
 	}
-	for (auto asset : systemAsset) {
-		delete asset;
+	for (auto& [_, asset] : assets) {
+		if (asset) delete asset;
 	}
-	systemAsset.clear();
+	assets.clear();
 }
 
 void Player::Tick(float delta) {
@@ -207,6 +208,107 @@ void Player::Tick(float delta) {
 vector<Event*> Player::ApplyChange(Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	vector<Event*> result;
+	if (!change) {
+		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
+	}
+
+	auto type = change->GetType();
+
+	if (type == "give_object") {
+		auto obj = dynamic_cast<GiveObjectChange*>(change);
+		if (!obj) return result;
+
+		for (int i = 0; i < obj->GetNum(); ++i) {
+			auto* objectAsset = new Asset(assetFactory, obj->GetObject());
+			objectAsset->DefineAsset();
+
+			bool placed = false;
+			if (!leftHand) {
+				leftHand = objectAsset;
+				placed = true;
+			}
+			else if (leftHand->GetVolume() > 0) {
+				placed = leftHand->AddContent(objectAsset->GetName(), objectAsset);
+			}
+
+			if (!placed) {
+				if (!rightHand) {
+					rightHand = objectAsset;
+					placed = true;
+				}
+				else if (rightHand->GetVolume() > 0) {
+					placed = rightHand->AddContent(objectAsset->GetName(), objectAsset);
+				}
+			}
+
+			if (!placed) {
+				if (objectAsset->GetBackpack()) {
+					if (!backPack) {
+						backPack = objectAsset;
+						placed = true;
+					}
+					else if (backPack->GetVolume() > 0) {
+						placed = backPack->AddContent(objectAsset->GetName(), objectAsset);
+					}
+				}
+				else if (backPack && backPack->GetVolume() > 0) {
+					placed = backPack->AddContent(objectAsset->GetName(), objectAsset);
+				}
+			}
+
+			if (!placed) {
+				delete objectAsset;
+			}
+		}
+	}
+	else if (type == "remove_object") {
+		auto obj = dynamic_cast<RemoveObjectChange*>(change);
+		if (!obj) return result;
+
+		string targetType = obj->GetObject();
+
+		struct Found {
+			Asset* parent;
+			string key;
+		};
+		vector<Found> found;
+
+		function<void(Asset*, const string&)> collectFromSlot = [&](Asset* slot, const string& slotKey) {
+			if (!slot) return;
+			if (slot->GetType() == targetType) {
+				found.push_back({ nullptr, slotKey });
+			}
+			for (auto& [childKey, child] : slot->GetContents()) {
+				if (!child) continue;
+				if (child->GetType() == targetType) {
+					found.push_back({ slot, childKey });
+				}
+				collectFromSlot(child, childKey);
+			}
+		};
+
+		collectFromSlot(leftHand, "left");
+		collectFromSlot(rightHand, "right");
+		collectFromSlot(backPack, "back");
+
+		if (static_cast<int>(found.size()) < obj->GetNum() && !obj->GetForce()) {
+			return result;
+		}
+
+		int toDelete = min(obj->GetNum(), static_cast<int>(found.size()));
+		for (int i = 0; i < toDelete; ++i) {
+			auto& item = found[i];
+			if (!item.parent) {
+				if (item.key == "left") { delete leftHand; leftHand = nullptr; }
+				else if (item.key == "right") { delete rightHand; rightHand = nullptr; }
+				else { delete backPack; backPack = nullptr; }
+			}
+			else {
+				item.parent->RemoveContent(item.key);
+			}
+		}
+	}
+
 	return result;
 }
 
@@ -234,36 +336,24 @@ bool Player::AddDeposit(int amount) {
 	return true;
 }
 
-bool Player::AddSystemAsset(Asset* asset) {
+void Player::AddAsset(Asset* asset) {
 	if (!asset) {
-		THROW_EXCEPTION(NullPointerException, "AddSystemAsset: asset is null.\n");
+		THROW_EXCEPTION(NullPointerException, "AddAsset: asset is null.\n");
 	}
-	auto mobility = asset->GetMobility();
-	if (mobility != ASSET_ESTATE && mobility != ASSET_VEHICLE) {
-		return false;
-	}
-	for (auto a : systemAsset) {
-		if (a == asset) return false;
-	}
-	systemAsset.push_back(asset);
-	return true;
+	const string& key = asset->GetAsset().empty() ? asset->GetName() : asset->GetAsset();
+	assets[key] = asset;
 }
 
-Asset* Player::RemoveSystemAsset(Asset* asset) {
-	if (!asset) {
-		return nullptr;
-	}
-	for (auto it = systemAsset.begin(); it != systemAsset.end(); ++it) {
-		if (*it == asset) {
-			systemAsset.erase(it);
-			return asset;
-		}
-	}
-	return nullptr;
+Asset* Player::GetAsset(const string& name) const {
+	auto it = assets.find(name);
+	return it != assets.end() ? it->second : nullptr;
 }
 
-const vector<Asset*>& Player::GetSystemAssets() const {
-	return systemAsset;
+void Player::RemoveAsset(const string& name) {
+	auto it = assets.find(name);
+	if (it == assets.end()) return;
+	if (it->second) delete it->second;
+	assets.erase(it);
 }
 
 vector<string> Player::SplitPath(const string& path) {

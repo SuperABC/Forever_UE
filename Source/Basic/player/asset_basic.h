@@ -190,3 +190,50 @@ private:
 	// 名称缓存
 	std::string name;
 };
+
+// 载具资产
+class VehicleAsset : public AssetMod {
+public:
+	/*
+	* 构造载具资产
+	*/
+	VehicleAsset();
+
+	/*
+	* 析构载具资产
+	*/
+	virtual ~VehicleAsset();
+
+	/*
+	* 载具资产静态类型标识
+	* @return: 静态类型标识
+	*/
+	static const char* GetId();
+
+	/*
+	* 载具资产动态类型标识
+	* @return: 动态类型标识
+	*/
+	virtual const char* GetType() const override;
+
+	/*
+	* 载具资产实例唯一名称
+	* @return: 实例唯一名称
+	*/
+	virtual const char* GetName() override;
+
+	/*
+	* 定义资产属性
+	*/
+	virtual void DefineAsset() override;
+
+private:
+	// 总实例数量
+	static int count;
+
+	// 实例编号
+	int id;
+
+	// 名称缓存
+	std::string name;
+};
