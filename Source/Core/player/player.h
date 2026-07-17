@@ -111,26 +111,13 @@ public:
 	* @asset: 待转移的资产
 	* @return: 资产指针，未登记则返回 nullptr
 	*/
-	Asset* TransferSystemAsset(Asset* asset);
-
-	/*
-	* 归还并析构登记资产，从登记列表移除
-	* @asset: 待析构的资产
-	*/
-	void DestroySystemAsset(Asset* asset);
+	Asset* RemoveSystemAsset(Asset* asset);
 
 	/*
 	* 获取所有登记资产
 	* @return: 登记资产列表
 	*/
 	const std::vector<Asset*>& GetSystemAssets() const;
-
-	/*
-	* 检查资产是否已登记
-	* @asset: 待检查的资产
-	* @return: 是否已在登记列表中
-	*/
-	bool HasSystemAsset(Asset* asset) const;
 
 	/*
 	* 按路径获取资产，路径格式为 root/容器1/.../asset名称，root 可为 left/right/back/room

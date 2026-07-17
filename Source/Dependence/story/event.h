@@ -52,7 +52,6 @@ private:
 	Condition condition;
 };
 
-
 // 游戏开始（已实现）
 class GameStartEvent : public Event {
 public:

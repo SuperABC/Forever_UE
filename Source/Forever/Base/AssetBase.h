@@ -30,6 +30,9 @@ struct FAsset {
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Asset")
 	bool isContainer;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Asset")
+	bool usable;
 };
 
 UCLASS()

@@ -237,14 +237,14 @@ bool Player::AddSystemAsset(Asset* asset) {
 	if (mobility != ASSET_ESTATE && mobility != ASSET_VEHICLE) {
 		return false;
 	}
-	if (HasSystemAsset(asset)) {
-		return false;
+	for (auto a : systemAsset) {
+		if (a == asset) return false;
 	}
 	systemAsset.push_back(asset);
 	return true;
 }
 
-Asset* Player::TransferSystemAsset(Asset* asset) {
+Asset* Player::RemoveSystemAsset(Asset* asset) {
 	if (!asset) {
 		return nullptr;
 	}
@@ -257,33 +257,8 @@ Asset* Player::TransferSystemAsset(Asset* asset) {
 	return nullptr;
 }
 
-void Player::DestroySystemAsset(Asset* asset) {
-	if (!asset) {
-		return;
-	}
-	for (auto it = systemAsset.begin(); it != systemAsset.end(); ++it) {
-		if (*it == asset) {
-			systemAsset.erase(it);
-			delete asset;
-			return;
-		}
-	}
-}
-
 const vector<Asset*>& Player::GetSystemAssets() const {
 	return systemAsset;
-}
-
-bool Player::HasSystemAsset(Asset* asset) const {
-	if (!asset) {
-		return false;
-	}
-	for (auto a : systemAsset) {
-		if (a == asset) {
-			return true;
-		}
-	}
-	return false;
 }
 
 vector<string> Player::SplitPath(const string& path) {

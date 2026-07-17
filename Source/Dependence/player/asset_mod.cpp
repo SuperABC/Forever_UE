@@ -10,6 +10,7 @@ AssetMod::AssetMod() :
 	size(-1.f), 
 	volume(-1.f),
 	backpack(false),
+	usable(false),
 	icon(),
 	mesh() {
 

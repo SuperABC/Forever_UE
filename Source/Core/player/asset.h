@@ -119,6 +119,12 @@ public:
 	bool GetBackpack() const;
 
 	/*
+	* 是否可使用
+	* @return: 是否可使用
+	*/
+	bool GetUsable() const;
+
+	/*
 	* 获取资产图标路径
 	* @return: 资产图标路径
 	*/
@@ -166,6 +172,9 @@ private:
 
 	// 是否可背
 	bool backpack;
+
+	// 是否可使用
+	bool usable;
 
 	// 资产图标路径
 	std::string icon;

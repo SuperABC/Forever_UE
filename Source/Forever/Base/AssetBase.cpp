@@ -94,6 +94,7 @@ FAsset AAssetBase::GetAsset(FString path) {
 		entry.icon = UTF8_TO_TCHAR(a->GetIcon().data());
 		entry.mesh = UTF8_TO_TCHAR(a->GetMesh().data());
 		entry.isContainer = a->GetVolume() > 0;
+		entry.usable = a->GetUsable();
 		return entry;
 	};
 
@@ -128,6 +129,7 @@ TArray<FAsset> AAssetBase::GetAssets(FString path) {
 		entry.icon = UTF8_TO_TCHAR(a->GetIcon().data());
 		entry.mesh = UTF8_TO_TCHAR(a->GetMesh().data());
 		entry.isContainer = a->GetVolume() > 0;
+		entry.usable = a->GetUsable();
 		return entry;
 	};
 
@@ -205,6 +207,7 @@ FString AAssetBase::PickAsset(FString path, FString target, FAsset& outAsset) {
 	outAsset.icon = UTF8_TO_TCHAR(asset->GetIcon().data());
 	outAsset.mesh = UTF8_TO_TCHAR(asset->GetMesh().data());
 	outAsset.isContainer = asset->GetVolume() > 0;
+	outAsset.usable = asset->GetUsable();
 	return UTF8_TO_TCHAR(newPath.data());
 }
 

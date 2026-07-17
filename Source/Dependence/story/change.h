@@ -45,7 +45,7 @@ private:
 
 };
 
-// 范围循环
+// 范围循环（已实现）
 class ForRangeChange : public Change {
 public:
 	/*
@@ -1058,6 +1058,47 @@ private:
 
 };
 
+// 进入战斗（已实现）
+class EnterBattleChange : public Change {
+public:
+	/*
+	* 默认构造进入战斗变化
+	*/
+	EnterBattleChange();
+
+	/*
+	* 构造进入战斗变化
+	* @enemy: 敌人名称
+	*/
+	EnterBattleChange(std::string enemy);
+
+	/*
+	* 析构进入战斗变化
+	*/
+	virtual ~EnterBattleChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 设置敌人名称
+	* @enemy: 名称
+	*/
+	void SetEnemy(std::string enemy);
+
+	/*
+	* 获取敌人名称
+	*/
+	std::string GetEnemy() const;
+
+private:
+	// 敌人名称
+	std::string enemy;
+
+};
+
 // 启动电梯（已实现）
 class LaunchElevatorChange : public Change {
 public:
@@ -1331,47 +1372,6 @@ private:
 
 	// 数量
 	int num;
-
-};
-
-// 进入战斗
-class EnterBattleChange : public Change {
-public:
-	/*
-	* 默认构造进入战斗变化
-	*/
-	EnterBattleChange();
-
-	/*
-	* 构造进入战斗变化
-	* @enemy: 敌人名称
-	*/
-	EnterBattleChange(std::string enemy);
-
-	/*
-	* 析构进入战斗变化
-	*/
-	virtual ~EnterBattleChange();
-
-	/*
-	* 变化类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 设置敌人名称
-	* @enemy: 名称
-	*/
-	void SetEnemy(std::string enemy);
-
-	/*
-	* 获取敌人名称
-	*/
-	std::string GetEnemy() const;
-
-private:
-	// 敌人名称
-	std::string enemy;
 
 };
 
@@ -1831,11 +1831,12 @@ using ChangeValue = std::variant<
 	EnterVehicleChange,
 	LeaveVehicleChange,
 	CreateTimerChange,
+	EnterBattleChange,
 	LaunchElevatorChange,
+	PlayVideoChange,
 	BankTransactionChange,
 	GiveItemChange,
 	RemoveItemChange,
-	EnterBattleChange,
 	PlayerInjuredChange,
 	PlayerCuredChange,
 	PlayerIllChange,

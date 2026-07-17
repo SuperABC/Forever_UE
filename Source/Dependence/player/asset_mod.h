@@ -108,6 +108,9 @@ public:
 	// 是否可背
 	bool backpack;
 
+	// 是否可使用
+	bool usable;
+
 	// 资产图标路径
 	std::string icon;
 

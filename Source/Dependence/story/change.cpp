@@ -638,6 +638,32 @@ string CreateTimerChange::GetLabel() const {
 	return label;
 }
 
+EnterBattleChange::EnterBattleChange() :
+	enemy() {
+
+}
+
+EnterBattleChange::EnterBattleChange(string enemy) :
+	enemy(enemy) {
+
+}
+
+EnterBattleChange::~EnterBattleChange() {
+
+}
+
+string EnterBattleChange::GetType() const {
+	return "enter_battle";
+}
+
+void EnterBattleChange::SetEnemy(string enemy) {
+	this->enemy = enemy;
+}
+
+string EnterBattleChange::GetEnemy() const {
+	return enemy;
+}
+
 LaunchElevatorChange::LaunchElevatorChange() :
 	building(),
 	elevator(),
@@ -811,32 +837,6 @@ void RemoveItemChange::SetNum(int num) {
 
 int RemoveItemChange::GetNum() {
 	return num;
-}
-
-EnterBattleChange::EnterBattleChange() :
-	enemy() {
-
-}
-
-EnterBattleChange::EnterBattleChange(string enemy) :
-	enemy(enemy) {
-
-}
-
-EnterBattleChange::~EnterBattleChange() {
-
-}
-
-string EnterBattleChange::GetType() const {
-	return "enter_battle";
-}
-
-void EnterBattleChange::SetEnemy(string enemy) {
-	this->enemy = enemy;
-}
-
-string EnterBattleChange::GetEnemy() const {
-	return enemy;
 }
 
 PlayerInjuredChange::PlayerInjuredChange() :

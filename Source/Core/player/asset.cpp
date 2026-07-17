@@ -16,6 +16,7 @@ Asset::Asset(AssetFactory* factory, const string& asset) :
 	space(0.f),
 	contents(),
 	backpack(false),
+	usable(false),
 	icon(),
 	mesh() {
 	if (!mod)
@@ -55,6 +56,7 @@ void Asset::DefineAsset() {
 	}
 	icon = mod->icon;
 	mesh = mod->mesh;
+	usable = mod->usable;
 }
 
 string Asset::GetAsset() {
@@ -83,6 +85,10 @@ float Asset::GetVolume() const {
 
 bool Asset::GetBackpack() const {
 	return backpack;
+}
+
+bool Asset::GetUsable() const {
+	return usable;
 }
 
 string Asset::GetIcon() const {
