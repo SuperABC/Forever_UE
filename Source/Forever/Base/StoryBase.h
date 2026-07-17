@@ -45,7 +45,7 @@ public:
 	void MatchEvent(Event* e, Script* script,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
-	void ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		Script* ownerScript = nullptr);
 
@@ -93,16 +93,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void NpcArrive(const FString& name, const FString& destination);
 
-	void ApplySchedulerChanges(std::vector<Change*>& changes);
+	void ApplyChanges(const std::vector<Change*>& changes,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
+		Script* ownerScript = nullptr);
+	void ApplyChanges(const std::vector<std::pair<Change*, Script*>>& changes,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 protected:
 	virtual void BeginPlay() override;
 
 	void CheckTimers();
-
-	void ApplyChanges(const std::vector<Change*>& changes,
-		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
-		Script* ownerScript = nullptr);
 
 	Cabin* FindCabin(const std::string& name);
 

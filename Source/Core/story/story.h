@@ -55,7 +55,7 @@ public:
 	* @change, getValues: 变化对象与值获取回调列表
 	* @targetScript: 指定目标脚本（nullptr时应用到主线剧情）
 	*/
-	void ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		Script* targetScript = nullptr);
 

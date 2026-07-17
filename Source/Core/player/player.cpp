@@ -204,9 +204,10 @@ void Player::Tick(float delta) {
 	time->AddMilliseconds((int)(delta * 60 * 1000));
 }
 
-void Player::ApplyChange(Change* change,
+vector<Event*> Player::ApplyChange(Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-
+	vector<Event*> result;
+	return result;
 }
 
 Time* Player::GetTime() {

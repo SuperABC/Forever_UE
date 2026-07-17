@@ -250,8 +250,9 @@ void Traffic::Tick(Player* player) {
 
 }
 
-void Traffic::ApplyChange(Change* change,
+vector<Event*> Traffic::ApplyChange(Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	vector<Event*> result;
 	if (!change) {
 		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
 	}
@@ -269,7 +270,7 @@ void Traffic::ApplyChange(Change* change,
 		string targetName = ToString(conditionTarget.EvaluateValue(getValues));
 		Vehicle* target = GetVehicle(targetName);
 		if (!target) {
-			return;
+			return result;
 		}
 
 		Condition conditionOption;
@@ -288,7 +289,7 @@ void Traffic::ApplyChange(Change* change,
 		string targetName = ToString(conditionTarget.EvaluateValue(getValues));
 		Vehicle* target = GetVehicle(targetName);
 		if (!target) {
-			return;
+			return result;
 		}
 
 		Condition conditionOption;
@@ -296,6 +297,7 @@ void Traffic::ApplyChange(Change* change,
 		string option = ToString(conditionOption.EvaluateValue(getValues));
 		target->RemoveOption(option);
 	}
+	return result;
 }
 
 Vehicle* Traffic::GetVehicle(const string& name) const {

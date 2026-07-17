@@ -332,7 +332,7 @@ void Society::Destroy() {
 	organizations.clear();
 }
 
-vector<Change*> Society::Tick(Player* player, Story* story) {
+vector<pair<Change*, Script*>> Society::Tick(Player* player, Story* story) {
 	auto time = player->GetTime();
 	auto cross = currentTime.GetYear() == 0 || player->CrossDay();
 	currentTime = *time;
@@ -361,7 +361,7 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 		}
 	}
 
-	vector<Change*> result;
+	vector<pair<Change*, Script*>> result;
 
 	// 每帧执行有限数量的到期计划节点
 	int count = 0;
@@ -373,11 +373,12 @@ vector<Change*> Society::Tick(Player* player, Story* story) {
 		// 区分职位计划节点与组织计划节点分别执行
 		if (job) {
 			changes = job->ExecNode(node, story->GetScript(), person->GetScheduler()->GetScript());
+			for (auto c : changes) result.emplace_back(c, job->GetScript());
 		}
 		else if (organization) {
 			changes = organization->ExecNode(node, story->GetScript());
+			for (auto c : changes) result.emplace_back(c, organization->GetScript());
 		}
-		result.insert(result.end(), changes.begin(), changes.end());
 		timerSet.erase(it);
 		count++;
 	}
@@ -398,22 +399,8 @@ Organization* Society::GetOrganization(const string& name) const {
 	return nullptr;
 }
 
-void Society::ApplyChange(Populace* populace, Player* player, Change* change,
+vector<Event*> Society::ApplyChange(Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	auto type = change->GetType();
-
-	if (type == "bank_transaction") {
-		auto obj = dynamic_cast<BankTransactionChange*>(change);
-		if (!obj) return;
-
-		if (obj->GetName().size() == 0) {
-			player->AddDeposit(obj->GetAmount());
-		}
-		else {
-			auto citizen = populace->GetCitizen(obj->GetName());
-			if(citizen) {
-				citizen->AddDeposit(obj->GetAmount());
-			}
-		}
-	}
+	vector<Event*> result;
+	return result;
 }

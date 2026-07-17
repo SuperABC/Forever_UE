@@ -93,9 +93,10 @@ void Story::Tick(Player* player) {
 	script->SetValue("system.time.second", currentTime.GetSecond());
 }
 
-void Story::ApplyChange(Change* change,
+vector<Event*> Story::ApplyChange(Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
 	Script* targetScript) {
+	vector<Event*> result;
 	if (change == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
 	}
@@ -114,7 +115,7 @@ void Story::ApplyChange(Change* change,
 		if (obj->GetVariable().substr(0, 7) == "system." ||
 			obj->GetVariable().substr(0, 7) == "self." ||
 			obj->GetVariable().substr(0, 7) == "local.") {
-			return;
+			return result;
 		}
 		Condition conditionVariable;
 		conditionVariable.ParseCondition(obj->GetVariable());
@@ -129,7 +130,7 @@ void Story::ApplyChange(Change* change,
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to RemoveValueChange.\n");
 		}
 		if (obj->GetVariable().substr(0, 7) == "system.") {
-			return;
+			return result;
 		}
 		script->RemoveValue(obj->GetVariable());
 	}
@@ -160,6 +161,7 @@ void Story::ApplyChange(Change* change,
 
 		CreateTimer(name, Time(time), obj->GetCategory(), label);
 	}
+	return result;
 }
 
 Script* Story::GetScript() const {

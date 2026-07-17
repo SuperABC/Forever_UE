@@ -131,39 +131,59 @@ void AStoryBase::ApplyChanges(const vector<Change*>& changes,
 	for (auto change : changes) {
 		if (!change) continue;
 		if (change->GetCondition().EvaluateBool(getValues)) {
-			global->GetMap()->ApplyChange(change, getValues);
-			global->GetPopulace()->ApplyChange(global->GetMap(), change, getValues);
-			global->GetSociety()->ApplyChange(global->GetPopulace(), global->GetPlayer(), change, getValues);
-			global->GetStory()->ApplyChange(change, getValues, ownerScript);
-			global->GetIndustry()->ApplyChange(change, getValues);
-			global->GetTraffic()->ApplyChange(change, getValues);
-			global->GetPlayer()->ApplyChange(change, getValues);
+			vector<Event*> events;
+			for (auto e : global->GetMap()->ApplyChange(change, getValues)) events.push_back(e);
+			for (auto e : global->GetPopulace()->ApplyChange(global->GetMap(), global->GetPlayer(), change, getValues)) events.push_back(e);
+			for (auto e : global->GetSociety()->ApplyChange(change, getValues)) events.push_back(e);
+			for (auto e : global->GetStory()->ApplyChange(change, getValues, ownerScript)) events.push_back(e);
+			for (auto e : global->GetIndustry()->ApplyChange(change, getValues)) events.push_back(e);
+			for (auto e : global->GetTraffic()->ApplyChange(change, getValues)) events.push_back(e);
+			for (auto e : global->GetPlayer()->ApplyChange(change, getValues)) events.push_back(e);
 
-			ApplyChange(change, getValues, ownerScript);
+			for (auto e : ApplyChange(change, getValues, ownerScript)) events.push_back(e);
+
+			for (auto event : events) {
+				MatchEvent(event, ownerScript, getValues);
+				delete event;
+			}
 		}
 	}
 }
 
-void AStoryBase::ApplySchedulerChanges(vector<Change*>& changes) {
-	auto story = global->GetStory();
-	if (!story) return;
-	auto storyScript = story->GetScript();
-	if (!storyScript) return;
-	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
-		[&](const string& valueName) -> pair<bool, ValueType> {
-			return storyScript->GetValue(valueName);
+void AStoryBase::ApplyChanges(const vector<pair<Change*, Script*>>& changes,
+	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	for (auto& [change, ownerScript] : changes) {
+		if (!change) continue;
+		if (ownerScript) {
+			getValues.push_back([ownerScript](const string& v) {
+				return ownerScript->GetValue(v);
+			});
 		}
-	};
-	ApplyChanges(changes, getValues, nullptr);
-	for (auto change : changes) {
-		delete change;
+		if (change->GetCondition().EvaluateBool(getValues)) {
+			vector<Event*> events;
+			for (auto e : global->GetMap()->ApplyChange(change, getValues)) events.push_back(e);
+			for (auto e : global->GetPopulace()->ApplyChange(global->GetMap(), global->GetPlayer(), change, getValues)) events.push_back(e);
+			for (auto e : global->GetSociety()->ApplyChange(change, getValues)) events.push_back(e);
+			for (auto e : global->GetStory()->ApplyChange(change, getValues, ownerScript)) events.push_back(e);
+			for (auto e : global->GetIndustry()->ApplyChange(change, getValues)) events.push_back(e);
+			for (auto e : global->GetTraffic()->ApplyChange(change, getValues)) events.push_back(e);
+			for (auto e : global->GetPlayer()->ApplyChange(change, getValues)) events.push_back(e);
+
+			for (auto e : ApplyChange(change, getValues, ownerScript)) events.push_back(e);
+
+			for (auto event : events) {
+				MatchEvent(event, ownerScript, getValues);
+				delete event;
+			}
+		}
+		if (ownerScript) getValues.pop_back();
 	}
-	changes.clear();
 }
 
-void AStoryBase::ApplyChange(Change* change,
+vector<Event*> AStoryBase::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues,
 	Script* ownerScript) {
+	vector<Event*> result;
 	auto type = change->GetType();
 
 	if (type == "global_message") {
@@ -389,6 +409,7 @@ void AStoryBase::ApplyChange(Change* change,
 			ApplyChanges(obj->GetChanges(), innerGetValues, ownerScript);
 		}
 	}
+	return result;
 }
 
 void AStoryBase::FinishSection() {

@@ -69,7 +69,7 @@ public:
 	* @change: 变化对象
 	* @getValues: 值获取回调列表
 	*/
-	void ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>> getValues);
 
 	// 产品工厂

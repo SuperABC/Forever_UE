@@ -55,13 +55,13 @@ public:
 	* 时钟周期，返回本帧调度节点产生的变化列表（由调用方负责释放）
 	* @map, story, player: 地图、剧情、玩家
 	*/
-	std::vector<Change*> Tick(Map* map, Story* story, Player* player);
+	std::vector<std::pair<Change*, Script*>> Tick(Map* map, Story* story, Player* player);
 
 	/*
 	* 应用剧情变化
 	* @map, change, getValues: 地图、变化对象、值获取回调列表
 	*/
-	void ApplyChange(Map* map, Change* change,
+	std::vector<Event*> ApplyChange(Map* map, Player* player, Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	/*

@@ -76,7 +76,7 @@ public:
 	* @change: 变化事件
 	* @getValues: 脚本变量获取函数集合
 	*/
-	void ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	/*

@@ -971,8 +971,9 @@ void Map::Tick(Player* player) {
 
 }
 
-void Map::ApplyChange(Change* change,
+vector<Event*> Map::ApplyChange(Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	vector<Event*> result;
 	auto type = change->GetType();
 
 	auto findCabin = [&](const string& name) -> Cabin* {
@@ -999,7 +1000,7 @@ void Map::ApplyChange(Change* change,
 		conditionTarget.ParseCondition(obj->GetName());
 		string targetName = ToString(conditionTarget.EvaluateValue(getValues));
 		Cabin* cabin = findCabin(targetName);
-		if (!cabin) return;
+		if (!cabin) return result;
 		Condition conditionOption;
 		conditionOption.ParseCondition(obj->GetOption());
 		string option = ToString(conditionOption.EvaluateValue(getValues));
@@ -1014,12 +1015,13 @@ void Map::ApplyChange(Change* change,
 		conditionTarget.ParseCondition(obj->GetName());
 		string targetName = ToString(conditionTarget.EvaluateValue(getValues));
 		Cabin* cabin = findCabin(targetName);
-		if (!cabin) return;
+		if (!cabin) return result;
 		Condition conditionOption;
 		conditionOption.ParseCondition(obj->GetOption());
 		string option = ToString(conditionOption.EvaluateValue(getValues));
 		cabin->RemoveOption(option);
 	}
+	return result;
 }
 
 pair<int, int> Map::GetSize() const {

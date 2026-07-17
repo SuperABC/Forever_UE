@@ -336,7 +336,8 @@ void Industry::Tick(Player* player) {
 	}
 }
 
-void Industry::ApplyChange(Change* change,
+vector<Event*> Industry::ApplyChange(Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>> getValues) {
-
+	vector<Event*> result;
+	return result;
 }

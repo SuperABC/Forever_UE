@@ -155,7 +155,7 @@ void Populace::Destroy() {
 	name = nullptr;
 }
 
-vector<Change*> Populace::Tick(Map* map, Story* story, Player* player) {
+vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* player) {
 	static int step = 0;
 	static int stride = 20;
 
@@ -173,7 +173,7 @@ vector<Change*> Populace::Tick(Map* map, Story* story, Player* player) {
 		}
 	}
 
-	vector<Change*> result;
+	vector<pair<Change*, Script*>> result;
 	int count = 0;
 	while (count < MAX_CITIZEN_TIMERS_PER_TICK && !timerSet.empty()) {
 		auto it = timerSet.begin();
@@ -184,7 +184,7 @@ vector<Change*> Populace::Tick(Map* map, Story* story, Player* player) {
 			jobScripts.push_back(job->GetScript());
 		}
 		auto changes = citizen->GetScheduler()->ExecNode(node, story->GetScript(), jobScripts);
-		result.insert(result.end(), changes.begin(), changes.end());
+		for (auto c : changes) result.emplace_back(c, citizen->GetScheduler()->GetScript());
 		timerSet.erase(it);
 		count++;
 	}
@@ -207,8 +207,9 @@ vector<Change*> Populace::Tick(Map* map, Story* story, Player* player) {
 	return result;
 }
 
-void Populace::ApplyChange(Map* map, Change* change,
+vector<Event*> Populace::ApplyChange(Map* map, Player* player, Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	vector<Event*> result;
 	if (!change) {
 		THROW_EXCEPTION(NullPointerException, "Change is null.\n");
 	}
@@ -226,7 +227,7 @@ void Populace::ApplyChange(Map* map, Change* change,
 		string targetName = ToString(conditionTarget.EvaluateValue(getValues));
 		Person* target = GetCitizen(targetName);
 		if (!target) {
-			return;
+			return result;
 		}
 
 		Condition conditionOption;
@@ -372,7 +373,7 @@ void Populace::ApplyChange(Map* map, Change* change,
 		Person* person = GetCitizen(name);
 		if (!person) {
 			debugf("Warning: Target citizen %s not found.\n", name.data());
-			return;
+			return result;
 		}
 
 		condition.ParseCondition(obj->GetDestination());
@@ -380,7 +381,7 @@ void Populace::ApplyChange(Map* map, Change* change,
 		auto room = map->LocateRoom(destination);
 		if (!room) {
 			debugf("Warning: Destination room %s not found.\n", destination.data());
-			return;
+			return result;
 		}
 
 		Node* startNode = ResolveNavigationNode(person->GetCurrentRoom(), person->GetCurrentBuilding(),
@@ -388,16 +389,31 @@ void Populace::ApplyChange(Map* map, Change* change,
 		Node* endNode = ResolveNavigationNode(room, nullptr, nullptr, nullptr);
 		if (!endNode) {
 			debugf("Warning: Failed to resolve navigation destination %s.\n", destination.data());
-			return;
+			return result;
 		}
 		if (!startNode) {
 			person->SetStatus(room);
-			return;
+			return result;
 		}
 
 		auto path = map->AutoNavigation(startNode->GetId(), endNode->GetId());
 		if(path.size() > 0)person->SetStatus(room, path, currentTime);
 	}
+	else if (type == "bank_transaction") {
+		auto obj = dynamic_cast<BankTransactionChange*>(change);
+		if (!obj) return result;
+
+		if (obj->GetName().size() == 0) {
+			player->AddDeposit(obj->GetAmount());
+		}
+		else {
+			auto citizen = GetCitizen(obj->GetName());
+			if (citizen) {
+				citizen->AddDeposit(obj->GetAmount());
+			}
+		}
+	}
+	return result;
 }
 
 vector<Person*>& Populace::GetCitizens() {

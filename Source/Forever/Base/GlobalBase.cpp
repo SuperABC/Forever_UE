@@ -22,6 +22,7 @@
 #include "populace/populace.h"
 #include "society/society.h"
 #include "story/story.h"
+#include "story/script.h"
 #include "industry/industry.h"
 #include "traffic/traffic.h"
 #include "player/player.h"
@@ -203,14 +204,19 @@ void AGlobalBase::Tick(float DeltaTime) {
 
 	player->Tick(DeltaTime);
 	map->Tick(player);
-	auto societyChanges = society->Tick(player, story);
-	if (!societyChanges.empty() && storyActor) {
-		storyActor->ApplySchedulerChanges(societyChanges);
-	}
-	auto schedulerChanges = populace->Tick(map, story, player);
-	if (!schedulerChanges.empty() && storyActor) {
-		storyActor->ApplySchedulerChanges(schedulerChanges);
-	}
+	auto applyAndFree = [&](vector<pair<Change*, Script*>> changes) {
+		if (!changes.empty() && storyActor && story->GetScript()) {
+			vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+				[&](const string& v) -> pair<bool, ValueType> {
+					return story->GetScript()->GetValue(v);
+				}
+			};
+			storyActor->ApplyChanges(changes, getValues);
+		}
+		for (auto& [c, s] : changes) delete c;
+	};
+	applyAndFree(society->Tick(player, story));
+	applyAndFree(populace->Tick(map, story, player));
 	story->Tick(player);
 	industry->Tick(player);
 	traffic->Tick(player);

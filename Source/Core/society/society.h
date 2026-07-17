@@ -62,13 +62,13 @@ public:
 	* 时钟周期，返回本帧职业计划节点产生的变化列表（由调用方负责释放）
 	* @player, story: 玩家与剧情对象
 	*/
-	std::vector<Change*> Tick(Player* player, Story* story);
+	std::vector<std::pair<Change*, Script*>> Tick(Player* player, Story* story);
 
 	/*
 	* 应用剧情变化
 	* @change, getValues: 变化对象与值获取回调列表
 	*/
-	void ApplyChange(Populace* populace, Player* player, Change* change,
+	std::vector<Event*> ApplyChange(Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	/*
