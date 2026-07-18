@@ -524,6 +524,284 @@ int PuzzleResultEvent::GetResult() const {
 	return result;
 }
 
+TransactionResultEvent::TransactionResultEvent(bool result, string name) :
+	result(result), name(name) {
+
+}
+
+TransactionResultEvent::~TransactionResultEvent() {
+
+}
+
+string TransactionResultEvent::GetType() const {
+	return "transaction_result";
+}
+
+bool TransactionResultEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<TransactionResultEvent*>(e);
+	if (!other) return false;
+
+	bool matched = result == other->result;
+	if (name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		matched = matched && (ToString(condition.EvaluateValue(getValues)) == other->name);
+	}
+	else {
+		matched = matched && other->name.empty();
+	}
+	return matched;
+}
+
+void TransactionResultEvent::SetResult(bool result) {
+	this->result = result;
+}
+
+bool TransactionResultEvent::GetResult() const {
+	return result;
+}
+
+void TransactionResultEvent::SetName(string name) {
+	this->name = name;
+}
+
+string TransactionResultEvent::GetName() const {
+	return name;
+}
+
+ObjectResultEvent::ObjectResultEvent(string action, string object, bool result, int num) :
+	action(action), object(object), result(result), num(num) {
+
+}
+
+ObjectResultEvent::~ObjectResultEvent() {
+
+}
+
+string ObjectResultEvent::GetType() const {
+	return "object_result";
+}
+
+bool ObjectResultEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<ObjectResultEvent*>(e);
+	if (!other) return false;
+
+	if (!action.empty() && action != other->action) return false;
+
+	if (!object.empty() && !other->object.empty()) {
+		Condition objectCondition;
+		objectCondition.ParseCondition(object);
+		if (ToString(objectCondition.EvaluateValue(getValues)) != other->object) return false;
+	}
+
+	return true;
+}
+
+void ObjectResultEvent::SetAction(string action) {
+	this->action = action;
+}
+
+string ObjectResultEvent::GetAction() const {
+	return action;
+}
+
+void ObjectResultEvent::SetObject(string object) {
+	this->object = object;
+}
+
+string ObjectResultEvent::GetObject() const {
+	return object;
+}
+
+void ObjectResultEvent::SetResult(bool result) {
+	this->result = result;
+}
+
+bool ObjectResultEvent::GetResult() const {
+	return result;
+}
+
+void ObjectResultEvent::SetNum(int num) {
+	this->num = num;
+}
+
+int ObjectResultEvent::GetNum() const {
+	return num;
+}
+
+TimeUpEvent::TimeUpEvent(string name) :
+	name(name) {
+
+}
+
+TimeUpEvent::~TimeUpEvent() {
+
+}
+
+string TimeUpEvent::GetType() const {
+	return "time_up";
+}
+
+bool TimeUpEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<TimeUpEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
+	}
+	return result;
+}
+
+void TimeUpEvent::SetName(string name) {
+	this->name = name;
+}
+
+string TimeUpEvent::GetName() const {
+	return name;
+}
+
+BattleWinEvent::BattleWinEvent(string enemy) :
+	enemy(enemy) {
+
+}
+
+BattleWinEvent::~BattleWinEvent() {
+
+}
+
+string BattleWinEvent::GetType() const {
+	return "battle_win";
+}
+
+bool BattleWinEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<BattleWinEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (enemy.size() > 0 && other->enemy.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(enemy);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
+	}
+	return result;
+}
+
+void BattleWinEvent::SetEnemy(string enemy) {
+	this->enemy = enemy;
+}
+
+string BattleWinEvent::GetEnemy() const {
+	return enemy;
+}
+
+BattleLoseEvent::BattleLoseEvent(string enemy) :
+	enemy(enemy) {
+
+}
+
+BattleLoseEvent::~BattleLoseEvent() {
+
+}
+
+string BattleLoseEvent::GetType() const {
+	return "battle_lose";
+}
+
+bool BattleLoseEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<BattleLoseEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (enemy.size() > 0 && other->enemy.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(enemy);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
+	}
+	return result;
+}
+
+void BattleLoseEvent::SetEnemy(string enemy) {
+	this->enemy = enemy;
+}
+
+string BattleLoseEvent::GetEnemy() const {
+	return enemy;
+}
+
+NpcArriveEvent::NpcArriveEvent(string name, string address)
+	: name(name), address(address) {
+
+}
+
+NpcArriveEvent::~NpcArriveEvent() {
+
+}
+
+string NpcArriveEvent::GetType() const {
+	return "npc_arrive";
+}
+
+bool NpcArriveEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<NpcArriveEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
+	}
+	if (address.size() > 0 && other->address.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(address);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->address);
+	}
+	return result;
+}
+
+void NpcArriveEvent::SetName(string name) {
+	this->name = name;
+}
+
+string NpcArriveEvent::GetName() const {
+	return name;
+}
+
+void NpcArriveEvent::SetAddress(string address) {
+	this->address = address;
+}
+
+string NpcArriveEvent::GetAddress() const {
+	return address;
+}
+
 NPCMeetEvent::NPCMeetEvent(string npc) :
 	npc(npc) {
 
@@ -649,86 +927,6 @@ void CitizenDeceaseEvent::SetReason(string reason) {
 
 string CitizenDeceaseEvent::GetReason() const {
 	return reason;
-}
-
-DepositChangeEvent::DepositChangeEvent(int result, int delta)
-	: result(result), delta(delta) {
-
-}
-
-DepositChangeEvent::~DepositChangeEvent() {
-
-}
-
-string DepositChangeEvent::GetType() const {
-	return "deposit_change";
-}
-
-bool DepositChangeEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<DepositChangeEvent*>(e);
-	if (!other) return false;
-
-	return result == other->result && delta == other->delta;
-}
-
-void DepositChangeEvent::SetResult(int result) {
-	this->result = result;
-}
-
-int DepositChangeEvent::GetResult() {
-	return result;
-}
-
-void DepositChangeEvent::SetDelta(int delta) {
-	this->delta = delta;
-}
-
-int DepositChangeEvent::GetDelta() {
-	return delta;
-}
-
-CashChangeEvent::CashChangeEvent(int result, int delta)
-	: result(result), delta(delta) {
-
-}
-
-CashChangeEvent::~CashChangeEvent() {
-
-}
-
-string CashChangeEvent::GetType() const {
-	return "cash_change";
-}
-
-bool CashChangeEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<CashChangeEvent*>(e);
-	if (!other) return false;
-
-	return result == other->result && delta == other->delta;
-}
-
-void CashChangeEvent::SetResult(int result) {
-	this->result = result;
-}
-
-int CashChangeEvent::GetResult() {
-	return result;
-}
-
-void CashChangeEvent::SetDelta(int delta) {
-	this->delta = delta;
-}
-
-int CashChangeEvent::GetDelta() {
-	return delta;
 }
 
 PlayerInjuredEvent::PlayerInjuredEvent(string wound) :
@@ -945,196 +1143,6 @@ void PlayerSleepEvent::SetHour(int hour) {
 
 int PlayerSleepEvent::GetHour() {
 	return hour;
-}
-
-TimeUpEvent::TimeUpEvent(string name) :
-	name(name) {
-
-}
-
-TimeUpEvent::~TimeUpEvent() {
-
-}
-
-string TimeUpEvent::GetType() const {
-	return "time_up";
-}
-
-bool TimeUpEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<TimeUpEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (name.size() > 0 && other->name.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(name);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
-	}
-	return result;
-}
-
-void TimeUpEvent::SetName(string name) {
-	this->name = name;
-}
-
-string TimeUpEvent::GetName() const {
-	return name;
-}
-
-BattleWinEvent::BattleWinEvent(string enemy) :
-	enemy(enemy) {
-
-}
-
-BattleWinEvent::~BattleWinEvent() {
-
-}
-
-string BattleWinEvent::GetType() const {
-	return "battle_win";
-}
-
-bool BattleWinEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<BattleWinEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (enemy.size() > 0 && other->enemy.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(enemy);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
-	}
-	return result;
-}
-
-void BattleWinEvent::SetEnemy(string enemy) {
-	this->enemy = enemy;
-}
-
-string BattleWinEvent::GetEnemy() const {
-	return enemy;
-}
-
-BattleLoseEvent::BattleLoseEvent(string enemy) :
-	enemy(enemy) {
-
-}
-
-BattleLoseEvent::~BattleLoseEvent() {
-
-}
-
-string BattleLoseEvent::GetType() const {
-	return "battle_lose";
-}
-
-bool BattleLoseEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<BattleLoseEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (enemy.size() > 0 && other->enemy.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(enemy);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
-	}
-	return result;
-}
-
-void BattleLoseEvent::SetEnemy(string enemy) {
-	this->enemy = enemy;
-}
-
-string BattleLoseEvent::GetEnemy() const {
-	return enemy;
-}
-
-EscapeSuccessEvent::EscapeSuccessEvent(string enemy) :
-	enemy(enemy) {
-
-}
-
-EscapeSuccessEvent::~EscapeSuccessEvent() {
-
-}
-
-string EscapeSuccessEvent::GetType() const {
-	return "escape_success";
-}
-
-bool EscapeSuccessEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<EscapeSuccessEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (enemy.size() > 0 && other->enemy.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(enemy);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
-	}
-	return result;
-}
-
-void EscapeSuccessEvent::SetEnemy(string enemy) {
-	this->enemy = enemy;
-}
-
-string EscapeSuccessEvent::GetEnemy() const {
-	return enemy;
-}
-
-EscapeFailEvent::EscapeFailEvent(string enemy) :
-	enemy(enemy) {
-
-}
-
-EscapeFailEvent::~EscapeFailEvent() {
-
-}
-
-string EscapeFailEvent::GetType() const {
-	return "escape_fail";
-}
-
-bool EscapeFailEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<EscapeFailEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (enemy.size() > 0 && other->enemy.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(enemy);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->enemy);
-	}
-	return result;
-}
-
-void EscapeFailEvent::SetEnemy(string enemy) {
-	this->enemy = enemy;
-}
-
-string EscapeFailEvent::GetEnemy() const {
-	return enemy;
 }
 
 CultivationChangeEvent::CultivationChangeEvent(string method, int level)
@@ -1390,170 +1398,6 @@ void PolicyChangeEvent::SetStatus(bool status) {
 
 bool PolicyChangeEvent::GetStatus() {
 	return status;
-}
-
-NpcArriveEvent::NpcArriveEvent(string name, string address)
-	: name(name), address(address) {
-
-}
-
-NpcArriveEvent::~NpcArriveEvent() {
-
-}
-
-string NpcArriveEvent::GetType() const {
-	return "npc_arrive";
-}
-
-bool NpcArriveEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<NpcArriveEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (name.size() > 0 && other->name.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(name);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
-	}
-	if (address.size() > 0 && other->address.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(address);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->address);
-	}
-	return result;
-}
-
-void NpcArriveEvent::SetName(string name) {
-	this->name = name;
-}
-
-string NpcArriveEvent::GetName() const {
-	return name;
-}
-
-void NpcArriveEvent::SetAddress(string address) {
-	this->address = address;
-}
-
-string NpcArriveEvent::GetAddress() const {
-	return address;
-}
-
-TransactionResultEvent::TransactionResultEvent(bool result, string name) :
-	result(result), name(name) {
-
-}
-
-TransactionResultEvent::~TransactionResultEvent() {
-
-}
-
-string TransactionResultEvent::GetType() const {
-	return "transaction_result";
-}
-
-bool TransactionResultEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<TransactionResultEvent*>(e);
-	if (!other) return false;
-
-	bool matched = result == other->result;
-	if (name.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(name);
-		matched = matched && (ToString(condition.EvaluateValue(getValues)) == other->name);
-	}
-	else {
-		matched = matched && other->name.empty();
-	}
-	return matched;
-}
-
-void TransactionResultEvent::SetResult(bool result) {
-	this->result = result;
-}
-
-bool TransactionResultEvent::GetResult() const {
-	return result;
-}
-
-void TransactionResultEvent::SetName(string name) {
-	this->name = name;
-}
-
-string TransactionResultEvent::GetName() const {
-	return name;
-}
-
-ObjectResultEvent::ObjectResultEvent(string action, string object, bool result, int num) :
-	action(action), object(object), result(result), num(num) {
-
-}
-
-ObjectResultEvent::~ObjectResultEvent() {
-
-}
-
-string ObjectResultEvent::GetType() const {
-	return "object_result";
-}
-
-bool ObjectResultEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<ObjectResultEvent*>(e);
-	if (!other) return false;
-
-	if (!action.empty() && action != other->action) return false;
-
-	if (!object.empty() && !other->object.empty()) {
-		Condition objectCondition;
-		objectCondition.ParseCondition(object);
-		if (ToString(objectCondition.EvaluateValue(getValues)) != other->object) return false;
-	}
-
-	return true;
-}
-
-void ObjectResultEvent::SetAction(string action) {
-	this->action = action;
-}
-
-string ObjectResultEvent::GetAction() const {
-	return action;
-}
-
-void ObjectResultEvent::SetObject(string object) {
-	this->object = object;
-}
-
-string ObjectResultEvent::GetObject() const {
-	return object;
-}
-
-void ObjectResultEvent::SetResult(bool result) {
-	this->result = result;
-}
-
-bool ObjectResultEvent::GetResult() const {
-	return result;
-}
-
-void ObjectResultEvent::SetNum(int num) {
-	this->num = num;
-}
-
-int ObjectResultEvent::GetNum() const {
-	return num;
 }
 
 

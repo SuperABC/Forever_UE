@@ -179,6 +179,9 @@ CMD_TYPE Parser::GetAction(const string& action) const {
 	if (action == "event") {
 		return CMD_EVENT;
 	}
+	if (action == "change") {
+		return CMD_CHANGE;
+	}
 	if (action == "lookup") {
 		return CMD_LOOKUP;
 	}

@@ -381,22 +381,6 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 			auto room = obj["room"];
 			event = new LeaveRoomEvent(zone.AsString(), building.AsString(), room.AsString());
 		}
-		else if (type == "deposit_change") {
-			auto result = obj["result"];
-			auto delta = obj["delta"];
-			if (result.IsNull() || delta.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing result or delta for deposit_change event.\n");
-			}
-			event = new DepositChangeEvent(result.AsInt(), delta.AsInt());
-		}
-		else if (type == "cash_change") {
-			auto result = obj["result"];
-			auto delta = obj["delta"];
-			if (result.IsNull() || delta.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing result or delta for cash_change event.\n");
-			}
-			event = new CashChangeEvent(result.AsInt(), delta.AsInt());
-		}
 		else if (type == "player_injured") {
 			auto wound = obj["wound"];
 			if (wound.IsNull()) {
@@ -463,20 +447,6 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 		else if (type == "puzzle_result") {
 			auto result = obj["result"];
 			event = new PuzzleResultEvent(result.IsNull() ? 0 : result.AsInt());
-		}
-		else if (type == "escape_success") {
-			auto enemy = obj["enemy"];
-			if (enemy.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing enemy for escape_success event.\n");
-			}
-			event = new EscapeSuccessEvent(enemy.AsString());
-		}
-		else if (type == "escape_fail") {
-			auto enemy = obj["enemy"];
-			if (enemy.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing enemy for escape_fail event.\n");
-			}
-			event = new EscapeFailEvent(enemy.AsString());
 		}
 		else if (type == "cultivation_change") {
 			auto method = obj["method"];

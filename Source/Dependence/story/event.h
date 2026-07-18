@@ -629,6 +629,338 @@ private:
 	int result;
 };
 
+// 交易结果（已实现）
+class TransactionResultEvent : public Event {
+public:
+	/*
+	* 构造交易结果事件
+	* @result: 是否成功
+	* @name: 交易对象姓名，为空代表玩家
+	*/
+	TransactionResultEvent(bool result, std::string name = "");
+
+	/*
+	* 析构交易结果事件
+	*/
+	virtual ~TransactionResultEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置交易结果
+	* @result: 是否成功
+	*/
+	void SetResult(bool result);
+
+	/*
+	* 获取交易结果
+	*/
+	bool GetResult() const;
+
+	/*
+	* 设置交易对象姓名
+	* @name: 姓名，为空代表玩家
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取交易对象姓名
+	*/
+	std::string GetName() const;
+
+private:
+	// 是否成功
+	bool result;
+
+	// 交易对象姓名，为空代表玩家
+	std::string name;
+};
+
+// 物品操作结果（已实现）
+class ObjectResultEvent : public Event {
+public:
+	/*
+	* 构造物品操作结果事件
+	* @action: 操作类型，"give"/"remove"，为空时 Match 匹配任意操作
+	* @object: 被操作的 object 类型
+	* @result: 是否全部成功
+	* @num: 失败时剩余未操作数量，-1 表示不指定
+	*/
+	ObjectResultEvent(std::string action, std::string object, bool result, int num = -1);
+
+	/*
+	* 析构物品操作结果事件
+	*/
+	virtual ~ObjectResultEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置操作类型
+	* @action: 操作类型
+	*/
+	void SetAction(std::string action);
+
+	/*
+	* 获取操作类型
+	*/
+	std::string GetAction() const;
+
+	/*
+	* 设置 object 类型
+	* @object: object 类型
+	*/
+	void SetObject(std::string object);
+
+	/*
+	* 获取 object 类型
+	*/
+	std::string GetObject() const;
+
+	/*
+	* 设置是否成功
+	* @result: 是否成功
+	*/
+	void SetResult(bool result);
+
+	/*
+	* 获取是否成功
+	*/
+	bool GetResult() const;
+
+	/*
+	* 设置剩余未操作数量
+	* @num: 数量，-1 表示不指定
+	*/
+	void SetNum(int num);
+
+	/*
+	* 获取剩余未操作数量
+	*/
+	int GetNum() const;
+
+private:
+	// 操作类型
+	std::string action;
+
+	// object 类型
+	std::string object;
+
+	// 是否成功
+	bool result;
+
+	// 剩余未操作数量
+	int num;
+};
+
+// 计时器到时（已实现）
+class TimeUpEvent : public Event {
+public:
+	/*
+	* 构造计时器到时事件
+	* @name: 计时器名称
+	*/
+	TimeUpEvent(std::string name);
+
+	/*
+	* 析构计时器到时事件
+	*/
+	virtual ~TimeUpEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置计时器名称
+	* @name: 名称
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取计时器名称
+	*/
+	std::string GetName() const;
+
+private:
+	// 计时器名称
+	std::string name;
+};
+
+// 战斗胜利（已实现）
+class BattleWinEvent : public Event {
+public:
+	/*
+	* 构造战斗胜利事件
+	* @enemy: 敌人名称
+	*/
+	BattleWinEvent(std::string enemy);
+
+	/*
+	* 析构战斗胜利事件
+	*/
+	virtual ~BattleWinEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置敌人名称
+	* @enemy: 名称
+	*/
+	void SetEnemy(std::string enemy);
+
+	/*
+	* 获取敌人名称
+	*/
+	std::string GetEnemy() const;
+
+private:
+	// 敌人名称
+	std::string enemy;
+};
+
+// 战斗失败（已实现）
+class BattleLoseEvent : public Event {
+public:
+	/*
+	* 构造战斗失败事件
+	* @enemy: 敌人名称
+	*/
+	BattleLoseEvent(std::string enemy);
+
+	/*
+	* 析构战斗失败事件
+	*/
+	virtual ~BattleLoseEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置敌人名称
+	* @enemy: 名称
+	*/
+	void SetEnemy(std::string enemy);
+
+	/*
+	* 获取敌人名称
+	*/
+	std::string GetEnemy() const;
+
+private:
+	// 敌人名称
+	std::string enemy;
+};
+
+// NPC抵达（已实现）
+class NpcArriveEvent : public Event {
+public:
+	/*
+	* 构造导航抵达事件
+	* @name, address: 抵达者姓名与目标地址
+	*/
+	NpcArriveEvent(std::string name, std::string address);
+
+	/*
+	* 析构导航抵达事件
+	*/
+	virtual ~NpcArriveEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置抵达者姓名
+	* @name: 姓名
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取抵达者姓名
+	*/
+	std::string GetName() const;
+
+	/*
+	* 设置目标地址
+	* @address: 地址
+	*/
+	void SetAddress(std::string address);
+
+	/*
+	* 获取目标地址
+	*/
+	std::string GetAddress() const;
+
+private:
+	// 抵达者姓名
+	std::string name;
+
+	// 目标地址
+	std::string address;
+};
+
 // NPC相遇
 class NPCMeetEvent : public Event {
 public:
@@ -770,120 +1102,6 @@ private:
 
 	// 死亡原因
 	std::string reason;
-};
-
-// 存款变化
-class DepositChangeEvent : public Event {
-public:
-	/*
-	* 构造存款变化事件
-	* @result, delta: 变化后余额与变化量
-	*/
-	DepositChangeEvent(int result, int delta);
-
-	/*
-	* 析构存款变化事件
-	*/
-	virtual ~DepositChangeEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置变化后余额
-	* @result: 余额
-	*/
-	void SetResult(int result);
-
-	/*
-	* 获取变化后余额
-	*/
-	int GetResult();
-
-	/*
-	* 设置变化量
-	* @delta: 变化量
-	*/
-	void SetDelta(int delta);
-
-	/*
-	* 获取变化量
-	*/
-	int GetDelta();
-
-private:
-	// 变化后余额
-	int result;
-
-	// 变化量
-	int delta;
-};
-
-// 现金变化
-class CashChangeEvent : public Event {
-public:
-	/*
-	* 构造现金变化事件
-	* @result, delta: 变化后余额与变化量
-	*/
-	CashChangeEvent(int result, int delta);
-
-	/*
-	* 析构现金变化事件
-	*/
-	virtual ~CashChangeEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置变化后余额
-	* @result: 余额
-	*/
-	void SetResult(int result);
-
-	/*
-	* 获取变化后余额
-	*/
-	int GetResult();
-
-	/*
-	* 设置变化量
-	* @delta: 变化量
-	*/
-	void SetDelta(int delta);
-
-	/*
-	* 获取变化量
-	*/
-	int GetDelta();
-
-private:
-	// 变化后余额
-	int result;
-
-	// 变化量
-	int delta;
 };
 
 // 受伤
@@ -1144,221 +1362,6 @@ private:
 	int hour;
 };
 
-// 计时器到时
-class TimeUpEvent : public Event {
-public:
-	/*
-	* 构造计时器到时事件
-	* @name: 计时器名称
-	*/
-	TimeUpEvent(std::string name);
-
-	/*
-	* 析构计时器到时事件
-	*/
-	virtual ~TimeUpEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置计时器名称
-	* @name: 名称
-	*/
-	void SetName(std::string name);
-
-	/*
-	* 获取计时器名称
-	*/
-	std::string GetName() const;
-
-private:
-	// 计时器名称
-	std::string name;
-};
-
-// 战斗胜利
-class BattleWinEvent : public Event {
-public:
-	/*
-	* 构造战斗胜利事件
-	* @enemy: 敌人名称
-	*/
-	BattleWinEvent(std::string enemy);
-
-	/*
-	* 析构战斗胜利事件
-	*/
-	virtual ~BattleWinEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置敌人名称
-	* @enemy: 名称
-	*/
-	void SetEnemy(std::string enemy);
-
-	/*
-	* 获取敌人名称
-	*/
-	std::string GetEnemy() const;
-
-private:
-	// 敌人名称
-	std::string enemy;
-};
-
-// 战斗失败
-class BattleLoseEvent : public Event {
-public:
-	/*
-	* 构造战斗失败事件
-	* @enemy: 敌人名称
-	*/
-	BattleLoseEvent(std::string enemy);
-
-	/*
-	* 析构战斗失败事件
-	*/
-	virtual ~BattleLoseEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置敌人名称
-	* @enemy: 名称
-	*/
-	void SetEnemy(std::string enemy);
-
-	/*
-	* 获取敌人名称
-	*/
-	std::string GetEnemy() const;
-
-private:
-	// 敌人名称
-	std::string enemy;
-};
-
-// 逃跑成功
-class EscapeSuccessEvent : public Event {
-public:
-	/*
-	* 构造逃跑成功事件
-	* @enemy: 敌人名称
-	*/
-	EscapeSuccessEvent(std::string enemy);
-
-	/*
-	* 析构逃跑成功事件
-	*/
-	virtual ~EscapeSuccessEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置敌人名称
-	* @enemy: 名称
-	*/
-	void SetEnemy(std::string enemy);
-
-	/*
-	* 获取敌人名称
-	*/
-	std::string GetEnemy() const;
-
-private:
-	// 敌人名称
-	std::string enemy;
-};
-
-// 逃跑失败
-class EscapeFailEvent : public Event {
-public:
-	/*
-	* 构造逃跑失败事件
-	* @enemy: 敌人名称
-	*/
-	EscapeFailEvent(std::string enemy);
-
-	/*
-	* 析构逃跑失败事件
-	*/
-	virtual ~EscapeFailEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置敌人名称
-	* @enemy: 名称
-	*/
-	void SetEnemy(std::string enemy);
-
-	/*
-	* 获取敌人名称
-	*/
-	std::string GetEnemy() const;
-
-private:
-	// 敌人名称
-	std::string enemy;
-};
-
 // 修炼变化
 class CultivationChangeEvent : public Event {
 public:
@@ -1600,209 +1603,6 @@ public:
 private:
 	// 天气类型
 	std::string weather;
-};
-
-// NPC抵达
-class NpcArriveEvent : public Event {
-public:
-	/*
-	* 构造导航抵达事件
-	* @name, address: 抵达者姓名与目标地址
-	*/
-	NpcArriveEvent(std::string name, std::string address);
-
-	/*
-	* 析构导航抵达事件
-	*/
-	virtual ~NpcArriveEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置抵达者姓名
-	* @name: 姓名
-	*/
-	void SetName(std::string name);
-
-	/*
-	* 获取抵达者姓名
-	*/
-	std::string GetName() const;
-
-	/*
-	* 设置目标地址
-	* @address: 地址
-	*/
-	void SetAddress(std::string address);
-
-	/*
-	* 获取目标地址
-	*/
-	std::string GetAddress() const;
-
-private:
-	// 抵达者姓名
-	std::string name;
-
-	// 目标地址
-	std::string address;
-};
-
-// 交易结果
-class TransactionResultEvent : public Event {
-public:
-	/*
-	* 构造交易结果事件
-	* @result: 是否成功
-	* @name: 交易对象姓名，为空代表玩家
-	*/
-	TransactionResultEvent(bool result, std::string name = "");
-
-	/*
-	* 析构交易结果事件
-	*/
-	virtual ~TransactionResultEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置交易结果
-	* @result: 是否成功
-	*/
-	void SetResult(bool result);
-
-	/*
-	* 获取交易结果
-	*/
-	bool GetResult() const;
-
-	/*
-	* 设置交易对象姓名
-	* @name: 姓名，为空代表玩家
-	*/
-	void SetName(std::string name);
-
-	/*
-	* 获取交易对象姓名
-	*/
-	std::string GetName() const;
-
-private:
-	// 是否成功
-	bool result;
-
-	// 交易对象姓名，为空代表玩家
-	std::string name;
-};
-
-// 物品操作结果
-class ObjectResultEvent : public Event {
-public:
-	/*
-	* 构造物品操作结果事件
-	* @action: 操作类型，"give"/"remove"，为空时 Match 匹配任意操作
-	* @object: 被操作的 object 类型
-	* @result: 是否全部成功
-	* @num: 失败时剩余未操作数量，-1 表示不指定
-	*/
-	ObjectResultEvent(std::string action, std::string object, bool result, int num = -1);
-
-	/*
-	* 析构物品操作结果事件
-	*/
-	virtual ~ObjectResultEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置操作类型
-	* @action: 操作类型
-	*/
-	void SetAction(std::string action);
-
-	/*
-	* 获取操作类型
-	*/
-	std::string GetAction() const;
-
-	/*
-	* 设置 object 类型
-	* @object: object 类型
-	*/
-	void SetObject(std::string object);
-
-	/*
-	* 获取 object 类型
-	*/
-	std::string GetObject() const;
-
-	/*
-	* 设置是否成功
-	* @result: 是否成功
-	*/
-	void SetResult(bool result);
-
-	/*
-	* 获取是否成功
-	*/
-	bool GetResult() const;
-
-	/*
-	* 设置剩余未操作数量
-	* @num: 数量，-1 表示不指定
-	*/
-	void SetNum(int num);
-
-	/*
-	* 获取剩余未操作数量
-	*/
-	int GetNum() const;
-
-private:
-	// 操作类型
-	std::string action;
-
-	// object 类型
-	std::string object;
-
-	// 是否成功
-	bool result;
-
-	// 剩余未操作数量
-	int num;
 };
 
 // 政策变化
