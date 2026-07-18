@@ -3,6 +3,7 @@
 #include "player/asset.h"
 #include "player/puzzle.h"
 #include "player/app.h"
+#include "story/event.h"
 #include "story/change.h"
 
 
@@ -218,6 +219,7 @@ vector<Event*> Player::ApplyChange(Change* change,
 		auto obj = dynamic_cast<GiveObjectChange*>(change);
 		if (!obj) return result;
 
+		int notPlaced = 0;
 		for (int i = 0; i < obj->GetNum(); ++i) {
 			auto* objectAsset = new Asset(assetFactory, obj->GetObject());
 			objectAsset->DefineAsset();
@@ -258,8 +260,10 @@ vector<Event*> Player::ApplyChange(Change* change,
 
 			if (!placed) {
 				delete objectAsset;
+				notPlaced++;
 			}
 		}
+		result.push_back(new ObjectResultEvent("give", obj->GetObject(), notPlaced == 0, notPlaced));
 	}
 	else if (type == "remove_object") {
 		auto obj = dynamic_cast<RemoveObjectChange*>(change);
@@ -292,6 +296,7 @@ vector<Event*> Player::ApplyChange(Change* change,
 		collectFromSlot(backPack, "back");
 
 		if (static_cast<int>(found.size()) < obj->GetNum() && !obj->GetForce()) {
+			result.push_back(new ObjectResultEvent("remove", obj->GetObject(), false, obj->GetNum()));
 			return result;
 		}
 
@@ -307,6 +312,8 @@ vector<Event*> Player::ApplyChange(Change* change,
 				item.parent->RemoveContent(item.key);
 			}
 		}
+		int notRemoved = obj->GetNum() - toDelete;
+		result.push_back(new ObjectResultEvent("remove", obj->GetObject(), notRemoved == 0, notRemoved));
 	}
 
 	return result;

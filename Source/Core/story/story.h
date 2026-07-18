@@ -99,6 +99,15 @@ public:
 	// 获取玩家当前房间
 	Room* GetCurrentRoom(Map* map);
 
+	/*
+	* 为事件注入 local 变量并追加到 getValues，返回创建的 Script*（无 local 时返回 nullptr）
+	* 调用方在不再需要时应 pop_back getValues 并 delete 返回值
+	* @event: 触发事件
+	* @getValues: 值获取回调列表（引用）
+	*/
+	static Script* CreateLocal(Event* event,
+		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+
 	// 脚本工厂
 	static ScriptFactory* scriptFactory;
 

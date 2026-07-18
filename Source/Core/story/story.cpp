@@ -114,8 +114,8 @@ vector<Event*> Story::ApplyChange(Change* change,
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to SetValueChange.\n");
 		}
 		if (obj->GetVariable().substr(0, 7) == "system." ||
-			obj->GetVariable().substr(0, 7) == "self." ||
-			obj->GetVariable().substr(0, 7) == "local.") {
+			obj->GetVariable().substr(0, 5) == "self." ||
+			obj->GetVariable().substr(0, 6) == "local.") {
 			return result;
 		}
 		Condition conditionVariable;
@@ -225,3 +225,31 @@ Room* Story::GetCurrentRoom(Map* map) {
 	return nullptr;
 }
 
+Script* Story::CreateLocal(Event* event,
+	vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!event) return nullptr;
+
+	Script* local = nullptr;
+
+	if (auto* e = dynamic_cast<PuzzleResultEvent*>(event)) {
+		local = new Script(Story::scriptFactory, "empty");
+		local->SetValue("local.result", e->GetResult());
+	}
+	else if (auto* e = dynamic_cast<OptionDialogEvent*>(event)) {
+		local = new Script(Story::scriptFactory, "empty");
+		local->SetValue("local.name", e->GetName());
+		local->SetValue("local.option", e->GetOption());
+	}
+	else if (auto* e = dynamic_cast<ObjectResultEvent*>(event)) {
+		local = new Script(Story::scriptFactory, "empty");
+		local->SetValue("local.result", e->GetResult());
+		local->SetValue("local.num", e->GetNum());
+	}
+
+	if (local) {
+		getValues.push_back([local](const string& name) -> pair<bool, ValueType> {
+			return local->GetValue(name);
+		});
+	}
+	return local;
+}

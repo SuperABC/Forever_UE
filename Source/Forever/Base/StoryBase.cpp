@@ -143,7 +143,9 @@ void AStoryBase::ApplyChanges(const vector<Change*>& changes,
 			for (auto e : ApplyChange(change, getValues, ownerScript)) events.push_back(e);
 
 			for (auto event : events) {
+				Script* local = Story::CreateLocal(event, getValues);
 				MatchEvent(event, ownerScript, getValues);
+				if (local) { getValues.pop_back(); delete local; }
 				delete event;
 			}
 		}
@@ -172,7 +174,9 @@ void AStoryBase::ApplyChanges(const vector<pair<Change*, Script*>>& changes,
 			for (auto e : ApplyChange(change, getValues, ownerScript)) events.push_back(e);
 
 			for (auto event : events) {
+				Script* local = Story::CreateLocal(event, getValues);
 				MatchEvent(event, ownerScript, getValues);
+				if (local) { getValues.pop_back(); delete local; }
 				delete event;
 			}
 		}
@@ -816,17 +820,12 @@ void AStoryBase::OptionDialog(FString name, FString option) {
 	auto story = global->GetStory();
 	auto event = new OptionDialogEvent(TCHAR_TO_UTF8(*name), TCHAR_TO_UTF8(*option));
 
-	Script* local = new Script(Story::scriptFactory, "empty");
-	local->SetValue("local.name", TCHAR_TO_UTF8(*name));
-	local->SetValue("local.option", TCHAR_TO_UTF8(*option));
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {
 			return story->GetScript()->GetValue(name);
-		},
-		[&](const string& name) -> pair<bool, ValueType> {
-			return local->GetValue(name);
 		}
 	};
+	Script* local = Story::CreateLocal(event, getValues);
 	MatchEvent(event, story->GetScript(), getValues);
 
 	auto citizen = global->GetPopulace()->GetCitizen(TCHAR_TO_UTF8(*name));
@@ -983,16 +982,12 @@ void AStoryBase::PuzzleResult(int result) {
 	auto story = global->GetStory();
 	auto event = new PuzzleResultEvent(result);
 
-	Script* local = new Script(Story::scriptFactory, "empty");
-	local->SetValue("local.result", result);
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {
 			return story->GetScript()->GetValue(name);
-		},
-		[&](const string& name) -> pair<bool, ValueType> {
-			return local->GetValue(name);
 		}
 	};
+	Script* local = Story::CreateLocal(event, getValues);
 	MatchEvent(event, story->GetScript(), getValues);
 
 	auto citizens = global->GetPopulace()->GetCitizens();

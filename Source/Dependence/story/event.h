@@ -886,120 +886,6 @@ private:
 	int delta;
 };
 
-// 获取物品
-class GetItemEvent : public Event {
-public:
-	/*
-	* 构造获取物品事件
-	* @item, num: 物品名称与数量
-	*/
-	GetItemEvent(std::string item, int num);
-
-	/*
-	* 析构获取物品事件
-	*/
-	virtual ~GetItemEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置物品名称
-	* @item: 物品名称
-	*/
-	void SetItem(std::string item);
-
-	/*
-	* 获取物品名称
-	*/
-	std::string GetItem() const;
-
-	/*
-	* 设置数量
-	* @num: 数量
-	*/
-	void SetNum(int num);
-
-	/*
-	* 获取数量
-	*/
-	int GetNum();
-
-private:
-	// 物品名称
-	std::string item;
-
-	// 物品数量
-	int num;
-};
-
-// 失去物品
-class LoseItemEvent : public Event {
-public:
-	/*
-	* 构造失去物品事件
-	* @item, num: 物品名称与数量
-	*/
-	LoseItemEvent(std::string item, int num);
-
-	/*
-	* 析构失去物品事件
-	*/
-	virtual ~LoseItemEvent();
-
-	/*
-	* 事件类型
-	*/
-	virtual std::string GetType() const;
-
-	/*
-	* 判断是否与给定事件匹配
-	* @e: 待匹配事件
-	* @getValues: 值获取回调列表
-	*/
-	virtual bool Match(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
-
-	/*
-	* 设置物品名称
-	* @item: 物品名称
-	*/
-	void SetItem(std::string item);
-
-	/*
-	* 获取物品名称
-	*/
-	std::string GetItem() const;
-
-	/*
-	* 设置数量
-	* @num: 数量
-	*/
-	void SetNum(int num);
-
-	/*
-	* 获取数量
-	*/
-	int GetNum();
-
-private:
-	// 物品名称
-	std::string item;
-
-	// 物品数量
-	int num;
-};
-
 // 受伤
 class PlayerInjuredEvent : public Event {
 public:
@@ -1829,6 +1715,94 @@ private:
 
 	// 交易对象姓名，为空代表玩家
 	std::string name;
+};
+
+// 物品操作结果
+class ObjectResultEvent : public Event {
+public:
+	/*
+	* 构造物品操作结果事件
+	* @action: 操作类型，"give"/"remove"，为空时 Match 匹配任意操作
+	* @object: 被操作的 object 类型
+	* @result: 是否全部成功
+	* @num: 失败时剩余未操作数量，-1 表示不指定
+	*/
+	ObjectResultEvent(std::string action, std::string object, bool result, int num = -1);
+
+	/*
+	* 析构物品操作结果事件
+	*/
+	virtual ~ObjectResultEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置操作类型
+	* @action: 操作类型
+	*/
+	void SetAction(std::string action);
+
+	/*
+	* 获取操作类型
+	*/
+	std::string GetAction() const;
+
+	/*
+	* 设置 object 类型
+	* @object: object 类型
+	*/
+	void SetObject(std::string object);
+
+	/*
+	* 获取 object 类型
+	*/
+	std::string GetObject() const;
+
+	/*
+	* 设置是否成功
+	* @result: 是否成功
+	*/
+	void SetResult(bool result);
+
+	/*
+	* 获取是否成功
+	*/
+	bool GetResult() const;
+
+	/*
+	* 设置剩余未操作数量
+	* @num: 数量，-1 表示不指定
+	*/
+	void SetNum(int num);
+
+	/*
+	* 获取剩余未操作数量
+	*/
+	int GetNum() const;
+
+private:
+	// 操作类型
+	std::string action;
+
+	// object 类型
+	std::string object;
+
+	// 是否成功
+	bool result;
+
+	// 剩余未操作数量
+	int num;
 };
 
 // 政策变化

@@ -31,8 +31,8 @@ VariableExpression::~VariableExpression() {
 }
 
 ValueType VariableExpression::Evaluate(vector<function<pair<bool, ValueType>(const string&)>> getValues) const {
-	for(auto getValue : getValues) {
-		auto value = getValue(name);
+	for (auto it = getValues.rbegin(); it != getValues.rend(); ++it) {
+		auto value = (*it)(name);
 		if (value.first) {
 			return value.second;
 		}

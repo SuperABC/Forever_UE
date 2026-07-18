@@ -76,7 +76,7 @@
 	"triggers": [{"type": "option_dialog", "name": "$$self.name", "option": "挑战"}],
 	"dialogs": [
 		{"list": [
-			{"speaker": "$$self.name", "content": "挑战规则：成功奖励100，失败惩罚100。"},
+			{"speaker": "$$self.name", "content": "挑战规则：成功奖励100以及一个container，失败惩罚100。"},
 			[
 				{
 					"option": "参加挑战",
@@ -118,13 +118,17 @@
 	"milestone": "success_notify",
 	"visible": false,
 	"triggers": [{"type": "transaction_result", "result": true}],
-	"dialogs": [],
+	"dialogs": [
+		{"list": [
+			{"speaker": "$$self.name", "content": "一百块钱给你了。"},
+		]}
+	],
 	"changes": [
 		{"type": "give_object", "object": "container"},
 		{"type": "deactivate_milestone", "milestone": "success_notify"},
 		{"type": "deactivate_milestone", "milestone": "fail_penalty"},
 	],
-	"subsequences": []
+	"subsequences": ["receive_object"]
 },
 {
 	"milestone": "fail_penalty",
@@ -139,6 +143,22 @@
 		{"type": "deactivate_milestone", "milestone": "success_notify"},
 		{"type": "deactivate_milestone", "milestone": "fail_penalty"},
 	],
+	"subsequences": []
+},
+{
+	"milestone": "receive_object",
+	"visible": false,
+	"drop": true,
+	"triggers": [{"type": "object_result", "object": "container"}],
+	"dialogs": [
+		{"condition": "$$local.result == false", "list": [
+			{"speaker": "$$self.name", "content": "但container你身上没地方放了。"},
+		]},
+		{"condition": "$$local.result == true", "list": [
+			{"speaker": "$$self.name", "content": "container也给你了。"},
+		]},
+	],
+	"changes": [],
 	"subsequences": []
 },
 ]

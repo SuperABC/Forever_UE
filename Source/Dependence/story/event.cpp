@@ -731,104 +731,6 @@ int CashChangeEvent::GetDelta() {
 	return delta;
 }
 
-GetItemEvent::GetItemEvent(string item, int num)
-	: item(item), num(num) {
-
-}
-
-GetItemEvent::~GetItemEvent() {
-
-}
-
-string GetItemEvent::GetType() const {
-	return "get_item";
-}
-
-bool GetItemEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<GetItemEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (item.size() > 0 && other->item.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(item);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->item);
-	}
-	if (num != 0) {
-		result = result && (num == other->num);
-	}
-	return result;
-}
-
-void GetItemEvent::SetItem(string item) {
-	this->item = item;
-}
-
-string GetItemEvent::GetItem() const {
-	return item;
-}
-
-void GetItemEvent::SetNum(int num) {
-	this->num = num;
-}
-
-int GetItemEvent::GetNum() {
-	return num;
-}
-
-LoseItemEvent::LoseItemEvent(string item, int num)
-	: item(item), num(num) {
-
-}
-
-LoseItemEvent::~LoseItemEvent() {
-
-}
-
-string LoseItemEvent::GetType() const {
-	return "lose_item";
-}
-
-bool LoseItemEvent::Match(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
-	if (!e) return false;
-	if (GetType() != e->GetType()) return false;
-
-	auto other = dynamic_cast<LoseItemEvent*>(e);
-	if (!other) return false;
-
-	bool result = true;
-	if (item.size() > 0 && other->item.size() > 0) {
-		Condition condition;
-		condition.ParseCondition(item);
-		result = result && (ToString(condition.EvaluateValue(getValues)) == other->item);
-	}
-	if (num != 0) {
-		result = result && (num == other->num);
-	}
-	return result;
-}
-
-void LoseItemEvent::SetItem(string item) {
-	this->item = item;
-}
-
-string LoseItemEvent::GetItem() const {
-	return item;
-}
-
-void LoseItemEvent::SetNum(int num) {
-	this->num = num;
-}
-
-int LoseItemEvent::GetNum() {
-	return num;
-}
-
 PlayerInjuredEvent::PlayerInjuredEvent(string wound) :
 	wound(wound) {
 
@@ -1588,6 +1490,70 @@ void TransactionResultEvent::SetName(string name) {
 
 string TransactionResultEvent::GetName() const {
 	return name;
+}
+
+ObjectResultEvent::ObjectResultEvent(string action, string object, bool result, int num) :
+	action(action), object(object), result(result), num(num) {
+
+}
+
+ObjectResultEvent::~ObjectResultEvent() {
+
+}
+
+string ObjectResultEvent::GetType() const {
+	return "object_result";
+}
+
+bool ObjectResultEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<ObjectResultEvent*>(e);
+	if (!other) return false;
+
+	if (!action.empty() && action != other->action) return false;
+
+	if (!object.empty() && !other->object.empty()) {
+		Condition objectCondition;
+		objectCondition.ParseCondition(object);
+		if (ToString(objectCondition.EvaluateValue(getValues)) != other->object) return false;
+	}
+
+	return true;
+}
+
+void ObjectResultEvent::SetAction(string action) {
+	this->action = action;
+}
+
+string ObjectResultEvent::GetAction() const {
+	return action;
+}
+
+void ObjectResultEvent::SetObject(string object) {
+	this->object = object;
+}
+
+string ObjectResultEvent::GetObject() const {
+	return object;
+}
+
+void ObjectResultEvent::SetResult(bool result) {
+	this->result = result;
+}
+
+bool ObjectResultEvent::GetResult() const {
+	return result;
+}
+
+void ObjectResultEvent::SetNum(int num) {
+	this->num = num;
+}
+
+int ObjectResultEvent::GetNum() const {
+	return num;
 }
 
 

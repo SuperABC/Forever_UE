@@ -168,19 +168,15 @@ Event* ParseEvent(Parser& parser) {
 		if (parser.HasOption("--delta")) delta = stoi(parser.GetOption("--delta"));
 		return new CashChangeEvent(result, delta);
 	}
-	else if (type == "get_item") {
-		string item = "";
-		int num = 0;
-		if (parser.HasOption("--item")) item = parser.GetOption("--item");
+	else if (type == "object_result") {
+		string action = "", object = "";
+		bool res = false;
+		int num = -1;
+		if (parser.HasOption("--action")) action = parser.GetOption("--action");
+		if (parser.HasOption("--object")) object = parser.GetOption("--object");
+		if (parser.HasOption("--result")) res = parser.GetOption("--result") == "true";
 		if (parser.HasOption("--num")) num = stoi(parser.GetOption("--num"));
-		return new GetItemEvent(item, num);
-	}
-	else if (type == "lose_item") {
-		string item = "";
-		int num = 0;
-		if (parser.HasOption("--item")) item = parser.GetOption("--item");
-		if (parser.HasOption("--num")) num = stoi(parser.GetOption("--num"));
-		return new LoseItemEvent(item, num);
+		return new ObjectResultEvent(action, object, res, num);
 	}
 	else if (type == "player_injured") {
 		string wound = "";

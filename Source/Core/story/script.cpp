@@ -397,22 +397,6 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 			}
 			event = new CashChangeEvent(result.AsInt(), delta.AsInt());
 		}
-		else if (type == "get_item") {
-			auto item = obj["item"];
-			auto num = obj["num"];
-			if (item.IsNull() || num.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing item or num for get_item event.\n");
-			}
-			event = new GetItemEvent(item.AsString(), num.AsInt());
-		}
-		else if (type == "lose_item") {
-			auto item = obj["item"];
-			auto num = obj["num"];
-			if (item.IsNull() || num.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing item or num for lose_item event.\n");
-			}
-			event = new LoseItemEvent(item.AsString(), num.AsInt());
-		}
 		else if (type == "player_injured") {
 			auto wound = obj["wound"];
 			if (wound.IsNull()) {
@@ -554,6 +538,21 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 			}
 			auto name = obj["name"];
 			event = new TransactionResultEvent(result.AsBool(), name.IsNull() ? "" : name.AsString());
+		}
+		else if (type == "object_result") {
+			auto object = obj["object"];
+			if (object.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing object for object_result event.\n");
+			}
+			auto res = obj["result"];
+			auto action = obj["action"];
+			auto num = obj["num"];
+			event = new ObjectResultEvent(
+				action.IsNull() ? "" : action.AsString(),
+				object.AsString(),
+				res.IsNull() ? false : res.AsBool(),
+				num.IsNull() ? -1 : num.AsInt()
+			);
 		}
 
 		if (!event) {
