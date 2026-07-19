@@ -61,43 +61,69 @@ void ATerrainBase::Tick(float DeltaTime) {
 		int rawY = static_cast<int>((location.Y + half / 2.f) / half);
 
 		// 限制 pivot 范围，避免 mesh 覆盖区域越出地图边界
-		int minPivot  = 1;
-		int maxPivotX = FMath::Max(minPivot, FMath::FloorToInt(mapSize.first  / half) - 1);
+		int minPivot = 1;
+		int maxPivotX = FMath::Max(minPivot, FMath::FloorToInt(mapSize.first / half) - 1);
 		int maxPivotY = FMath::Max(minPivot, FMath::FloorToInt(mapSize.second / half) - 1);
 
-		newPivots[i].first  = FMath::Clamp(rawX, minPivot, maxPivotX);
+		newPivots[i].first = FMath::Clamp(rawX, minPivot, maxPivotX);
 		newPivots[i].second = FMath::Clamp(rawY, minPivot, maxPivotY);
 	}
-	bool childChange = false;
-	for (int i = 0; i < currentPivots.size(); i++) {
-		if (newPivots[i] != currentPivots[i].first || childChange) {
-			int childPos = 0;
-			if (i >= 1) {
-				int idx = (newPivots[i - 1].second + 1 - newPivots[i].second * 2) * 3 +
-					(newPivots[i - 1].first + 1 - newPivots[i].first * 2);
-				switch (idx) {
-				case 0: childPos = 0xCC00; break;
-				case 1: childPos = 0x6600; break;
-				case 2: childPos = 0x3300; break;
-				case 3: childPos = 0x0CC0; break;
-				case 4: childPos = 0x0660; break;
-				case 5: childPos = 0x0330; break;
-				case 6: childPos = 0x00CC; break;
-				case 7: childPos = 0x0066; break;
-				case 8: childPos = 0x0033; break;
-				default:
-					break;
-				}
-			}
-			BuildLevel(i, newPivots[i], currentPivots[i].second, childPos);
-			if (newPivots[i] != currentPivots[i].first) {
-				currentPivots[i].first = newPivots[i];
-				childChange = true;
-			}
-			else {
-				childChange = false;
+	int numLevels = (int)currentPivots.size();
+
+	// boundaryChanged[i]: 当级 mesh 被重建后其边界顶点是否会改变
+	// 从粗到细传播：父级边界变 → 子级接缝也变
+	std::vector<bool> boundaryChanged(numLevels, false);
+	boundaryChanged[numLevels - 1] = (newPivots[numLevels - 1] != currentPivots[numLevels - 1].first);
+	for (int i = numLevels - 2; i >= 0; i--)
+		boundaryChanged[i] = (newPivots[i] != currentPivots[i].first) || boundaryChanged[i + 1];
+
+	// needsRebuild[i]: 自身 pivot 变、子级移动（挖洞位置变）、父级边界变（接缝修正变）
+	std::vector<bool> needsRebuild(numLevels, false);
+	for (int i = 0; i < numLevels; i++) {
+		if (newPivots[i] != currentPivots[i].first) needsRebuild[i] = true;
+		if (i > 0 && newPivots[i - 1] != currentPivots[i - 1].first) needsRebuild[i] = true;
+		if (i < numLevels - 1 && boundaryChanged[i + 1]) needsRebuild[i] = true;
+	}
+
+	// 从粗到细重建，让父级已修正的边界数据传递给子级
+	for (int i = numLevels - 1; i >= 0; i--) {
+		if (!needsRebuild[i]) continue;
+
+		int childPos = 0;
+		if (i >= 1) {
+			int idx = (newPivots[i - 1].second + 1 - newPivots[i].second * 2) * 3 +
+				(newPivots[i - 1].first + 1 - newPivots[i].first * 2);
+			switch (idx) {
+			case 0: childPos = 0xCC00; break;
+			case 1: childPos = 0x6600; break;
+			case 2: childPos = 0x3300; break;
+			case 3: childPos = 0x0CC0; break;
+			case 4: childPos = 0x0660; break;
+			case 5: childPos = 0x0330; break;
+			case 6: childPos = 0x00CC; break;
+			case 7: childPos = 0x0066; break;
+			case 8: childPos = 0x0033; break;
+			default: break;
 			}
 		}
+
+		// 计算与父级（i+1）的边界重合标志和偏移量
+		int edgeFlags = 0, parentOffsetX = 0, parentOffsetY = 0;
+		if (i < numLevels - 1) {
+			int idxX = newPivots[i].first + 1 - newPivots[i + 1].first * 2;
+			int idxY = newPivots[i].second + 1 - newPivots[i + 1].second * 2;
+			if (idxX == 0) edgeFlags |= 0x1;
+			if (idxX == 2) edgeFlags |= 0x2;
+			if (idxY == 0) edgeFlags |= 0x4;
+			if (idxY == 2) edgeFlags |= 0x8;
+			parentOffsetX = idxX * 8;
+			parentOffsetY = idxY * 8;
+		}
+
+		const LodBoundary* parentBoundary = (i < numLevels - 1) ? &lodBoundaries[i + 1] : nullptr;
+		BuildLevel(i, newPivots[i], currentPivots[i].second, childPos,
+			parentBoundary, parentOffsetX, parentOffsetY, edgeFlags);
+		currentPivots[i].first = newPivots[i];
 	}
 }
 
@@ -212,6 +238,14 @@ void ATerrainBase::InitInstances(int width, int height) {
 		comp->RegisterComponent();
 		AddInstanceComponent(comp);
 		gridMeshes[i] = comp;
+	}
+
+	lodBoundaries.resize(num);
+	for (auto& boundary : lodBoundaries) {
+		boundary.bottom.SetNum(33);
+		boundary.top.SetNum(33);
+		boundary.left.SetNum(33);
+		boundary.right.SetNum(33);
 	}
 
 	BuildOceanMesh(mapWidth, mapHeight);
@@ -336,7 +370,8 @@ void ATerrainBase::RemoveInstance(int elemX, int elemY, TArray<int>& ids) {
 	}
 }
 
-void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int childPos) {
+void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int childPos,
+	const LodBoundary* parentBoundary, int parentOffsetX, int parentOffsetY, int edgeFlags) {
 	Map* map = global->GetMap();
 	if (!map) return;
 
@@ -344,13 +379,13 @@ void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int 
 
 	UProceduralMeshComponent* mesh = gridMeshes[levelIdx];
 
-	const float cellSize   = size / 32.f;
-	const float startX     = pos.first  * (size / 2.f) - size / 2.f;
-	const float startY     = pos.second * (size / 2.f) - size / 2.f;
+	const float cellSize = size / 32.f;
+	const float startX = pos.first * (size / 2.f) - size / 2.f;
+	const float startY = pos.second * (size / 2.f) - size / 2.f;
 	const float worldScale = 1000.f;
 
-	TArray<FVector>   vertices;
-	TArray<int32>     triangles;
+	TArray<FVector> vertices;
+	TArray<int32> triangles;
 	TArray<FVector2D> uvs;
 
 	vertices.Reserve(33 * 33);
@@ -361,17 +396,17 @@ void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int 
 			float mapX = startX + vx * cellSize;
 			float mapY = startY + vy * cellSize;
 
-			int ex0 = FMath::Clamp(FMath::FloorToInt(mapX), 0, mapSize.first  - 1);
+			int ex0 = FMath::Clamp(FMath::FloorToInt(mapX), 0, mapSize.first - 1);
 			int ey0 = FMath::Clamp(FMath::FloorToInt(mapY), 0, mapSize.second - 1);
-			int ex1 = FMath::Clamp(ex0 + 1,                 0, mapSize.first  - 1);
-			int ey1 = FMath::Clamp(ey0 + 1,                 0, mapSize.second - 1);
+			int ex1 = FMath::Clamp(ex0 + 1, 0, mapSize.first - 1);
+			int ey1 = FMath::Clamp(ey0 + 1, 0, mapSize.second - 1);
 			float tx = mapX - FMath::FloorToInt(mapX);
 			float ty = mapY - FMath::FloorToInt(mapY);
 
-			float h = map->GetHeight(ex0, ey0) * (1-tx) * (1-ty)
-			        + map->GetHeight(ex1, ey0) *    tx  * (1-ty)
-			        + map->GetHeight(ex0, ey1) * (1-tx) *    ty
-			        + map->GetHeight(ex1, ey1) *    tx  *    ty;
+			float h = map->GetHeight(ex0, ey0) * (1-tx) * (1-ty) +
+				map->GetHeight(ex1, ey0) * tx * (1-ty) +
+				map->GetHeight(ex0, ey1) * (1-tx) * ty +
+				map->GetHeight(ex1, ey1) * tx * ty;
 			h += HEIGHT_EPSILON;
 
 			vertices.Add(FVector(mapX * worldScale, mapY * worldScale, h * worldScale));
@@ -382,8 +417,27 @@ void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int 
 		}
 	}
 
-	// 让边缘在粗一级 LOD 的格点间距上保持分段线性，消除接缝裂缝
 	auto vertIdx = [](int vx, int vy) { return vy * 33 + vx; };
+
+	// 若与父级（粗一级）LOD 存在共享边，先将偶数顶点对齐到父级已修正的边界值，
+	// 再统一做奇数插值，确保多级边界完全一致
+	if (parentBoundary && edgeFlags) {
+		if (edgeFlags & 0x1) // 左边（vx=0）与父级左边重合
+			for (int k = 0; k <= 32; k += 2)
+				vertices[vertIdx(0, k)] = parentBoundary->left[parentOffsetY + k / 2];
+		if (edgeFlags & 0x2) // 右边（vx=32）与父级右边重合
+			for (int k = 0; k <= 32; k += 2)
+				vertices[vertIdx(32, k)] = parentBoundary->right[parentOffsetY + k / 2];
+		if (edgeFlags & 0x4) // 下边（vy=0）与父级下边重合
+			for (int k = 0; k <= 32; k += 2)
+				vertices[vertIdx(k, 0)] = parentBoundary->bottom[parentOffsetX + k / 2];
+		if (edgeFlags & 0x8) // 上边（vy=32）与父级上边重合
+			for (int k = 0; k <= 32; k += 2)
+				vertices[vertIdx(k, 32)] = parentBoundary->top[parentOffsetX + k / 2];
+	}
+
+	// 让边缘在粗一级 LOD 的格点间距上保持分段线性，消除接缝裂缝
+	// 此时偶数顶点已被父级修正（若有），奇数插值结果自动继承修正值
 	for (int edgeVy : { 0, 32 })
 		for (int vx = 1; vx < 32; vx += 2)
 			vertices[vertIdx(vx, edgeVy)] = (vertices[vertIdx(vx - 1, edgeVy)] + vertices[vertIdx(vx + 1, edgeVy)]) * 0.5f;
@@ -401,7 +455,7 @@ void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int 
 				bool allConstruction = true;
 				for (int dy = 0; dy < elemsPerRegion && allConstruction; dy++)
 					for (int dx = 0; dx < elemsPerRegion && allConstruction; dx++) {
-						int ex = FMath::Clamp(baseX + rj * elemsPerRegion + dx, 0, mapSize.first  - 1);
+						int ex = FMath::Clamp(baseX + rj * elemsPerRegion + dx, 0, mapSize.first - 1);
 						int ey = FMath::Clamp(baseY + ri * elemsPerRegion + dy, 0, mapSize.second - 1);
 						allConstruction = map->GetTerrain(ex, ey) == "construction";
 					}
@@ -415,8 +469,8 @@ void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int 
 			if ((childPos >> (15 - s)) & 1) continue;
 			if (constructionRegion[cy / 8][cx / 8]) continue;
 
-			int32 v00 =  cy    * 33 + cx;
-			int32 v10 =  cy    * 33 + cx + 1;
+			int32 v00 = cy * 33 + cx;
+			int32 v10 = cy * 33 + cx + 1;
 			int32 v01 = (cy+1) * 33 + cx;
 			int32 v11 = (cy+1) * 33 + cx + 1;
 			triangles.Add(v00); triangles.Add(v11); triangles.Add(v10);
@@ -426,6 +480,17 @@ void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int 
 
 	mesh->CreateMeshSection(0, vertices, triangles,
 		TArray<FVector>(), uvs, TArray<FColor>(), TArray<FProcMeshTangent>(), true);
+
+	// 保存修正后的四条边界顶点，供更细一级 LOD 进行接缝修正时使用
+	if (levelIdx < (int)lodBoundaries.size()) {
+		LodBoundary& boundary = lodBoundaries[levelIdx];
+		for (int k = 0; k <= 32; k++) {
+			boundary.bottom[k] = vertices[vertIdx(k, 0)];
+			boundary.top[k] = vertices[vertIdx(k, 32)];
+			boundary.left[k] = vertices[vertIdx(0, k)];
+			boundary.right[k] = vertices[vertIdx(32, k)];
+		}
+	}
 
 	if (levelIdx <= 2) {
 		// lod0/1/2 的 cell 比 element 还小，需要细分地形混合数据
@@ -438,7 +503,7 @@ void ATerrainBase::BuildLevel(int levelIdx, pair<int, int> pos, float size, int 
 		const auto& texInfo = map->GetTerrainTextures();
 		for (int y = 0; y < baseRes; y++) {
 			for (int x = 0; x < baseRes; x++) {
-				int ex = FMath::Clamp(baseX + x, 0, mapSize.first  - 1);
+				int ex = FMath::Clamp(baseX + x, 0, mapSize.first - 1);
 				int ey = FMath::Clamp(baseY + y, 0, mapSize.second - 1);
 				auto it = texInfo.find(map->GetTerrain(ex, ey));
 				FFineCell& cell = cells[y * baseRes + x];

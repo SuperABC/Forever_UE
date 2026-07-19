@@ -64,6 +64,14 @@ struct FFineCell {
 	float Weights[4] = { 0.f, 0.f, 0.f, 0.f };
 };
 
+// 某一级 LOD mesh 经过接缝修正后的四条边界顶点
+struct LodBoundary {
+	TArray<FVector> bottom; // vy=0,  vx=0..32
+	TArray<FVector> top;    // vy=32, vx=0..32
+	TArray<FVector> left;   // vx=0,  vy=0..32
+	TArray<FVector> right;  // vx=32, vy=0..32
+};
+
 UCLASS()
 class FOREVER_API ATerrainBase : public AActor {
 	GENERATED_BODY()
@@ -140,12 +148,15 @@ protected:
 	UProceduralMeshComponent* oceanMesh = nullptr;
 
 	std::vector<std::pair<std::pair<int, int>, float>> currentPivots;
+	std::vector<LodBoundary> lodBoundaries;
 
 	std::vector<std::vector<TArray<int>>> terrainInstances;
 	std::vector<std::pair<int, int>> idList;
 
 private:
-	void BuildLevel(int levelIdx, std::pair<int, int> pos, float size, int childPos);
+	// edgeFlags: bit0=左边与父级重合, bit1=右边, bit2=下边, bit3=上边
+	void BuildLevel(int levelIdx, std::pair<int, int> pos, float size, int childPos,
+		const LodBoundary* parentBoundary = nullptr, int parentOffsetX = 0, int parentOffsetY = 0, int edgeFlags = 0);
 
 	// 构建覆盖所有"ocean"地形格的海面网格，高度固定为0
 	void BuildOceanMesh(int width, int height);
