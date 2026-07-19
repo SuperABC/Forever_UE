@@ -64,17 +64,17 @@ int Phone::FindEntry(const string& type) const {
 	return -1;
 }
 
-void Phone::OpenApp(Canvas* canvas, int entryIdx) {
+void Phone::OpenApp(Canvas* canvas, int entryIdx, PostHandle* post) {
 	if (entryIdx < 0 || entryIdx >= (int)entries.size()) return;
 	currentAppType = entries[entryIdx].type;
 	state = InApp;
 
 	if (!entries[entryIdx].initialized) {
 		canvas->ClearBuffer();
-		Player::appFactory->InitApp(entries[entryIdx].type);
+		Player::appFactory->InitApp(entries[entryIdx].type, post);
 		entries[entryIdx].initialized = true;
 	} else {
-		Player::appFactory->RefreshApp(entries[entryIdx].type, canvas);
+		Player::appFactory->RefreshApp(entries[entryIdx].type, canvas, post);
 	}
 }
 
@@ -85,7 +85,7 @@ void Phone::SaveSnapshot(Canvas* canvas, int entryIdx) {
 	entries[entryIdx].snapshot.assign(data, data + size);
 }
 
-void Phone::HandleHomeKeys(Canvas* canvas) {
+void Phone::HandleHomeKeys(Canvas* canvas, PostHandle* post) {
 	int n = (int)appTypes.size();
 	int upCode = canvas->KeyCode("up");
 	int downCode = canvas->KeyCode("down");
@@ -113,7 +113,7 @@ void Phone::HandleHomeKeys(Canvas* canvas) {
 				entries.push_back({ type, false, {} });
 				idx = (int)entries.size() - 1;
 			}
-			OpenApp(canvas, idx);
+			OpenApp(canvas, idx, post);
 		} else if (key == tabCode) {
 			state = TaskList;
 			taskSelection = max(0, min(taskSelection, (int)entries.size() - 1));
@@ -121,7 +121,7 @@ void Phone::HandleHomeKeys(Canvas* canvas) {
 	}
 }
 
-void Phone::HandleInAppKeys(Canvas* canvas) {
+void Phone::HandleInAppKeys(Canvas* canvas, PostHandle* post) {
 	int backCode = canvas->KeyCode("backspace");
 	int homeCode = canvas->KeyCode("space");
 	int taskCode = canvas->KeyCode("tab");
@@ -137,7 +137,7 @@ void Phone::HandleInAppKeys(Canvas* canvas) {
 
 		if (isPress && code == backCode) {
 			if (entryIdx >= 0) {
-				Player::appFactory->BackApp(entries[entryIdx].type, canvas);
+				Player::appFactory->BackApp(entries[entryIdx].type, canvas, post);
 			}
 		} else if (isPress && code == homeCode) {
 			if (entryIdx >= 0) SaveSnapshot(canvas, entryIdx);
@@ -162,7 +162,7 @@ void Phone::HandleInAppKeys(Canvas* canvas) {
 	}
 }
 
-void Phone::HandleTaskKeys(Canvas* canvas) {
+void Phone::HandleTaskKeys(Canvas* canvas, PostHandle* post) {
 	int backCode = canvas->KeyCode("backspace");
 	int homeCode = canvas->KeyCode("space");
 	int tabCode = canvas->KeyCode("tab");
@@ -182,7 +182,7 @@ void Phone::HandleTaskKeys(Canvas* canvas) {
 			taskSelection = min(taskSelection + 1, n - 1);
 		} else if (key == enterCode && n > 0) {
 			taskSelection = min(taskSelection, n - 1);
-			OpenApp(canvas, taskSelection);
+			OpenApp(canvas, taskSelection, post);
 		} else if (key == backCode && n > 0) {
 			taskSelection = min(taskSelection, n - 1);
 			if (entries[taskSelection].type == currentAppType) {
@@ -307,14 +307,14 @@ void Phone::RenderBottomBar(Canvas* canvas) {
 	canvas->PutRect(392, barY + 6, 408, barY + 22, false);
 }
 
-int Phone::Loop(Canvas* canvas, int ms) {
+int Phone::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	if (!canvas) return 0;
 
 	// 第一阶段：处理按键（可能改变当前状态）
 	switch (state) {
-	case Home: HandleHomeKeys(canvas); break;
-	case InApp: HandleInAppKeys(canvas); break;
-	case TaskList: HandleTaskKeys(canvas); break;
+	case Home: HandleHomeKeys(canvas, post); break;
+	case InApp: HandleInAppKeys(canvas, post); break;
+	case TaskList: HandleTaskKeys(canvas, post); break;
 	}
 
 	// 第二阶段：渲染当前界面
@@ -325,7 +325,7 @@ int Phone::Loop(Canvas* canvas, int ms) {
 	case InApp: {
 		int idx = FindEntry(currentAppType);
 		if (idx >= 0) {
-			Player::appFactory->LoopApp(entries[idx].type, canvas, ms);
+			Player::appFactory->LoopApp(entries[idx].type, canvas, ms, post);
 		} else {
 			canvas->ClearBuffer();
 		}

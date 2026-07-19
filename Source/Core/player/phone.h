@@ -34,8 +34,9 @@ public:
 	* 驱动手机一帧（处理按键并渲染）
 	* @canvas: 画布对象
 	* @ms: 本帧时长（毫秒）
+	* @post: 向Core发起查询的句柄
 	*/
-	int Loop(Canvas* canvas, int ms);
+	int Loop(Canvas* canvas, int ms, PostHandle* post);
 
 private:
 	// 屏幕宽度
@@ -98,8 +99,9 @@ private:
 	* 打开或恢复指定应用
 	* @canvas: 画布对象
 	* @entryIdx: 条目索引
+	* @post: 向Core发起查询的句柄
 	*/
-	void OpenApp(Canvas* canvas, int entryIdx);
+	void OpenApp(Canvas* canvas, int entryIdx, PostHandle* post);
 
 	/*
 	* 将当前画布内容保存为条目快照
@@ -111,20 +113,23 @@ private:
 	/*
 	* 处理桌面状态下的按键输入
 	* @canvas: 画布对象
+	* @post: 向Core发起查询的句柄
 	*/
-	void HandleHomeKeys(Canvas* canvas);
+	void HandleHomeKeys(Canvas* canvas, PostHandle* post);
 
 	/*
 	* 处理应用内状态下的按键输入
 	* @canvas: 画布对象
+	* @post: 向Core发起查询的句柄
 	*/
-	void HandleInAppKeys(Canvas* canvas);
+	void HandleInAppKeys(Canvas* canvas, PostHandle* post);
 
 	/*
 	* 处理任务列表状态下的按键输入
 	* @canvas: 画布对象
+	* @post: 向Core发起查询的句柄
 	*/
-	void HandleTaskKeys(Canvas* canvas);
+	void HandleTaskKeys(Canvas* canvas, PostHandle* post);
 
 	/*
 	* 渲染桌面界面

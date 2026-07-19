@@ -61,8 +61,9 @@ public:
 	/*
 	* 时钟周期，返回本帧职业计划节点产生的变化列表（由调用方负责释放）
 	* @player, story: 玩家与剧情对象
+	* @post: 向Core发起查询的句柄
 	*/
-	std::vector<std::pair<Change*, Script*>> Tick(Player* player, Story* story);
+	std::vector<std::pair<Change*, Script*>> Tick(Player* player, Story* story, PostHandle* post);
 
 	/*
 	* 应用剧情变化

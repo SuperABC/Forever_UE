@@ -50,8 +50,9 @@ public:
 	* Override
 	* 每日规划
 	* @time: 当前游戏时间
+	* @post: 向Core发起查询的句柄
 	*/
-	virtual void DailyPlan(const Time& time) override;
+	virtual void DailyPlan(const Time& time, PostHandle* post) override;
 
 	/*
 	* Override
@@ -59,9 +60,11 @@ public:
 	* @node: 节点名称
 	* @storyScript, schedulerScript: 主线剧情脚本与调度自身的剧情脚本
 	* @jobScripts: 市民所有工作的剧情脚本列表
+	* @post: 向Core发起查询的句柄
 	*/
 	virtual void ExecNode(const std::string& node,
-		Container* storyScript, Container* schedulerScript, const std::vector<Container*>& jobScripts) override;
+		Container* storyScript, Container* schedulerScript, const std::vector<Container*>& jobScripts,
+		PostHandle* post) override;
 
 private:
 	// 总实例数量

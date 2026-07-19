@@ -29,20 +29,20 @@ string App::GetName() const {
 	return name;
 }
 
-void App::Init() const {
-	factory->InitApp(type);
+void App::Init(PostHandle* post) const {
+	factory->InitApp(type, post);
 }
 
-int App::Loop(Canvas* canvas, int ms) const {
-	return factory->LoopApp(type, canvas, ms);
+int App::Loop(Canvas* canvas, int ms, PostHandle* post) const {
+	return factory->LoopApp(type, canvas, ms, post);
 }
 
-void App::Back(Canvas* canvas) const {
-	factory->BackApp(type, canvas);
+void App::Back(Canvas* canvas, PostHandle* post) const {
+	factory->BackApp(type, canvas, post);
 }
 
-void App::Refresh(Canvas* canvas) const {
-	factory->RefreshApp(type, canvas);
+void App::Refresh(Canvas* canvas, PostHandle* post) const {
+	factory->RefreshApp(type, canvas, post);
 }
 
 int EmptyApp::count = 0;
@@ -68,19 +68,19 @@ const char* EmptyApp::GetName() {
 	return name.data();
 }
 
-void EmptyApp::Init() {
+void EmptyApp::Init(PostHandle* post) {
 
 }
 
-int EmptyApp::Loop(Canvas* canvas, int ms) {
+int EmptyApp::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	return 0;
 }
 
-void EmptyApp::Back(Canvas* canvas) {
+void EmptyApp::Back(Canvas* canvas, PostHandle* post) {
 
 }
 
-void EmptyApp::Refresh(Canvas* canvas) {
+void EmptyApp::Refresh(Canvas* canvas, PostHandle* post) {
 	if (!canvas) return;
 	canvas->ClearBuffer();
 }

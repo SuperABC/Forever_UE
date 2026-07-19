@@ -193,7 +193,7 @@ void WarPuzzle::AIFire() {
 
 // --- init ---
 
-void WarPuzzle::Init(int width, int height) {
+void WarPuzzle::Init(int width, int height, PostHandle* post) {
 	canvasW = width;
 	canvasH = height;
 	ComputeLayout();
@@ -469,7 +469,7 @@ void WarPuzzle::DrawScene(Canvas* canvas) {
 
 // --- main loop ---
 
-int WarPuzzle::Loop(Canvas* canvas, int ms) {
+int WarPuzzle::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	if (!canvas) return 0;
 
 	if (canvas->GetWidth() != canvasW || canvas->GetHeight() != canvasH) {

@@ -77,7 +77,7 @@ void FlappyPuzzle::SpawnPipe() {
 	p.passed = false;
 }
 
-void FlappyPuzzle::Init(int width, int height) {
+void FlappyPuzzle::Init(int width, int height, PostHandle* post) {
 	canvasW = width;
 	canvasH = height;
 	ComputeLayout();
@@ -220,7 +220,7 @@ void FlappyPuzzle::DrawScene(Canvas* canvas) {
 	}
 }
 
-int FlappyPuzzle::Loop(Canvas* canvas, int ms) {
+int FlappyPuzzle::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	if (!canvas) return 0;
 
 	if (canvas->GetWidth() != canvasW || canvas->GetHeight() != canvasH) {

@@ -98,7 +98,7 @@ void TetrisPuzzle::ComputeLayout(int width, int height) {
 	digitScale = max(1, cellSize / 8);
 }
 
-void TetrisPuzzle::Init(int width, int height) {
+void TetrisPuzzle::Init(int width, int height, PostHandle* post) {
 	ComputeLayout(width, height);
 
 	memset(board, 0, sizeof(board));
@@ -393,7 +393,7 @@ void TetrisPuzzle::DrawBoard(Canvas* canvas) {
 	}
 }
 
-int TetrisPuzzle::Loop(Canvas* canvas, int ms) {
+int TetrisPuzzle::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	if (!canvas) return 0;
 
 	// 自动适配画布尺寸，无需依赖 Init 的调用时机

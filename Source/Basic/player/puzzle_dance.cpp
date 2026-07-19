@@ -65,7 +65,7 @@ void DancePuzzle::StartRound() {
 	wrongFlashTimer = 0.0f;
 }
 
-void DancePuzzle::Init(int width, int height) {
+void DancePuzzle::Init(int width, int height, PostHandle* post) {
 	canvasW = width;
 	canvasH = height;
 	round = 1;
@@ -264,7 +264,7 @@ void DancePuzzle::DrawScene(Canvas* canvas) {
 	}
 }
 
-int DancePuzzle::Loop(Canvas* canvas, int ms) {
+int DancePuzzle::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	if (!canvas) return 0;
 
 	if (canvas->GetWidth() != canvasW || canvas->GetHeight() != canvasH) {

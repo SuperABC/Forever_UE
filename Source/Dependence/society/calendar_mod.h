@@ -2,6 +2,7 @@
 
 #include "../common/utility.h"
 #include "../common/error.h"
+#include "../common/handle.h"
 
 #include <string>
 #include <functional>
@@ -45,15 +46,17 @@ public:
 	* Override
 	* 获取指定日期的上班时间
 	* @date: 目标日期
+	* @post: 向Core发起查询的句柄
 	*/
-	COSTOM_RUNTIME virtual Time SigninTime(const Time& date) const = 0;
+	COSTOM_RUNTIME virtual Time SigninTime(const Time& date, PostHandle* post) const = 0;
 
 	/*
 	* Override
 	* 获取指定日期的下班时间
 	* @date: 目标日期
+	* @post: 向Core发起查询的句柄
 	*/
-	COSTOM_RUNTIME virtual Time SignoutTime(const Time& date) const = 0;
+	COSTOM_RUNTIME virtual Time SignoutTime(const Time& date, PostHandle* post) const = 0;
 
 };
 

@@ -8,6 +8,7 @@
 
 // Common
 
+class PostHandle;
 class Time;
 class Counter;
 

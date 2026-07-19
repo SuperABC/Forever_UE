@@ -19,6 +19,7 @@
 #include "society/organization.h"
 #include "story/story.h"
 #include "story/script.h"
+#include "common/implement.h"
 #include "story/event.h"
 #include "story/dialog.h"
 #include "story/change.h"
@@ -103,7 +104,9 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 
 	try {
 		auto actions = script->MatchEvent(event, getValues);
-		actions = script->WrapScript(event, actions, getValues);
+		PostImplement implement(global->GetMap(), global->GetPopulace(), global->GetSociety(),
+			global->GetStory(), global->GetIndustry(), global->GetTraffic(), global->GetPlayer());
+		actions = script->WrapScript(event, actions, getValues, &implement);
 
 		for (auto action : actions) {
 			visit([&](auto* ptr) {

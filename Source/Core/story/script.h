@@ -75,9 +75,11 @@ public:
 	* @event: 触发事件
 	* @actions: 当前动作队列
 	* @getValues: 值获取回调列表
+	* @post: 向Core发起查询的句柄
 	*/
 	std::vector<ScriptAction>& WrapScript(Event* event, std::vector<ScriptAction>& actions,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
+		PostHandle* post);
 
 	/*
 	* 读取剧本文件到缓存
@@ -221,9 +223,11 @@ public:
 	* 脚本逻辑重载
 	* @event: 触发事件
 	* @getValues: 值获取回调列表
+	* @post: 向Core发起查询的句柄
 	*/
 	virtual void WrapScript(const Event* event,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
+		PostHandle* post) override;
 
 private:
 	// 总实例数量

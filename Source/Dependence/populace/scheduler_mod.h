@@ -2,6 +2,7 @@
 
 #include "../common/utility.h"
 #include "../common/error.h"
+#include "../common/handle.h"
 
 #include "../story/change.h"
 
@@ -63,8 +64,9 @@ public:
 	* Override
 	* 每日规划，填充plans字段
 	* @time: 当前游戏时间
+	* @post: 向Core发起查询的句柄
 	*/
-	COSTOM_RUNTIME virtual void DailyPlan(const Time& time) = 0;
+	COSTOM_RUNTIME virtual void DailyPlan(const Time& time, PostHandle* post) = 0;
 
 	/*
 	* Override
@@ -72,9 +74,11 @@ public:
 	* @name: 节点名称
 	* @storyScript, schedulerScript: 主线剧情脚本与调度自身的剧情脚本
 	* @jobScripts: 市民所有工作的剧情脚本列表
+	* @post: 向Core发起查询的句柄
 	*/
 	COSTOM_RUNTIME virtual void ExecNode(const std::string& name,
-		Container* storyScript, Container* schedulerScript, const std::vector<Container*>& jobScripts) = 0;
+		Container* storyScript, Container* schedulerScript, const std::vector<Container*>& jobScripts,
+		PostHandle* post) = 0;
 
 	/*
 	* Tool

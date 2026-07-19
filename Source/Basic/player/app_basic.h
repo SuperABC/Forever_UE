@@ -36,28 +36,32 @@ public:
 
 	/*
 	* 初始化应用
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Init();
+	static void Init(PostHandle* post);
 
 	/*
 	* 每帧更新逻辑
 	* @canvas: 当前画布
 	* @ms: 距上帧毫秒数
+	* @post: 向Core发起查询的句柄
 	* @return: 帧状态码，0继续运行，非0退出
 	*/
-	static int Loop(Canvas* canvas, int ms);
+	static int Loop(Canvas* canvas, int ms, PostHandle* post);
 
 	/*
 	* 返回键响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Back(Canvas* canvas);
+	static void Back(Canvas* canvas, PostHandle* post);
 
 	/*
 	* 强制刷新响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Refresh(Canvas* canvas);
+	static void Refresh(Canvas* canvas, PostHandle* post);
 
 private:
 	// 总实例数量

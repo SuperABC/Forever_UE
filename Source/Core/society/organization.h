@@ -86,15 +86,17 @@ public:
 	/*
 	* 每日规划，委托模组填充plans字段
 	* @time: 当前游戏时间
+	* @post: 向Core发起查询的句柄
 	*/
-	void DailyPlan(const Time& time);
+	void DailyPlan(const Time& time, PostHandle* post);
 
 	/*
 	* 规划节点调用，返回节点产出的变化列表（由调用方负责释放）
 	* @node: 节点名称
 	* @storyScript: 主线剧情脚本
+	* @post: 向Core发起查询的句柄
 	*/
-	std::vector<Change*> ExecNode(const std::string& node, Script* storyScript);
+	std::vector<Change*> ExecNode(const std::string& node, Script* storyScript, PostHandle* post);
 
 	/*
 	* 获取今日计划（节点名 -> 触发时刻）
@@ -193,17 +195,19 @@ public:
 	* Override
 	* 每日规划
 	* @time: 当前游戏时间
+	* @post: 向Core发起查询的句柄
 	*/
-	virtual void DailyPlan(const Time& time) override;
+	virtual void DailyPlan(const Time& time, PostHandle* post) override;
 
 	/*
 	* Override
 	* 规划节点调用
 	* @name: 节点名称
 	* @storyScript, orgScript: 主线剧情脚本、组织自身剧情脚本
+	* @post: 向Core发起查询的句柄
 	*/
 	virtual void ExecNode(const std::string& name,
-		Container* storyScript, Container* orgScript) override;
+		Container* storyScript, Container* orgScript, PostHandle* post) override;
 
 private:
 	// 总实例数量

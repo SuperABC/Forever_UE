@@ -136,13 +136,13 @@ void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles,
 	}
 }
 
-void Populace::Init(int accomodation, Player* player) {
+void Populace::Init(int accomodation, Player* player, PostHandle* post) {
 	Destroy();
 
 	if (!player->GetTime()) {
 		THROW_EXCEPTION(NullPointerException, "Time pointer is null during initialization.\n");
 	}
-	GenerateCitizens(static_cast<int>(accomodation *exp(GetRandom(1000) / 1000.0f - 0.5f)), player->GetTime());
+	GenerateCitizens(static_cast<int>(accomodation *exp(GetRandom(1000) / 1000.0f - 0.5f)), player->GetTime(), post);
 
 	GenerateEducations(player->GetTime());
 	GenerateEmotions(player->GetTime());
@@ -159,7 +159,7 @@ void Populace::Destroy() {
 	name = nullptr;
 }
 
-vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* player) {
+vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* player, PostHandle* post) {
 	static int step = 0;
 	static int stride = 20;
 
@@ -170,7 +170,7 @@ vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* pl
 	if (cross) {
 		for (int j = 0; j < citizens.size(); j++) {
 			auto citizen = citizens[j];
-			citizen->GetScheduler()->DailyPlan(*time);
+			citizen->GetScheduler()->DailyPlan(*time, post);
 			for (auto& [node, timer] : citizen->GetScheduler()->GetPlans()) {
 				timerSet.insert({ timer, citizen, node });
 			}
@@ -187,7 +187,7 @@ vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* pl
 		for (auto job : citizen->GetJobs()) {
 			jobScripts.push_back(job->GetScript());
 		}
-		auto changes = citizen->GetScheduler()->ExecNode(node, story->GetScript(), jobScripts);
+		auto changes = citizen->GetScheduler()->ExecNode(node, story->GetScript(), jobScripts, post);
 		for (auto c : changes) result.emplace_back(c, citizen->GetScheduler()->GetScript());
 		timerSet.erase(it);
 		count++;
@@ -593,7 +593,7 @@ Person* Populace::GetCitizen(const string& name) {
 	return citizens[it->second];
 }
 
-void Populace::GenerateCitizens(int num, Time* time) {
+void Populace::GenerateCitizens(int num, Time* time, PostHandle* post) {
 	if (!time) {
 		THROW_EXCEPTION(NullPointerException, "Time is null.\n");
 	}
@@ -639,7 +639,7 @@ void Populace::GenerateCitizens(int num, Time* time) {
 	int year = 1;
 	for (int i = 1; i <= 100; i++) {
 		string n;
-		name->GenerateName([&](const string& name) { n = name; }, false, true);
+		name->GenerateName([&](const string& name) { n = name; }, false, true, true, post);
 		if (n.empty()) continue;
 		females.push_back({ -1, n, GetRandom(20), -1, LIFE_SINGLE, GENDER_FEMALE,
 			-1, -1, -1, {} });
@@ -655,7 +655,7 @@ void Populace::GenerateCitizens(int num, Time* time) {
 	}
 	for (int i = 1; i <= 100; i++) {
 		string n;
-		name->GenerateName([&](const string& name) { n = name; }, false, true);
+		name->GenerateName([&](const string& name) { n = name; }, false, true, true, post);
 		if (n.empty()) continue;
 		males.push_back({ -1, n, GetRandom(20), -1, LIFE_SINGLE, GENDER_MALE,
 			-1, -1, -1, {} });
@@ -727,9 +727,9 @@ void Populace::GenerateCitizens(int num, Time* time) {
 				case LIFE_BIRTH: {
 					int gender = GetRandom(2);
 					string s, n;
-					name->GetSurname([&](const string& name) { s = name; }, males[females[eventIdx].spouse].name);
+					name->GetSurname([&](const string& name) { s = name; }, males[females[eventIdx].spouse].name, post);
 					name->GenerateName([&](const string& name) { n = name; }, s,
-						gender == GENDER_MALE, gender == GENDER_FEMALE);
+						gender == GENDER_MALE, gender == GENDER_FEMALE, true, post);
 					if (n.empty()) break;
 					if (gender == GENDER_FEMALE) {
 						females[eventIdx].childs.emplace_back(GENDER_FEMALE,

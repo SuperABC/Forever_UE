@@ -34,11 +34,12 @@ void WorkonlyScheduler::InitScheduler() {
 	script = { "empty", { "basic_scheduler" } };
 }
 
-void WorkonlyScheduler::DailyPlan(const Time& time) {
+void WorkonlyScheduler::DailyPlan(const Time& time, PostHandle* post) {
 
 }
 
 void WorkonlyScheduler::ExecNode(const string& node,
-	Container* storyScript, Container* schedulerScript, const vector<Container*>& jobScripts) {
+	Container* storyScript, Container* schedulerScript, const vector<Container*>& jobScripts,
+	PostHandle* post) {
 
 }

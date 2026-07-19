@@ -27,12 +27,12 @@ string Calendar::GetName() const {
 	return name;
 }
 
-Time Calendar::SigninTime(const Time& date) const {
-	return mod->SigninTime(date);
+Time Calendar::SigninTime(const Time& date, PostHandle* post) const {
+	return mod->SigninTime(date, post);
 }
 
-Time Calendar::SignoutTime(const Time& date) const {
-	return mod->SignoutTime(date);
+Time Calendar::SignoutTime(const Time& date, PostHandle* post) const {
+	return mod->SignoutTime(date, post);
 }
 
 int EmptyCalendar::count = 0;
@@ -58,11 +58,11 @@ const char* EmptyCalendar::GetName() {
 	return name.data();
 }
 
-Time EmptyCalendar::SigninTime(const Time& date) const {
+Time EmptyCalendar::SigninTime(const Time& date, PostHandle* post) const {
 	return Time();
 }
 
-Time EmptyCalendar::SignoutTime(const Time& date) const {
+Time EmptyCalendar::SignoutTime(const Time& date, PostHandle* post) const {
 	return Time();
 }
 

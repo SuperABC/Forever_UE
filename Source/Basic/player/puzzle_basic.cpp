@@ -40,7 +40,7 @@ const char* TestPuzzle::GetName() {
 	return name.data();
 }
 
-void TestPuzzle::Init(int width, int height) {
+void TestPuzzle::Init(int width, int height, PostHandle* post) {
 	canvasW = width;
 	canvasH = height;
 
@@ -53,7 +53,7 @@ void TestPuzzle::Init(int width, int height) {
 	velY = SPEED * sinf(angle) * (rand() % 2 ? 1.0f : -1.0f);
 }
 
-int TestPuzzle::Loop(Canvas* canvas, int ms) {
+int TestPuzzle::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	if (!canvas || canvasW <= 0 || canvasH <= 0) return 0;
 
 	int key;

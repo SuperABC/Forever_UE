@@ -35,7 +35,8 @@ void NPCScript::SetScript() {
 }
 
 void NPCScript::WrapScript(const Event* event,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
+	PostHandle* post) {
 
 }
 
@@ -71,6 +72,7 @@ void ElevatorScript::SetScript() {
 }
 
 void ElevatorScript::WrapScript(const Event* event,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
+	PostHandle* post) {
 
 }

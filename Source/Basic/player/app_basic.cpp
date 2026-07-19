@@ -38,7 +38,7 @@ const char* TestApp::GetName() {
 	return name.data();
 }
 
-void TestApp::Init() {
+void TestApp::Init(PostHandle* post) {
 	posX = APP_W / 2.0f;
 	posY = APP_H / 2.0f;
 
@@ -47,7 +47,7 @@ void TestApp::Init() {
 	velY = SPEED * sinf(angle);
 }
 
-int TestApp::Loop(Canvas* canvas, int ms) {
+int TestApp::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	if (!canvas) return 0;
 
 	float dt = ms / 1000.0f;
@@ -67,11 +67,11 @@ int TestApp::Loop(Canvas* canvas, int ms) {
 	return 0;
 }
 
-void TestApp::Back(Canvas* canvas) {
+void TestApp::Back(Canvas* canvas, PostHandle* post) {
 
 }
 
-void TestApp::Refresh(Canvas* canvas) {
+void TestApp::Refresh(Canvas* canvas, PostHandle* post) {
 	if (!canvas) return;
 	canvas->ClearBuffer();
 	canvas->SetColor(100, 200, 255);

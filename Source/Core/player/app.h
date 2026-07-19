@@ -41,28 +41,32 @@ public:
 
 	/*
 	* 初始化应用
+	* @post: 向Core发起查询的句柄
 	*/
-	void Init() const;
+	void Init(PostHandle* post) const;
 
 	/*
 	* 每帧更新逻辑
 	* @canvas: 当前画布
 	* @ms: 距上帧毫秒数
+	* @post: 向Core发起查询的句柄
 	* @return: 帧状态码，0继续运行，非0退出
 	*/
-	int Loop(Canvas* canvas, int ms) const;
+	int Loop(Canvas* canvas, int ms, PostHandle* post) const;
 
 	/*
 	* 返回键响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	void Back(Canvas* canvas) const;
+	void Back(Canvas* canvas, PostHandle* post) const;
 
 	/*
 	* 强制刷新响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	void Refresh(Canvas* canvas) const;
+	void Refresh(Canvas* canvas, PostHandle* post) const;
 
 private:
 	// 应用模组对象
@@ -110,28 +114,32 @@ public:
 
 	/*
 	* 初始化应用
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Init();
+	static void Init(PostHandle* post);
 
 	/*
 	* 每帧更新逻辑
 	* @canvas: 当前画布
 	* @ms: 距上帧毫秒数
+	* @post: 向Core发起查询的句柄
 	* @return: 帧状态码，0继续运行，非0退出
 	*/
-	static int Loop(Canvas* canvas, int ms);
+	static int Loop(Canvas* canvas, int ms, PostHandle* post);
 
 	/*
 	* 返回键响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Back(Canvas* canvas);
+	static void Back(Canvas* canvas, PostHandle* post);
 
 	/*
 	* 强制刷新响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Refresh(Canvas* canvas);
+	static void Refresh(Canvas* canvas, PostHandle* post);
 
 private:
 	// 空应用实例计数器

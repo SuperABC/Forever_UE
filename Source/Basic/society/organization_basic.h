@@ -72,17 +72,19 @@ public:
 	* Override
 	* 每日规划
 	* @time: 当前游戏时间
+	* @post: 向Core发起查询的句柄
 	*/
-	virtual void DailyPlan(const Time& time) override;
+	virtual void DailyPlan(const Time& time, PostHandle* post) override;
 
 	/*
 	* Override
 	* 规划节点调用
 	* @name: 节点名称
 	* @storyScript, organizationScript: 主线剧情脚本、组织自身剧情脚本
+	* @post: 向Core发起查询的句柄
 	*/
 	virtual void ExecNode(const std::string& name,
-		Container* storyScript, Container* organizationScript) override;
+		Container* storyScript, Container* organizationScript, PostHandle* post) override;
 
 private:
 	// 总实例数量

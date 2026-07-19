@@ -27,12 +27,12 @@ string Puzzle::GetName() const {
 	return name;
 }
 
-void Puzzle::Init(int width, int height) const {
-	factory->InitPuzzle(type, width, height);
+void Puzzle::Init(int width, int height, PostHandle* post) const {
+	factory->InitPuzzle(type, width, height, post);
 }
 
-int Puzzle::Loop(Canvas* canvas, int ms) const {
-	return factory->LoopPuzzle(type, canvas, ms);
+int Puzzle::Loop(Canvas* canvas, int ms, PostHandle* post) const {
+	return factory->LoopPuzzle(type, canvas, ms, post);
 }
 
 int EmptyPuzzle::count = 0;
@@ -58,10 +58,10 @@ const char* EmptyPuzzle::GetName() {
 	return name.data();
 }
 
-void EmptyPuzzle::Init(int width, int height) {
+void EmptyPuzzle::Init(int width, int height, PostHandle* post) {
 
 }
 
-int EmptyPuzzle::Loop(Canvas* canvas, int ms) {
+int EmptyPuzzle::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	return 0;
 }

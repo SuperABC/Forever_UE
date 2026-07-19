@@ -58,13 +58,14 @@ void ShopOrganization::InitOrganization() {
 	script = { "empty", { "" } };
 }
 
-void ShopOrganization::DailyPlan(const Time& time) {
+void ShopOrganization::DailyPlan(const Time& time, PostHandle* post) {
 	if (time.GetDay() == 1) {
 		plans["salary_payment"] = time;
 	}
 }
 
-void ShopOrganization::ExecNode(const string& name, Container* storyScript, Container* organizationScript) {
+void ShopOrganization::ExecNode(const string& name,
+	Container* storyScript, Container* organizationScript, PostHandle* post) {
 	if (name == "salary_payment") {
 		int count = ToInt(organizationScript->GetValue("self.employee_count").second);
 		for (int i = 0; i < count; i++) {

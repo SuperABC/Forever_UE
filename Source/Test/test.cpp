@@ -4,6 +4,7 @@
 #include "society/society.h"
 #include "story/story.h"
 #include "story/script.h"
+#include "common/implement.h"
 #include "story/event.h"
 #include "story/dialog.h"
 #include "story/change.h"
@@ -36,6 +37,7 @@ Story* story = new Story();
 Industry* industry = new Industry();
 Traffic* traffic = new Traffic();
 Player* player = new Player();
+PostImplement* implement = new PostImplement(::map, populace, society, story, industry, traffic, player);
 
 // ANSI字符串和UTF-8字符串转换
 string AnsiToUtf8(const string& ansiStr) {
@@ -661,7 +663,7 @@ int main() {
 				::map->InitBlocks(size, size);
 				traffic->InitBuildings(::map);
 				int accomodation = ::map->InitContents();
-				populace->Init(accomodation, player);
+				populace->Init(accomodation, player, implement);
 				::map->Checkin(populace, player);
 				traffic->InitTraffic(::map, populace);
 				society->Init(::map, populace, player);
@@ -715,7 +717,7 @@ int main() {
 				};
 				
 				auto actions = story->GetScript()->MatchEvent(event, getValues);
-				actions = story->GetScript()->WrapScript(event, actions, getValues);
+				actions = story->GetScript()->WrapScript(event, actions, getValues, implement);
 				for (auto action : actions) {
 					visit([&](auto* ptr) {
 						if constexpr (is_same_v<decltype(ptr), Dialog*>) {

@@ -30,14 +30,14 @@ string Name::GetName() const {
 }
 
 void Name::GetSurname(function<void(const string&)> set,
-	const string& name) {
-	mod->GetSurname(set, name);
+	const string& name, PostHandle* post) {
+	mod->GetSurname(set, name, post);
 }
 
 void Name::GenerateName(function<void(const string&)> set,
-	bool male, bool female, bool neutral) {
+	bool male, bool female, bool neutral, PostHandle* post) {
 	string name = "";
-	mod->GenerateName([&](const string& n) {name = n; }, male, female, neutral);
+	mod->GenerateName([&](const string& n) {name = n; }, male, female, neutral, post);
 	if (RegisterName(name)) {
 		set(name);
 	}
@@ -47,9 +47,9 @@ void Name::GenerateName(function<void(const string&)> set,
 }
 
 void Name::GenerateName(function<void(const string&)> set,
-	const string& surname, bool male, bool female, bool neutral) {
+	const string& surname, bool male, bool female, bool neutral, PostHandle* post) {
 	string name = "";
-	mod->GenerateName([&](const string& n) {name = n; }, surname, male, female, neutral);
+	mod->GenerateName([&](const string& n) {name = n; }, surname, male, female, neutral, post);
 	if (RegisterName(name)) {
 		set(name);
 	}
@@ -98,17 +98,17 @@ const char* EmptyName::GetName() {
 }
 
 void EmptyName::GetSurname(function<void(const string&)> set,
-	const string& name) {
+	const string& name, PostHandle* post) {
 
 }
 
 void EmptyName::GenerateName(function<void(const string&)> set,
-	bool male, bool female, bool neutral) {
+	bool male, bool female, bool neutral, PostHandle* post) {
 
 }
 
 void EmptyName::GenerateName(function<void(const string&)> set,
-	const string& surname, bool male, bool female, bool neutral) {
+	const string& surname, bool male, bool female, bool neutral, PostHandle* post) {
 
 }
 

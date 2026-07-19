@@ -43,8 +43,9 @@ public:
 	/*
 	* 初始化人口
 	* @accomodation, player: 容纳量与玩家对象
+	* @post: 向Core发起查询的句柄
 	*/
-	void Init(int accomodation, Player* player);
+	void Init(int accomodation, Player* player, PostHandle* post);
 
 	/*
 	* 释放空间
@@ -54,8 +55,9 @@ public:
 	/*
 	* 时钟周期，返回本帧调度节点产生的变化列表（由调用方负责释放）
 	* @map, story, player: 地图、剧情、玩家
+	* @post: 向Core发起查询的句柄
 	*/
-	std::vector<std::pair<Change*, Script*>> Tick(Map* map, Story* story, Player* player);
+	std::vector<std::pair<Change*, Script*>> Tick(Map* map, Story* story, Player* player, PostHandle* post);
 
 	/*
 	* 应用剧情变化
@@ -89,8 +91,9 @@ private:
 	/*
 	* 生成市民
 	* @num, time: 数量与游戏时间指针
+	* @post: 向Core发起查询的句柄
 	*/
-	void GenerateCitizens(int num, Time* time);
+	void GenerateCitizens(int num, Time* time, PostHandle* post);
 
 	/*
 	* 生成教育经历

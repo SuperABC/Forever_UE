@@ -10,6 +10,7 @@
 #include "../Utility/CanvasBuffer.h"
 
 #include "common/class.h"
+#include "common/implement.h"
 
 #include <string>
 #include <unordered_map>
@@ -119,6 +120,8 @@ protected:
 	Industry* industry;
 	Traffic* traffic;
 	Player* player;
+
+	OBJECT_HOLDER PostImplement* implement;
 
 	ATerrainBase* terrainActor;
 	ARoadnetBase* roadnetActor;

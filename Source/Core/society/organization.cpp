@@ -130,13 +130,13 @@ void Organization::InitOrganization() {
 	script->SetValue("self.type", string(mod->GetType()));
 }
 
-void Organization::DailyPlan(const Time& time) {
-	mod->DailyPlan(time);
+void Organization::DailyPlan(const Time& time, PostHandle* post) {
+	mod->DailyPlan(time, post);
 }
 
-vector<Change*> Organization::ExecNode(const string& node, Script* storyScript) {
+vector<Change*> Organization::ExecNode(const string& node, Script* storyScript, PostHandle* post) {
 	mod->changes.clear();
-	mod->ExecNode(node, storyScript, script);
+	mod->ExecNode(node, storyScript, script, post);
 	vector<Change*> result;
 	for (auto& cv : mod->changes) {
 		result.push_back(visit([](auto& c) -> Change* { return new decay_t<decltype(c)>(c); }, cv));
@@ -193,11 +193,12 @@ void EmptyOrganization::InitOrganization() {
 	script = { "empty", {} };
 }
 
-void EmptyOrganization::DailyPlan(const Time& time) {
+void EmptyOrganization::DailyPlan(const Time& time, PostHandle* post) {
 
 }
 
-void EmptyOrganization::ExecNode(const string& name, Container* storyScript, Container* orgScript) {
+void EmptyOrganization::ExecNode(const string& name, Container* storyScript, Container* orgScript,
+	PostHandle* post) {
 
 }
 

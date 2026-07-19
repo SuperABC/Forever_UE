@@ -2,6 +2,7 @@
 
 #include "../common/utility.h"
 #include "../common/error.h"
+#include "../common/handle.h"
 
 #include <string>
 #include <functional>
@@ -46,31 +47,35 @@ public:
 	/*
 	* Override
 	* 初始化应用
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Init();
+	COSTOM_RUNTIME static void Init(PostHandle* post);
 
 	/*
 	* Override
 	* 每帧更新逻辑
 	* @canvas: 当前画布
 	* @ms: 距上帧毫秒数
+	* @post: 向Core发起查询的句柄
 	* @return: 帧状态码，0继续运行，非0退出
 	*/
-	static int Loop(Canvas* canvas, int ms);
+	COSTOM_RUNTIME static int Loop(Canvas* canvas, int ms, PostHandle* post);
 
 	/*
 	* Override
 	* 返回键响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Back(Canvas* canvas);
+	COSTOM_RUNTIME static void Back(Canvas* canvas, PostHandle* post);
 
 	/*
 	* Override
 	* 强制刷新响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Refresh(Canvas* canvas);
+	COSTOM_RUNTIME static void Refresh(Canvas* canvas, PostHandle* post);
 };
 
 class AppFactory {
@@ -81,8 +86,8 @@ public:
 	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterApp(const std::string& id,
-		std::function<void()> init, std::function<int(Canvas*, int)> loop,
-		std::function<void(Canvas*)> back, std::function<void(Canvas*)> refresh,
+		std::function<void(PostHandle*)> init, std::function<int(Canvas*, int, PostHandle*)> loop,
+		std::function<void(Canvas*, PostHandle*)> back, std::function<void(Canvas*, PostHandle*)> refresh,
 		std::function<AppMod*()> creator, std::function<void(AppMod*)> deleter);
 
 	/*
@@ -112,29 +117,33 @@ public:
 	/*
 	* 初始化应用
 	* @id: 应用类型
+	* @post: 向Core发起查询的句柄
 	*/
-	void InitApp(const std::string& id) const;
+	void InitApp(const std::string& id, PostHandle* post) const;
 
 	/*
 	* 每帧更新小应用
 	* @id: 应用类型
 	* @canvas: 当前画布
 	* @ms: 距上帧毫秒数
+	* @post: 向Core发起查询的句柄
 	* @return: 帧状态码，0继续运行，非0退出
 	*/
-	int LoopApp(const std::string& id, Canvas* canvas, int ms) const;
+	int LoopApp(const std::string& id, Canvas* canvas, int ms, PostHandle* post) const;
 
 	/*
 	* 返回键响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	void BackApp(const std::string& id, Canvas* canvas) const;
+	void BackApp(const std::string& id, Canvas* canvas, PostHandle* post) const;
 
 	/*
 	* 强制刷新响应函数
 	* @canvas: 当前画布
+	* @post: 向Core发起查询的句柄
 	*/
-	void RefreshApp(const std::string& id, Canvas* canvas) const;
+	void RefreshApp(const std::string& id, Canvas* canvas, PostHandle* post) const;
 
 	/*
 	* 析构应用
@@ -145,10 +154,10 @@ public:
 private:
 	// 注册表
 	struct Registry {
-		std::function<void()> init;
-		std::function<int(Canvas*, int)> loop;
-		std::function<void(Canvas*)> back;
-		std::function<void(Canvas*)> refresh;
+		std::function<void(PostHandle*)> init;
+		std::function<int(Canvas*, int, PostHandle*)> loop;
+		std::function<void(Canvas*, PostHandle*)> back;
+		std::function<void(Canvas*, PostHandle*)> refresh;
 		std::function<AppMod*()> creator;
 		std::function<void(AppMod*)> deleter;
 	};

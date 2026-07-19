@@ -52,16 +52,19 @@ public:
 	/*
 	* 每日计划
 	* @time: 当前游戏时间
+	* @post: 向Core发起查询的句柄
 	*/
-	void DailyPlan(const Time& time);
+	void DailyPlan(const Time& time, PostHandle* post);
 
 	/*
 	* 执行节点，返回节点计算出的变化列表（由调用方负责释放）
 	* @node: 节点名称
 	* @storyScript: 主线剧情脚本，用于节点内的变量解析；调度自身的脚本由内部获取
 	* @jobScripts: 该市民所有工作的剧情脚本列表
+	* @post: 向Core发起查询的句柄
 	*/
-	std::vector<Change*> ExecNode(const std::string& node, Script* storyScript, const std::vector<Script*>& jobScripts);
+	std::vector<Change*> ExecNode(const std::string& node, Script* storyScript,
+		const std::vector<Script*>& jobScripts, PostHandle* post);
 
 	/*
 	* 获取今日计划（节点名 -> 目标时刻）
@@ -132,8 +135,9 @@ public:
 	* Override
 	* 每日规划
 	* @time: 当前游戏时间
+	* @post: 向Core发起查询的句柄
 	*/
-	virtual void DailyPlan(const Time& time) override;
+	virtual void DailyPlan(const Time& time, PostHandle* post) override;
 
 	/*
 	* Override
@@ -141,9 +145,11 @@ public:
 	* @node: 节点名称
 	* @storyScript, schedulerScript: 主线剧情脚本与调度自身的剧情脚本
 	* @jobScripts: 市民所有工作的剧情脚本列表
+	* @post: 向Core发起查询的句柄
 	*/
 	virtual void ExecNode(const std::string& node,
-		Container* storyScript, Container* schedulerScript, const std::vector<Container*>& jobScripts) override;
+		Container* storyScript, Container* schedulerScript, const std::vector<Container*>& jobScripts,
+		PostHandle* post) override;
 
 private:
 	// 总实例数量

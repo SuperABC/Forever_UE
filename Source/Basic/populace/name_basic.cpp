@@ -31,7 +31,7 @@ const char* ChineseName::GetName() {
 }
 
 void ChineseName::GetSurname(function<void(const string&)> set,
-	const string& name) {
+	const string& name, PostHandle* post) {
 	if (name.empty()) return;
 
 	const unsigned char* s = reinterpret_cast<const unsigned char*>(name.data());
@@ -60,17 +60,17 @@ void ChineseName::GetSurname(function<void(const string&)> set,
 }
 
 void ChineseName::GenerateName(function<void(const string&)> set,
-	bool male, bool female, bool neutral) {
+	bool male, bool female, bool neutral, PostHandle* post) {
 	int randVal = GetRandom(static_cast<int>(surnames.size() * surnames.size()));
 	int idx = static_cast<int>(sqrt(randVal));
 	int surnameIdx = static_cast<int>(surnames.size()) - 1 - idx;
 	string surname = surnames[surnameIdx];
 
-	GenerateName(set, surname, male, female, neutral);
+	GenerateName(set, surname, male, female, neutral, post);
 }
 
 void ChineseName::GenerateName(function<void(const string&)> set,
-	const string& surname, bool male, bool female, bool neutral) {
+	const string& surname, bool male, bool female, bool neutral, PostHandle* post) {
 	vector<int> nameList;
 
 	nameList.push_back(male ? static_cast<int>(maleNames.size()) : 0);

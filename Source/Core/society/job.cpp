@@ -70,13 +70,14 @@ void Job::SetPosition(Room* room) {
 	position = room;
 }
 
-void Job::DailyPlan(const Time& time) {
-	mod->DailyPlan(time);
+void Job::DailyPlan(const Time& time, PostHandle* post) {
+	mod->DailyPlan(time, post);
 }
 
-vector<Change*> Job::ExecNode(const string& node, Script* storyScript, Script* schedulerScript) {
+vector<Change*> Job::ExecNode(const string& node, Script* storyScript,
+	Script* schedulerScript, PostHandle* post) {
 	mod->changes.clear();
-	mod->ExecNode(node, storyScript, schedulerScript, script);
+	mod->ExecNode(node, storyScript, schedulerScript, script, post);
 	vector<Change*> result;
 	for (auto& cv : mod->changes) {
 		result.push_back(visit([](auto& c) -> Change* { return new decay_t<decltype(c)>(c); }, cv));
@@ -116,11 +117,12 @@ void EmptyJob::InitJob() {
 
 }
 
-void EmptyJob::DailyPlan(const Time& time) {
+void EmptyJob::DailyPlan(const Time& time, PostHandle* post) {
 
 }
 
-void EmptyJob::ExecNode(const string& name, Container* storyScript, Container* schedulerScript, Container* jobScript) {
+void EmptyJob::ExecNode(const string& name, Container* storyScript, Container* schedulerScript,
+	Container* jobScript, PostHandle* post) {
 
 }
 

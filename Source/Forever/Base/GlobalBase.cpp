@@ -42,6 +42,7 @@ AGlobalBase::AGlobalBase() :
 	industry(nullptr),
 	traffic(nullptr),
 	player(nullptr),
+	implement(nullptr),
 	terrainActor(nullptr),
 	roadnetActor(nullptr),
 	zoneActor(nullptr),
@@ -55,6 +56,10 @@ AGlobalBase::AGlobalBase() :
 }
 
 AGlobalBase::~AGlobalBase() {
+	if (implement) {
+		delete implement;
+		implement = nullptr;
+	}
 	if (map) {
 		delete map;
 		map = nullptr;
@@ -110,6 +115,7 @@ void AGlobalBase::BeginPlay() {
 		industry = new Industry();
 		traffic = new Traffic();
 		player = new Player();
+		implement = new PostImplement(map, populace, society, story, industry, traffic, player);
 
 		auto mods = Config::GetMods();
 
@@ -161,7 +167,7 @@ void AGlobalBase::BeginPlay() {
 		map->InitBlocks(size, size);
 		traffic->InitBuildings(map);
 		int accomodation = map->InitContents();
-		populace->Init(accomodation, player);
+		populace->Init(accomodation, player, implement);
 		map->Checkin(populace, player);
 		traffic->InitTraffic(map, populace);
 		society->Init(map, populace, player);
@@ -215,8 +221,8 @@ void AGlobalBase::Tick(float DeltaTime) {
 		}
 		for (auto& [c, s] : changes) delete c;
 	};
-	applyAndFree(society->Tick(player, story));
-	applyAndFree(populace->Tick(map, story, player));
+	applyAndFree(society->Tick(player, story, implement));
+	applyAndFree(populace->Tick(map, story, player, implement));
 	story->Tick(player);
 	industry->Tick(player);
 	traffic->Tick(player);
@@ -404,11 +410,11 @@ void AGlobalBase::DrawMap(UCanvasBuffer* buffer) {
 }
 
 void AGlobalBase::InitPuzzle(FString puzzle, int width, int height) {
-	Player::puzzleFactory->InitPuzzle(TCHAR_TO_UTF8(*puzzle), width, height);
+	Player::puzzleFactory->InitPuzzle(TCHAR_TO_UTF8(*puzzle), width, height, implement);
 }
 
 int32 AGlobalBase::LoopPuzzle(FString puzzle, UCanvasBuffer* canvas, int ms) {
-	return (int32)Player::puzzleFactory->LoopPuzzle(TCHAR_TO_UTF8(*puzzle), canvas->GetCanvas(), ms);
+	return (int32)Player::puzzleFactory->LoopPuzzle(TCHAR_TO_UTF8(*puzzle), canvas->GetCanvas(), ms, implement);
 }
 
 void AGlobalBase::InitPhone(int width, int height) {
@@ -416,5 +422,5 @@ void AGlobalBase::InitPhone(int width, int height) {
 }
 
 int32 AGlobalBase::LoopPhone(UCanvasBuffer* canvas, int ms) {
-	return (int32)GetPlayer()->GetPhone()->Loop(canvas->GetCanvas(), ms);
+	return (int32)GetPlayer()->GetPhone()->Loop(canvas->GetCanvas(), ms, implement);
 }

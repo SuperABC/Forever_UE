@@ -46,12 +46,15 @@ public:
 	virtual void SetScript();
 
 	/*
+	* Override
 	* 修正剧情
 	* @event: 关联事件
 	* @getValues: 变量取值函数列表
+	* @post: 向Core发起查询的句柄
 	*/
 	virtual void WrapScript(const Event* event,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
+		PostHandle* post) override;
 
 private:
 	// 全局实例计数
@@ -107,12 +110,15 @@ public:
 	virtual void SetScript();
 
 	/*
+	* Override
 	* 修正剧情
 	* @event: 关联事件
 	* @getValues: 变量取值函数列表
+	* @post: 向Core发起查询的句柄
 	*/
 	virtual void WrapScript(const Event* event,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
+		PostHandle* post) override;
 
 private:
 	// 全局实例计数

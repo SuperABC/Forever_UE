@@ -36,16 +36,18 @@ public:
 	/*
 	* 初始化小游戏
 	* @width: 画布宽度, height: 画布高度
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Init(int width, int height);
+	static void Init(int width, int height, PostHandle* post);
 
 	/*
 	* 每帧更新逻辑
 	* @canvas: 当前画布
 	* @ms: 距上帧毫秒数
+	* @post: 向Core发起查询的句柄
 	* @return: 帧状态码，0继续运行，非0退出
 	*/
-	static int Loop(Canvas* canvas, int ms);
+	static int Loop(Canvas* canvas, int ms, PostHandle* post);
 
 	// 总轮次数
 	static const int TOTAL_ROUNDS = 20;

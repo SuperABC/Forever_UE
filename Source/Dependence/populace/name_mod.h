@@ -2,6 +2,7 @@
 
 #include "../common/utility.h"
 #include "../common/error.h"
+#include "../common/handle.h"
 
 #include <string>
 #include <functional>
@@ -46,18 +47,20 @@ public:
 	* 从姓名中获取姓
 	* @set: 接收姓的回调
 	* @name: 待提取的姓名
+	* @post: 向Core发起查询的句柄
 	*/
 	COSTOM_RUNTIME virtual void GetSurname(std::function<void(const std::string&)> set,
-		const std::string& name) = 0;
+		const std::string& name, PostHandle* post) = 0;
 
 	/*
 	* Override
 	* 全随机生成姓名
 	* @set: 接收生成结果的回调
 	* @male, female, neutral: 是否允许使用男性、女性、中性名
+	* @post: 向Core发起查询的句柄
 	*/
 	COSTOM_RUNTIME virtual void GenerateName(std::function<void(const std::string&)> set,
-		bool male = true, bool female = true, bool neutral = true) = 0;
+		bool male, bool female, bool neutral, PostHandle* post) = 0;
 
 	/*
 	* Override
@@ -65,9 +68,10 @@ public:
 	* @set: 接收生成结果的回调
 	* @surname: 指定的姓
 	* @male, female, neutral: 是否允许使用男性、女性、中性名
+	* @post: 向Core发起查询的句柄
 	*/
 	COSTOM_RUNTIME virtual void GenerateName(std::function<void(const std::string&)> set,
-		const std::string& surname, bool male = true, bool female = true, bool neutral = true) = 0;
+		const std::string& surname, bool male, bool female, bool neutral, PostHandle* post) = 0;
 };
 
 class NameFactory {

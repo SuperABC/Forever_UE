@@ -30,10 +30,12 @@ void ShopSalerJob::InitJob() {
 	script = { "empty", {"shop_saler"} };
 }
 
-void ShopSalerJob::DailyPlan(const Time& time) {
+void ShopSalerJob::DailyPlan(const Time& time, PostHandle* post) {
 
 }
 
-void ShopSalerJob::ExecNode(const string& name, Container* storyScript, Container* schedulerScript, Container* jobScript) {
+void ShopSalerJob::ExecNode(const string& name,
+	Container* storyScript, Container* schedulerScript, Container* jobScript,
+	PostHandle* post) {
 
 }

@@ -332,7 +332,7 @@ void Society::Destroy() {
 	organizations.clear();
 }
 
-vector<pair<Change*, Script*>> Society::Tick(Player* player, Story* story) {
+vector<pair<Change*, Script*>> Society::Tick(Player* player, Story* story, PostHandle* post) {
 	auto time = player->GetTime();
 	auto cross = currentTime.GetYear() == 0 || player->CrossDay();
 	currentTime = *time;
@@ -341,18 +341,18 @@ vector<pair<Change*, Script*>> Society::Tick(Player* player, Story* story) {
 	if (cross) {
 		for (auto organization : organizations) {
 			if (!organization) continue;
-			organization->DailyPlan(*time);
+			organization->DailyPlan(*time, post);
 			for (auto& [node, timer] : organization->GetPlans()) {
 				timerSet.insert({ timer, nullptr, nullptr, organization, node });
 			}
 			// 为组织内各职位生成上下班时间及日计划
 			for (auto& [component, jobs] : organization->GetJobs()) {
 				for (auto& [job, person] : jobs) {
-					auto signin = job->GetCalendar()->SigninTime(*time);
-					auto signout = job->GetCalendar()->SignoutTime(*time);
+					auto signin = job->GetCalendar()->SigninTime(*time, post);
+					auto signout = job->GetCalendar()->SignoutTime(*time, post);
 					job->GetScript()->SetValue("self.signin_time", signin.ToString(false, true));
 					job->GetScript()->SetValue("self.signout_time", signout.ToString(false, true));
-					job->DailyPlan(*time);
+					job->DailyPlan(*time, post);
 					for (auto& [node, timer] : job->GetPlans()) {
 						timerSet.insert({ timer, job, person, nullptr, node });
 					}
@@ -372,11 +372,11 @@ vector<pair<Change*, Script*>> Society::Tick(Player* player, Story* story) {
 		vector<Change*> changes;
 		// 区分职位计划节点与组织计划节点分别执行
 		if (job) {
-			changes = job->ExecNode(node, story->GetScript(), person->GetScheduler()->GetScript());
+			changes = job->ExecNode(node, story->GetScript(), person->GetScheduler()->GetScript(), post);
 			for (auto c : changes) result.emplace_back(c, job->GetScript());
 		}
 		else if (organization) {
-			changes = organization->ExecNode(node, story->GetScript());
+			changes = organization->ExecNode(node, story->GetScript(), post);
 			for (auto c : changes) result.emplace_back(c, organization->GetScript());
 		}
 		timerSet.erase(it);

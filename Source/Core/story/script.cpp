@@ -95,9 +95,10 @@ string Script::GetTask() {
 }
 
 vector<ScriptAction>& Script::WrapScript(Event* event, vector<ScriptAction>& actions,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
+	PostHandle* post) {
 	mod->actionQueue = move(actions);
-	mod->WrapScript(event, getValues);
+	mod->WrapScript(event, getValues, post);
 
 	return mod->actionQueue;
 }
@@ -958,6 +959,7 @@ void EmptyScript::SetScript() {
 }
 
 void EmptyScript::WrapScript(const Event* event,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
+	PostHandle* post) {
 
 }

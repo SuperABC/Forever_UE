@@ -29,7 +29,7 @@ const char* StandardCalendar::GetName() {
 	return name.data();
 }
 
-Time StandardCalendar::SigninTime(const Time& date) const {
+Time StandardCalendar::SigninTime(const Time& date, PostHandle* post) const {
 	int day = date.DayOfWeek();
 	if (day >= 0 && day <= 4) {
 		Time t = on;
@@ -41,7 +41,7 @@ Time StandardCalendar::SigninTime(const Time& date) const {
 	}
 }
 
-Time StandardCalendar::SignoutTime(const Time& date) const {
+Time StandardCalendar::SignoutTime(const Time& date, PostHandle* post) const {
 	int day = date.DayOfWeek();
 	if (day >= 0 && day <= 4) {
 		Time t = off;
@@ -79,13 +79,13 @@ const char* FullCalendar::GetName() {
 	return name.data();
 }
 
-Time FullCalendar::SigninTime(const Time& date) const {
+Time FullCalendar::SigninTime(const Time& date, PostHandle* post) const {
 	Time t = on;
 	t.SetDate(date.GetYear(), date.GetMonth(), date.GetDay());
 	return t;
 }
 
-Time FullCalendar::SignoutTime(const Time& date) const {
+Time FullCalendar::SignoutTime(const Time& date, PostHandle* post) const {
 	Time t = off;
 	t.SetDate(date.GetYear(), date.GetMonth(), date.GetDay());
 	return t;

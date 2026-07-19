@@ -2,6 +2,7 @@
 
 #include "../common/utility.h"
 #include "../common/error.h"
+#include "../common/handle.h"
 
 #include <string>
 #include <functional>
@@ -47,17 +48,19 @@ public:
 	* Override
 	* 初始化小游戏
 	* @width: 画布宽度, height: 画布高度
+	* @post: 向Core发起查询的句柄
 	*/
-	static void Init(int width, int height);
+	COSTOM_RUNTIME static void Init(int width, int height, PostHandle* post);
 
 	/*
 	* Override
 	* 每帧更新逻辑
 	* @canvas: 当前画布
 	* @ms: 距上帧毫秒数
+	* @post: 向Core发起查询的句柄
 	* @return: 帧状态码，0继续运行，非0退出
 	*/
-	static int Loop(Canvas* canvas, int ms);
+	COSTOM_RUNTIME static int Loop(Canvas* canvas, int ms, PostHandle* post);
 };
 
 class PuzzleFactory {
@@ -68,7 +71,7 @@ public:
 	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterPuzzle(const std::string& id,
-		std::function<void(int, int)> init, std::function<int(Canvas*, int)> loop,
+		std::function<void(int, int, PostHandle*)> init, std::function<int(Canvas*, int, PostHandle*)> loop,
 		std::function<PuzzleMod* ()> creator, std::function<void(PuzzleMod*)> deleter);
 
 	/*
@@ -99,17 +102,19 @@ public:
 	* 初始化小游戏
 	* @id: 小游戏类型
 	* @width: 画布宽度, height: 画布高度
+	* @post: 向Core发起查询的句柄
 	*/
-	void InitPuzzle(const std::string& id, int width, int height) const;
+	void InitPuzzle(const std::string& id, int width, int height, PostHandle* post) const;
 
 	/*
 	* 每帧更新小游戏
 	* @id: 小游戏类型
 	* @canvas: 当前画布
 	* @ms: 距上帧毫秒数
+	* @post: 向Core发起查询的句柄
 	* @return: 帧状态码，0继续运行，非0退出
 	*/
-	int LoopPuzzle(const std::string& id, Canvas* canvas, int ms) const;
+	int LoopPuzzle(const std::string& id, Canvas* canvas, int ms, PostHandle* post) const;
 
 	/*
 	* 析构小游戏
@@ -119,8 +124,8 @@ public:
 
 private:
 	struct Registry {
-		std::function<void(int, int)> init;
-		std::function<int(Canvas*, int)> loop;
+		std::function<void(int, int, PostHandle*)> init;
+		std::function<int(Canvas*, int, PostHandle*)> loop;
 		std::function<PuzzleMod* ()> creator;
 		std::function<void(PuzzleMod*)> deleter;
 	};

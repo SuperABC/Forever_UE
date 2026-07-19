@@ -3,6 +3,7 @@
 #include "../common/utility.h"
 #include "../common/error.h"
 #include "../common/json.h"
+#include "../common/handle.h"
 
 #include "condition.h"
 
@@ -69,9 +70,11 @@ public:
 	* 脚本逻辑重载，修改actionQueue字段
 	* @event: 触发事件
 	* @getValues: 值获取回调列表
+	* @post: 向Core发起查询的句柄
 	*/
 	COSTOM_RUNTIME virtual void WrapScript(const Event* event,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) = 0;
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
+		PostHandle* post) = 0;
 
 	// 脚本文件路径
 	std::string scriptPath;

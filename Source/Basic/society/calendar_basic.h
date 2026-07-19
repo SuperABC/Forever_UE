@@ -38,15 +38,17 @@ public:
 	* Override
 	* 获取指定日期的上班时间
 	* @date: 目标日期
+	* @post: 向Core发起查询的句柄
 	*/
-	virtual Time SigninTime(const Time& date) const override;
+	virtual Time SigninTime(const Time& date, PostHandle* post) const override;
 
 	/*
 	* Override
 	* 获取指定日期的下班时间
 	* @date: 目标日期
+	* @post: 向Core发起查询的句柄
 	*/
-	virtual Time SignoutTime(const Time& date) const override;
+	virtual Time SignoutTime(const Time& date, PostHandle* post) const override;
 
 private:
 	// 总实例数量
@@ -100,15 +102,17 @@ public:
 	* Override
 	* 获取指定日期的上班时间
 	* @date: 目标日期
+	* @post: 向Core发起查询的句柄
 	*/
-	virtual Time SigninTime(const Time& date) const override;
+	virtual Time SigninTime(const Time& date, PostHandle* post) const override;
 
 	/*
 	* Override
 	* 获取指定日期的下班时间
 	* @date: 目标日期
+	* @post: 向Core发起查询的句柄
 	*/
-	virtual Time SignoutTime(const Time& date) const override;
+	virtual Time SignoutTime(const Time& date, PostHandle* post) const override;
 
 private:
 	// 总实例数量

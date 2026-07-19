@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="common\error.cpp" />
+    <ClCompile Include="common\handle.cpp" />
     <ClCompile Include="common\json.cpp" />
     <ClCompile Include="common\utility.cpp" />
     <ClCompile Include="industry\manufacture_mod.cpp" />
@@ -161,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\error.h" />
+    <ClInclude Include="common\handle.h" />
     <ClInclude Include="common\json.h" />
     <ClInclude Include="common\utility.h" />
     <ClInclude Include="industry\manufacture_mod.h" />
