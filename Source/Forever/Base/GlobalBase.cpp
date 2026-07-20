@@ -1,7 +1,9 @@
 ﻿#include "GlobalBase.h"
 
 #include "AssetRegistry/IAssetRegistry.h"
-#include "Interfaces/IPluginManager.h"
+#include "Misc/CoreDelegates.h"
+#include "Misc/PackageName.h"
+#include "ShaderCodeLibrary.h"
 
 #include "TerrainBase.h"
 #include "RoadnetBase.h"
@@ -94,19 +96,41 @@ void AGlobalBase::BeginPlay() {
 	Super::BeginPlay();
 
 	try {
+#if WITH_EDITOR
 		for (auto& pluginPath : Config::GetPlugins()) {
 			FString pluginFile(UTF8_TO_TCHAR(pluginPath.data()));
-			if (IPluginManager::Get().AddToPluginsList(pluginFile)) {
-				FString pluginName = FPaths::GetBaseFilename(pluginFile);
-				IPluginManager::Get().MountNewlyCreatedPlugin(pluginName);
-				TSharedPtr<IPlugin> plugin = IPluginManager::Get().FindPlugin(pluginName);
-				if (plugin) {
+			FString pluginDir  = FPaths::GetPath(pluginFile);
+			FString pluginName = FPaths::GetBaseFilename(pluginFile);
+			FString contentDir = FPaths::ConvertRelativePathToFull(pluginDir / TEXT("Content"));
+			FString mountPoint = TEXT("/") + pluginName + TEXT("/");
+			if (FPaths::DirectoryExists(contentDir)) {
+				FPackageName::RegisterMountPoint(mountPoint, contentDir);
+				if (IAssetRegistry* AR = IAssetRegistry::Get()) {
+					AR->ScanPathsSynchronous({ mountPoint }, true);
+				}
+			}
+		}
+#else
+		for (auto& pakPath : Config::GetPakFiles()) {
+			FString pakFile(UTF8_TO_TCHAR(pakPath.data()));
+			FString pluginName = FPaths::GetBaseFilename(pakFile);
+			FString mountPoint = TEXT("/") + pluginName + TEXT("/");
+			if (FCoreDelegates::MountPaksEx.IsBound()) {
+				TArray<UE::FMountPaksExArgs> mountArgsArr;
+				UE::FMountPaksExArgs& mountArgs = mountArgsArr.AddDefaulted_GetRef();
+				mountArgs.PakFilePath = *pakFile;
+				mountArgs.Order = 4;
+				mountArgs.MountOptions.MountFlags = FPakMountOptions::EMountFlags::SkipContainerFile;
+				if (FCoreDelegates::MountPaksEx.Execute(mountArgsArr)) {
+					FPackageName::RegisterMountPoint(mountPoint, TEXT("../../../") + pluginName + TEXT("/Content/"));
+					FShaderCodeLibrary::OpenLibrary(pluginName, TEXT("../../../") + pluginName + TEXT("/Content/"));
 					if (IAssetRegistry* AR = IAssetRegistry::Get()) {
-						AR->ScanPathsSynchronous({ plugin->GetMountedAssetPath() }, true);
+						AR->ScanPathsSynchronous({ mountPoint }, true);
 					}
 				}
 			}
 		}
+#endif
 
 		map = new Map();
 		populace = new Populace();

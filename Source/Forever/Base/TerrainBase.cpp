@@ -161,7 +161,9 @@ void ATerrainBase::InitInstances(int width, int height) {
 	terrainDiffuseArray = NewObject<UTexture2DArray>(this, NAME_None, RF_Transient);
 	terrainDiffuseArray->Filter = TF_Bilinear;
 	terrainDiffuseArray->SRGB = true;
+#if WITH_EDITOR
 	terrainDiffuseArray->MipGenSettings = TMGS_NoMipmaps;
+#endif
 	terrainDiffuseArray->NeverStream = true;
 
 	FTexturePlatformData* platformData = new FTexturePlatformData();
@@ -183,9 +185,20 @@ void ATerrainBase::InitInstances(int width, int height) {
 	for (int32 sliceIndex = 0; sliceIndex < sourceTextures.Num(); sliceIndex++) {
 		UTexture2D* srcTexture = sourceTextures[sliceIndex];
 		if (!srcTexture) continue;
+#if WITH_EDITOR
 		TArray64<uint8> srcBytes;
 		if (srcTexture->Source.GetMipData(srcBytes, 0) && srcBytes.Num() >= sliceBytes)
 			FMemory::Memcpy(destPixels + (int64)sliceIndex * sliceBytes, srcBytes.GetData(), sliceBytes);
+#else
+		FTexturePlatformData* srcPlatformData = srcTexture->GetPlatformData();
+		if (srcPlatformData && srcPlatformData->Mips.Num() > 0) {
+			FByteBulkData& bulkData = srcPlatformData->Mips[0].BulkData;
+			const void* srcData = bulkData.Lock(LOCK_READ_ONLY);
+			if (srcData && bulkData.GetBulkDataSize() >= sliceBytes)
+				FMemory::Memcpy(destPixels + (int64)sliceIndex * sliceBytes, srcData, sliceBytes);
+			bulkData.Unlock();
+		}
+#endif
 	}
 
 	mip->BulkData.Unlock();

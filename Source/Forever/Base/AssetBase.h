@@ -73,7 +73,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AGlobalBase* global;
 
-	std::unordered_map<std::string, AActor*> assetInstances;
+	UPROPERTY()
+	TMap<FString, AActor*> assetInstances;
 
 private:
 	Room* GetCurrentRoom() const;

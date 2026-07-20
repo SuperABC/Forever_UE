@@ -44,7 +44,7 @@ void APopulaceBase::Tick(float DeltaTime) {
 	auto populace = global->GetPopulace();
 	for (int j = step; j < populace->GetCitizens().size(); j += stride) {
 		auto citizen = populace->GetCitizens()[j];
-		if (personInstances.find(citizen->GetName()) != personInstances.end()) {
+		if (personInstances.Contains(UTF8_TO_TCHAR(citizen->GetName().c_str()))) {
 			continue;
 		}
 		auto destination = citizen->PopChange();
@@ -70,14 +70,13 @@ void APopulaceBase::Tick(float DeltaTime) {
 
 	TArray<FString> removes;
 	for(auto &[name, instance] : personInstances) {
-		auto destination = populace->GetCitizen(name)->PopChange();
+		auto destination = populace->GetCitizen(TCHAR_TO_UTF8(*name))->PopChange();
 		if (!destination.empty()) {
-			global->GetStoryActor()->NpcArrive(
-				UTF8_TO_TCHAR(name.data()), UTF8_TO_TCHAR(destination.data()));
+			global->GetStoryActor()->NpcArrive(name, UTF8_TO_TCHAR(destination.data()));
 		}
 		auto pos = instance->GetActorLocation() / 1000.f;
 		if(!destination.empty() ||(pos - location).Size() > 4.f || fabs(pos.Z - location.Z) > 0.8f) {
-			removes.Add(UTF8_TO_TCHAR(name.data()));
+			removes.Add(name);
 		}
 	}
 	UpdatePopulace(adds, removes);
@@ -90,16 +89,13 @@ void APopulaceBase::SetGlobal(AGlobalBase* g) {
 }
 
 AActor* APopulaceBase::GetInstance(FString name) {
-	auto it = personInstances.find(TCHAR_TO_UTF8(*name));
-	if (it == personInstances.end()) {
-		return nullptr;
-	}
-	return it->second;
+	AActor** found = personInstances.Find(name);
+	return found ? *found : nullptr;
 }
 
 void APopulaceBase::AddInstance(FString name, AActor* actor) {
-	if (personInstances.find(TCHAR_TO_UTF8(*name)) == personInstances.end()) {
-		personInstances[TCHAR_TO_UTF8(*name)] = actor;
+	if (!personInstances.Contains(name)) {
+		personInstances.Add(name, actor);
 	}
 	else {
 		THROW_EXCEPTION(RuntimeException, string("Duplicate person name: ") + TCHAR_TO_UTF8(*name) + ".\n");
@@ -107,9 +103,9 @@ void APopulaceBase::AddInstance(FString name, AActor* actor) {
 }
 
 void APopulaceBase::RemoveInstance(FString name, AActor*& instance) {
-	if (personInstances.find(TCHAR_TO_UTF8(*name)) != personInstances.end()) {
-		instance = personInstances[TCHAR_TO_UTF8(*name)];
-		personInstances.erase(TCHAR_TO_UTF8(*name));
+	if (personInstances.Contains(name)) {
+		instance = personInstances[name];
+		personInstances.Remove(name);
 
 		auto person = global->GetPopulace()->GetCitizen(TCHAR_TO_UTF8(*name));
 		if (person) {

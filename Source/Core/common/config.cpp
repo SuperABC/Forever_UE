@@ -20,6 +20,7 @@ unordered_map<string, vector<string>> Config::layoutPaths = {};
 unordered_map<string, unordered_map<string, string>> Config::scriptPaths = {};
 unordered_map<string, vector<string>> Config::actionPaths = {};
 unordered_map<string, vector<string>> Config::pluginPaths = {};
+unordered_map<string, vector<string>> Config::pakPaths = {};
 unordered_set<string> Config::storyPaths = {};
 
 bool Config::CheckFileFormat(const filesystem::path& filePath, const string& format) {
@@ -902,6 +903,16 @@ vector<string> Config::GetPlugins() {
 	return plugins;
 }
 
+vector<string> Config::GetPakFiles() {
+	vector<string> paks;
+
+	for (auto& pakPath : pakPaths) {
+		paks.insert(paks.end(), pakPath.second.begin(), pakPath.second.end());
+	}
+
+	return paks;
+}
+
 void Config::AddResourcePath(const string& path) {
 	filesystem::path dir(path);
 	if (!filesystem::exists(dir) || !filesystem::is_directory(dir)) {
@@ -921,6 +932,7 @@ void Config::AddResourcePath(const string& path) {
 	scriptPaths[path].clear();
 	actionPaths[path].clear();
 	pluginPaths[path].clear();
+	pakPaths[path].clear();
 
 	for (const auto& entry : filesystem::recursive_directory_iterator(dir)) {
 		if (filesystem::is_regular_file(entry.path())) {
@@ -946,6 +958,9 @@ void Config::AddResourcePath(const string& path) {
 			else if (ext == ".uplugin") {
 				pluginPaths[path].push_back(fullPath);
 			}
+			else if (ext == ".pak") {
+				pakPaths[path].push_back(fullPath);
+			}
 		}
 	}
 }
@@ -963,6 +978,7 @@ void Config::RemoveResourcePath(const string& path) {
 	scriptPaths.erase(path);
 	actionPaths.erase(path);
 	pluginPaths.erase(path);
+	pakPaths.erase(path);
 }
 
 unordered_set<string> Config::GetStories() {

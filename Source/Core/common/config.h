@@ -106,6 +106,12 @@ public:
 	static std::vector<std::string> GetPlugins();
 
 	/*
+	* 获取所有已发现的pak文件绝对路径
+	* @return: pak文件路径列表
+	*/
+	static std::vector<std::string> GetPakFiles();
+
+	/*
 	* 添加resource目录并扫描其中的layout/script/action/uplugin文件
 	* @path: resource目录路径
 	*/
@@ -164,6 +170,9 @@ private:
 
 	// resource目录路径 -> [uplugin文件路径列表]
 	static std::unordered_map<std::string, std::vector<std::string>> pluginPaths;
+
+	// resource目录路径 -> [pak文件路径列表]
+	static std::unordered_map<std::string, std::vector<std::string>> pakPaths;
 
 	// 主剧情文件路径集合
 	static std::unordered_set<std::string> storyPaths;

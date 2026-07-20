@@ -67,5 +67,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AGlobalBase* global;
 
-	std::unordered_map<std::string, AActor*> zoneInstances;
+	UPROPERTY()
+	TMap<FString, AActor*> zoneInstances;
 };

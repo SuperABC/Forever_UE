@@ -57,5 +57,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AGlobalBase* global;
 
-	std::unordered_map<std::string, AActor*> vehicleInstances;
+	UPROPERTY()
+	TMap<FString, AActor*> vehicleInstances;
 };

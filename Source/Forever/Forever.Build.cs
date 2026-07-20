@@ -1,5 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.IO;
 using UnrealBuildTool;
 
 public class Forever : ModuleRules
@@ -27,7 +28,12 @@ public class Forever : ModuleRules
 			"Water"
         });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "FreeType2", "ImageWrapper", "Projects" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "FreeType2", "ImageWrapper", "Projects", "RenderCore" });
+
+		string libDir = Path.Combine(ModuleDirectory, "..", "..", "x64", "Release");
+		PublicAdditionalLibraries.Add(Path.Combine(libDir, "Dependence.lib"));
+		PublicAdditionalLibraries.Add(Path.Combine(libDir, "Core.lib"));
+		PublicAdditionalLibraries.Add(Path.Combine(libDir, "WXDJ.lib"));
 
 		AddEngineThirdPartyPrivateStaticDependencies(Target, "zlib");
 		AddEngineThirdPartyPrivateStaticDependencies(Target, "UElibPNG");

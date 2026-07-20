@@ -119,5 +119,6 @@ private:
 		const std::unordered_map<FACE_DIRECTION, std::vector<std::pair<std::vector<float>, Quad>>>& windows,
 		const FString& wallMaterial, TArray<FWall>& walls, TArray<FMesh>& meshes);
 
-	std::unordered_map<std::string, AActor*> buildingInstances;
+	UPROPERTY()
+	TMap<FString, AActor*> buildingInstances;
 };

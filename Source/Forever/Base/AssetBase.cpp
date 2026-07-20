@@ -54,14 +54,13 @@ Room* AAssetBase::GetCurrentRoom() const {
 }
 
 AActor* AAssetBase::GetInstance(FString name) {
-	auto it = assetInstances.find(TCHAR_TO_UTF8(*name));
-	if (it == assetInstances.end()) return nullptr;
-	return it->second;
+	AActor** found = assetInstances.Find(name);
+	return found ? *found : nullptr;
 }
 
 void AAssetBase::AddInstance(FString name, AActor* actor) {
-	if (assetInstances.find(TCHAR_TO_UTF8(*name)) == assetInstances.end()) {
-		assetInstances[TCHAR_TO_UTF8(*name)] = actor;
+	if (!assetInstances.Contains(name)) {
+		assetInstances.Add(name, actor);
 	}
 	else {
 		THROW_EXCEPTION(RuntimeException, string("Duplicate asset name: ") + TCHAR_TO_UTF8(*name) + ".\n");
@@ -69,9 +68,9 @@ void AAssetBase::AddInstance(FString name, AActor* actor) {
 }
 
 void AAssetBase::RemoveInstance(FString name, AActor*& instance) {
-	if (assetInstances.find(TCHAR_TO_UTF8(*name)) != assetInstances.end()) {
-		instance = assetInstances[TCHAR_TO_UTF8(*name)];
-		assetInstances.erase(TCHAR_TO_UTF8(*name));
+	if (assetInstances.Contains(name)) {
+		instance = assetInstances[name];
+		assetInstances.Remove(name);
 	}
 	else {
 		THROW_EXCEPTION(RuntimeException, string("Asset not found: ") + TCHAR_TO_UTF8(*name) + ".\n");

@@ -49,7 +49,7 @@ void AZoneBase::Tick(float DeltaTime) {
 		}
 		auto blockZones = block->GetZones();
 		for (auto blockZone : blockZones) {
-			if(zoneInstances.find(blockZone.first) != zoneInstances.end()) {
+			if(zoneInstances.Contains(UTF8_TO_TCHAR(blockZone.first.data()))) {
 				continue;
 			}
 			auto zone = blockZone.second;
@@ -82,8 +82,8 @@ void AZoneBase::SetGlobal(AGlobalBase* g) {
 }
 
 void AZoneBase::SetInstance(FString name, AActor* actor) {
-	if (zoneInstances.find(TCHAR_TO_UTF8(*name)) == zoneInstances.end()) {
-		zoneInstances[TCHAR_TO_UTF8(*name)] = actor;
+	if (!zoneInstances.Contains(name)) {
+		zoneInstances.Add(name, actor);
 	}
 	else {
 		THROW_EXCEPTION(RuntimeException, string("Duplicate zone name: ") + TCHAR_TO_UTF8(*name) + ".\n");

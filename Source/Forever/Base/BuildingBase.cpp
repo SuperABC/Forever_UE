@@ -53,7 +53,7 @@ void ABuildingBase::Tick(float DeltaTime) {
 		for (auto& [blockBuildingName, building] : blockBuildings) {
 			// 跳过面积为零的建筑，此类建筑无有效占地，不需要生成实例
 			if (building->GetAcreage() <= 0.f)continue;
-			if (buildingInstances.find(blockBuildingName) != buildingInstances.end()) {
+			if (buildingInstances.Contains(UTF8_TO_TCHAR(blockBuildingName.data()))) {
 				continue;
 			}
 			FBuilding buildingInfo;
@@ -78,7 +78,7 @@ void ABuildingBase::Tick(float DeltaTime) {
 			for (auto& [zoneBuildingName, building] : zone->GetBuildings()) {
 				// 跳过面积为零的建筑，此类建筑无有效占地，不需要生成实例
 				if (building->GetAcreage() <= 0.f)continue;
-				if (buildingInstances.find(zoneBuildingName) != buildingInstances.end()) {
+				if (buildingInstances.Contains(UTF8_TO_TCHAR(zoneBuildingName.data()))) {
 					continue;
 				}
 				FBuilding buildingInfo;
@@ -108,8 +108,8 @@ void ABuildingBase::SetGlobal(AGlobalBase* g) {
 }
 
 void ABuildingBase::SetInstance(FString name, AActor* actor) {
-	if (buildingInstances.find(TCHAR_TO_UTF8(*name)) == buildingInstances.end()) {
-		buildingInstances[TCHAR_TO_UTF8(*name)] = actor;
+	if (!buildingInstances.Contains(name)) {
+		buildingInstances.Add(name, actor);
 	}
 	else {
 		THROW_EXCEPTION(RuntimeException, string("Duplicate building name: ") + TCHAR_TO_UTF8(*name) + ".\n");
@@ -117,9 +117,8 @@ void ABuildingBase::SetInstance(FString name, AActor* actor) {
 }
 
 AActor* ABuildingBase::GetInstance(FString name) {
-	auto it = buildingInstances.find(TCHAR_TO_UTF8(*name));
-	if (it == buildingInstances.end()) return nullptr;
-	return it->second;
+	AActor** found = buildingInstances.Find(name);
+	return found ? *found : nullptr;
 }
 
 void ABuildingBase::EnterBuilding(FString building) {

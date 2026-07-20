@@ -39,7 +39,7 @@ void ATrafficBase::Tick(float DeltaTime) {
 	if (!traffic) return;
 	for (int j = step; j < traffic->GetVehicles().size(); j += stride) {
 		auto vehicle = traffic->GetVehicles()[j];
-		if (vehicleInstances.find(vehicle->GetName()) != vehicleInstances.end()) {
+		if (vehicleInstances.Contains(UTF8_TO_TCHAR(vehicle->GetName().c_str()))) {
 			continue;
 		}
 		FVehicle vehicleInfo;
@@ -64,7 +64,7 @@ void ATrafficBase::Tick(float DeltaTime) {
 	TArray<FString> removes;
 	for (auto& [name, instance] : vehicleInstances) {
 		if ((instance->GetActorLocation() / 1000.f - location).Size() > 8.f) {
-			removes.Add(UTF8_TO_TCHAR(name.data()));
+			removes.Add(name);
 		}
 	}
 	UpdateTraffic(adds, removes);
@@ -78,12 +78,13 @@ void ATrafficBase::SetGlobal(AGlobalBase* g) {
 }
 
 AActor* ATrafficBase::GetInstance(FString name) {
-	return vehicleInstances[TCHAR_TO_UTF8(*name)];
+	AActor** found = vehicleInstances.Find(name);
+	return found ? *found : nullptr;
 }
 
 void ATrafficBase::AddInstance(FString name, AActor* actor) {
-	if (vehicleInstances.find(TCHAR_TO_UTF8(*name)) == vehicleInstances.end()) {
-		vehicleInstances[TCHAR_TO_UTF8(*name)] = actor;
+	if (!vehicleInstances.Contains(name)) {
+		vehicleInstances.Add(name, actor);
 	}
 	else {
 		THROW_EXCEPTION(RuntimeException, string("Duplicate vehicle name: ") + TCHAR_TO_UTF8(*name) + ".\n");
@@ -91,9 +92,9 @@ void ATrafficBase::AddInstance(FString name, AActor* actor) {
 }
 
 void ATrafficBase::RemoveInstance(FString name, AActor*& instance) {
-	if (vehicleInstances.find(TCHAR_TO_UTF8(*name)) != vehicleInstances.end()) {
-		instance = vehicleInstances[TCHAR_TO_UTF8(*name)];
-		vehicleInstances.erase(TCHAR_TO_UTF8(*name));
+	if (vehicleInstances.Contains(name)) {
+		instance = vehicleInstances[name];
+		vehicleInstances.Remove(name);
 	}
 	else {
 		THROW_EXCEPTION(RuntimeException, string("Vehicle not found: ") + TCHAR_TO_UTF8(*name) + ".\n");
