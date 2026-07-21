@@ -1123,6 +1123,15 @@ private:
 	*/
 	static std::vector<float> InversePoint(const std::vector<float>& point, int face);
 
+	/*
+	* 根据转向修改门/窗在墙上的位置参数（8个浮点数，沿墙方向+垂直方向）
+	* 某些旋转会翻转沿墙方向，此时需要把起终点对调并做 1-ratio 镜像。
+	* @pos: 位置相对参数（8个浮点数）
+	* @direction: 门/窗所在墙的原始朝向（旋转前）
+	* @face: 转向
+	*/
+	static std::vector<float> InverseWall(const std::vector<float>& pos, int direction, int face);
+
 	// 模组对象
 	OBJECT_HOLDER BuildingMod* mod;
 

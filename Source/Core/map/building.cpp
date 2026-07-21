@@ -1032,24 +1032,24 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 						corridor.AddWall(InverseDirection(wall.AsInt(), i));
 					}
 					for (auto door : c["doors"]) {
+						int origDir = door["direction"].AsInt();
 						vector<vector<float>> positions;
 						for (auto p : door["positions"]) {
-							positions.emplace_back();
-							for (auto f : p) {
-								positions.back().push_back(f.AsFloat());
-							}
+							vector<float> pos;
+							for (auto f : p) pos.push_back(f.AsFloat());
+							positions.push_back(InverseWall(pos, origDir, i));
 						}
-						corridor.AddDoor(static_cast<FACE_DIRECTION>(InverseDirection(door["direction"].AsInt(), i)), positions);
+						corridor.AddDoor(static_cast<FACE_DIRECTION>(InverseDirection(origDir, i)), positions);
 					}
 					for (auto window : c["windows"]) {
+						int origDir = window["direction"].AsInt();
 						vector<vector<float>> positions;
 						for (auto p : window["positions"]) {
-							positions.emplace_back();
-							for (auto f : p) {
-								positions.back().push_back(f.AsFloat());
-							}
+							vector<float> pos;
+							for (auto f : p) pos.push_back(f.AsFloat());
+							positions.push_back(InverseWall(pos, origDir, i));
 						}
-						corridor.AddWindow(static_cast<FACE_DIRECTION>(InverseDirection(window["direction"].AsInt(), i)), positions);
+						corridor.AddWindow(static_cast<FACE_DIRECTION>(InverseDirection(origDir, i)), positions);
 					}
 					layout->templateCorridors[basename][i].push_back(corridor);
 				}
@@ -1069,24 +1069,24 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 					Single single(InverseParams(rect, i));
 					single.SetDirection(static_cast<FACE_DIRECTION>(InverseDirection(s["direction"].AsInt(), i)));
 					for (auto door : s["doors"]) {
+						int origDir = door["direction"].AsInt();
 						vector<vector<float>> positions;
 						for (auto p : door["positions"]) {
-							positions.emplace_back();
-							for (auto f : p) {
-								positions.back().push_back(f.AsFloat());
-							}
+							vector<float> pos;
+							for (auto f : p) pos.push_back(f.AsFloat());
+							positions.push_back(InverseWall(pos, origDir, i));
 						}
-						single.AddDoor(static_cast<FACE_DIRECTION>(InverseDirection(door["direction"].AsInt(), i)), positions);
+						single.AddDoor(static_cast<FACE_DIRECTION>(InverseDirection(origDir, i)), positions);
 					}
 					for (auto window : s["windows"]) {
+						int origDir = window["direction"].AsInt();
 						vector<vector<float>> positions;
 						for (auto p : window["positions"]) {
-							positions.emplace_back();
-							for (auto f : p) {
-								positions.back().push_back(f.AsFloat());
-							}
+							vector<float> pos;
+							for (auto f : p) pos.push_back(f.AsFloat());
+							positions.push_back(InverseWall(pos, origDir, i));
 						}
-						single.AddWindow(static_cast<FACE_DIRECTION>(InverseDirection(window["direction"].AsInt(), i)), positions);
+						single.AddWindow(static_cast<FACE_DIRECTION>(InverseDirection(origDir, i)), positions);
 					}
 					layout->templateSingles[basename][i].push_back(single);
 				}
@@ -1106,24 +1106,24 @@ Layout* Building::ReadTemplates(const vector<string>& paths) {
 					Row row(InverseParams(rect, i));
 					row.SetDirection(static_cast<FACE_DIRECTION>(InverseDirection(r["direction"].AsInt(), i)));
 					for (auto door : r["doors"]) {
+						int origDir = door["direction"].AsInt();
 						vector<vector<float>> positions;
 						for (auto p : door["positions"]) {
-							positions.emplace_back();
-							for (auto f : p) {
-								positions.back().push_back(f.AsFloat());
-							}
+							vector<float> pos;
+							for (auto f : p) pos.push_back(f.AsFloat());
+							positions.push_back(InverseWall(pos, origDir, i));
 						}
-						row.AddDoor(static_cast<FACE_DIRECTION>(InverseDirection(door["direction"].AsInt(), i)), positions);
+						row.AddDoor(static_cast<FACE_DIRECTION>(InverseDirection(origDir, i)), positions);
 					}
 					for (auto window : r["windows"]) {
+						int origDir = window["direction"].AsInt();
 						vector<vector<float>> positions;
 						for (auto p : window["positions"]) {
-							positions.emplace_back();
-							for (auto f : p) {
-								positions.back().push_back(f.AsFloat());
-							}
+							vector<float> pos;
+							for (auto f : p) pos.push_back(f.AsFloat());
+							positions.push_back(InverseWall(pos, origDir, i));
 						}
-						row.AddWindow(static_cast<FACE_DIRECTION>(InverseDirection(window["direction"].AsInt(), i)), positions);
+						row.AddWindow(static_cast<FACE_DIRECTION>(InverseDirection(origDir, i)), positions);
 					}
 					layout->templateRows[basename][i].push_back(row);
 				}
@@ -1498,6 +1498,31 @@ vector<float> Building::InversePoint(const vector<float>& point, int face) {
 	}
 }
 
+
+vector<float> Building::InverseWall(const vector<float>& pos, int direction, int face) {
+	if (pos.size() != RECT_PARAM_COUNT) {
+		THROW_EXCEPTION(InvalidArgumentException, "Wall position must have 8 elements.\n");
+	}
+	// Determine whether this rotation reverses the along-wall direction.
+	// face=0 (90° CCW + x-flip): reverses vertical walls (WEST=0, EAST=1)
+	// face=1 (90° CW + x-flip): reverses horizontal walls (NORTH=2, SOUTH=3)
+	// face=2 (identity): no reversal
+	// face=3 (180°): reverses all walls
+	bool flip = false;
+	switch (face) {
+	case 0: flip = (direction == 0 || direction == 1); break;
+	case 1: flip = (direction == 2 || direction == 3); break;
+	case 3: flip = true; break;
+	}
+	if (!flip) return pos;
+	// Reflect the along-wall (x) components: swap start x ↔ end x and apply 1-ratio.
+	// The vertical (y) components describe opening bottom/top and are wall-direction-
+	// independent, so they stay in place (y1 with start slot, y2 with end slot).
+	return {
+		1.f - pos[4], -pos[5], pos[2], pos[3],
+		1.f - pos[0], -pos[1], pos[6], pos[7],
+	};
+}
 
 // line的运行期状态：固定端点缓存 + 沿line收集到的锚点（用于排序后串成走廊骨架）
 struct LineRuntime {

@@ -73,16 +73,59 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 	}
 
 	string component = "residential";
-	AssignFloor(-1, direction, "straight_linear_b+");
-	ArrangeRow(-1, 0, "residential", 200.f, component, 0);
-	ArrangeRow(-1, 1, "residential", 200.f, component, 0);
-	AssignFloor(0, direction, "straight_linear_f^+-");
-	ArrangeRow(0, 0, "residential", 200.f, component, 0);
-	ArrangeRow(0, 1, "residential", 200.f, component, 0);
-	for (int i = 1; i < layers; i++) {
-		AssignFloor(i, direction, "straight_linear_f+-");
-		ArrangeRow(i, 0, "residential", 200.f, component, 0);
-		ArrangeRow(i, 1, "residential", 200.f, component, 0);
+
+	if (quad->GetAcreage() < 5000) {
+		AssignFloor(-1, direction, "default_straight_linear_b+");
+		ArrangeRow(-1, 0, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 1, "residential", 120.f, component, 0);
+		AssignFloor(0, direction, "default_straight_linear_f^+-");
+		ArrangeRow(0, 0, "residential", 120.f, component, 0);
+		ArrangeRow(0, 1, "residential", 120.f, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "default_straight_linear_f+-");
+			ArrangeRow(i, 0, "residential", 120.f, component, 0);
+			ArrangeRow(i, 1, "residential", 120.f, component, 0);
+		}
+	}
+	else {
+		AssignFloor(-1, direction, "default_nshape_double_b+");
+		AssignRoom(-1, 0, "empty", component, 0);
+		AssignRoom(-1, 1, "residential", component, 0);
+		AssignRoom(-1, 2, "residential", component, 0);
+		ArrangeRow(-1, 0, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 1, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 2, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 3, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 4, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 5, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 6, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 7, "residential", 120.f, component, 0);
+		AssignFloor(0, direction, "default_nshape_double_f^+-");
+		AssignRoom(0, 0, "empty", component, 0);
+		AssignRoom(0, 1, "residential", component, 0);
+		AssignRoom(0, 2, "residential", component, 0);
+		ArrangeRow(0, 0, "residential", 120.f, component, 0);
+		ArrangeRow(0, 1, "residential", 120.f, component, 0);
+		ArrangeRow(0, 2, "residential", 120.f, component, 0);
+		ArrangeRow(0, 3, "residential", 120.f, component, 0);
+		ArrangeRow(0, 4, "residential", 120.f, component, 0);
+		ArrangeRow(0, 5, "residential", 120.f, component, 0);
+		ArrangeRow(0, 6, "residential", 120.f, component, 0);
+		ArrangeRow(0, 7, "residential", 120.f, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "default_nshape_double_f+-");
+			AssignRoom(i, 0, "empty", component, 0);
+			AssignRoom(i, 1, "residential", component, 0);
+			AssignRoom(i, 2, "residential", component, 0);
+			ArrangeRow(i, 0, "residential", 120.f, component, 0);
+			ArrangeRow(i, 1, "residential", 120.f, component, 0);
+			ArrangeRow(i, 2, "residential", 120.f, component, 0);
+			ArrangeRow(i, 3, "residential", 120.f, component, 0);
+			ArrangeRow(i, 4, "residential", 120.f, component, 0);
+			ArrangeRow(i, 5, "residential", 120.f, component, 0);
+			ArrangeRow(i, 6, "residential", 120.f, component, 0);
+			ArrangeRow(i, 7, "residential", 120.f, component, 0);
+		}
 	}
 
 	script = { "empty", { "basic_building" } };
@@ -157,12 +200,12 @@ void ShopBuilding::LayoutBuilding(const Quad* quad) {
 	}
 
 	string component = "shop";
-	AssignFloor(0, direction, "lobby_linear_f^+");
+	AssignFloor(0, direction, "default_lobby_linear_f^+");
 	AssignRoom(0, 0, "shop", component, 0);
 	ArrangeRow(0, 0, "warehouse", 200.f, component, 0);
 	ArrangeRow(0, 1, "warehouse", 200.f, component, 0);
 	for (int i = 1; i < layers; i++) {
-		AssignFloor(i, direction, "lobby_linear_f-");
+		AssignFloor(i, direction, "default_lobby_linear_f-");
 		AssignRoom(i, 0, "residential", component, 0);
 		ArrangeRow(i, 0, "residential", 200.f, component, 0);
 		ArrangeRow(i, 1, "residential", 200.f, component, 0);
@@ -224,9 +267,9 @@ void FactoryBuilding::LayoutBuilding(const Quad* quad) {
 	int direction = GetRandom(4);
 
 	string component = "factory";
-	AssignFloor(-1, direction, "single_room_b+");
+	AssignFloor(-1, direction, "default_single_room_b+");
 	AssignRoom(-1, 0, "parking", component, 0);
-	AssignFloor(0, direction, "single_room_f^-");
+	AssignFloor(0, direction, "default_single_room_f^-");
 	AssignRoom(0, 0, "factory", component, 0);
 
 	script = { "empty", { "basic_building" } };

@@ -14,18 +14,18 @@ body { font-family: monospace; font-size: 13px; background: #1e1e1e; color: #ccc
 
 #main { display: flex; flex: 1; overflow: hidden; }
 
-#canvas-wrap { flex: 1; min-width: 0; display: grid;
+#canvas-wrap { flex: 0 0 40%; min-width: 0; display: grid;
                grid-template-rows: 1fr auto;
                align-items: center; justify-items: center;
                background: #252525; padding: 16px; gap: 10px; overflow: hidden; }
 canvas { display: block; cursor: crosshair; border: 1px solid #333;
-         max-width: 100%; max-height: 100%; aspect-ratio: 1 / 1; }
+         max-width: 100%; max-height: 100%; }
 #legend { display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: center;
           min-height: 32px; width: 100%; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #aaa; }
 .legend-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
 
-#panel { width: 340px; flex-shrink: 0; background: #2a2a2a; border-left: 1px solid #444;
+#panel { flex: 0 0 30%; min-width: 0; background: #2a2a2a; border-left: 1px solid #444;
          overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 
 .sec { border: 1px solid #3a3a3a; padding: 8px; border-radius: 2px; }
@@ -71,16 +71,58 @@ hr { border: none; border-top: 1px solid #3a3a3a; margin: 6px 0; }
 
 .field-title { font-size: 11px; color: #777; margin: 5px 0 3px; }
 .hint { font-size: 11px; color: #666; font-style: italic; }
+
+#file-list {
+  flex: 0 0 30%; min-width: 0;
+  background: #222; border-right: 1px solid #444;
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+.file-item {
+  display: flex; align-items: center; padding: 5px 8px;
+  cursor: pointer; border-bottom: 1px solid #2d2d2d; gap: 4px;
+  font-size: 11px; color: #aaa; user-select: none;
+}
+.file-item:hover { background: #2d2d2d; }
+.file-item.active {
+  background: #1a3040; color: #77bbdd;
+  border-left: 2px solid #4488aa; padding-left: 6px;
+}
+.file-item-name {
+  flex: 1; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap; min-width: 0;
+}
+.file-close {
+  flex-shrink: 0; color: #555; padding: 0 2px;
+  font-size: 14px; line-height: 1; cursor: pointer;
+}
+.file-close:hover { color: #ff7777; }
 </style>
 </head>
 <body>
 
 <div id="topbar">
+  <button class="primary" onclick="newFile()">新建</button>
   <button class="primary" onclick="loadFile()">加载</button>
   <button class="primary" onclick="saveFile()">保存</button>
+  <button class="primary" onclick="saveFileAs()">另存为</button>
+  <button onclick="undo()" title="Ctrl+Z">撤销</button>
+  <button onclick="redo()" title="Ctrl+Y">重做</button>
   <span id="fname"></span>
+  <div style="flex:1"></div>
+  <label>W</label>
+  <input type="number" id="global-w" step="1" min="2" value="4" style="width:52px">
+  <label>H</label>
+  <input type="number" id="global-h" step="1" min="2" value="4" style="width:52px">
+  <button onclick="applyGlobalSize()">应用</button>
+  <select id="global-mode">
+    <option value="ceilings">房顶</option>
+    <option value="grounds_hatches">地面</option>
+    <option value="others" selected>房间</option>
+    <option value="navigation">导航</option>
+  </select>
 </div>
 <div id="main">
+  <div id="file-list"></div>
   <div id="canvas-wrap">
     <canvas id="c" width="600" height="600"></canvas>
     <div id="legend"></div>
@@ -186,7 +228,7 @@ hr { border: none; border-top: 1px solid #3a3a3a; margin: 6px 0; }
 //
 // Complex (stored as {rect:[8], ...} in JSON):
 //   stairs, ramps, elevators  --> {rect, direction, walls:[int]}
-//   corridors                 --> {rect, walls:[int], windows:[...]}
+//   corridors                 --> {rect, walls:[int], doors:[...], windows:[...]}
 //   singles, rows             --> {rect, direction, doors:[...], windows:[...]}
 //
 // Singles and rows always have all 4 walls; no "walls" field appears in the file.
@@ -198,7 +240,9 @@ hr { border: none; border-top: 1px solid #3a3a3a; margin: 6px 0; }
 const CANVAS_PX    = 600;
 const LAYOUT_MIN   = -0.5;   // leftmost/topmost visible normalized coord
 const LAYOUT_RANGE = 2.0;    // total visible range: -0.5 to 1.5
-const SCALE        = CANVAS_PX / LAYOUT_RANGE;  // 300 px per normalized unit
+// Per-axis scale: the larger floor dimension always maps to CANVAS_PX
+function scaleX() { return CANVAS_PX / LAYOUT_RANGE * S.W / Math.max(S.W, S.H); }
+function scaleY() { return CANVAS_PX / LAYOUT_RANGE * S.H / Math.max(S.W, S.H); }
 
 // Fill colors for each geometry element type
 const COLORS = {
@@ -229,7 +273,7 @@ const MODE_TYPES = {
 const SIMPLE   = new Set(['ceilings', 'grounds', 'hatches']);
 const HAS_DIR  = new Set(['stairs', 'ramps', 'elevators', 'singles', 'rows']);
 const HAS_WALL = new Set(['stairs', 'ramps', 'elevators', 'corridors']);
-const HAS_DOOR = new Set(['singles', 'rows']);
+const HAS_DOOR = new Set(['corridors', 'singles', 'rows']);
 const HAS_WIN  = new Set(['corridors', 'singles', 'rows']);
 
 const ALL_KEYS = ['stairs', 'elevators', 'ramps', 'ceilings', 'grounds', 'hatches', 'corridors', 'singles', 'rows'];
@@ -245,7 +289,7 @@ const OUTER_CONN_LABEL = {
 };
 
 // Navigation mode: colors for labeled node circles
-const NAV_CIRCLE_R = 12;  // radius for all labeled nav circles
+const NAV_CIRCLE_R = 8;  // radius for all labeled nav circles
 const NAV_CIRCLE_COLOR = {
   node:      '#ffdd44',  // yellow  — standalone nav node
   single:    '#ff88cc',  // pink    — single room implicit nav node
@@ -266,18 +310,169 @@ const S = {
   H: 4,           // floor height in world units
   mode: 'others', // current display mode
   sel: null,      // geometry selection: {type, idx} or null
+  multiSel: [],   // multi-selection: [{type,idx}] geo or [{kind,idx}] nav; non-empty means multi-select mode
 
   // Navigation data — fully editable (replaces the old read-only rawNav)
   nav: { nodes: [], lines: [], connections: [] },
   navSel: null,   // nav selection: {kind:'node'|'line'|'conn', idx:N} or null
 };
 
+// ── File Tab System ───────────────────────────────────────────────────────────
+
+const files = [];      // array of open file entries
+let activeFileIdx = -1;
+
+// ── Undo / Redo ───────────────────────────────────────────────────────────────
+
+const undoStack = [];   // past snapshots (most recent last) — swapped on file switch
+const redoStack = [];   // future snapshots after undo (most recent last)
+const MAX_HISTORY = 80;
+
+// Serialise the mutable data portion of S into a compact string for the stack.
+// W, H, mode are global — not included in per-file undo snapshots.
+function snapshotState() {
+  return JSON.stringify({ data: S.data, nav: S.nav });
+}
+
+// Call before any mutation to record the current state.
+function snapshot() {
+  undoStack.push(snapshotState());
+  if (undoStack.length > MAX_HISTORY) undoStack.shift();
+  redoStack.length = 0;
+}
+
+function applySnapshot(raw) {
+  const st = JSON.parse(raw);
+  S.data = st.data; S.nav = st.nav;
+  S.sel = null; S.navSel = null; S.multiSel = [];
+  redraw(); renderLegend(); renderPanel();
+}
+
+function undo() {
+  if (!undoStack.length) return;
+  redoStack.push(snapshotState());
+  applySnapshot(undoStack.pop());
+}
+
+function redo() {
+  if (!redoStack.length) return;
+  undoStack.push(snapshotState());
+  applySnapshot(redoStack.pop());
+}
+
+// ── File Entry Helpers ────────────────────────────────────────────────────────
+
+function makeBlankEntry(name) {
+  return {
+    name,
+    handle: null,
+    data: { ceilings:[], grounds:[], hatches:[], stairs:[], ramps:[], elevators:[], corridors:[], singles:[], rows:[] },
+    nav:  { nodes: [], lines: [], connections: [] },
+    sel: null, navSel: null, multiSel: [],
+    undoStack: [], redoStack: [],
+  };
+}
+
+function makeNewFileName() {
+  const base = '新布局', ext = '.layout';
+  const names = new Set(files.map(f => f.name));
+  if (!names.has(base + ext)) return base + ext;
+  let n = 2;
+  while (names.has(base + n + ext)) n++;
+  return base + n + ext;
+}
+
+function saveCurrentToEntry() {
+  if (activeFileIdx < 0 || activeFileIdx >= files.length) return;
+  const f = files[activeFileIdx];
+  const snap = JSON.parse(snapshotState());
+  f.data = snap.data; f.nav = snap.nav;
+  f.sel     = S.sel;
+  f.navSel  = S.navSel;
+  f.multiSel = S.multiSel.slice();
+  f.undoStack = undoStack.slice();
+  f.redoStack = redoStack.slice();
+}
+
+function applyEntry(idx) {
+  activeFileIdx = idx;
+  _pendingSnapshot = false;
+  const f = files[idx];
+  S.data    = JSON.parse(JSON.stringify(f.data));
+  S.nav     = JSON.parse(JSON.stringify(f.nav));
+  S.sel     = f.sel;
+  S.navSel  = f.navSel;
+  S.multiSel = f.multiSel ? f.multiSel.slice() : [];
+  undoStack.splice(0, undoStack.length, ...f.undoStack);
+  redoStack.splice(0, redoStack.length, ...f.redoStack);
+  document.getElementById('fname').textContent = f.name;
+  redraw(); renderLegend(); renderPanel(); renderFileList();
+}
+
+function switchToFile(idx) {
+  saveCurrentToEntry();
+  applyEntry(idx);
+}
+
+function closeFile(idx) {
+  const isActive = idx === activeFileIdx;
+  files.splice(idx, 1);
+  if (files.length === 0) {
+    activeFileIdx = -1;
+    renderFileList();
+  } else if (isActive) {
+    const newIdx = Math.min(idx, files.length - 1);
+    activeFileIdx = -1;
+    applyEntry(newIdx);
+  } else {
+    if (activeFileIdx > idx) activeFileIdx--;
+    renderFileList();
+  }
+}
+
+function renderFileList() {
+  const hasFile = activeFileIdx >= 0;
+  document.getElementById('canvas-wrap').style.display = hasFile ? '' : 'none';
+  document.getElementById('panel').style.display       = hasFile ? '' : 'none';
+
+  const el = document.getElementById('file-list');
+  if (!el) return;
+  el.innerHTML = '';
+  files.forEach((f, i) => {
+    const item = document.createElement('div');
+    item.className = 'file-item' + (i === activeFileIdx ? ' active' : '');
+    item.title = f.handle ? f.handle.name : f.name;
+
+    const nameEl = document.createElement('span');
+    nameEl.className = 'file-item-name';
+    nameEl.textContent = f.name;
+
+    const closeEl = document.createElement('span');
+    closeEl.className = 'file-close';
+    closeEl.textContent = '×';
+    closeEl.onclick = e => { e.stopPropagation(); closeFile(i); };
+
+    item.appendChild(nameEl);
+    item.appendChild(closeEl);
+    item.onclick = () => { if (i !== activeFileIdx) switchToFile(i); };
+    el.appendChild(item);
+  });
+}
+
+// Used by numInput: take a snapshot before the first edit in each focus session.
+let _pendingSnapshot = false;
+
+// Drag-select state (mousedown → mousemove → mouseup)
+let _dragStart   = null;   // {canvX, canvY} on mousedown, null when not dragging
+let _dragCurrent = null;   // {canvX, canvY} updated on mousemove
+let _isDragging  = false;  // true once pointer moves > 4px from _dragStart
+
 // ── Coordinate Helpers ────────────────────────────────────────────────────────
 
-const toCanvasX = normX => (normX - LAYOUT_MIN) * SCALE;
-const toCanvasY = normY => (normY - LAYOUT_MIN) * SCALE;
-const toLayoutX = canvX =>  canvX / SCALE + LAYOUT_MIN;
-const toLayoutY = canvY =>  canvY / SCALE + LAYOUT_MIN;
+const toCanvasX = normX => (normX - LAYOUT_MIN) * scaleX();
+const toCanvasY = normY => (normY - LAYOUT_MIN) * scaleY();
+const toLayoutX = canvX =>  canvX / scaleX() + LAYOUT_MIN;
+const toLayoutY = canvY =>  canvY / scaleY() + LAYOUT_MIN;
 
 // Evaluate an 8-element rect param array into normalized corner coordinates.
 // Formula: normalizedCoord = ratio + offset/floorDim
@@ -386,6 +581,33 @@ function distToSegment(px, py, x1, y1, x2, y2) {
   return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
 }
 
+// ── Multi-select Helpers ──────────────────────────────────────────────────────
+
+function getCanvasCoords(e) {
+  const b = canvas.getBoundingClientRect();
+  return {
+    canvX: (e.clientX - b.left) * (canvas.width  / b.width),
+    canvY: (e.clientY - b.top)  * (canvas.height / b.height),
+  };
+}
+
+function toggleGeoMultiSel(type, idx) {
+  const i = S.multiSel.findIndex(s => s.type === type && s.idx === idx);
+  if (i >= 0) S.multiSel.splice(i, 1);
+  else S.multiSel.push({ type, idx });
+}
+function toggleNavMultiSel(kind, idx) {
+  const i = S.multiSel.findIndex(s => s.kind === kind && s.idx === idx);
+  if (i >= 0) S.multiSel.splice(i, 1);
+  else S.multiSel.push({ kind, idx });
+}
+function isGeoMultiSelected(type, idx) {
+  return S.multiSel.some(s => s.type === type && s.idx === idx);
+}
+function isNavMultiSelected(kind, idx) {
+  return S.multiSel.some(s => s.kind === kind && s.idx === idx);
+}
+
 // ── Canvas Setup ──────────────────────────────────────────────────────────────
 
 const canvas = document.getElementById('c');
@@ -407,7 +629,7 @@ function drawNavCircle(cx, cy, r, fillColor, label) {
   ctx.fill();
   ctx.save();
   ctx.fillStyle = '#111111';
-  ctx.font = `bold ${String(label).length <= 2 ? 12 : 9}px monospace`;
+  ctx.font = `bold ${String(label).length <= 2 ? 12 : 10}px monospace`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(String(label), cx, cy);
@@ -436,7 +658,7 @@ function drawArrow(cx, cy, dir, sz) {
 
 function drawWall(axis, wallStart, wallEnd, perpStart, thickness, col, wallDir, rect, doors, windows) {
   // Position formula: canvasPos = wallOriginPx + pos[ratio]*wallLenPx + pos[offset]*worldUnitPx
-  const worldUnitPx  = axis === 'h' ? SCALE / S.W : SCALE / S.H;
+  const worldUnitPx  = axis === 'h' ? scaleX() / S.W : scaleY() / S.H;
   const wallLenPx    = axis === 'h' ? rect.pw      : rect.ph;
   const wallOriginPx = axis === 'h' ? rect.cx1     : rect.cy1;
 
@@ -569,7 +791,8 @@ function drawNavMode() {
     if (!posA || !posB) continue;
     const ax = toCanvasX(posA[0]), ay = toCanvasY(posA[1]);
     const bx = toCanvasX(posB[0]), by = toCanvasY(posB[1]);
-    const isSel = S.navSel && S.navSel.kind === 'conn' && S.navSel.idx === i;
+    const isSel = (S.navSel && S.navSel.kind === 'conn' && S.navSel.idx === i)
+               || isNavMultiSelected('conn', i);
     ctx.save();
     ctx.strokeStyle = isSel ? '#ffffff' : 'rgba(255,255,255,0.7)';
     ctx.lineWidth   = isSel ? 3 : 2;
@@ -589,7 +812,8 @@ function drawNavMode() {
     const pB = evalPoint(line.begin), pE = evalPoint(line.end);
     const bx = toCanvasX(pB[0]), by = toCanvasY(pB[1]);
     const ex = toCanvasX(pE[0]), ey = toCanvasY(pE[1]);
-    const isSel = S.navSel && S.navSel.kind === 'line' && S.navSel.idx === i;
+    const isSel = (S.navSel && S.navSel.kind === 'line' && S.navSel.idx === i)
+               || isNavMultiSelected('line', i);
 
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,0.8)';
@@ -618,7 +842,8 @@ function drawNavMode() {
   for (let i = 0; i < nav.nodes.length; i++) {
     const pos = evalPoint(nav.nodes[i].position);
     const cx = toCanvasX(pos[0]), cy = toCanvasY(pos[1]);
-    const isSel = S.navSel && S.navSel.kind === 'node' && S.navSel.idx === i;
+    const isSel = (S.navSel && S.navSel.kind === 'node' && S.navSel.idx === i)
+               || isNavMultiSelected('node', i);
 
     drawNavCircle(cx, cy, NAV_CIRCLE_R, NAV_CIRCLE_COLOR.node, i);
 
@@ -658,14 +883,31 @@ function drawNavMode() {
       ctx.fill('evenodd');  // evenodd: outer region filled, inner hole removed
     });
   }
+
+  // Drag-select overlay
+  if (_isDragging && _dragStart && _dragCurrent) {
+    const rx = Math.min(_dragStart.canvX, _dragCurrent.canvX);
+    const ry = Math.min(_dragStart.canvY, _dragCurrent.canvY);
+    const rw = Math.abs(_dragCurrent.canvX - _dragStart.canvX);
+    const rh = Math.abs(_dragCurrent.canvY - _dragStart.canvY);
+    ctx.save();
+    ctx.fillStyle = 'rgba(100,160,255,0.08)';
+    ctx.fillRect(rx, ry, rw, rh);
+    ctx.strokeStyle = 'rgba(100,160,255,0.6)';
+    ctx.lineWidth = 1; ctx.setLineDash([4, 2]);
+    ctx.strokeRect(rx, ry, rw, rh);
+    ctx.restore();
+  }
 }
 
 // ── Main Redraw ───────────────────────────────────────────────────────────────
 
 function redraw() {
-  ctx.clearRect(0, 0, CANVAS_PX, CANVAS_PX);
+  canvas.width  = Math.round(CANVAS_PX * S.W / Math.max(S.W, S.H));
+  canvas.height = Math.round(CANVAS_PX * S.H / Math.max(S.W, S.H));
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(0, 0, CANVAS_PX, CANVAS_PX);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Grid lines and 0-1 boundary (drawn in every mode)
   const gridLeft   = toCanvasX(0), gridTop    = toCanvasY(0);
@@ -694,12 +936,28 @@ function redraw() {
       const item       = elemArray[i];
       const params     = getParams(type, item);
       const dir        = SIMPLE.has(type) ? undefined : item.direction;
-      const isSelected = S.sel && S.sel.type === type && S.sel.idx === i;
+      const isSelected = (S.sel && S.sel.type === type && S.sel.idx === i)
+                      || isGeoMultiSelected(type, i);
       const walls   = (type === 'singles' || type === 'rows') ? [0, 1, 2, 3] : (item.walls || []);
       const doors   = !SIMPLE.has(type) ? (item.doors   || []) : [];
       const windows = !SIMPLE.has(type) ? (item.windows || []) : [];
       drawElem(type, params, dir, isSelected, walls, doors, windows);
     }
+  }
+
+  // Drag-select overlay: drawn last so it appears on top of everything
+  if (_isDragging && _dragStart && _dragCurrent) {
+    const rx = Math.min(_dragStart.canvX, _dragCurrent.canvX);
+    const ry = Math.min(_dragStart.canvY, _dragCurrent.canvY);
+    const rw = Math.abs(_dragCurrent.canvX - _dragStart.canvX);
+    const rh = Math.abs(_dragCurrent.canvY - _dragStart.canvY);
+    ctx.save();
+    ctx.fillStyle = 'rgba(100,160,255,0.08)';
+    ctx.fillRect(rx, ry, rw, rh);
+    ctx.strokeStyle = 'rgba(100,160,255,0.6)';
+    ctx.lineWidth = 1; ctx.setLineDash([4, 2]);
+    ctx.strokeRect(rx, ry, rw, rh);
+    ctx.restore();
   }
 }
 
@@ -750,38 +1008,170 @@ function navHitTest(canvX, canvY) {
   return null;
 }
 
-// ── Canvas Click Handler ──────────────────────────────────────────────────────
+// ── Auto-delete Zero-area on Deselect ────────────────────────────────────────
 
-canvas.addEventListener('click', e => {
-  const bounds = canvas.getBoundingClientRect();
-  const scaleX = canvas.width  / bounds.width;
-  const scaleY = canvas.height / bounds.height;
-  const canvX  = (e.clientX - bounds.left) * scaleX;
-  const canvY  = (e.clientY - bounds.top)  * scaleY;
-
-  if (S.mode === 'navigation') {
-    S.navSel = navHitTest(canvX, canvY);
-    redraw(); renderPanel();
-    return;
+// Call before any operation that clears/changes S.sel in geometry modes.
+// If the currently selected element has a negative signed area (one dimension
+// inverted), it is considered a degenerate rect and is silently removed.
+function autoDeleteZeroArea() {
+  if (!S.sel || S.mode === 'navigation') return;
+  const { type, idx } = S.sel;
+  const elemArray = S.data[type];
+  if (!elemArray || idx >= elemArray.length) return;
+  const { x1, y1, x2, y2 } = evalRect(getParams(type, elemArray[idx]), S.W, S.H);
+  if ((x2 - x1) * (y2 - y1) < 0) {
+    elemArray.splice(idx, 1);
+    S.sel = null;
   }
+}
 
-  // Geometry mode: hit-test from top of z-stack downward
-  const clickLx = toLayoutX(canvX);
-  const clickLy = toLayoutY(canvY);
-  const typeList = MODE_TYPES[S.mode];
-  let hitResult  = null;
-  outer:
-  for (let typeIdx = typeList.length - 1; typeIdx >= 0; typeIdx--) {
-    const type      = typeList[typeIdx];
-    const elemArray = S.data[type] || [];
-    for (let i = elemArray.length - 1; i >= 0; i--) {
-      if (hitTest(clickLx, clickLy, getParams(type, elemArray[i]), S.W, S.H)) {
-        hitResult = { type, idx: i };
-        break outer;
+// ── Canvas Click / Rect-Select Handlers ──────────────────────────────────────
+
+function performClick(canvX, canvY, ctrlKey) {
+  if (S.mode === 'navigation') {
+    const hit = navHitTest(canvX, canvY);
+    if (ctrlKey) {
+      // Promote existing single selection into multiSel before toggling the new hit
+      if (S.navSel && !isNavMultiSelected(S.navSel.kind, S.navSel.idx))
+        S.multiSel.push({ kind: S.navSel.kind, idx: S.navSel.idx });
+      if (hit) toggleNavMultiSel(hit.kind, hit.idx);
+      S.navSel = null; S.sel = null;
+    } else {
+      S.multiSel = []; S.navSel = hit; S.sel = null;
+    }
+  } else {
+    if (!ctrlKey) autoDeleteZeroArea();
+    const clickLx = toLayoutX(canvX), clickLy = toLayoutY(canvY);
+    const typeList = MODE_TYPES[S.mode];
+    let hitResult = null;
+    outer:
+    for (let typeIdx = typeList.length - 1; typeIdx >= 0; typeIdx--) {
+      const type = typeList[typeIdx];
+      const elemArray = S.data[type] || [];
+      for (let i = elemArray.length - 1; i >= 0; i--) {
+        if (hitTest(clickLx, clickLy, getParams(type, elemArray[i]), S.W, S.H)) {
+          hitResult = { type, idx: i }; break outer;
+        }
+      }
+    }
+    if (ctrlKey) {
+      // Promote existing single selection into multiSel before toggling the new hit
+      if (S.sel && !isGeoMultiSelected(S.sel.type, S.sel.idx))
+        S.multiSel.push({ type: S.sel.type, idx: S.sel.idx });
+      if (hitResult) toggleGeoMultiSel(hitResult.type, hitResult.idx);
+      S.sel = null; S.navSel = null;
+    } else {
+      S.multiSel = []; S.sel = hitResult; S.navSel = null;
+    }
+  }
+}
+
+function performRectSelect(cx1, cy1, cx2, cy2, ctrl) {
+  if (S.mode === 'navigation') {
+    S.navSel = null;
+    const nav = S.nav;
+    for (let i = 0; i < nav.nodes.length; i++) {
+      const pos = evalPoint(nav.nodes[i].position);
+      const px = toCanvasX(pos[0]), py = toCanvasY(pos[1]);
+      if (px >= cx1 && px <= cx2 && py >= cy1 && py <= cy2) {
+        if (ctrl) toggleNavMultiSel('node', i);
+        else if (!isNavMultiSelected('node', i)) S.multiSel.push({ kind: 'node', idx: i });
+      }
+    }
+    for (let i = 0; i < nav.lines.length; i++) {
+      const line = nav.lines[i];
+      const pB = evalPoint(line.begin), pE = evalPoint(line.end);
+      const bx = toCanvasX(pB[0]), by = toCanvasY(pB[1]);
+      const ex = toCanvasX(pE[0]), ey = toCanvasY(pE[1]);
+      const hit = (bx >= cx1 && bx <= cx2 && by >= cy1 && by <= cy2) ||
+                  (ex >= cx1 && ex <= cx2 && ey >= cy1 && ey <= cy2);
+      if (hit) {
+        if (ctrl) toggleNavMultiSel('line', i);
+        else if (!isNavMultiSelected('line', i)) S.multiSel.push({ kind: 'line', idx: i });
+      }
+    }
+    for (let i = 0; i < nav.connections.length; i++) {
+      const conn = nav.connections[i];
+      if (isExternalEndpoint(conn.begin) || isExternalEndpoint(conn.end)) continue;
+      const posA = resolveEndpointPos(conn.begin), posB = resolveEndpointPos(conn.end);
+      if (!posA || !posB) continue;
+      const ax = toCanvasX(posA[0]), ay = toCanvasY(posA[1]);
+      const bx = toCanvasX(posB[0]), by = toCanvasY(posB[1]);
+      const hit = (ax >= cx1 && ax <= cx2 && ay >= cy1 && ay <= cy2) ||
+                  (bx >= cx1 && bx <= cx2 && by >= cy1 && by <= cy2);
+      if (hit) {
+        if (ctrl) toggleNavMultiSel('conn', i);
+        else if (!isNavMultiSelected('conn', i)) S.multiSel.push({ kind: 'conn', idx: i });
+      }
+    }
+  } else {
+    S.sel = null;
+    const lx1 = toLayoutX(cx1), ly1 = toLayoutY(cy1);
+    const lx2 = toLayoutX(cx2), ly2 = toLayoutY(cy2);
+    for (const type of MODE_TYPES[S.mode]) {
+      const elemArray = S.data[type] || [];
+      for (let i = 0; i < elemArray.length; i++) {
+        const { x1, y1, x2, y2 } = evalRect(getParams(type, elemArray[i]), S.W, S.H);
+        const eMinX = Math.min(x1, x2), eMaxX = Math.max(x1, x2);
+        const eMinY = Math.min(y1, y2), eMaxY = Math.max(y1, y2);
+        if (eMaxX >= lx1 && eMinX <= lx2 && eMaxY >= ly1 && eMinY <= ly2) {
+          if (ctrl) toggleGeoMultiSel(type, i);
+          else if (!isGeoMultiSelected(type, i)) S.multiSel.push({ type, idx: i });
+        }
       }
     }
   }
-  S.sel = hitResult;
+}
+
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey)) return;
+  const inInput = document.activeElement.tagName === 'INPUT' ||
+                  document.activeElement.tagName === 'TEXTAREA' ||
+                  document.activeElement.tagName === 'SELECT';
+  switch (e.key) {
+    case 'z': e.preventDefault(); e.shiftKey ? redo() : undo(); break;
+    case 'y': e.preventDefault(); redo(); break;
+    case 's': e.preventDefault(); e.shiftKey ? saveFileAs() : saveFile(); break;
+    case 'c': if (!inInput) { e.preventDefault(); copySelected(); } break;
+    case 'v': if (!inInput) { e.preventDefault(); pasteElement(); } break;
+    case 'Delete': if (!inInput) { e.preventDefault(); deleteSelected(); } break;
+  }
+});
+
+canvas.addEventListener('mousedown', e => {
+  const { canvX, canvY } = getCanvasCoords(e);
+  _dragStart   = { canvX, canvY };
+  _dragCurrent = { canvX, canvY };
+  _isDragging  = false;
+  if (!(e.ctrlKey || e.metaKey)) {
+    S.sel = null; S.navSel = null; S.multiSel = [];
+    redraw(); renderPanel();
+  }
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (!_dragStart) return;
+  const { canvX, canvY } = getCanvasCoords(e);
+  _dragCurrent = { canvX, canvY };
+  const dx = canvX - _dragStart.canvX, dy = canvY - _dragStart.canvY;
+  if (!_isDragging && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) _isDragging = true;
+  if (_isDragging) redraw();
+});
+
+canvas.addEventListener('mouseup', e => {
+  if (!_dragStart) return;
+  const { canvX, canvY } = getCanvasCoords(e);
+  const ctrl = e.ctrlKey || e.metaKey;
+  if (_isDragging) {
+    performRectSelect(
+      Math.min(_dragStart.canvX, canvX), Math.min(_dragStart.canvY, canvY),
+      Math.max(_dragStart.canvX, canvX), Math.max(_dragStart.canvY, canvY),
+      ctrl
+    );
+  } else {
+    performClick(canvX, canvY, ctrl);
+  }
+  _dragStart = null; _dragCurrent = null; _isDragging = false;
   redraw(); renderPanel();
 });
 
@@ -804,9 +1194,22 @@ function btn(text, cls, onclick) {
 }
 function numInput(initialValue, onInput, cls) {
   const el = document.createElement('input');
-  el.type = 'number'; el.step = 'any'; el.value = initialValue;
+  el.type = 'number'; el.step = '0.1'; el.value = initialValue;
   if (cls) el.className = cls;
-  el.addEventListener('input', () => onInput(parseFloat(el.value) || 0));
+  el.addEventListener('focus', () => { _pendingSnapshot = true; });
+  el.addEventListener('input', () => {
+    if (_pendingSnapshot) { snapshot(); _pendingSnapshot = false; }
+    onInput(parseFloat(el.value) || 0);
+  });
+  el.addEventListener('wheel', e => {
+    if (document.activeElement !== el) return;
+    e.preventDefault();
+    const step = parseFloat(el.step) || 1;
+    const newVal = (parseFloat(el.value) || 0) + (e.deltaY < 0 ? step : -step);
+    el.value = parseFloat(newVal.toPrecision(10));
+    if (_pendingSnapshot) { snapshot(); _pendingSnapshot = false; }
+    onInput(parseFloat(el.value) || 0);
+  }, { passive: false });
   return el;
 }
 function makeSelect(optPairs, currentValue, onChange) {
@@ -825,7 +1228,7 @@ function makeCheckLabel(text, isChecked, onChange) {
   lbl.style.cssText = 'display:flex;align-items:center;gap:3px;cursor:pointer;color:#aaa;font-size:12px;';
   const cb = document.createElement('input');
   cb.type = 'checkbox'; cb.checked = isChecked;
-  cb.addEventListener('change', () => onChange(cb.checked));
+  cb.addEventListener('change', () => { snapshot(); onChange(cb.checked); });
   lbl.appendChild(cb);
   lbl.appendChild(document.createTextNode(text));
   return lbl;
@@ -840,43 +1243,17 @@ function renderPanel() {
   const panel = document.getElementById('panel');
   panel.innerHTML = '';
 
-  // ── Floor size (always visible) ──
-  const sizeSec = div('sec');
-  sizeSec.appendChild(div('sec-title', '楼层尺寸'));
-  const sizeRow = div('row');
-  sizeRow.appendChild(lbl('W'));
-  const wInput = numInput(S.W, () => {}, null);
-  wInput.min = 2; wInput.style.width = '72px';
-  sizeRow.appendChild(wInput);
-  sizeRow.appendChild(lbl('H'));
-  const hInput = numInput(S.H, () => {}, null);
-  hInput.min = 2; hInput.style.width = '72px';
-  sizeRow.appendChild(hInput);
-  sizeRow.appendChild(btn('应用', 'primary', () => {
-    const w = parseFloat(wInput.value), h = parseFloat(hInput.value);
-    if (isNaN(w) || w < 2 || isNaN(h) || h < 2) { alert('W 和 H 必须 >= 2'); return; }
-    S.W = w; S.H = h;
-    redraw();
-  }));
-  sizeSec.appendChild(sizeRow);
-  panel.appendChild(sizeSec);
-
-  // ── Mode selector (always visible, 4 options) ──
-  const modeSec = div('sec');
-  modeSec.appendChild(div('sec-title', '显示模式'));
-  const modeSel = makeSelect([
-    ['ceilings',        '房顶'],
-    ['grounds_hatches', '地面'],
-    ['others',          '房间'],
-    ['navigation',      '导航'],
-  ], S.mode, newMode => {
-    S.mode   = newMode;
-    S.sel    = null;
-    S.navSel = null;
-    redraw(); renderLegend(); renderPanel();
-  });
-  modeSec.appendChild(div('row', modeSel));
-  panel.appendChild(modeSec);
+  // ── Multi-select: show count + bulk actions, skip the rest of the panel ──
+  if (S.multiSel.length > 0) {
+    const multiSec = div('sec');
+    multiSec.appendChild(div('sec-title', `已选中 ${S.multiSel.length} 个元素`));
+    multiSec.appendChild(div('row',
+      btn('复制', 'primary', () => copySelected()),
+      btn('删除', 'danger',  () => deleteSelected()),
+    ));
+    panel.appendChild(multiSec);
+    return;
+  }
 
   // ── Navigation mode: hand off to nav panel renderer ──
   if (S.mode === 'navigation') {
@@ -895,6 +1272,7 @@ function renderPanel() {
     newElemSec.appendChild(div('row',
       typeSel,
       btn('新建', 'primary', () => {
+        snapshot();
         const t = typeSel.value;
         S.data[t].push(makeDefault(t));
         S.sel = { type: t, idx: S.data[t].length - 1 };
@@ -917,11 +1295,13 @@ function renderNavPanel(panel) {
     newSec.appendChild(div('sec-title', '新建导航元素'));
     newSec.appendChild(div('row',
       btn('+ 新建节点', 'primary', () => {
+        snapshot();
         nav.nodes.push({ position: [0, 0, 0, 0] });
         S.navSel = { kind: 'node', idx: nav.nodes.length - 1 };
         redraw(); renderPanel();
       }),
       btn('+ 新建路径', 'primary', () => {
+        snapshot();
         nav.lines.push({ begin: [0, 0, 0, 0], end: [1, 0, 0, 0] });
         S.navSel = { kind: 'line', idx: nav.lines.length - 1 };
         redraw(); renderPanel();
@@ -940,6 +1320,7 @@ function renderNavPanel(panel) {
       connSec.appendChild(div('row', lbl('End'),   endSel));
       connSec.appendChild(div('row',
         btn('添加连接', 'primary', () => {
+          snapshot();
           nav.connections.push({ begin: decodeEndpoint(beginSel.value), end: decodeEndpoint(endSel.value) });
           S.navSel = { kind: 'conn', idx: nav.connections.length - 1 };
           redraw(); renderPanel();
@@ -995,11 +1376,13 @@ function makeNavNodeSec() {
     row.appendChild(lbl(extLabel));
     if (exists) {
       row.appendChild(btn('删除', 'sm danger', () => {
+        snapshot();
         nav.connections.splice(connIdx, 1);
         redraw(); renderPanel();
       }));
     } else {
       row.appendChild(btn('添加', 'sm primary', () => {
+        snapshot();
         nav.connections.push({ begin: { type: 'node', idx }, end: { type: extType } });
         redraw(); renderPanel();
       }));
@@ -1009,7 +1392,15 @@ function makeNavNodeSec() {
 
   // Delete node: remove it and all connections that reference it, fix remaining indices
   sec.appendChild(document.createElement('hr'));
-  sec.appendChild(div('row', btn('删除节点', 'danger', () => {
+  sec.appendChild(div('row',
+    btn('复制节点', 'primary', () => {
+      snapshot();
+      nav.nodes.push(JSON.parse(JSON.stringify(node)));
+      S.navSel = { kind: 'node', idx: nav.nodes.length - 1 };
+      redraw(); renderPanel();
+    }),
+    btn('删除节点', 'danger', () => {
+    snapshot();
     nav.connections = nav.connections.filter(c =>
       !(c.begin.type === 'node' && c.begin.idx === idx) &&
       !(c.end.type   === 'node' && c.end.idx   === idx)
@@ -1049,7 +1440,15 @@ function makeNavLineSec() {
 
   // Delete line: remove it and all connections referencing it, fix remaining indices
   sec.appendChild(document.createElement('hr'));
-  sec.appendChild(div('row', btn('删除路径', 'danger', () => {
+  sec.appendChild(div('row',
+    btn('复制路径', 'primary', () => {
+      snapshot();
+      nav.lines.push(JSON.parse(JSON.stringify(line)));
+      S.navSel = { kind: 'line', idx: nav.lines.length - 1 };
+      redraw(); renderPanel();
+    }),
+    btn('删除路径', 'danger', () => {
+    snapshot();
     nav.connections = nav.connections.filter(c =>
       !(c.begin.type === 'line' && c.begin.idx === idx) &&
       !(c.end.type   === 'line' && c.end.idx   === idx)
@@ -1082,23 +1481,32 @@ function makeNavConnSec() {
   } else {
     sec.appendChild(div('field-title', 'Begin'));
     const beginSel = makeSelect(epOpts, encodeEndpoint(conn.begin), v => {
-      conn.begin = decodeEndpoint(v); redraw();
+      snapshot(); conn.begin = decodeEndpoint(v); redraw();
     });
     sec.appendChild(div('row', beginSel));
 
     sec.appendChild(div('field-title', 'End'));
     const endSel = makeSelect(epOpts, encodeEndpoint(conn.end), v => {
-      conn.end = decodeEndpoint(v); redraw();
+      snapshot(); conn.end = decodeEndpoint(v); redraw();
     });
     sec.appendChild(div('row', endSel));
   }
 
   sec.appendChild(document.createElement('hr'));
-  sec.appendChild(div('row', btn('删除连接', 'danger', () => {
-    nav.connections.splice(idx, 1);
-    S.navSel = null;
-    redraw(); renderPanel();
-  })));
+  sec.appendChild(div('row',
+    btn('复制连接', 'primary', () => {
+      snapshot();
+      nav.connections.push(JSON.parse(JSON.stringify(conn)));
+      S.navSel = { kind: 'conn', idx: nav.connections.length - 1 };
+      redraw(); renderPanel();
+    }),
+    btn('删除连接', 'danger', () => {
+      snapshot();
+      nav.connections.splice(idx, 1);
+      S.navSel = null;
+      redraw(); renderPanel();
+    })
+  ));
 
   return sec;
 }
@@ -1130,7 +1538,7 @@ function makeSelSec() {
     sec.appendChild(document.createElement('hr'));
     sec.appendChild(div('field-title', '朝向'));
     const dirSel = makeSelect(DIR_LABELS.map((l, i) => [i, l]), item.direction, v => {
-      item.direction = parseInt(v); redraw();
+      snapshot(); item.direction = parseInt(v); redraw();
     });
     sec.appendChild(div('row', dirSel));
   }
@@ -1165,11 +1573,20 @@ function makeSelSec() {
   }
 
   sec.appendChild(document.createElement('hr'));
-  sec.appendChild(div('row', btn('删除', 'danger', () => {
-    elemArray.splice(idx, 1);
-    S.sel = null;
-    redraw(); renderPanel();
-  })));
+  sec.appendChild(div('row',
+    btn('复制', 'primary', () => {
+      snapshot();
+      elemArray.push(JSON.parse(JSON.stringify(item)));
+      S.sel = { type, idx: elemArray.length - 1 };
+      redraw(); renderPanel();
+    }),
+    btn('删除', 'danger', () => {
+      snapshot();
+      elemArray.splice(idx, 1);
+      S.sel = null;
+      redraw(); renderPanel();
+    })
+  ));
 
   return sec;
 }
@@ -1205,7 +1622,7 @@ function makeOpeningList(item, fieldName, label) {
       hdr.appendChild(makeSelect(DIR_LABELS.map((l, i) => [i, l]), entry.direction, v => {
         entry.direction = parseInt(v);
       }));
-      hdr.appendChild(btn('x', 'sm danger', () => { openingList.splice(entryIdx, 1); rebuild(); }));
+      hdr.appendChild(btn('x', 'sm danger', () => { snapshot(); openingList.splice(entryIdx, 1); rebuild(); }));
       entrySub.appendChild(hdr);
 
       entry.positions.forEach((pos, posIdx) => {
@@ -1217,13 +1634,14 @@ function makeOpeningList(item, fieldName, label) {
         });
         posSub.appendChild(posGrid);
         posSub.appendChild(div('row',
-          btn('- 删除位置', 'sm', () => { entry.positions.splice(posIdx, 1); rebuild(); })
+          btn('- 删除位置', 'sm', () => { snapshot(); entry.positions.splice(posIdx, 1); rebuild(); })
         ));
         entrySub.appendChild(posSub);
       });
 
       entrySub.appendChild(div('row',
         btn('+ 位置', 'sm primary', () => {
+          snapshot();
           entry.positions.push([0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, -0.1]);
           rebuild();
         })
@@ -1233,6 +1651,7 @@ function makeOpeningList(item, fieldName, label) {
 
     wrap.appendChild(div('row',
       btn(`+ 添加${label}`, 'sm primary', () => {
+        snapshot();
         openingList.push({ direction: 2, positions: [] });
         rebuild();
       })
@@ -1243,48 +1662,287 @@ function makeOpeningList(item, fieldName, label) {
   return wrap;
 }
 
+// ── Delete Selected ───────────────────────────────────────────────────────────
+
+function deleteSelected() {
+  if (S.multiSel.length > 0) {
+    snapshot();
+    if (S.mode !== 'navigation') {
+      const byType = {};
+      S.multiSel.forEach(({ type, idx }) => { (byType[type] = byType[type] || []).push(idx); });
+      for (const [type, idxs] of Object.entries(byType)) {
+        idxs.sort((a, b) => b - a).forEach(i => S.data[type].splice(i, 1));
+      }
+    } else {
+      const nodeSet = new Set(S.multiSel.filter(s => s.kind === 'node').map(s => s.idx));
+      const lineSet = new Set(S.multiSel.filter(s => s.kind === 'line').map(s => s.idx));
+      const connSet = new Set(S.multiSel.filter(s => s.kind === 'conn').map(s => s.idx));
+      const nav = S.nav;
+      nav.connections = nav.connections.filter((c, i) =>
+        !connSet.has(i) &&
+        !(c.begin.type === 'node' && nodeSet.has(c.begin.idx)) &&
+        !(c.end.type   === 'node' && nodeSet.has(c.end.idx))   &&
+        !(c.begin.type === 'line' && lineSet.has(c.begin.idx)) &&
+        !(c.end.type   === 'line' && lineSet.has(c.end.idx))
+      );
+      const oldNodeCount = nav.nodes.length;
+      nav.nodes = nav.nodes.filter((_, i) => !nodeSet.has(i));
+      const nodeIdxMap = new Map();
+      let ni = 0;
+      for (let i = 0; i < oldNodeCount; i++) if (!nodeSet.has(i)) nodeIdxMap.set(i, ni++);
+      nav.connections.forEach(c => {
+        if (c.begin.type === 'node') c.begin.idx = nodeIdxMap.get(c.begin.idx) ?? c.begin.idx;
+        if (c.end.type   === 'node') c.end.idx   = nodeIdxMap.get(c.end.idx)   ?? c.end.idx;
+      });
+      const oldLineCount = nav.lines.length;
+      nav.lines = nav.lines.filter((_, i) => !lineSet.has(i));
+      const lineIdxMap = new Map();
+      let li = 0;
+      for (let i = 0; i < oldLineCount; i++) if (!lineSet.has(i)) lineIdxMap.set(i, li++);
+      nav.connections.forEach(c => {
+        if (c.begin.type === 'line') c.begin.idx = lineIdxMap.get(c.begin.idx) ?? c.begin.idx;
+        if (c.end.type   === 'line') c.end.idx   = lineIdxMap.get(c.end.idx)   ?? c.end.idx;
+      });
+    }
+    S.multiSel = []; S.sel = null; S.navSel = null;
+    redraw(); renderPanel();
+    return;
+  }
+  if (S.mode !== 'navigation' && S.sel) {
+    const { type, idx } = S.sel;
+    const arr = S.data[type];
+    if (!arr || idx >= arr.length) return;
+    snapshot();
+    arr.splice(idx, 1);
+    S.sel = null;
+    redraw(); renderPanel();
+  } else if (S.mode === 'navigation' && S.navSel) {
+    const { kind, idx } = S.navSel;
+    const nav = S.nav;
+    snapshot();
+    if (kind === 'node') {
+      nav.connections = nav.connections.filter(c =>
+        !(c.begin.type === 'node' && c.begin.idx === idx) &&
+        !(c.end.type   === 'node' && c.end.idx   === idx)
+      );
+      nav.connections.forEach(c => {
+        if (c.begin.type === 'node' && c.begin.idx > idx) c.begin.idx--;
+        if (c.end.type   === 'node' && c.end.idx   > idx) c.end.idx--;
+      });
+      nav.nodes.splice(idx, 1);
+    } else if (kind === 'line') {
+      nav.connections = nav.connections.filter(c =>
+        !(c.begin.type === 'line' && c.begin.idx === idx) &&
+        !(c.end.type   === 'line' && c.end.idx   === idx)
+      );
+      nav.connections.forEach(c => {
+        if (c.begin.type === 'line' && c.begin.idx > idx) c.begin.idx--;
+        if (c.end.type   === 'line' && c.end.idx   > idx) c.end.idx--;
+      });
+      nav.lines.splice(idx, 1);
+    } else if (kind === 'conn') {
+      nav.connections.splice(idx, 1);
+    }
+    S.navSel = null;
+    redraw(); renderPanel();
+  }
+}
+
+// ── Clipboard Copy / Paste ────────────────────────────────────────────────────
+
+// Payload format: { type, element } for geometry, { navKind, element } for nav.
+
+function copySelected() {
+  if (S.multiSel.length > 0) {
+    let elements;
+    if (S.mode !== 'navigation') {
+      elements = S.multiSel
+        .map(({ type, idx }) => { const e = S.data[type]?.[idx]; return e ? { type, element: e } : null; })
+        .filter(Boolean);
+    } else {
+      elements = S.multiSel
+        .map(({ kind, idx }) => {
+          const src = kind === 'node' ? S.nav.nodes[idx]
+                    : kind === 'line' ? S.nav.lines[idx]
+                    : S.nav.connections[idx];
+          return src ? { navKind: kind, element: src } : null;
+        }).filter(Boolean);
+    }
+    if (elements.length) navigator.clipboard.writeText(JSON.stringify({ multi: true, elements })).catch(() => {});
+    return;
+  }
+  let payload = null;
+  if (S.mode !== 'navigation' && S.sel) {
+    const { type, idx } = S.sel;
+    const item = S.data[type]?.[idx];
+    if (item) payload = { type, element: item };
+  } else if (S.mode === 'navigation' && S.navSel) {
+    const { kind, idx } = S.navSel;
+    const src = kind === 'node' ? S.nav.nodes[idx]
+              : kind === 'line' ? S.nav.lines[idx]
+              : S.nav.connections[idx];
+    if (src) payload = { navKind: kind, element: src };
+  }
+  if (payload) navigator.clipboard.writeText(JSON.stringify(payload)).catch(() => {});
+}
+
+// Returns the display mode that contains the given geometry type, or null.
+function typeToMode(type) {
+  for (const [mode, types] of Object.entries(MODE_TYPES)) {
+    if (types.includes(type)) return mode;
+  }
+  return null;
+}
+
+async function pasteElement() {
+  let text;
+  try { text = await navigator.clipboard.readText(); } catch { return; }
+  let p;
+  try { p = JSON.parse(text); } catch { return; }
+  if (!p || typeof p !== 'object') return;
+
+  if (p.multi && Array.isArray(p.elements) && p.elements.length) {
+    snapshot();
+    S.multiSel = []; S.sel = null; S.navSel = null;
+    const first = p.elements[0];
+    if (first && first.type) {
+      p.elements.forEach(({ type, element }) => {
+        if (!type || S.data[type] === undefined || !element) return;
+        S.data[type].push(JSON.parse(JSON.stringify(element)));
+        S.multiSel.push({ type, idx: S.data[type].length - 1 });
+      });
+      S.mode = typeToMode(first.type) || S.mode;
+    } else if (first && first.navKind) {
+      p.elements.forEach(({ navKind, element }) => {
+        if (!element) return;
+        if (navKind === 'node')  { S.nav.nodes.push(JSON.parse(JSON.stringify(element)));       S.multiSel.push({ kind: 'node', idx: S.nav.nodes.length - 1 }); }
+        if (navKind === 'line')  { S.nav.lines.push(JSON.parse(JSON.stringify(element)));       S.multiSel.push({ kind: 'line', idx: S.nav.lines.length - 1 }); }
+        if (navKind === 'conn')  { S.nav.connections.push(JSON.parse(JSON.stringify(element))); S.multiSel.push({ kind: 'conn', idx: S.nav.connections.length - 1 }); }
+      });
+      S.mode = 'navigation';
+    }
+    redraw(); renderLegend(); renderPanel();
+    return;
+  }
+
+  if (!p.element) return;
+
+  if (p.type && S.data[p.type] !== undefined) {
+    // Geometry element — switch to its mode and select it
+    const mode = typeToMode(p.type);
+    if (!mode) return;
+    snapshot();
+    const arr = S.data[p.type];
+    arr.push(JSON.parse(JSON.stringify(p.element)));
+    S.mode   = mode;
+    S.sel    = { type: p.type, idx: arr.length - 1 };
+    S.navSel = null;
+    redraw(); renderLegend(); renderPanel();
+  } else if (p.navKind === 'node' || p.navKind === 'line' || p.navKind === 'conn') {
+    // Navigation element — switch to navigation mode and select it
+    snapshot();
+    const nav = S.nav;
+    if (p.navKind === 'node') {
+      nav.nodes.push(JSON.parse(JSON.stringify(p.element)));
+      S.navSel = { kind: 'node', idx: nav.nodes.length - 1 };
+    } else if (p.navKind === 'line') {
+      nav.lines.push(JSON.parse(JSON.stringify(p.element)));
+      S.navSel = { kind: 'line', idx: nav.lines.length - 1 };
+    } else {
+      nav.connections.push(JSON.parse(JSON.stringify(p.element)));
+      S.navSel = { kind: 'conn', idx: nav.connections.length - 1 };
+    }
+    S.mode = 'navigation';
+    S.sel  = null;
+    redraw(); renderLegend(); renderPanel();
+  }
+}
+
+function applyGlobalSize() {
+  const w = parseFloat(document.getElementById('global-w').value);
+  const h = parseFloat(document.getElementById('global-h').value);
+  if (isNaN(w) || w < 2 || isNaN(h) || h < 2) { alert('W 和 H 必须 >= 2'); return; }
+  S.W = w; S.H = h;
+  redraw();
+}
+
 // ── File I/O ──────────────────────────────────────────────────────────────────
 
-function loadFile() { document.getElementById('finput').click(); }
+function newFile() {
+  saveCurrentToEntry();
+  const entry = makeBlankEntry(makeNewFileName());
+  files.push(entry);
+  applyEntry(files.length - 1);
+}
+
+function parseAndApply(text, name, handle = null) {
+  try {
+    let src = text.replace(/,(\s*[}\]])/g, '$1');  // strip trailing commas
+    const parsed = JSON.parse(src);
+    const entry = makeBlankEntry(name);
+    entry.handle = handle;
+    ALL_KEYS.forEach(k => { entry.data[k] = parsed[k] || []; });
+    const rawNav = parsed.navigation;
+    entry.nav = rawNav
+      ? { nodes: rawNav.nodes || [], lines: rawNav.lines || [], connections: rawNav.connections || [] }
+      : { nodes: [], lines: [], connections: [] };
+    saveCurrentToEntry();
+    files.push(entry);
+    applyEntry(files.length - 1);
+  } catch (err) { alert('解析失败: ' + err.message); }
+}
+
+async function loadFile() {
+  if (window.showOpenFilePicker) {
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: 'Layout', accept: { 'text/plain': ['.layout'] } }],
+        startIn: files[activeFileIdx]?.handle || 'documents',
+      });
+      // Check if already open
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].handle && await files[i].handle.isSameEntry(handle)) {
+          switchToFile(i);
+          return;
+        }
+      }
+      const file = await handle.getFile();
+      parseAndApply(await file.text(), file.name, handle);
+    } catch (err) { if (err.name !== 'AbortError') alert('加载失败: ' + err.message); }
+  } else {
+    document.getElementById('finput').click();
+  }
+}
 
 function onFileChosen(e) {
   const file = e.target.files[0];
   if (!file) return;
-  document.getElementById('fname').textContent = file.name;
   e.target.value = '';
-
+  // Check if already open by name
+  const existIdx = files.findIndex(f => f.name === file.name);
+  if (existIdx >= 0) { switchToFile(existIdx); return; }
   const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      let src = ev.target.result;
-      src = src.replace(/,(\s*[}\]])/g, '$1');  // strip trailing commas
-      const parsed = JSON.parse(src);
-      ALL_KEYS.forEach(k => { S.data[k] = parsed[k] || []; });
-      // Initialize nav from file; normalize to always have the three array fields
-      const rawNav = parsed.navigation;
-      S.nav = rawNav
-        ? { nodes: rawNav.nodes || [], lines: rawNav.lines || [], connections: rawNav.connections || [] }
-        : { nodes: [], lines: [], connections: [] };
-      S.sel    = null;
-      S.navSel = null;
-      redraw(); renderLegend(); renderPanel();
-    } catch (err) { alert('解析失败: ' + err.message); }
-  };
+  reader.onload = ev => parseAndApply(ev.target.result, file.name, null);
   reader.readAsText(file);
 }
 
-async function saveFile() {
-  const content  = serializeLayout();
-  const fileName = document.getElementById('fname').textContent || 'untitled.layout';
+async function saveFileAs() {
+  const content    = serializeLayout();
+  const curEntry   = files[activeFileIdx];
+  const fileName   = curEntry ? curEntry.name : 'untitled.layout';
   if (window.showSaveFilePicker) {
     try {
-      const fileHandle = await window.showSaveFilePicker({
+      const handle = await window.showSaveFilePicker({
         suggestedName: fileName,
+        startIn: curEntry?.handle || 'documents',
         types: [{ description: 'Layout', accept: { 'text/plain': ['.layout'] } }],
       });
-      const writable = await fileHandle.createWritable();
+      if (curEntry) { curEntry.handle = handle; curEntry.name = handle.name; }
+      document.getElementById('fname').textContent = handle.name;
+      const writable = await handle.createWritable();
       await writable.write(content);
       await writable.close();
+      renderFileList();
     } catch (err) { if (err.name !== 'AbortError') alert('保存失败: ' + err.message); }
   } else {
     const anchor    = document.createElement('a');
@@ -1293,6 +1951,39 @@ async function saveFile() {
     anchor.click();
     URL.revokeObjectURL(anchor.href);
   }
+}
+
+async function saveFile() {
+  const content  = serializeLayout();
+  const curEntry = files[activeFileIdx];
+  const fileName = curEntry ? curEntry.name : 'untitled.layout';
+  try {
+    if (curEntry?.handle) {
+      const writable = await curEntry.handle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      return;
+    }
+    if (window.showSaveFilePicker) {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: fileName,
+        startIn: curEntry?.handle || 'documents',
+        types: [{ description: 'Layout', accept: { 'text/plain': ['.layout'] } }],
+      });
+      if (curEntry) { curEntry.handle = handle; curEntry.name = handle.name; }
+      document.getElementById('fname').textContent = handle.name;
+      const writable = await handle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      renderFileList();
+    } else {
+      const anchor    = document.createElement('a');
+      anchor.href     = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
+      anchor.download = fileName;
+      anchor.click();
+      URL.revokeObjectURL(anchor.href);
+    }
+  } catch (err) { if (err.name !== 'AbortError') alert('保存失败: ' + err.message); }
 }
 
 // ── Serializer ────────────────────────────────────────────────────────────────
@@ -1434,9 +2125,27 @@ function renderLegend() {
 
 // ── Initialization ────────────────────────────────────────────────────────────
 
-redraw();
-renderLegend();
-renderPanel();
+// Global mode selector
+document.getElementById('global-mode').addEventListener('change', e => {
+  autoDeleteZeroArea();
+  S.mode = e.target.value;
+  S.sel = null; S.navSel = null; S.multiSel = [];
+  redraw(); renderLegend(); renderPanel();
+});
+
+// Wheel scroll for global W/H inputs
+['global-w', 'global-h'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('wheel', e => {
+    if (document.activeElement !== el) return;
+    e.preventDefault();
+    const step = parseFloat(el.step) || 1;
+    const newVal = Math.max(parseFloat(el.min) || 0, (parseFloat(el.value) || 0) + (e.deltaY < 0 ? step : -step));
+    el.value = newVal;
+  }, { passive: false });
+});
+
+renderFileList();  // starts with no files: hides canvas-wrap and panel
 </script>
 </body>
 </html>
