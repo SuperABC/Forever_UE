@@ -1,19 +1,19 @@
 {
 	"stairs": [{
 		"rect": [0.5, -0.2, 1, -0.8, 0.5, 0.2, 1, 0],
-		"direction": 2
+		"direction": 2,
 	}],
 	"ceilings": [
 		[0, 0, 0, 0, 0.5, -0.2, 1, 0],
 		[0.5, 0.2, 0, 0, 1, 0, 1, 0],
-		[0.5, -0.2, 0, 0, 0.5, 0.2, 1, -0.8]
+		[0.5, -0.2, 0, 0, 0.5, 0.2, 1, -0.8],
 	],
 	"grounds": [
-		[0, 0, 0, 0, 1, 0, 1, 0]
+		[0, 0, 0, 0, 1, 0, 1, 0],
 	],
 	"corridors": [{
 		"rect": [0.5, -0.4, 0, 0, 0.5, 0.4, 1, 0],
-		"walls": [2, 3]
+		"walls": [2, 3],
 	}],
 	"rows": [{
 		"rect": [0, 0, 0, 0, 0.5, -0.4, 1, 0],
@@ -21,9 +21,11 @@
 		"doors": [
 			{
 				"direction": 1,
-				"positions": [[0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, 0]]
-			}
-		]
+				"positions": [
+					[0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, 0],
+				],
+			},
+		],
 	},
 	{
 		"rect": [0.5, 0.4, 0, 0, 1, 0, 1, 0],
@@ -31,38 +33,66 @@
 		"doors": [
 			{
 				"direction": 0,
-				"positions": [[0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, 0]]
-			}
-		]
+				"positions": [
+					[0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, 0],
+				],
+			},
+		],
 	}],
 	"navigation": {
 		"nodes": [
 			{
-				"position": [0.5, 0.1, 1, -0.1]
+				"position": [0.5, 0.1, 1, -0.1],
 			},
 		],
 		"lines": [
 			{
 				"begin": [0.5, 0, 0, 0],
-				"end": [0.5, 0, 1, -1]
-			}
+				"end": [0.5, 0, 1, -1],
+			},
 		],
 		"connections": [
 			{
-				"begin": {"type": "line", "idx": 0, "vertex": 1},
-				"end": {"type": "node", "idx": 0},
+				"begin": {
+					"type": "line",
+					"idx": 0,
+					"vertex": 1,
+				},
+				"end": {
+					"type": "node",
+					"idx": 0,
+				},
 			},
 			{
-				"begin": {"type": "node", "idx": 0},
-				"end": {"type": "upstair"},
+				"begin": {
+					"type": "node",
+					"idx": 0,
+				},
+				"end": {
+					"type": "upstair",
+				},
 			},
 			{
-				"begin": {"type": "line", "idx": 0, "vertex": -1},
-				"end": {"type": "row", "idx": 0},
+				"begin": {
+					"type": "line",
+					"idx": 0,
+					"vertex": -1,
+				},
+				"end": {
+					"type": "row",
+					"idx": 0,
+				},
 			},
 			{
-				"begin": {"type": "line", "idx": 0, "vertex": -1},
-				"end": {"type": "row", "idx": 1},
+				"begin": {
+					"type": "line",
+					"idx": 0,
+					"vertex": -1,
+				},
+				"end": {
+					"type": "row",
+					"idx": 1,
+				},
 			},
 		],
 	}
