@@ -1576,11 +1576,15 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 		};
 
 		vector<Node*> floorFixedNodes;
+		vector<pair<float, float>> floorFixedNodePositions;
 		for (auto& nodeTemplate : navTemplate.nodes) {
+			float lx = nodeTemplate.position[0] * floorWidth + nodeTemplate.position[1];
+			float ly = nodeTemplate.position[2] * floorHeight + nodeTemplate.position[3];
 			Node* node = instantiate(nodeTemplate.position);
 			nodes.push_back(node);
 			newNodes.push_back(node);
 			floorFixedNodes.push_back(node);
+			floorFixedNodePositions.emplace_back(lx, ly);
 		}
 
 		vector<LineRuntime> lineRuntimes(navTemplate.lines.size());
@@ -1653,34 +1657,70 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 			bool beginIsProjection = connTemplate.begin.type == "line" && connTemplate.begin.vertex == -1;
 			bool endIsProjection = connTemplate.end.type == "line" && connTemplate.end.vertex == -1;
 
-			// line的vertex=-1端：将房间中心动态投影到line上生成锚点并与房间连接
+			// line的vertex=-1端：将对端中心动态投影到line上生成锚点并与其连接
 			if (beginIsProjection || endIsProjection) {
 				const NavigationEndpointTemplate& lineSide = beginIsProjection ? connTemplate.begin : connTemplate.end;
-				const NavigationEndpointTemplate& roomSide = beginIsProjection ? connTemplate.end : connTemplate.begin;
-				if (roomSide.type != "single" && roomSide.type != "row") {
-					THROW_EXCEPTION(JsonFormatException, "Line vertex -1 can only connect to a single or row endpoint.\n");
+				const NavigationEndpointTemplate& srcSide  = beginIsProjection ? connTemplate.end   : connTemplate.begin;
+				if (srcSide.type == "line" && srcSide.vertex == -1) {
+					THROW_EXCEPTION(JsonFormatException, "Line vertex -1 cannot connect to another line vertex -1.\n");
 				}
 				if (lineSide.idx < 0 || lineSide.idx >= static_cast<int>(lineRuntimes.size())) {
 					THROW_EXCEPTION(OutOfRangeException, "Navigation line index out of range.\n");
 				}
 
+				auto& line = lineRuntimes[lineSide.idx];
+				if (srcSide.type == "node") {
+					if (srcSide.idx < 0 || srcSide.idx >= static_cast<int>(floorFixedNodes.size())) {
+						THROW_EXCEPTION(OutOfRangeException, "Navigation node index out of range.\n");
+					}
+					auto [nx, ny] = floorFixedNodePositions[srcSide.idx];
+					float t = ProjectOntoLine(nx, ny, line.beginX, line.beginY, line.endX, line.endY);
+					float px = line.beginX + t * (line.endX - line.beginX);
+					float py = line.beginY + t * (line.endY - line.beginY);
+					auto [wx, wy] = GetPosition(px, py);
+					Node* projected = new Node("building", wx, wy, height * level);
+					nodes.push_back(projected);
+					newNodes.push_back(projected);
+					line.anchors.emplace_back(t, projected);
+					newConnections.push_back(new Connection(*projected, *floorFixedNodes[srcSide.idx]));
+					continue;
+				}
+
+				if (srcSide.type == "line") {
+					if (srcSide.idx < 0 || srcSide.idx >= static_cast<int>(lineRuntimes.size())) {
+						THROW_EXCEPTION(OutOfRangeException, "Navigation line index out of range.\n");
+					}
+					auto& srcLine = lineRuntimes[srcSide.idx];
+					float nx = (srcSide.vertex == 0) ? srcLine.beginX : srcLine.endX;
+					float ny = (srcSide.vertex == 0) ? srcLine.beginY : srcLine.endY;
+					vector<Node*> srcNodes = resolveEndpoint(srcSide);
+					float t = ProjectOntoLine(nx, ny, line.beginX, line.beginY, line.endX, line.endY);
+					float px = line.beginX + t * (line.endX - line.beginX);
+					float py = line.beginY + t * (line.endY - line.beginY);
+					auto [wx, wy] = GetPosition(px, py);
+					Node* projected = new Node("building", wx, wy, height * level);
+					nodes.push_back(projected);
+					newNodes.push_back(projected);
+					line.anchors.emplace_back(t, projected);
+					newConnections.push_back(new Connection(*projected, *srcNodes[0]));
+					continue;
+				}
+
 				vector<Room*> rooms;
-				if (roomSide.type == "single") {
+				if (srcSide.type == "single") {
 					auto levelIt = singleRoomBySlot.find(level);
-					if (levelIt == singleRoomBySlot.end() || levelIt->second.find(roomSide.idx) == levelIt->second.end()) {
+					if (levelIt == singleRoomBySlot.end() || levelIt->second.find(srcSide.idx) == levelIt->second.end()) {
 						THROW_EXCEPTION(OutOfRangeException, "Navigation single slot not found.\n");
 					}
-					rooms.push_back(levelIt->second.at(roomSide.idx));
+					rooms.push_back(levelIt->second.at(srcSide.idx));
 				}
 				else {
 					auto levelIt = rowRoomBySlot.find(level);
-					if (levelIt == rowRoomBySlot.end() || levelIt->second.find(roomSide.idx) == levelIt->second.end()) {
+					if (levelIt == rowRoomBySlot.end() || levelIt->second.find(srcSide.idx) == levelIt->second.end()) {
 						THROW_EXCEPTION(OutOfRangeException, "Navigation row slot not found.\n");
 					}
-					rooms = levelIt->second.at(roomSide.idx);
+					rooms = levelIt->second.at(srcSide.idx);
 				}
-
-				auto& line = lineRuntimes[lineSide.idx];
 				for (auto room : rooms) {
 					float t = ProjectOntoLine(room->GetPosX(), room->GetPosY(),
 						line.beginX, line.beginY, line.endX, line.endY);
@@ -1691,7 +1731,6 @@ void Building::BuildNavigation(Layout* layout, Map* map) {
 					nodes.push_back(projected);
 					newNodes.push_back(projected);
 					line.anchors.emplace_back(t, projected);
-
 					newConnections.push_back(new Connection(*projected, *room->GetNavigationNode()));
 				}
 				continue;

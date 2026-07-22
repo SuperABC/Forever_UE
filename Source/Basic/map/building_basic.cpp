@@ -178,7 +178,7 @@ float ShopBuilding::RandomAcreage() {
 
 void ShopBuilding::LayoutBuilding(const Quad* quad) {
 	layers = 2;
-	height = 0.5f;
+	height = 0.4f;
 	wallTexture = "/Game/Asset/Materials/White.White";
 
 	int direction = 0;
@@ -200,15 +200,48 @@ void ShopBuilding::LayoutBuilding(const Quad* quad) {
 	}
 
 	string component = "shop";
-	AssignFloor(0, direction, "default_lobby_linear_f^+");
-	AssignRoom(0, 0, "shop", component, 0);
-	ArrangeRow(0, 0, "warehouse", 200.f, component, 0);
-	ArrangeRow(0, 1, "warehouse", 200.f, component, 0);
-	for (int i = 1; i < layers; i++) {
-		AssignFloor(i, direction, "default_lobby_linear_f-");
-		AssignRoom(i, 0, "residential", component, 0);
-		ArrangeRow(i, 0, "residential", 200.f, component, 0);
-		ArrangeRow(i, 1, "residential", 200.f, component, 0);
+
+	if (quad->GetAcreage() < 4000) {
+		AssignFloor(0, direction, "default_lobby_linear_f^+");
+		AssignRoom(0, 0, "shop", component, 0);
+		ArrangeRow(0, 0, "warehouse", 200.f, component, 0);
+		ArrangeRow(0, 1, "warehouse", 200.f, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "default_lobby_linear_f-");
+			AssignRoom(i, 0, "residential", component, 0);
+			ArrangeRow(i, 0, "residential", 200.f, component, 0);
+			ArrangeRow(i, 1, "residential", 200.f, component, 0);
+		}
+	}
+	else {
+		AssignFloor(0, direction, "default_circle_double_f^+");
+		AssignRoom(0, 0, "shop", component, 0);
+		AssignRoom(0, 1, "shop", component, 0);
+		AssignRoom(0, 2, "warehouse", component, 0);
+		AssignRoom(0, 3, "warehouse", component, 0);
+		AssignRoom(0, 4, "warehouse", component, 0);
+		AssignRoom(0, 5, "warehouse", component, 0);
+		ArrangeRow(0, 0, "warehouse", 100.f, component, 0);
+		ArrangeRow(0, 1, "warehouse", 100.f, component, 0);
+		ArrangeRow(0, 2, "warehouse", 100.f, component, 0);
+		ArrangeRow(0, 3, "warehouse", 100.f, component, 0);
+		ArrangeRow(0, 4, "warehouse", 100.f, component, 0);
+		ArrangeRow(0, 5, "warehouse", 100.f, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "default_circle_double_f+-");
+			AssignRoom(i, 0, "warehouse", component, 0);
+			AssignRoom(i, 1, "warehouse", component, 0);
+			AssignRoom(i, 2, "warehouse", component, 0);
+			AssignRoom(i, 3, "warehouse", component, 0);
+			AssignRoom(i, 4, "warehouse", component, 0);
+			ArrangeRow(i, 0, "warehouse", 100.f, component, 0);
+			ArrangeRow(i, 1, "warehouse", 100.f, component, 0);
+			ArrangeRow(i, 2, "warehouse", 100.f, component, 0);
+			ArrangeRow(i, 3, "warehouse", 100.f, component, 0);
+			ArrangeRow(i, 4, "warehouse", 100.f, component, 0);
+			ArrangeRow(i, 5, "warehouse", 100.f, component, 0);
+			ArrangeRow(i, 6, "warehouse", 100.f, component, 0);
+		}
 	}
 
 	script = { "empty", { "basic_building" } };
