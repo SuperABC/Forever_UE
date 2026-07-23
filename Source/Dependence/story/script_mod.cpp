@@ -1,16 +1,56 @@
 ﻿#include "script_mod.h"
 
+#include "dialog.h"
+#include "change.h"
+
 
 using namespace std;
 
 ScriptMod::ScriptMod() :
 	scriptPath(),
-	actionQueue() {
+	actionQueue(),
+	wrapping(false) {
 
 }
 
 ScriptMod::~ScriptMod() {
 
+}
+
+bool ScriptMod::EnableWrapping() const {
+	return false;
+}
+
+void ScriptMod::WrapScript(const Event* event, const vector<ReadOnlyScriptAction>& actions,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
+	PostHandle* post) {
+
+}
+
+void ScriptMod::DeepCopy(const vector<ReadOnlyScriptAction>& actions) {
+	for (auto& action : actions) {
+		visit([this](auto* ptr) {
+			using T = decay_t<decltype(ptr)>;
+			if constexpr (is_same_v<T, const Dialog*>) {
+				actionQueue.push_back(ptr);
+			}
+			else if constexpr (is_same_v<T, const Change*>) {
+				actionQueue.push_back(ptr->Clone());
+			}
+		}, action);
+	}
+}
+
+void ScriptMod::AutoClean() {
+	for (auto& action : actionQueue) {
+		visit([](auto* ptr) {
+			using T = decay_t<decltype(ptr)>;
+			if constexpr (is_same_v<T, const Change*>) {
+				delete ptr;
+			}
+		}, action);
+	}
+	actionQueue.clear();
 }
 
 void ScriptFactory::RegisterScript(const string& id, bool main,

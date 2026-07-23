@@ -39,8 +39,8 @@ public:
 
 	void SetGlobal(AGlobalBase* g);
 
-	void AddFront(Dialog* dialog, Script* ownerScript, const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
-	void AddBack(Dialog* dialog, Script* ownerScript, const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+	void AddFront(const Dialog* dialog, Script* ownerScript, const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+	void AddBack(const Dialog* dialog, Script* ownerScript, const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	void MatchEvent(Event* e, Script* script,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);

@@ -57,6 +57,7 @@ public:
 	Industry* GetIndustry();
 	Traffic* GetTraffic();
 	Player* GetPlayer();
+	PostImplement* GetImplement();
 
 	ATerrainBase* GetTerrainActor();
 	ARoadnetBase* GetRoadnetActor();

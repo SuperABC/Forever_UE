@@ -34,12 +34,6 @@ void NPCScript::SetScript() {
 
 }
 
-void NPCScript::WrapScript(const Event* event,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
-	PostHandle* post) {
-
-}
-
 int ElevatorScript::count = 0;
 
 ElevatorScript::ElevatorScript() : id(count++) {
@@ -68,11 +62,5 @@ bool ElevatorScript::MainStory() {
 }
 
 void ElevatorScript::SetScript() {
-
-}
-
-void ElevatorScript::WrapScript(const Event* event,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
-	PostHandle* post) {
 
 }

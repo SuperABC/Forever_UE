@@ -178,6 +178,15 @@
 					"vertex": 0,
 				},
 			},
+			{
+				"begin": {
+					"type": "node",
+					"idx": 2,
+				},
+				"end": {
+					"type": "outside",
+				},
+			},
 		],
 	}
 }

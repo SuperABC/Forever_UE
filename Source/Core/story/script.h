@@ -71,13 +71,30 @@ public:
 	std::string GetTask();
 
 	/*
-	* 脚本逻辑重载入口
+	* 是否启用WrapScript对动作队列的改写
+	*/
+	bool EnableWrapping() const;
+
+	/*
+	* 是否正在处理WrapScript，用于防止同一脚本实例被递归重入
+	*/
+	bool IsWrapping() const;
+
+	/*
+	* 设置是否正在处理WrapScript
+	* @value: 是否正在处理
+	*/
+	void SetWrapping(bool value);
+
+	/*
+	* 脚本逻辑重载入口，仅在EnableWrapping()返回true时才应被调用；返回的动作列表中指针均为const，
+	* 只能读取（详见ScriptMod::DeepCopy的说明），调用方需要可写的Change*时请自行Clone()
 	* @event: 触发事件
 	* @actions: 当前动作队列
 	* @getValues: 值获取回调列表
 	* @post: 向Core发起查询的句柄
 	*/
-	std::vector<ScriptAction>& WrapScript(Event* event, std::vector<ScriptAction>& actions,
+	const std::vector<ReadOnlyScriptAction>& WrapScript(Event* event, const std::vector<ScriptAction>& actions,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		PostHandle* post);
 
@@ -217,17 +234,6 @@ public:
 	* 设置脚本文件
 	*/
 	virtual void SetScript() override;
-
-	/*
-	* Override
-	* 脚本逻辑重载
-	* @event: 触发事件
-	* @getValues: 值获取回调列表
-	* @post: 向Core发起查询的句柄
-	*/
-	virtual void WrapScript(const Event* event,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
-		PostHandle* post) override;
 
 private:
 	// 总实例数量

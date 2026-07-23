@@ -280,6 +280,10 @@ Player* AGlobalBase::GetPlayer() {
 	return player;
 }
 
+PostImplement* AGlobalBase::GetImplement() {
+	return implement;
+}
+
 ATerrainBase* AGlobalBase::GetTerrainActor() {
 	return terrainActor;
 }

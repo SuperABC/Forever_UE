@@ -12,7 +12,7 @@ Change::~Change() {
 
 }
 
-const Condition& Change::GetCondition() {
+const Condition& Change::GetCondition() const {
 	return condition;
 }
 
@@ -34,6 +34,15 @@ string ForRangeChange::GetTo() const { return to; }
 string ForRangeChange::GetStep() const { return step; }
 const vector<Change*>& ForRangeChange::GetChanges() const { return changes; }
 
+Change* ForRangeChange::Clone() const {
+	auto* copy = new ForRangeChange(*this);
+	copy->changes.clear();
+	for (auto* c : changes) {
+		copy->changes.push_back(c->Clone());
+	}
+	return copy;
+}
+
 GlobalMessageChange::GlobalMessageChange() :
 	message() {
 
@@ -46,6 +55,10 @@ GlobalMessageChange::GlobalMessageChange(string message) :
 
 GlobalMessageChange::~GlobalMessageChange() {
 
+}
+
+Change* GlobalMessageChange::Clone() const {
+	return new GlobalMessageChange(*this);
 }
 
 string GlobalMessageChange::GetType() const {
@@ -68,6 +81,10 @@ GameEndChange::~GameEndChange() {
 
 }
 
+Change* GameEndChange::Clone() const {
+	return new GameEndChange(*this);
+}
+
 string GameEndChange::GetType() const {
 	return "game_end";
 }
@@ -85,6 +102,10 @@ SetValueChange::SetValueChange(string variable, string value) :
 
 SetValueChange::~SetValueChange() {
 
+}
+
+Change* SetValueChange::Clone() const {
+	return new SetValueChange(*this);
 }
 
 string SetValueChange::GetType() const {
@@ -121,6 +142,10 @@ RemoveValueChange::~RemoveValueChange() {
 
 }
 
+Change* RemoveValueChange::Clone() const {
+	return new RemoveValueChange(*this);
+}
+
 string RemoveValueChange::GetType() const {
 	return "remove_value";
 }
@@ -145,6 +170,10 @@ DeactivateMilestoneChange::DeactivateMilestoneChange(string milestone) :
 
 DeactivateMilestoneChange::~DeactivateMilestoneChange() {
 
+}
+
+Change* DeactivateMilestoneChange::Clone() const {
+	return new DeactivateMilestoneChange(*this);
 }
 
 string DeactivateMilestoneChange::GetType() const {
@@ -172,6 +201,10 @@ AddOptionChange::AddOptionChange(string name, string option) :
 
 AddOptionChange::~AddOptionChange() {
 
+}
+
+Change* AddOptionChange::Clone() const {
+	return new AddOptionChange(*this);
 }
 
 string AddOptionChange::GetType() const {
@@ -207,6 +240,10 @@ RemoveOptionChange::RemoveOptionChange(string name, string option) :
 
 RemoveOptionChange::~RemoveOptionChange() {
 
+}
+
+Change* RemoveOptionChange::Clone() const {
+	return new RemoveOptionChange(*this);
 }
 
 string RemoveOptionChange::GetType() const {
@@ -254,6 +291,10 @@ SpawnNpcChange::SpawnNpcChange(string avatar, string name, string gender, string
 
 SpawnNpcChange::~SpawnNpcChange() {
 
+}
+
+Change* SpawnNpcChange::Clone() const {
+	return new SpawnNpcChange(*this);
 }
 
 string SpawnNpcChange::GetType() const {
@@ -370,6 +411,10 @@ RemoveNpcChange::~RemoveNpcChange() {
 
 }
 
+Change* RemoveNpcChange::Clone() const {
+	return new RemoveNpcChange(*this);
+}
+
 string RemoveNpcChange::GetType() const {
 	return "remove_npc";
 }
@@ -395,6 +440,10 @@ TeleportCitizenChange::TeleportCitizenChange(string name, string destination) :
 
 TeleportCitizenChange::~TeleportCitizenChange() {
 
+}
+
+Change* TeleportCitizenChange::Clone() const {
+	return new TeleportCitizenChange(*this);
 }
 
 string TeleportCitizenChange::GetType() const {
@@ -432,6 +481,10 @@ NPCNavigateChange::~NPCNavigateChange() {
 
 }
 
+Change* NPCNavigateChange::Clone() const {
+	return new NPCNavigateChange(*this);
+}
+
 string NPCNavigateChange::GetType() const {
 	return "npc_navigate";
 }
@@ -466,6 +519,10 @@ TeleportPlayerChange::~TeleportPlayerChange() {
 
 }
 
+Change* TeleportPlayerChange::Clone() const {
+	return new TeleportPlayerChange(*this);
+}
+
 string TeleportPlayerChange::GetType() const {
 	return "teleport_player";
 }
@@ -490,6 +547,10 @@ OpenShopChange::OpenShopChange(string saler) :
 
 OpenShopChange::~OpenShopChange() {
 
+}
+
+Change* OpenShopChange::Clone() const {
+	return new OpenShopChange(*this);
 }
 
 string OpenShopChange::GetType() const {
@@ -518,6 +579,10 @@ StartPuzzleChange::~StartPuzzleChange() {
 
 }
 
+Change* StartPuzzleChange::Clone() const {
+	return new StartPuzzleChange(*this);
+}
+
 string StartPuzzleChange::GetType() const {
 	return "start_puzzle";
 }
@@ -544,6 +609,10 @@ EnterVehicleChange::~EnterVehicleChange() {
 
 }
 
+Change* EnterVehicleChange::Clone() const {
+	return new EnterVehicleChange(*this);
+}
+
 string EnterVehicleChange::GetType() const {
 	return "enter_vehicle";
 }
@@ -568,6 +637,10 @@ LeaveVehicleChange::LeaveVehicleChange(string vehicle) :
 
 LeaveVehicleChange::~LeaveVehicleChange() {
 
+}
+
+Change* LeaveVehicleChange::Clone() const {
+	return new LeaveVehicleChange(*this);
 }
 
 string LeaveVehicleChange::GetType() const {
@@ -600,6 +673,10 @@ CreateTimerChange::CreateTimerChange(string name, string time, string category, 
 
 CreateTimerChange::~CreateTimerChange() {
 
+}
+
+Change* CreateTimerChange::Clone() const {
+	return new CreateTimerChange(*this);
 }
 
 string CreateTimerChange::GetType() const {
@@ -652,6 +729,10 @@ EnterBattleChange::~EnterBattleChange() {
 
 }
 
+Change* EnterBattleChange::Clone() const {
+	return new EnterBattleChange(*this);
+}
+
 string EnterBattleChange::GetType() const {
 	return "enter_battle";
 }
@@ -678,6 +759,10 @@ LaunchElevatorChange::LaunchElevatorChange(string building, string elevator, str
 
 LaunchElevatorChange::~LaunchElevatorChange() {
 
+}
+
+Change* LaunchElevatorChange::Clone() const {
+	return new LaunchElevatorChange(*this);
 }
 
 string LaunchElevatorChange::GetType() const {
@@ -722,6 +807,10 @@ PlayVideoChange::~PlayVideoChange() {
 
 }
 
+Change* PlayVideoChange::Clone() const {
+	return new PlayVideoChange(*this);
+}
+
 string PlayVideoChange::GetType() const {
 	return "play_video";
 }
@@ -747,6 +836,10 @@ BankTransactionChange::BankTransactionChange(string name, int amount) :
 
 BankTransactionChange::~BankTransactionChange() {
 
+}
+
+Change* BankTransactionChange::Clone() const {
+	return new BankTransactionChange(*this);
 }
 
 string BankTransactionChange::GetType() const {
@@ -783,6 +876,10 @@ GiveEstateChange::GiveEstateChange(string estate, string name, bool force) :
 
 GiveEstateChange::~GiveEstateChange() {
 
+}
+
+Change* GiveEstateChange::Clone() const {
+	return new GiveEstateChange(*this);
 }
 
 string GiveEstateChange::GetType() const {
@@ -828,6 +925,10 @@ RemoveEstateChange::~RemoveEstateChange() {
 
 }
 
+Change* RemoveEstateChange::Clone() const {
+	return new RemoveEstateChange(*this);
+}
+
 string RemoveEstateChange::GetType() const {
 	return "remove_estate";
 }
@@ -862,6 +963,10 @@ GiveVehicleChange::GiveVehicleChange(string vehicle, string name, bool force) :
 
 GiveVehicleChange::~GiveVehicleChange() {
 
+}
+
+Change* GiveVehicleChange::Clone() const {
+	return new GiveVehicleChange(*this);
 }
 
 string GiveVehicleChange::GetType() const {
@@ -907,6 +1012,10 @@ RemoveVehicleChange::~RemoveVehicleChange() {
 
 }
 
+Change* RemoveVehicleChange::Clone() const {
+	return new RemoveVehicleChange(*this);
+}
+
 string RemoveVehicleChange::GetType() const {
 	return "remove_vehicle";
 }
@@ -940,6 +1049,10 @@ GiveObjectChange::GiveObjectChange(string object, int num) :
 
 GiveObjectChange::~GiveObjectChange() {
 
+}
+
+Change* GiveObjectChange::Clone() const {
+	return new GiveObjectChange(*this);
 }
 
 string GiveObjectChange::GetType() const {
@@ -976,6 +1089,10 @@ RemoveObjectChange::RemoveObjectChange(string object, int num, bool force) :
 
 RemoveObjectChange::~RemoveObjectChange() {
 
+}
+
+Change* RemoveObjectChange::Clone() const {
+	return new RemoveObjectChange(*this);
 }
 
 string RemoveObjectChange::GetType() const {
@@ -1020,6 +1137,10 @@ PlayerInjuredChange::~PlayerInjuredChange() {
 
 }
 
+Change* PlayerInjuredChange::Clone() const {
+	return new PlayerInjuredChange(*this);
+}
+
 string PlayerInjuredChange::GetType() const {
 	return "player_injured";
 }
@@ -1044,6 +1165,10 @@ PlayerCuredChange::PlayerCuredChange(string wound) :
 
 PlayerCuredChange::~PlayerCuredChange() {
 
+}
+
+Change* PlayerCuredChange::Clone() const {
+	return new PlayerCuredChange(*this);
 }
 
 string PlayerCuredChange::GetType() const {
@@ -1072,6 +1197,10 @@ PlayerIllChange::~PlayerIllChange() {
 
 }
 
+Change* PlayerIllChange::Clone() const {
+	return new PlayerIllChange(*this);
+}
+
 string PlayerIllChange::GetType() const {
 	return "player_ill";
 }
@@ -1096,6 +1225,10 @@ PlayerRecoverChange::PlayerRecoverChange(string illness) :
 
 PlayerRecoverChange::~PlayerRecoverChange() {
 
+}
+
+Change* PlayerRecoverChange::Clone() const {
+	return new PlayerRecoverChange(*this);
 }
 
 string PlayerRecoverChange::GetType() const {
@@ -1124,6 +1257,10 @@ PlayerSleepChange::~PlayerSleepChange() {
 
 }
 
+Change* PlayerSleepChange::Clone() const {
+	return new PlayerSleepChange(*this);
+}
+
 string PlayerSleepChange::GetType() const {
 	return "player_sleep";
 }
@@ -1148,6 +1285,10 @@ ChangeTimeChange::ChangeTimeChange(Time delta) :
 
 ChangeTimeChange::~ChangeTimeChange() {
 
+}
+
+Change* ChangeTimeChange::Clone() const {
+	return new ChangeTimeChange(*this);
 }
 
 string ChangeTimeChange::GetType() const {
@@ -1175,6 +1316,10 @@ ChangeCultivationChange::ChangeCultivationChange(string method, int level) :
 
 ChangeCultivationChange::~ChangeCultivationChange() {
 
+}
+
+Change* ChangeCultivationChange::Clone() const {
+	return new ChangeCultivationChange(*this);
 }
 
 string ChangeCultivationChange::GetType() const {
@@ -1212,6 +1357,10 @@ ChangeWantedChange::~ChangeWantedChange() {
 
 }
 
+Change* ChangeWantedChange::Clone() const {
+	return new ChangeWantedChange(*this);
+}
+
 string ChangeWantedChange::GetType() const {
 	return "change_wanted";
 }
@@ -1246,6 +1395,10 @@ ChangeWeatherChange::~ChangeWeatherChange() {
 
 }
 
+Change* ChangeWeatherChange::Clone() const {
+	return new ChangeWeatherChange(*this);
+}
+
 string ChangeWeatherChange::GetType() const {
 	return "change_weather";
 }
@@ -1270,6 +1423,10 @@ ChangePolicyChange::ChangePolicyChange(string policy) :
 
 ChangePolicyChange::~ChangePolicyChange() {
 
+}
+
+Change* ChangePolicyChange::Clone() const {
+	return new ChangePolicyChange(*this);
 }
 
 string ChangePolicyChange::GetType() const {

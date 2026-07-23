@@ -158,7 +158,7 @@ public:
 	/*
 	* 获取所有对话段
 	*/
-	std::vector<Section> GetDialogs();
+	std::vector<Section> GetDialogs() const;
 
 	/*
 	* 设置显示条件

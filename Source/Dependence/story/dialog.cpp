@@ -92,7 +92,7 @@ void Dialog::AddDialog(vector<Option> options) {
 	list.push_back(Section(options));
 }
 
-vector<Section> Dialog::GetDialogs() {
+vector<Section> Dialog::GetDialogs() const {
 	return list;
 }
 

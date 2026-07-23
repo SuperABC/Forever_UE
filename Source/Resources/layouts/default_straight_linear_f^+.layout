@@ -150,6 +150,15 @@
 					"vertex": 0,
 				},
 			},
+			{
+				"begin": {
+					"type": "node",
+					"idx": 1,
+				},
+				"end": {
+					"type": "outside",
+				},
+			},
 		],
 	}
 }

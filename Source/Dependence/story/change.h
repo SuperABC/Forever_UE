@@ -30,9 +30,14 @@ public:
 	virtual std::string GetType() const = 0;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const = 0;
+
+	/*
 	* 获取控制条件
 	*/
-	const Condition& GetCondition();
+	const Condition& GetCondition() const;
 
 	/*
 	* 设置控制条件
@@ -67,6 +72,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 获取循环变量名
@@ -136,6 +146,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置消息内容
 	* @variable: 消息内容
 	*/
@@ -170,6 +185,11 @@ public:
 	*/
 	virtual std::string GetType() const;
 
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
 private:
 };
 
@@ -196,6 +216,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置变量名
@@ -253,6 +278,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置变量名
 	* @variable: 变量名
 	*/
@@ -294,6 +324,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置里程碑名称
 	* @milestone: 名称
 	*/
@@ -333,6 +368,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置目标名称
@@ -388,6 +428,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置目标名称
@@ -447,6 +492,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置形象标识
@@ -644,6 +694,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置NPC姓名
 	* @name: 姓名
 	*/
@@ -683,6 +738,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置市民姓名
@@ -740,6 +800,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置NPC姓名
 	* @name: 姓名
 	*/
@@ -795,6 +860,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置目标房间名称
 	* @destination: 名称
 	*/
@@ -834,6 +904,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置售货员姓名
@@ -877,6 +952,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置小游戏类型标识
 	* @puzzle: 标识
 	*/
@@ -916,6 +996,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置载具名称
@@ -959,6 +1044,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置载具名称
 	* @vehicle: 名称
 	*/
@@ -999,6 +1089,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置计时器名称
@@ -1084,6 +1179,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置敌人名称
 	* @enemy: 名称
 	*/
@@ -1123,6 +1223,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置建筑名称
@@ -1194,6 +1299,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置视频文件路径
 	* @path: 路径
 	*/
@@ -1234,6 +1344,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置收款人姓名
@@ -1291,6 +1406,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置房产名称
@@ -1363,6 +1483,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置房产名称
 	* @estate: 名称
 	*/
@@ -1418,6 +1543,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置载具名称
@@ -1490,6 +1620,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置载具名称
 	* @vehicle: 名称
 	*/
@@ -1544,6 +1679,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置资产类型标识
@@ -1601,6 +1741,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置资产类型标识
@@ -1672,6 +1817,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置伤势描述
 	* @wound: 伤势
 	*/
@@ -1711,6 +1861,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置痊愈的伤势
@@ -1754,6 +1909,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置病症描述
 	* @illness: 病症
 	*/
@@ -1793,6 +1953,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置康复的病症
@@ -1836,6 +2001,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置睡眠时长
 	* @hour: 小时数
 	*/
@@ -1877,6 +2047,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置时间偏移量
 	* @delta: 偏移量
 	*/
@@ -1916,6 +2091,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置修炼方式
@@ -1973,6 +2153,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置通缉原因
 	* @reason: 原因
 	*/
@@ -2028,6 +2213,11 @@ public:
 	virtual std::string GetType() const;
 
 	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
+
+	/*
 	* 设置天气类型
 	* @weather: 天气
 	*/
@@ -2067,6 +2257,11 @@ public:
 	* 变化类型
 	*/
 	virtual std::string GetType() const;
+
+	/*
+	* 深拷贝出一份独立的副本
+	*/
+	virtual Change* Clone() const override;
 
 	/*
 	* 设置政策名称

@@ -79,7 +79,7 @@ void AStoryBase::SetGlobal(AGlobalBase* g) {
 	this->global = g;
 }
 
-void AStoryBase::AddFront(Dialog* dialog, Script* ownerScript, const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+void AStoryBase::AddFront(const Dialog* dialog, Script* ownerScript, const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	for(int i = dialog->GetDialogs().size() - 1; i >= 0; i--) {
 		auto section = dialog->GetDialogs()[i];
 		section.SetOwnerScript(ownerScript);
@@ -88,7 +88,7 @@ void AStoryBase::AddFront(Dialog* dialog, Script* ownerScript, const vector<func
 	}
 }
 
-void AStoryBase::AddBack(Dialog* dialog, Script* ownerScript, const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+void AStoryBase::AddBack(const Dialog* dialog, Script* ownerScript, const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	for (auto section : dialog->GetDialogs()) {
 		section.SetOwnerScript(ownerScript);
 		section.EvaluateText(getValues);
@@ -102,28 +102,59 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 		return;
 	}
 
+	bool wrapped = false;
 	try {
 		auto actions = script->MatchEvent(event, getValues);
-		PostImplement implement(global->GetMap(), global->GetPopulace(), global->GetSociety(),
-			global->GetStory(), global->GetIndustry(), global->GetTraffic(), global->GetPlayer());
-		actions = script->WrapScript(event, actions, getValues, &implement);
+
+		// 只有脚本没有正在被外层WrapScript处理时才允许包裹，避免级联事件递归重入同一脚本实例的actionQueue
+		wrapped = script->EnableWrapping() && !script->IsWrapping();
+		if (wrapped) {
+			script->SetWrapping(true);
+			auto& wrappedActions = script->WrapScript(event, actions, getValues, global->GetImplement());
+			// wrappedActions里的指针都是const的，只能读取；这里重新构建一份这一帧私有的、可写的actions，
+			// Change克隆出独立副本，Dialog直接透传只读指针（无需拷贝，其生命周期由Milestone永久持有）
+			actions.clear();
+			actions.reserve(wrappedActions.size());
+			for (auto& action : wrappedActions) {
+				visit([&actions](auto* ptr) {
+					using T = decay_t<decltype(ptr)>;
+					if constexpr (is_same_v<T, const Dialog*>) {
+						actions.push_back(ptr);
+					}
+					else if constexpr (is_same_v<T, const Change*>) {
+						actions.push_back(ptr->Clone());
+					}
+				}, action);
+			}
+		}
 
 		for (auto action : actions) {
 			visit([&](auto* ptr) {
-				if constexpr (is_same_v<decltype(ptr), Dialog*>) {
-					auto* dialog = dynamic_cast<Dialog*>(ptr);
-					if (dialog->GetCondition().EvaluateBool(getValues)) {
-						AddBack(dialog, script, getValues);
+				using T = decay_t<decltype(ptr)>;
+				if constexpr (is_same_v<T, const Dialog*>) {
+					if (ptr->GetCondition().EvaluateBool(getValues)) {
+						AddBack(ptr, script, getValues);
 					}
 				}
-				else if constexpr (is_same_v<decltype(ptr), Change*>) {
-					auto* change = dynamic_cast<Change*>(ptr);
-					ApplyChanges({ change }, getValues, script);
+				else if constexpr (is_same_v<T, Change*>) {
+					ApplyChanges({ ptr }, getValues, script);
 				}
 			}, action);
 		}
+
+		if (wrapped) {
+			for (auto& action : actions) {
+				if (auto* change = get_if<Change*>(&action)) {
+					delete *change;
+				}
+			}
+			script->SetWrapping(false);
+		}
 	}
 	catch (ExceptionBase& e) {
+		if (wrapped) {
+			script->SetWrapping(false);
+		}
 		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
 	}
 }

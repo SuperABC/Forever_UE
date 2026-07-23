@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 class JsonValue;
 
@@ -12,10 +12,15 @@ public:
 	virtual ~PostHandle() = default;
 
 	/*
-	* 向Core发起查询请求
+	* 向Core发起查询请求；结果通过GetResult()获取引用，避免返回值跨模块释放导致崩溃
 	* @request: 查询请求JSON
-	* @return: 查询结果JSON
 	*/
-	virtual JsonValue* Post(JsonValue* request) = 0;
+	virtual void Post(const JsonValue& request) = 0;
+
+	/*
+	* 获取上一次Post()查询的结果
+	* @return: 查询结果JSON的引用
+	*/
+	virtual const JsonValue& GetResult() const = 0;
 
 };

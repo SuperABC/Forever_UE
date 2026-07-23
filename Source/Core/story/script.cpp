@@ -94,11 +94,28 @@ string Script::GetTask() {
 	return task;
 }
 
-vector<ScriptAction>& Script::WrapScript(Event* event, vector<ScriptAction>& actions,
+bool Script::EnableWrapping() const {
+	return mod->EnableWrapping();
+}
+
+bool Script::IsWrapping() const {
+	return mod->wrapping;
+}
+
+void Script::SetWrapping(bool value) {
+	mod->wrapping = value;
+}
+
+const vector<ReadOnlyScriptAction>& Script::WrapScript(Event* event, const vector<ScriptAction>& actions,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
 	PostHandle* post) {
-	mod->actionQueue = move(actions);
-	mod->WrapScript(event, getValues, post);
+	vector<ReadOnlyScriptAction> readOnly;
+	readOnly.reserve(actions.size());
+	for (auto& action : actions) {
+		visit([&readOnly](auto* ptr) { readOnly.emplace_back(ptr); }, action);
+	}
+
+	mod->WrapScript(event, readOnly, getValues, post);
 
 	return mod->actionQueue;
 }
@@ -955,11 +972,5 @@ bool EmptyScript::MainStory() {
 }
 
 void EmptyScript::SetScript() {
-
-}
-
-void EmptyScript::WrapScript(const Event* event,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
-	PostHandle* post) {
 
 }

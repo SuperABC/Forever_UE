@@ -526,7 +526,7 @@ Change* ParseChange(Parser& parser) {
 }
 
 // 递归输出对话与选项
-bool PrintDialog(Dialog* dialog, vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+bool PrintDialog(const Dialog* dialog, vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	auto sections = dialog->GetDialogs();
 	if (sections.size() == 0)return false;
 
@@ -717,30 +717,54 @@ int main() {
 				};
 				
 				auto actions = story->GetScript()->MatchEvent(event, getValues);
-				actions = story->GetScript()->WrapScript(event, actions, getValues, implement);
+				bool wrapped = story->GetScript()->EnableWrapping() && !story->GetScript()->IsWrapping();
+				if (wrapped) {
+					story->GetScript()->SetWrapping(true);
+					auto& wrappedActions = story->GetScript()->WrapScript(event, actions, getValues, implement);
+					actions.clear();
+					actions.reserve(wrappedActions.size());
+					for (auto& action : wrappedActions) {
+						visit([&actions](auto* ptr) {
+							using T = decay_t<decltype(ptr)>;
+							if constexpr (is_same_v<T, const Dialog*>) {
+								actions.push_back(ptr);
+							}
+							else if constexpr (is_same_v<T, const Change*>) {
+								actions.push_back(ptr->Clone());
+							}
+						}, action);
+					}
+				}
 				for (auto action : actions) {
 					visit([&](auto* ptr) {
-						if constexpr (is_same_v<decltype(ptr), Dialog*>) {
-							auto* dialog = dynamic_cast<Dialog*>(ptr);
-							if (dialog->GetCondition().EvaluateBool(getValues)) {
-								PrintDialog(dialog, getValues);
+						using T = decay_t<decltype(ptr)>;
+						if constexpr (is_same_v<T, const Dialog*>) {
+							if (ptr->GetCondition().EvaluateBool(getValues)) {
+								PrintDialog(ptr, getValues);
 							}
 						}
-						else if constexpr (is_same_v<decltype(ptr), Change*>) {
-							auto* change = dynamic_cast<Change*>(ptr);
-							if (change->GetCondition().EvaluateBool(getValues)) {
-								::map->ApplyChange(change, getValues);
-								populace->ApplyChange(::map, player, traffic, change, getValues);
-								society->ApplyChange(change, getValues);
-								story->ApplyChange(change, getValues);
-								industry->ApplyChange(change, getValues);
-								traffic->ApplyChange(change, getValues);
-								player->ApplyChange(change, getValues);
+						else if constexpr (is_same_v<T, Change*>) {
+							if (ptr->GetCondition().EvaluateBool(getValues)) {
+								::map->ApplyChange(ptr, getValues);
+								populace->ApplyChange(::map, player, traffic, ptr, getValues);
+								society->ApplyChange(ptr, getValues);
+								story->ApplyChange(ptr, getValues);
+								industry->ApplyChange(ptr, getValues);
+								traffic->ApplyChange(ptr, getValues);
+								player->ApplyChange(ptr, getValues);
 							}
 						}
 					}, action);
 				}
-				
+				if (wrapped) {
+					for (auto& action : actions) {
+						if (auto* change = get_if<Change*>(&action)) {
+							delete *change;
+						}
+					}
+					story->GetScript()->SetWrapping(false);
+				}
+
 				delete event;
 				break;
 			}
