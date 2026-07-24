@@ -78,7 +78,7 @@ void Script::RemoveValue(const string& name) {
 	variables.erase(name);
 }
 
-string Script::GetTask() {
+string Script::GetTask() const {
 	string task;
 	for (auto active : actives) {
 		auto goal = active->content->GetGoal();
@@ -94,30 +94,15 @@ string Script::GetTask() {
 	return task;
 }
 
-bool Script::EnableWrapping() const {
-	return mod->EnableWrapping();
-}
-
-bool Script::IsWrapping() const {
-	return mod->wrapping;
-}
-
-void Script::SetWrapping(bool value) {
-	mod->wrapping = value;
-}
-
-const vector<ReadOnlyScriptAction>& Script::WrapScript(Event* event, const vector<ScriptAction>& actions,
+vector<ScriptAction>& Script::WrapScript(Event* event, const vector<ScriptAction>& actions,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
 	PostHandle* post) {
-	vector<ReadOnlyScriptAction> readOnly;
-	readOnly.reserve(actions.size());
-	for (auto& action : actions) {
-		visit([&readOnly](auto* ptr) { readOnly.emplace_back(ptr); }, action);
-	}
+	mod->WrapScript(event, actions, getValues, post);
+	return mod->actionStack.back();
+}
 
-	mod->WrapScript(event, readOnly, getValues, post);
-
-	return mod->actionQueue;
+void Script::AutoPop() {
+	mod->AutoPop();
 }
 
 void Script::ReadScript(const string& path) {
@@ -605,6 +590,10 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			string step = obj["step"].IsNull() ? "1" : obj["step"].AsString();
 			auto doChanges = BuildChanges(obj["do"]);
 			change = new ForRangeChange(var.AsString(), from.AsString(), to.AsString(), step, doChanges);
+		}
+		else if (type == "placeholder") {
+			auto label = obj["label"];
+			change = new PlaceHolderChange(label.IsNull() ? "" : label.AsString());
 		}
 		else if (type == "global_message") {
 			auto message = obj["message"];

@@ -68,35 +68,23 @@ public:
 	/*
 	* 获取任务描述
 	*/
-	std::string GetTask();
+	std::string GetTask() const;
 
 	/*
-	* 是否启用WrapScript对动作队列的改写
-	*/
-	bool EnableWrapping() const;
-
-	/*
-	* 是否正在处理WrapScript，用于防止同一脚本实例被递归重入
-	*/
-	bool IsWrapping() const;
-
-	/*
-	* 设置是否正在处理WrapScript
-	* @value: 是否正在处理
-	*/
-	void SetWrapping(bool value);
-
-	/*
-	* 脚本逻辑重载入口，仅在EnableWrapping()返回true时才应被调用；返回的动作列表中指针均为const，
-	* 只能读取（详见ScriptMod::DeepCopy的说明），调用方需要可写的Change*时请自行Clone()
+	* 脚本逻辑重载入口，每次都会被调用；返回mod的actionStack里这一层的引用
 	* @event: 触发事件
-	* @actions: 当前动作队列
+	* @actions: 当前动作列表
 	* @getValues: 值获取回调列表
 	* @post: 向Core发起查询的句柄
 	*/
-	const std::vector<ReadOnlyScriptAction>& WrapScript(Event* event, const std::vector<ScriptAction>& actions,
+	std::vector<ScriptAction>& WrapScript(Event* event, const std::vector<ScriptAction>& actions,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		PostHandle* post);
+
+	/*
+	* 处理完当前层的所有动作之后调用，弹出WrapScript这次压入actionStack的那一层
+	*/
+	void AutoPop();
 
 	/*
 	* 读取剧本文件到缓存

@@ -105,30 +105,10 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 	bool wrapped = false;
 	try {
 		auto actions = script->MatchEvent(event, getValues);
+		auto& wrappedActions = script->WrapScript(event, actions, getValues, global->GetImplement());
+		wrapped = true;
 
-		// 只有脚本没有正在被外层WrapScript处理时才允许包裹，避免级联事件递归重入同一脚本实例的actionQueue
-		wrapped = script->EnableWrapping() && !script->IsWrapping();
-		if (wrapped) {
-			script->SetWrapping(true);
-			auto& wrappedActions = script->WrapScript(event, actions, getValues, global->GetImplement());
-			// wrappedActions里的指针都是const的，只能读取；这里重新构建一份这一帧私有的、可写的actions，
-			// Change克隆出独立副本，Dialog直接透传只读指针（无需拷贝，其生命周期由Milestone永久持有）
-			actions.clear();
-			actions.reserve(wrappedActions.size());
-			for (auto& action : wrappedActions) {
-				visit([&actions](auto* ptr) {
-					using T = decay_t<decltype(ptr)>;
-					if constexpr (is_same_v<T, const Dialog*>) {
-						actions.push_back(ptr);
-					}
-					else if constexpr (is_same_v<T, const Change*>) {
-						actions.push_back(ptr->Clone());
-					}
-				}, action);
-			}
-		}
-
-		for (auto action : actions) {
+		for (auto action : wrappedActions) {
 			visit([&](auto* ptr) {
 				using T = decay_t<decltype(ptr)>;
 				if constexpr (is_same_v<T, const Dialog*>) {
@@ -136,30 +116,21 @@ void AStoryBase::MatchEvent(Event* event, Script* script,
 						AddBack(ptr, script, getValues);
 					}
 				}
-				else if constexpr (is_same_v<T, Change*>) {
+				else if constexpr (is_same_v<T, const Change*>) {
 					ApplyChanges({ ptr }, getValues, script);
 				}
 			}, action);
 		}
-
-		if (wrapped) {
-			for (auto& action : actions) {
-				if (auto* change = get_if<Change*>(&action)) {
-					delete *change;
-				}
-			}
-			script->SetWrapping(false);
-		}
 	}
 	catch (ExceptionBase& e) {
-		if (wrapped) {
-			script->SetWrapping(false);
-		}
 		UE_LOGFMT(LogTemp, Log, "Exception: {0}", FString(UTF8_TO_TCHAR(e.GetDetailedInfo().data())));
+	}
+	if (wrapped) {
+		script->AutoPop();
 	}
 }
 
-void AStoryBase::ApplyChanges(const vector<Change*>& changes,
+void AStoryBase::ApplyChanges(const vector<const Change*>& changes,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues,
 	Script* ownerScript) {
 	for (auto change : changes) {
@@ -218,14 +189,14 @@ void AStoryBase::ApplyChanges(const vector<pair<Change*, Script*>>& changes,
 	}
 }
 
-vector<Event*> AStoryBase::ApplyChange(Change* change,
+vector<Event*> AStoryBase::ApplyChange(const Change* change,
 	vector<function<pair<bool, ValueType>(const string&)>>& getValues,
 	Script* ownerScript) {
 	vector<Event*> result;
 	auto type = change->GetType();
 
 	if (type == "global_message") {
-		auto obj = dynamic_cast<GlobalMessageChange*>(change);
+		auto obj = dynamic_cast<const GlobalMessageChange*>(change);
 		if (obj == nullptr) {
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to GlobalMessageChange.\n");
 		}
@@ -234,7 +205,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		ScriptMessage(UTF8_TO_TCHAR(ToString(condition.EvaluateValue(getValues)).data()));
 	}
 	else if (type == "remove_option") {
-		auto obj = dynamic_cast<RemoveOptionChange*>(change);
+		auto obj = dynamic_cast<const RemoveOptionChange*>(change);
 		if (obj == nullptr) {
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to RemoveOptionChange.\n");
 		}
@@ -246,7 +217,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		RemoveOption(UTF8_TO_TCHAR(name.data()), UTF8_TO_TCHAR(option.data()));
 	}
 	else if (type == "open_shop") {
-		auto obj = dynamic_cast<OpenShopChange*>(change);
+		auto obj = dynamic_cast<const OpenShopChange*>(change);
 		if (obj == nullptr) {
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to OpenShopChange.\n");
 		}
@@ -271,7 +242,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		}
 	}
 	else if (type == "start_puzzle") {
-		auto obj = dynamic_cast<StartPuzzleChange*>(change);
+		auto obj = dynamic_cast<const StartPuzzleChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to StartPuzzleChange.\n");
 		}
@@ -281,7 +252,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		StartPuzzle(UTF8_TO_TCHAR(puzzle.data()));
 	}
 	else if(type == "teleport_player") {
-		auto obj = dynamic_cast<TeleportPlayerChange*>(change);
+		auto obj = dynamic_cast<const TeleportPlayerChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to TeleportPlayerChange.\n");
 		}
@@ -299,7 +270,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		}
 	}
 	else if (type == "npc_navigate") {
-		auto obj = dynamic_cast<NPCNavigateChange*>(change);
+		auto obj = dynamic_cast<const NPCNavigateChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to NPCNavigateChange.\n");
 		}
@@ -338,7 +309,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		}
 	}
 	else if(type == "enter_battle") {
-		auto obj = dynamic_cast<EnterBattleChange*>(change);
+		auto obj = dynamic_cast<const EnterBattleChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to EnterBattleChange.\n");
 		}
@@ -348,7 +319,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		EnterBattle(this, UTF8_TO_TCHAR(enemy.data()));
 	}
 	else if (type == "enter_vehicle") {
-		auto obj = dynamic_cast<EnterVehicleChange*>(change);
+		auto obj = dynamic_cast<const EnterVehicleChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to EnterVehicleChange.\n");
 		}
@@ -358,7 +329,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		global->GetTrafficActor()->EnterVehicle(UTF8_TO_TCHAR(vehicle.data()));
 	}
 	else if (type == "leave_vehicle") {
-		auto obj = dynamic_cast<LeaveVehicleChange*>(change);
+		auto obj = dynamic_cast<const LeaveVehicleChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to LeaveVehicleChange.\n");
 		}
@@ -368,7 +339,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		global->GetTrafficActor()->LeaveVehicle(UTF8_TO_TCHAR(vehicle.data()));
 	}
 	else if (type == "launch_elevator") {
-		auto obj = dynamic_cast<LaunchElevatorChange*>(change);
+		auto obj = dynamic_cast<const LaunchElevatorChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to LaunchElevatorChange.\n");
 		}
@@ -401,7 +372,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		buildingActor->LaunchElevator(buildingInstance, UTF8_TO_TCHAR(elevatorName.data()), target);
 	}
 	else if (type == "play_video") {
-		auto obj = dynamic_cast<PlayVideoChange*>(change);
+		auto obj = dynamic_cast<const PlayVideoChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to PlayVideoChange.\n");
 		}
@@ -411,7 +382,7 @@ vector<Event*> AStoryBase::ApplyChange(Change* change,
 		PlayVideo(UTF8_TO_TCHAR(path.data()));
 	}
 	else if (type == "for_range") {
-		auto obj = dynamic_cast<ForRangeChange*>(change);
+		auto obj = dynamic_cast<const ForRangeChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to ForRangeChange.\n");
 		}

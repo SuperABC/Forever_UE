@@ -70,13 +70,13 @@ public:
 	* @change: 变化事件
 	* @getValues: 脚本变量获取函数集合
 	*/
-	std::vector<Event*> ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(const Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	/*
 	* 获取游戏时钟
 	*/
-	Time* GetTime();
+	Time* GetTime() const;
 
 	/*
 	* 是否发生跨天
@@ -122,7 +122,7 @@ public:
 	* @path: 资产路径，room 暂不支持，返回 nullptr
 	* @return: 目标资产，路径无效或未找到则返回 nullptr
 	*/
-	Asset* GetByPath(const std::string& path);
+	Asset* GetByPath(const std::string& path) const;
 
 	/*
 	* 按路径移除资产并转移所有权给调用方，路径格式为 root/容器1/.../asset名称，root 可为 left/right/back/room

@@ -12,7 +12,7 @@ Event::~Event() {
 
 }
 
-const Condition& Event::GetCondition() {
+const Condition& Event::GetCondition() const {
 	return condition;
 }
 
@@ -1109,7 +1109,7 @@ void PlayerRestEvent::SetMinute(int minute) {
 	this->minute = minute;
 }
 
-int PlayerRestEvent::GetMinute() {
+int PlayerRestEvent::GetMinute() const {
 	return minute;
 }
 
@@ -1141,7 +1141,7 @@ void PlayerSleepEvent::SetHour(int hour) {
 	this->hour = hour;
 }
 
-int PlayerSleepEvent::GetHour() {
+int PlayerSleepEvent::GetHour() const {
 	return hour;
 }
 
@@ -1188,7 +1188,7 @@ void CultivationChangeEvent::SetLevel(int level) {
 	this->level = level;
 }
 
-int CultivationChangeEvent::GetLevel() {
+int CultivationChangeEvent::GetLevel() const {
 	return level;
 }
 
@@ -1235,7 +1235,7 @@ void WantedChangeEvent::SetLevel(int level) {
 	this->level = level;
 }
 
-int WantedChangeEvent::GetLevel() {
+int WantedChangeEvent::GetLevel() const {
 	return level;
 }
 
@@ -1396,7 +1396,7 @@ void PolicyChangeEvent::SetStatus(bool status) {
 	this->status = status;
 }
 
-bool PolicyChangeEvent::GetStatus() {
+bool PolicyChangeEvent::GetStatus() const {
 	return status;
 }
 

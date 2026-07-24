@@ -971,7 +971,7 @@ void Map::Tick(Player* player) {
 
 }
 
-vector<Event*> Map::ApplyChange(Change* change,
+vector<Event*> Map::ApplyChange(const Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	vector<Event*> result;
 	auto type = change->GetType();
@@ -992,7 +992,7 @@ vector<Event*> Map::ApplyChange(Change* change,
 	};
 
 	if (type == "add_option") {
-		auto obj = dynamic_cast<AddOptionChange*>(change);
+		auto obj = dynamic_cast<const AddOptionChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to AddOptionChange.\n");
 		}
@@ -1007,7 +1007,7 @@ vector<Event*> Map::ApplyChange(Change* change,
 		cabin->AddOption(option);
 	}
 	else if (type == "remove_option") {
-		auto obj = dynamic_cast<RemoveOptionChange*>(change);
+		auto obj = dynamic_cast<const RemoveOptionChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to RemoveOptionChange.\n");
 		}

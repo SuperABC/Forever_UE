@@ -8,8 +8,7 @@ using namespace std;
 
 ScriptMod::ScriptMod() :
 	scriptPath(),
-	actionQueue(),
-	wrapping(false) {
+	actionStack() {
 
 }
 
@@ -17,40 +16,35 @@ ScriptMod::~ScriptMod() {
 
 }
 
-bool ScriptMod::EnableWrapping() const {
-	return false;
-}
-
-void ScriptMod::WrapScript(const Event* event, const vector<ReadOnlyScriptAction>& actions,
+void ScriptMod::WrapScript(const Event* event, const vector<ScriptAction>& actions,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
 	PostHandle* post) {
-
+	AutoCopy(actions);
 }
 
-void ScriptMod::DeepCopy(const vector<ReadOnlyScriptAction>& actions) {
-	for (auto& action : actions) {
-		visit([this](auto* ptr) {
-			using T = decay_t<decltype(ptr)>;
-			if constexpr (is_same_v<T, const Dialog*>) {
-				actionQueue.push_back(ptr);
-			}
-			else if constexpr (is_same_v<T, const Change*>) {
-				actionQueue.push_back(ptr->Clone());
-			}
-		}, action);
-	}
+void ScriptMod::AutoPop() {
+	actionStack.pop_back();
 }
 
-void ScriptMod::AutoClean() {
-	for (auto& action : actionQueue) {
-		visit([](auto* ptr) {
-			using T = decay_t<decltype(ptr)>;
-			if constexpr (is_same_v<T, const Change*>) {
-				delete ptr;
-			}
-		}, action);
+void ScriptMod::AutoCopy(const vector<ScriptAction>& actions) {
+	actionStack.emplace_back(actions.begin(), actions.end());
+}
+
+int ScriptMod::FindLabel(const string& label) const {
+	if (actionStack.empty()) {
+		return -1;
 	}
-	actionQueue.clear();
+
+	auto& top = actionStack.back();
+	for (size_t i = 0; i < top.size(); i++) {
+		if (auto* change = get_if<const Change*>(&top[i])) {
+			auto* placeholder = dynamic_cast<const PlaceHolderChange*>(*change);
+			if (placeholder && placeholder->GetLabel() == label) {
+				return static_cast<int>(i);
+			}
+		}
+	}
+	return -1;
 }
 
 void ScriptFactory::RegisterScript(const string& id, bool main,
@@ -101,7 +95,7 @@ void ScriptFactory::SetConfig(const string& name, bool config) {
 	configs[name] = config;
 }
 
-string ScriptFactory::GetMain() {
+string ScriptFactory::GetMain() const {
 	return main;
 }
 

@@ -57,7 +57,7 @@ public:
 	/*
 	* 获取寻址锚点
 	*/
-	const std::vector<Node*> GetPivots();
+	const std::vector<Node*> GetPivots() const;
 
 	/*
 	* 获取园区内部划分（DivideSpace）产生的导航节点
@@ -85,12 +85,12 @@ public:
 	* 按名称获取园区内一栋建筑
 	* @name: 建筑名称
 	*/
-	Building* GetBuilding(const std::string& name);
+	Building* GetBuilding(const std::string& name) const;
 
 	/*
 	* 获取园区内所有建筑
 	*/
-	const std::unordered_map<std::string, Building*>& GetBuildings();
+	const std::unordered_map<std::string, Building*>& GetBuildings() const;
 
 	/*
 	* 获取是否由政府拥有

@@ -33,7 +33,7 @@ int Action::GetPower() const {
 	return power;
 }
 
-shared_ptr<Effect> Action::GetEffect(EFFECT_TYPE type) {
+shared_ptr<Effect> Action::GetEffect(EFFECT_TYPE type) const {
 	for (auto& effect : effects) {
 		if (effect->GetType() == type) return effect;
 	}
@@ -137,15 +137,15 @@ DualAction::~DualAction() {
 
 }
 
-shared_ptr<SingleAction> DualAction::GetAction1() {
+shared_ptr<SingleAction> DualAction::GetAction1() const {
 	return action1;
 }
 
-shared_ptr<SingleAction> DualAction::GetAction2() {
+shared_ptr<SingleAction> DualAction::GetAction2() const {
 	return action2;
 }
 
-string DualAction::GetText() {
+string DualAction::GetText() const {
 	return "(" + action1->GetName() + ", " + action2->GetName() + ")";
 }
 

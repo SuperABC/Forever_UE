@@ -315,7 +315,7 @@ public:
 	* @change: 剧情变化
 	* @getValues: 取值回调列表
 	*/
-	std::vector<Event*> ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(const Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	/*

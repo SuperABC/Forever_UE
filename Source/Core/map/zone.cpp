@@ -71,7 +71,7 @@ void Zone::SetParent(Block* block) {
 	parentBlock = block;
 }
 
-Building* Zone::GetBuilding(const string& name) {
+Building* Zone::GetBuilding(const string& name) const {
 	auto it = buildings.find(name);
 	if (it != buildings.end()) {
 		return it->second;
@@ -79,7 +79,7 @@ Building* Zone::GetBuilding(const string& name) {
 	return nullptr;
 }
 
-const unordered_map<string, Building*>& Zone::GetBuildings() {
+const unordered_map<string, Building*>& Zone::GetBuildings() const {
 	return buildings;
 }
 
@@ -97,7 +97,7 @@ string Zone::GetAddress() {
 	return address.data();
 }
 
-const vector<Node*> Zone::GetPivots() {
+const vector<Node*> Zone::GetPivots() const {
 	return pivots;
 }
 

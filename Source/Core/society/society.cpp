@@ -399,7 +399,7 @@ Organization* Society::GetOrganization(const string& name) const {
 	return nullptr;
 }
 
-vector<Event*> Society::ApplyChange(Change* change,
+vector<Event*> Society::ApplyChange(const Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	vector<Event*> result;
 	return result;

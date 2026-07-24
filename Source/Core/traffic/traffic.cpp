@@ -258,7 +258,7 @@ void Traffic::Tick(Player* player) {
 
 }
 
-vector<Event*> Traffic::ApplyChange(Change* change,
+vector<Event*> Traffic::ApplyChange(const Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	vector<Event*> result;
 	if (!change) {
@@ -268,7 +268,7 @@ vector<Event*> Traffic::ApplyChange(Change* change,
 	auto type = change->GetType();
 
 	if (type == "add_option") {
-		auto obj = dynamic_cast<AddOptionChange*>(change);
+		auto obj = dynamic_cast<const AddOptionChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to AddOptionChange.\n");
 		}
@@ -287,7 +287,7 @@ vector<Event*> Traffic::ApplyChange(Change* change,
 		target->AddOption(option);
 	}
 	else if (type == "remove_option") {
-		auto obj = dynamic_cast<RemoveOptionChange*>(change);
+		auto obj = dynamic_cast<const RemoveOptionChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to RemoveOptionChange.\n");
 		}

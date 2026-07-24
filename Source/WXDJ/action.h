@@ -35,13 +35,13 @@ public:
 	int GetPower() const;
 
 	// 获取指定类型的效果
-	std::shared_ptr<Effect> GetEffect(EFFECT_TYPE type);
+	std::shared_ptr<Effect> GetEffect(EFFECT_TYPE type) const;
 
 	// 获取所有效果
 	std::vector<std::shared_ptr<Effect>>& GetEffects();
 
 	// 获取招式文本描述
-	virtual std::string GetText() = 0;
+	virtual std::string GetText() const = 0;
 
 	static std::vector<std::string> attributeText;
 };
@@ -50,14 +50,14 @@ public:
 class SkipAction : public Action {
 public:
 	SkipAction();
-	virtual std::string GetText() override { return "无"; }
+	virtual std::string GetText() const override { return "无"; }
 };
 
 // 积攒真气炸弹
 class AccumulateAction : public Action {
 public:
 	AccumulateAction();
-	virtual std::string GetText() override { return "积攒真气炸弹"; }
+	virtual std::string GetText() const override { return "积攒真气炸弹"; }
 };
 
 // 释放真气炸弹
@@ -65,7 +65,7 @@ class BombAction : public Action {
 public:
 	BombAction();
 	void SetPower(int power);
-	virtual std::string GetText() override { return "释放真气炸弹"; }
+	virtual std::string GetText() const override { return "释放真气炸弹"; }
 };
 
 // 单发招式
@@ -85,7 +85,7 @@ public:
 	Realm GetRealm() const;
 	std::vector<std::shared_ptr<Effect>>& GetEffects();
 
-	virtual std::string GetText() override { return name; }
+	virtual std::string GetText() const override { return name; }
 };
 
 // 双发招式
@@ -97,9 +97,9 @@ public:
 	DualAction(std::shared_ptr<SingleAction> action1, std::shared_ptr<SingleAction> action2);
 	virtual ~DualAction();
 
-	std::shared_ptr<SingleAction> GetAction1();
-	std::shared_ptr<SingleAction> GetAction2();
+	std::shared_ptr<SingleAction> GetAction1() const;
+	std::shared_ptr<SingleAction> GetAction2() const;
 
-	virtual std::string GetText() override;
+	virtual std::string GetText() const override;
 };
 

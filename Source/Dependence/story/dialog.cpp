@@ -5,7 +5,7 @@ using namespace std;
 
 Option::Option(const Condition& condition, const string& option,
 	const vector<Dialog*>& dialogs, const vector<Change*>& changes) :
-	condition(condition), option(option), dialogs(dialogs), changes(changes){
+	condition(condition), option(option), dialogs(dialogs), changes(changes.begin(), changes.end()) {
 
 }
 
@@ -25,7 +25,7 @@ vector<Dialog*> Option::GetDialogs() const {
 	return dialogs;
 }
 
-vector<Change*> Option::GetChanges() const {
+vector<const Change*> Option::GetChanges() const {
 	return changes;
 }
 

@@ -916,7 +916,7 @@ public:
 	/*
 	* 获取寻址锚点
 	*/
-	const std::vector<Node*>& GetPivots();
+	const std::vector<Node*>& GetPivots() const;
 
 	/*
 	* 获取建筑自身的四角四边（非持有引用）
@@ -997,12 +997,12 @@ public:
 	/*
 	* 获取面积下限
 	*/
-	float GetAcreageMin();
+	float GetAcreageMin() const;
 
 	/*
 	* 获取面积上限
 	*/
-	float GetAcreageMax();
+	float GetAcreageMax() const;
 
 	/*
 	* 获取建筑中心世界坐标

@@ -39,7 +39,7 @@ public:
 	/*
 	* 获取控制条件
 	*/
-	const Condition& GetCondition();
+	const Condition& GetCondition() const;
 
 	/*
 	* 设置控制条件
@@ -1312,7 +1312,7 @@ public:
 	/*
 	* 获取休息时长
 	*/
-	int GetMinute();
+	int GetMinute() const;
 
 private:
 	// 休息时长（分钟）
@@ -1355,7 +1355,7 @@ public:
 	/*
 	* 获取睡眠时长
 	*/
-	int GetHour();
+	int GetHour() const;
 
 private:
 	// 睡眠时长（小时）
@@ -1409,7 +1409,7 @@ public:
 	/*
 	* 获取等级
 	*/
-	int GetLevel();
+	int GetLevel() const;
 
 private:
 	// 修炼方式
@@ -1466,7 +1466,7 @@ public:
 	/*
 	* 获取通缉等级
 	*/
-	int GetLevel();
+	int GetLevel() const;
 
 private:
 	// 通缉原因
@@ -1652,7 +1652,7 @@ public:
 	/*
 	* 获取启用状态
 	*/
-	bool GetStatus();
+	bool GetStatus() const;
 
 private:
 	// 政策名称

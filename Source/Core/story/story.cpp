@@ -94,7 +94,7 @@ void Story::Tick(Player* player) {
 	script->SetValue("system.time.second", currentTime.GetSecond());
 }
 
-vector<Event*> Story::ApplyChange(Change* change,
+vector<Event*> Story::ApplyChange(const Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues,
 	Script* targetScript) {
 	vector<Event*> result;
@@ -105,11 +105,11 @@ vector<Event*> Story::ApplyChange(Change* change,
 	auto type = change->GetType();
 
 	if (type == "game_end") {
-		auto obj = dynamic_cast<GameEndChange*>(change);
+		auto obj = dynamic_cast<const GameEndChange*>(change);
 		script->ClearContext();
 	}
 	else if (type == "set_value") {
-		auto obj = dynamic_cast<SetValueChange*>(change);
+		auto obj = dynamic_cast<const SetValueChange*>(change);
 		if (obj == nullptr) {
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to SetValueChange.\n");
 		}
@@ -126,7 +126,7 @@ vector<Event*> Story::ApplyChange(Change* change,
 			conditionValue.EvaluateValue(getValues));
 	}
 	else if (type == "remove_value") {
-		auto obj = dynamic_cast<RemoveValueChange*>(change);
+		auto obj = dynamic_cast<const RemoveValueChange*>(change);
 		if (obj == nullptr) {
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to RemoveValueChange.\n");
 		}
@@ -136,7 +136,7 @@ vector<Event*> Story::ApplyChange(Change* change,
 		script->RemoveValue(obj->GetVariable());
 	}
 	else if (type == "deactivate_milestone") {
-		auto obj = dynamic_cast<DeactivateMilestoneChange*>(change);
+		auto obj = dynamic_cast<const DeactivateMilestoneChange*>(change);
 		if (obj == nullptr) {
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to DeactivateMilestoneChange.\n");
 		}
@@ -144,7 +144,7 @@ vector<Event*> Story::ApplyChange(Change* change,
 		target->DeactivateMilestone(obj->GetMilestone());
 	}
 	else if (type == "create_timer") {
-		auto obj = dynamic_cast<CreateTimerChange*>(change);
+		auto obj = dynamic_cast<const CreateTimerChange*>(change);
 		if (obj == nullptr) {
 			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to CreateTimerChange.\n");
 		}
@@ -209,7 +209,7 @@ vector<tuple<string, string, string>> Story::PopExpiredTimers(const Time& now, i
 	return result;
 }
 
-Room* Story::GetCurrentRoom(Map* map) {
+Room* Story::GetCurrentRoom(Map* map) const {
 	auto zone = map->GetZone(ToString(script->GetValue("system.player.zone").second));
 	if (zone) {
 		auto building = zone->GetBuilding(ToString(script->GetValue("system.player.building").second));

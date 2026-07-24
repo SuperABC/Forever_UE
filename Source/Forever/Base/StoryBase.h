@@ -45,7 +45,7 @@ public:
 	void MatchEvent(Event* e, Script* script,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
-	std::vector<Event*> ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(const Change* change,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		Script* ownerScript = nullptr);
 
@@ -93,7 +93,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void NpcArrive(const FString& name, const FString& destination);
 
-	void ApplyChanges(const std::vector<Change*>& changes,
+	void ApplyChanges(const std::vector<const Change*>& changes,
 		std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		Script* ownerScript = nullptr);
 	void ApplyChanges(const std::vector<std::pair<Change*, Script*>>& changes,

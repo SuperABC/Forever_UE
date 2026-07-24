@@ -206,7 +206,7 @@ void Player::Tick(float delta) {
 	time->AddMilliseconds((int)(delta * 60 * 1000));
 }
 
-vector<Event*> Player::ApplyChange(Change* change,
+vector<Event*> Player::ApplyChange(const Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	vector<Event*> result;
 	if (!change) {
@@ -216,7 +216,7 @@ vector<Event*> Player::ApplyChange(Change* change,
 	auto type = change->GetType();
 
 	if (type == "give_object") {
-		auto obj = dynamic_cast<GiveObjectChange*>(change);
+		auto obj = dynamic_cast<const GiveObjectChange*>(change);
 		if (!obj) return result;
 
 		int notPlaced = 0;
@@ -266,7 +266,7 @@ vector<Event*> Player::ApplyChange(Change* change,
 		result.push_back(new ObjectResultEvent("give", obj->GetObject(), notPlaced == 0, notPlaced));
 	}
 	else if (type == "remove_object") {
-		auto obj = dynamic_cast<RemoveObjectChange*>(change);
+		auto obj = dynamic_cast<const RemoveObjectChange*>(change);
 		if (!obj) return result;
 
 		string targetType = obj->GetObject();
@@ -319,7 +319,7 @@ vector<Event*> Player::ApplyChange(Change* change,
 	return result;
 }
 
-Time* Player::GetTime() {
+Time* Player::GetTime() const {
 	return time;
 }
 
@@ -382,7 +382,7 @@ vector<string> Player::SplitPath(const string& path) {
 	return parts;
 }
 
-Asset* Player::GetByPath(const string& path) {
+Asset* Player::GetByPath(const string& path) const {
 	auto parts = SplitPath(path);
 	if (parts.empty()) return nullptr;
 

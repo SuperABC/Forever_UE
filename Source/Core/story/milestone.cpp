@@ -29,20 +29,20 @@ Milestone::~Milestone() {
 	changes.clear();
 }
 
-vector<Dialog*> Milestone::GetDialogs() {
+vector<Dialog*> Milestone::GetDialogs() const {
 	return dialogs;
 }
 
-vector<Change*> Milestone::GetChanges() {
+vector<Change*> Milestone::GetChanges() const {
 	return changes;
 }
 
-vector<Event*> Milestone::GetTriggers() {
+vector<Event*> Milestone::GetTriggers() const {
 	return triggers;
 }
 
 bool Milestone::MatchTrigger(Event* e,
-	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) const {
 	if (triggers.size() <= 0)return false;
 	if (!e)return false;
 
@@ -57,31 +57,31 @@ bool Milestone::MatchTrigger(Event* e,
 	return false;
 }
 
-string Milestone::GetName() {
+string Milestone::GetName() const {
 	return name;
 }
 
-bool Milestone::IsVisible() {
+bool Milestone::IsVisible() const {
 	return visible;
 }
 
-Condition Milestone::DropCondition() {
+Condition Milestone::DropCondition() const {
 	return drop;
 }
 
-bool Milestone::DropSelf(const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+bool Milestone::DropSelf(const vector<function<pair<bool, ValueType>(const string&)>>& getValues) const {
 	return drop.EvaluateBool(getValues);
 }
 
-string Milestone::GetDescription() {
+string Milestone::GetDescription() const {
 	return description;
 }
 
-string Milestone::GetGoal() {
+string Milestone::GetGoal() const {
 	return goal;
 }
 
-vector<string> Milestone::GetSubsequences() {
+vector<string> Milestone::GetSubsequences() const {
 	return subsequences;
 }
 

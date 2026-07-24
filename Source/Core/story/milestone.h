@@ -37,19 +37,19 @@ public:
 	* 获取触发事件列表
 	* @return: 事件指针列表
 	*/
-	std::vector<Event*> GetTriggers();
+	std::vector<Event*> GetTriggers() const;
 
 	/*
 	* 获取关联对话列表
 	* @return: 对话指针列表
 	*/
-	std::vector<Dialog*> GetDialogs();
+	std::vector<Dialog*> GetDialogs() const;
 
 	/*
 	* 获取变更列表
 	* @return: 变更指针列表
 	*/
-	std::vector<Change*> GetChanges();
+	std::vector<Change*> GetChanges() const;
 
 	/*
 	* 判断给定事件是否匹配本里程碑的某个触发条件
@@ -58,50 +58,50 @@ public:
 	* @return: 匹配则返回 true，否则返回 false
 	*/
 	bool MatchTrigger(Event* e,
-		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) const;
 
 	/*
 	* 获取里程碑名称
 	* @return: 里程碑名称字符串
 	*/
-	std::string GetName();
+	std::string GetName() const;
 
 	/*
 	* 判断里程碑是否对玩家可见
 	* @return: 可见返回 true，否则返回 false
 	*/
-	bool IsVisible();
+	bool IsVisible() const;
 
 	/*
 	* 获取丢弃条件对象
 	* @return: 丢弃条件
 	*/
-	Condition DropCondition();
+	Condition DropCondition() const;
 
 	/*
 	* 根据当前值求值丢弃条件，判断是否应丢弃本里程碑
 	* @getValues: 取值回调列表
 	* @return: 应丢弃返回 true，否则返回 false
 	*/
-	bool DropSelf(const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
+	bool DropSelf(const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) const;
 
 	/*
 	* 获取里程碑描述文本
 	* @return: 描述字符串
 	*/
-	std::string GetDescription();
+	std::string GetDescription() const;
 
 	/*
 	* 获取里程碑目标文本
 	* @return: 目标字符串
 	*/
-	std::string GetGoal();
+	std::string GetGoal() const;
 
 	/*
 	* 获取后续故事序列名称列表
 	* @return: 序列名称字符串列表
 	*/
-	std::vector<std::string> GetSubsequences();
+	std::vector<std::string> GetSubsequences() const;
 
 private:
 

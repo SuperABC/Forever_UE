@@ -663,7 +663,7 @@ bool Condition::HigherPrecedence(const string& op1, const string& op2) {
 	return prec1 > prec2;
 }
 
-int Condition::GetPrecedence(const string& op) {
+int Condition::GetPrecedence(const string& op) const {
 	if (op == "!" || op == "negate") return 8;
 	if (op == "^") return 7;
 	if (op == "*" || op == "/" || op == "%") return 6;
@@ -679,7 +679,7 @@ bool Condition::RightAssociative(const string& op) {
 	return op == "^" || op == "!";
 }
 
-BinaryOperator Condition::GetOperator(const string& token) {
+BinaryOperator Condition::GetOperator(const string& token) const {
 	if (token == "==") return BinaryOperator::EQUAL;
 	else if (token == "!=") return BinaryOperator::NOT_EQUAL;
 	else if (token == ">") return BinaryOperator::GREATER;

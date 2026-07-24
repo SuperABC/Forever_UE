@@ -717,25 +717,8 @@ int main() {
 				};
 				
 				auto actions = story->GetScript()->MatchEvent(event, getValues);
-				bool wrapped = story->GetScript()->EnableWrapping() && !story->GetScript()->IsWrapping();
-				if (wrapped) {
-					story->GetScript()->SetWrapping(true);
-					auto& wrappedActions = story->GetScript()->WrapScript(event, actions, getValues, implement);
-					actions.clear();
-					actions.reserve(wrappedActions.size());
-					for (auto& action : wrappedActions) {
-						visit([&actions](auto* ptr) {
-							using T = decay_t<decltype(ptr)>;
-							if constexpr (is_same_v<T, const Dialog*>) {
-								actions.push_back(ptr);
-							}
-							else if constexpr (is_same_v<T, const Change*>) {
-								actions.push_back(ptr->Clone());
-							}
-						}, action);
-					}
-				}
-				for (auto action : actions) {
+				auto& wrappedActions = story->GetScript()->WrapScript(event, actions, getValues, implement);
+				for (auto action : wrappedActions) {
 					visit([&](auto* ptr) {
 						using T = decay_t<decltype(ptr)>;
 						if constexpr (is_same_v<T, const Dialog*>) {
@@ -743,7 +726,7 @@ int main() {
 								PrintDialog(ptr, getValues);
 							}
 						}
-						else if constexpr (is_same_v<T, Change*>) {
+						else if constexpr (is_same_v<T, const Change*>) {
 							if (ptr->GetCondition().EvaluateBool(getValues)) {
 								::map->ApplyChange(ptr, getValues);
 								populace->ApplyChange(::map, player, traffic, ptr, getValues);
@@ -756,14 +739,7 @@ int main() {
 						}
 					}, action);
 				}
-				if (wrapped) {
-					for (auto& action : actions) {
-						if (auto* change = get_if<Change*>(&action)) {
-							delete *change;
-						}
-					}
-					story->GetScript()->SetWrapping(false);
-				}
+				story->GetScript()->AutoPop();
 
 				delete event;
 				break;

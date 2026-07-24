@@ -700,7 +700,7 @@ string Building::GetAddress() {
 	}
 }
 
-const vector<Node*>& Building::GetPivots() {
+const vector<Node*>& Building::GetPivots() const {
 	return pivots;
 }
 
@@ -766,11 +766,11 @@ float Building::RandomAcreage() {
 	return mod->RandomAcreage();
 }
 
-float Building::GetAcreageMin() {
+float Building::GetAcreageMin() const {
 	return mod->minAcreage;
 }
 
-float Building::GetAcreageMax() {
+float Building::GetAcreageMax() const {
 	return mod->maxAcreage;
 }
 

@@ -59,7 +59,7 @@ void Asset::DefineAsset() {
 	usable = mod->usable;
 }
 
-string Asset::GetAsset() {
+string Asset::GetAsset() const {
 	return asset;
 }
 

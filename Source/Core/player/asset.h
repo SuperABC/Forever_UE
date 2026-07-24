@@ -49,7 +49,7 @@ public:
 	* 获取资产描述文本
 	* @return: 描述文本
 	*/
-	std::string GetAsset();
+	std::string GetAsset() const;
 
 	/*
 	* 设置资产描述文本

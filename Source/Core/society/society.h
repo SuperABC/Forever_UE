@@ -69,7 +69,7 @@ public:
 	* 应用剧情变化
 	* @change, getValues: 变化对象与值获取回调列表
 	*/
-	std::vector<Event*> ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(const Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	/*

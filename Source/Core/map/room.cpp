@@ -155,7 +155,7 @@ string Room::GetAddress() const {
 	return GetParentBuilding()->GetAddress() + " " + number;
 }
 
-const vector<Node*> Room::GetPivots() {
+const vector<Node*> Room::GetPivots() const {
 	return pivots;
 }
 

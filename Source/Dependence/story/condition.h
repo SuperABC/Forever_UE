@@ -418,7 +418,7 @@ private:
 	* @op: 运算符
 	* @return: 优先级数值
 	*/
-	int GetPrecedence(const std::string& op);
+	int GetPrecedence(const std::string& op) const;
 
 	/*
 	* 判断运算符是否右结合
@@ -432,7 +432,7 @@ private:
 	* @token: 运算符词元
 	* @return: 双目运算符枚举值
 	*/
-	BinaryOperator GetOperator(const std::string& token);
+	BinaryOperator GetOperator(const std::string& token) const;
 
 	/*
 	* 将词元解析为操作数表达式

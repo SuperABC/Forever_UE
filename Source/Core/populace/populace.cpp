@@ -211,7 +211,7 @@ vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* pl
 	return result;
 }
 
-vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic, Change* change,
+vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic, const Change* change,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	vector<Event*> result;
 	if (!change) {
@@ -221,7 +221,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 	auto type = change->GetType();
 
 	if (type == "add_option") {
-		auto obj = dynamic_cast<AddOptionChange*>(change);
+		auto obj = dynamic_cast<const AddOptionChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to AddOptionChange.\n");
 		}
@@ -240,7 +240,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		target->AddOption(option);
 	}
 	else if (type == "remove_option") {
-		auto obj = dynamic_cast<RemoveOptionChange*>(change);
+		auto obj = dynamic_cast<const RemoveOptionChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to RemoveOptionChange.\n");
 		}
@@ -259,7 +259,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		target->RemoveOption(option);
 	}
 	else if (type == "spawn_npc") {
-		auto obj = dynamic_cast<SpawnNpcChange*>(change);
+		auto obj = dynamic_cast<const SpawnNpcChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to SpawnNpcChange.\n");
 		}
@@ -322,7 +322,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		ids[person->GetName()] = person->GetId();
 	}
 	else if (type == "remove_npc") {
-		auto obj = dynamic_cast<RemoveNpcChange*>(change);
+		auto obj = dynamic_cast<const RemoveNpcChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to RemoveNpcChange.\n");
 		}
@@ -345,7 +345,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		ids[person->GetName()] = -1;
 	}
 	else if (type == "teleport_citizen") {
-		auto obj = dynamic_cast<TeleportCitizenChange*>(change);
+		auto obj = dynamic_cast<const TeleportCitizenChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to TeleportCitizenChange.\n");
 		}
@@ -367,7 +367,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		}
 	}
 	else if (type == "npc_navigate") {
-		auto obj = dynamic_cast<NPCNavigateChange*>(change);
+		auto obj = dynamic_cast<const NPCNavigateChange*>(change);
 		if (!obj) {
 			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to NPCNavigateChange.\n");
 		}
@@ -404,7 +404,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		if(path.size() > 0)person->SetStatus(room, path, currentTime);
 	}
 	else if (type == "bank_transaction") {
-		auto obj = dynamic_cast<BankTransactionChange*>(change);
+		auto obj = dynamic_cast<const BankTransactionChange*>(change);
 		if (!obj) return result;
 
 		bool success = false;
@@ -420,7 +420,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		result.push_back(new TransactionResultEvent(success, obj->GetName()));
 	}
 	else if (type == "give_estate") {
-		auto obj = dynamic_cast<GiveEstateChange*>(change);
+		auto obj = dynamic_cast<const GiveEstateChange*>(change);
 		if (!obj) return result;
 
 		Condition estateCondition;
@@ -475,7 +475,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		}
 	}
 	else if (type == "remove_estate") {
-		auto obj = dynamic_cast<RemoveEstateChange*>(change);
+		auto obj = dynamic_cast<const RemoveEstateChange*>(change);
 		if (!obj) return result;
 
 		Condition estateCondition;
@@ -509,7 +509,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		else { room->SetStated(true); room->SetOwner(nullptr); }
 	}
 	else if (type == "give_vehicle") {
-		auto obj = dynamic_cast<GiveVehicleChange*>(change);
+		auto obj = dynamic_cast<const GiveVehicleChange*>(change);
 		if (!obj) return result;
 
 		Condition vehicleCondition;
@@ -553,7 +553,7 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		}
 	}
 	else if (type == "remove_vehicle") {
-		auto obj = dynamic_cast<RemoveVehicleChange*>(change);
+		auto obj = dynamic_cast<const RemoveVehicleChange*>(change);
 		if (!obj) return result;
 
 		Condition vehicleCondition;
@@ -584,7 +584,7 @@ vector<Person*>& Populace::GetCitizens() {
 	return citizens;
 }
 
-Person* Populace::GetCitizen(const string& name) {
+Person* Populace::GetCitizen(const string& name) const {
 	auto it = ids.find(name);
 	if (it == ids.end() || it->second < 0 ||
 		it->second >= static_cast<int>(citizens.size())) {

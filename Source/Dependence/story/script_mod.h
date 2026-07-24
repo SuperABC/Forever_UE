@@ -9,6 +9,7 @@
 
 #include <string>
 #include <queue>
+#include <deque>
 #include <variant>
 #include <functional>
 
@@ -17,8 +18,7 @@ class Event;
 class Dialog;
 class Change;
 
-using ScriptAction = std::variant<const Dialog*, Change*>;
-using ReadOnlyScriptAction = std::variant<const Dialog*, const Change*>;
+using ScriptAction = std::variant<const Dialog*, const Change*>;
 
 // 脚本Mod基类
 class ScriptMod {
@@ -68,53 +68,51 @@ public:
 
 	/*
 	* Override
-	* 是否启用WrapScript对动作队列的改写，默认不启用；mod需要修改actionQueue时应重载为返回true
-	*/
-	COSTOM_RUNTIME virtual bool EnableWrapping() const;
-
-	/*
-	* Override
-	* 脚本逻辑重载，修改actionQueue字段；仅在EnableWrapping()返回true时才会被调用。
-	* 重载时应在函数开头先调用AutoClean()清理上一次调用遗留的actionQueue内容，
-	* 再通过DeepCopy将本次的只读动作列表拷贝进actionQueue
+	* 脚本逻辑重载，往actionStack里塞入mod自己长期持有的Dialog/Change指针；每次调用都会执行。
+	* 重载时应在函数开头先调用AutoCopy(actions)，把这一层要处理的动作先搬进actionStack，
+	* 再按需用FindLabel找到PlaceHolderChange的位置、替换成mod自己持有的指针。
+	* mod往actionStack里塞的指针必须是mod自己长期维护、永不delete的对象——
+	* 就像Milestone永久持有Core自己的Dialog/Change一样，Core这边也绝不会delete这些指针。
+	* 默认实现：AutoCopy(actions)，即原样透传，不做任何改写
 	* @event: 触发事件
-	* @actions: 只读动作列表，需要写入actionQueue的内容请通过DeepCopy拷贝
+	* @actions: 只读动作列表
 	* @getValues: 值获取回调列表
 	* @post: 向Core发起查询的句柄
 	*/
-	COSTOM_RUNTIME virtual void WrapScript(const Event* event, const std::vector<ReadOnlyScriptAction>& actions,
+	COSTOM_RUNTIME virtual void WrapScript(const Event* event, const std::vector<ScriptAction>& actions,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		PostHandle* post);
 
 	/*
-	* Tool
-	* 将只读动作列表深拷贝进actionQueue：Change克隆为独立副本（需通过AutoClean清理），
-	* Dialog直接透传只读指针（其生命周期由Milestone永久持有，无需拷贝或清理）；
-	* actionQueue里的指针都是const的，只能读取，不能调用setter修改内部字段——
-	* 因为这些克隆对象的堆归属仍然是构造它们的那个模块（通常是Core），跨模块调用setter
-	* （尤其是修改std::string/std::vector/std::map这类自己管理堆内存的成员）会导致
-	* 分配和释放走不同模块的分配器，引发堆损坏。确实需要修改内容的话，只能new一个全新对象整体替换
-	* @actions: 只读动作列表
+	* Override
+	* 处理完当前层的所有动作之后，Core会调用它来弹出WrapScript这次压入的那一层；
+	* 是虚函数，即使mod不重载，也会走mod自己所在模块链接的这份默认实现，弹出操作
+	* 天然发生在构造这个ScriptMod对象的那个模块里，不需要mod额外做任何事。
+	* 默认实现：actionStack.pop_back()
 	*/
-	void DeepCopy(const std::vector<ReadOnlyScriptAction>& actions);
+	COSTOM_RUNTIME virtual void AutoPop();
 
 	/*
 	* Tool
-	* 遍历actionQueue：Change直接delete（对应DeepCopy克隆出的副本及mod自行new出的内容），
-	* Dialog跳过不处理（其生命周期由Milestone永久持有），最后清空actionQueue；
-	* 应在WrapScript重载开头调用，清理上一次调用遗留的内容
+	* 在actionStack里新增一层，把这一层要处理的动作列表搬进去；应在WrapScript重载开头调用
+	* @actions: 只读动作列表
 	*/
-	void AutoClean();
+	void AutoCopy(const std::vector<ScriptAction>& actions);
+
+	/*
+	* Tool
+	* 在actionStack当前层（最上层）里查找label匹配的PlaceHolderChange，
+	* label允许重复，返回第一个匹配到的下标；找不到返回-1
+	* @label: 要查找的标签
+	*/
+	int FindLabel(const std::string& label) const;
 
 	// 脚本文件路径
 	std::string scriptPath;
 
-	// 脚本动作队列（脚本前逻辑 + 脚本逻辑 + 脚本后逻辑）；元素均为const指针，只能读取，
-	// 需要修改内容时必须new一个新对象整体替换，不能调用setter（详见DeepCopy的说明）
-	std::vector<ReadOnlyScriptAction> actionQueue;
-
-	// 是否正在处理WrapScript，用于防止同一脚本实例被递归重入（级联事件触发同一脚本的WrapScript）
-	bool wrapping;
+	// 脚本动作栈：每次WrapScript调用对应一层。指针全部是const的，Dialog的生命周期由Milestone
+	// 永久持有，Change要么由Milestone永久持有、要么由mod自己永久持有，这里绝不delete任何指针
+	std::deque<std::vector<ScriptAction>> actionStack;
 
 };
 
@@ -156,7 +154,7 @@ public:
 	/*
 	* 获取主线剧情脚本类型标识
 	*/
-	std::string GetMain();
+	std::string GetMain() const;
 
 	/*
 	* 析构脚本
@@ -178,4 +176,3 @@ private:
 	std::string main;
 
 };
-

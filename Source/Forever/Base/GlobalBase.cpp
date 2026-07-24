@@ -252,71 +252,71 @@ void AGlobalBase::Tick(float DeltaTime) {
 	traffic->Tick(player);
 }
 
-Map* AGlobalBase::GetMap() {
+Map* AGlobalBase::GetMap() const {
 	return map;
 }
 
-Populace* AGlobalBase::GetPopulace() {
+Populace* AGlobalBase::GetPopulace() const {
 	return populace;
 }
 
-Society* AGlobalBase::GetSociety() {
+Society* AGlobalBase::GetSociety() const {
 	return society;
 }
 
-Story* AGlobalBase::GetStory() {
+Story* AGlobalBase::GetStory() const {
 	return story;
 }
 
-Industry* AGlobalBase::GetIndustry() {
+Industry* AGlobalBase::GetIndustry() const {
 	return industry;
 }
 
-Traffic *AGlobalBase::GetTraffic() {
+Traffic *AGlobalBase::GetTraffic() const {
 	return traffic;
 }
 
-Player* AGlobalBase::GetPlayer() {
+Player* AGlobalBase::GetPlayer() const {
 	return player;
 }
 
-PostImplement* AGlobalBase::GetImplement() {
+PostImplement* AGlobalBase::GetImplement() const {
 	return implement;
 }
 
-ATerrainBase* AGlobalBase::GetTerrainActor() {
+ATerrainBase* AGlobalBase::GetTerrainActor() const {
 	return terrainActor;
 }
 
-ARoadnetBase* AGlobalBase::GetRoadnetActor() {
+ARoadnetBase* AGlobalBase::GetRoadnetActor() const {
 	return roadnetActor;
 }
 
-AZoneBase* AGlobalBase::GetZoneActor() {
+AZoneBase* AGlobalBase::GetZoneActor() const {
 	return zoneActor;
 }
 
-ABuildingBase* AGlobalBase::GetBuildingActor() {
+ABuildingBase* AGlobalBase::GetBuildingActor() const {
 	return buildingActor;
 }
 
-ARoomBase* AGlobalBase::GetRoomActor() {
+ARoomBase* AGlobalBase::GetRoomActor() const {
 	return roomActor;
 }
 
-APopulaceBase* AGlobalBase::GetPopulaceActor() {
+APopulaceBase* AGlobalBase::GetPopulaceActor() const {
 	return populaceActor;
 }
 
-AStoryBase* AGlobalBase::GetStoryActor() {
+AStoryBase* AGlobalBase::GetStoryActor() const {
 	return storyActor;
 }
 
-ATrafficBase* AGlobalBase::GetTrafficActor() {
+ATrafficBase* AGlobalBase::GetTrafficActor() const {
 	return trafficActor;
 }
 
-AAssetBase* AGlobalBase::GetAssetActor() {
+AAssetBase* AGlobalBase::GetAssetActor() const {
 	return assetActor;
 }
 

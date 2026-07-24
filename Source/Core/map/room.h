@@ -135,7 +135,7 @@ public:
 	/*
 	* 获取寻址锚点
 	*/
-	const std::vector<Node*> GetPivots();
+	const std::vector<Node*> GetPivots() const;
 
 	/*
 	* 放置寻址锚点

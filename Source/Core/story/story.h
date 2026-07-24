@@ -55,7 +55,7 @@ public:
 	* @change, getValues: 变化对象与值获取回调列表
 	* @targetScript: 指定目标脚本（nullptr时应用到主线剧情）
 	*/
-	std::vector<Event*> ApplyChange(Change* change,
+	std::vector<Event*> ApplyChange(const Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues,
 		Script* targetScript = nullptr);
 
@@ -97,7 +97,7 @@ public:
 	std::vector<std::tuple<std::string, std::string, std::string>> PopExpiredTimers(const Time& now, int maxCount);
 
 	// 获取玩家当前房间
-	Room* GetCurrentRoom(Map* map);
+	Room* GetCurrentRoom(Map* map) const;
 
 	/*
 	* 为事件注入 local 变量并追加到 getValues，返回创建的 Script*（无 local 时返回 nullptr）

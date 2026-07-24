@@ -61,7 +61,7 @@ void Commute::SetTime(const Time& start) {
 	currentEnd = start + Time(0, 1, 1, seconds / 3600, (seconds / 60) % 60, seconds % 60);
 }
 
-bool Commute::GetSimulate() {
+bool Commute::GetSimulate() const {
 	return simulate;
 }
 
@@ -69,7 +69,7 @@ void Commute::SetSimulate(bool simulate) {
 	this->simulate = simulate;
 }
 
-bool Commute::GetVisible() {
+bool Commute::GetVisible() const {
 	return visible;
 }
 

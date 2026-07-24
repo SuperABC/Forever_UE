@@ -46,7 +46,7 @@ public:
 	/*
 	* 获取是否接入路线模拟
 	*/
-	bool GetSimulate();
+	bool GetSimulate() const;
 
 	/*
 	* 设置是否接入路线模拟
@@ -57,7 +57,7 @@ public:
 	/*
 	* 获取是否已在视线范围内
 	*/
-	bool GetVisible();
+	bool GetVisible() const;
 
 	/*
 	* 进入视线范围

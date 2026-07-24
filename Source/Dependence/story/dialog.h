@@ -48,7 +48,7 @@ public:
 	/*
 	* 获取选中后触发的变化列表
 	*/
-	std::vector<Change*> GetChanges() const;
+	std::vector<const Change*> GetChanges() const;
 
 private:
 	// 显示条件
@@ -61,7 +61,7 @@ private:
 	std::vector<Dialog*> dialogs;
 
 	// 选中后触发的变化列表
-	std::vector<Change*> changes;
+	std::vector<const Change*> changes;
 
 };
 

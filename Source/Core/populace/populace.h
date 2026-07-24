@@ -63,7 +63,7 @@ public:
 	* 应用剧情变化
 	* @map, change, getValues: 地图、变化对象、值获取回调列表
 	*/
-	std::vector<Event*> ApplyChange(Map* map, Player* player, Traffic* traffic, Change* change,
+	std::vector<Event*> ApplyChange(Map* map, Player* player, Traffic* traffic, const Change* change,
 		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues);
 
 	/*
@@ -75,7 +75,7 @@ public:
 	* 按姓名查找市民
 	* @name: 市民姓名
 	*/
-	Person* GetCitizen(const std::string& name);
+	Person* GetCitizen(const std::string& name) const;
 
 	/*
 	* 按精细程度从房间到地块依次取第一个可用的导航节点

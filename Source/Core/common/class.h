@@ -92,7 +92,7 @@ class Dialog;
 class Milestone;
 
 using ValueType = std::variant<int, double, bool, std::string>;
-using ScriptAction = std::variant<const Dialog*, Change*>;
+using ScriptAction = std::variant<const Dialog*, const Change*>;
 
 class Script;
 class ScriptFactory;

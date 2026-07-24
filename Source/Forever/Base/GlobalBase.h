@@ -50,24 +50,24 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	Map* GetMap();
-	Populace* GetPopulace();
-	Society* GetSociety();
-	Story* GetStory();
-	Industry* GetIndustry();
-	Traffic* GetTraffic();
-	Player* GetPlayer();
-	PostImplement* GetImplement();
+	Map* GetMap() const;
+	Populace* GetPopulace() const;
+	Society* GetSociety() const;
+	Story* GetStory() const;
+	Industry* GetIndustry() const;
+	Traffic* GetTraffic() const;
+	Player* GetPlayer() const;
+	PostImplement* GetImplement() const;
 
-	ATerrainBase* GetTerrainActor();
-	ARoadnetBase* GetRoadnetActor();
-	AZoneBase* GetZoneActor();
-	ABuildingBase* GetBuildingActor();
-	ARoomBase* GetRoomActor();
-	APopulaceBase* GetPopulaceActor();
-	AStoryBase* GetStoryActor();
-	ATrafficBase* GetTrafficActor();
-	AAssetBase* GetAssetActor();
+	ATerrainBase* GetTerrainActor() const;
+	ARoadnetBase* GetRoadnetActor() const;
+	AZoneBase* GetZoneActor() const;
+	ABuildingBase* GetBuildingActor() const;
+	ARoomBase* GetRoomActor() const;
+	APopulaceBase* GetPopulaceActor() const;
+	AStoryBase* GetStoryActor() const;
+	ATrafficBase* GetTrafficActor() const;
+	AAssetBase* GetAssetActor() const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> TerrainClass;
