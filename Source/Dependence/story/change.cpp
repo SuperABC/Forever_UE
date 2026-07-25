@@ -27,7 +27,7 @@ ForRangeChange::~ForRangeChange() {
 	for (auto c : changes) delete c;
 }
 
-string ForRangeChange::GetType() const { return "for_range"; }
+const string& ForRangeChange::GetType() const { static const string type = "for_range"; return type; }
 string ForRangeChange::GetVar() const { return var; }
 string ForRangeChange::GetFrom() const { return from; }
 string ForRangeChange::GetTo() const { return to; }
@@ -48,8 +48,9 @@ PlaceHolderChange::~PlaceHolderChange() {
 
 }
 
-string PlaceHolderChange::GetType() const {
-	return "placeholder";
+const string& PlaceHolderChange::GetType() const {
+	static const string type = "place_holder";
+	return type;
 }
 
 void PlaceHolderChange::SetLabel(string label) {
@@ -74,8 +75,9 @@ GlobalMessageChange::~GlobalMessageChange() {
 
 }
 
-string GlobalMessageChange::GetType() const {
-	return "get_message";
+const string& GlobalMessageChange::GetType() const {
+	static const string type = "global_message";
+	return type;
 }
 
 void GlobalMessageChange::SetMessage(string message) {
@@ -94,8 +96,9 @@ GameEndChange::~GameEndChange() {
 
 }
 
-string GameEndChange::GetType() const {
-	return "game_end";
+const string& GameEndChange::GetType() const {
+	static const string type = "game_end";
+	return type;
 }
 
 SetValueChange::SetValueChange() :
@@ -113,8 +116,9 @@ SetValueChange::~SetValueChange() {
 
 }
 
-string SetValueChange::GetType() const {
-	return "set_value";
+const string& SetValueChange::GetType() const {
+	static const string type = "set_value";
+	return type;
 }
 
 void SetValueChange::SetVariable(string variable) {
@@ -147,8 +151,9 @@ RemoveValueChange::~RemoveValueChange() {
 
 }
 
-string RemoveValueChange::GetType() const {
-	return "remove_value";
+const string& RemoveValueChange::GetType() const {
+	static const string type = "remove_value";
+	return type;
 }
 
 void RemoveValueChange::SetVariable(string variable) {
@@ -173,8 +178,9 @@ DeactivateMilestoneChange::~DeactivateMilestoneChange() {
 
 }
 
-string DeactivateMilestoneChange::GetType() const {
-	return "deactivate_milestone";
+const string& DeactivateMilestoneChange::GetType() const {
+	static const string type = "deactivate_milestone";
+	return type;
 }
 
 void DeactivateMilestoneChange::SetMilestone(string milestone) {
@@ -200,8 +206,9 @@ AddOptionChange::~AddOptionChange() {
 
 }
 
-string AddOptionChange::GetType() const {
-	return "add_option";
+const string& AddOptionChange::GetType() const {
+	static const string type = "add_option";
+	return type;
 }
 
 void AddOptionChange::SetName(string name) {
@@ -235,8 +242,9 @@ RemoveOptionChange::~RemoveOptionChange() {
 
 }
 
-string RemoveOptionChange::GetType() const {
-	return "remove_option";
+const string& RemoveOptionChange::GetType() const {
+	static const string type = "remove_option";
+	return type;
 }
 
 void RemoveOptionChange::SetName(string name) {
@@ -282,8 +290,9 @@ SpawnNpcChange::~SpawnNpcChange() {
 
 }
 
-string SpawnNpcChange::GetType() const {
-	return "spawn_npc";
+const string& SpawnNpcChange::GetType() const {
+	static const string type = "spawn_npc";
+	return type;
 }
 
 void SpawnNpcChange::SetAvatar(string avatar) {
@@ -396,8 +405,9 @@ RemoveNpcChange::~RemoveNpcChange() {
 
 }
 
-string RemoveNpcChange::GetType() const {
-	return "remove_npc";
+const string& RemoveNpcChange::GetType() const {
+	static const string type = "remove_npc";
+	return type;
 }
 
 void RemoveNpcChange::SetName(string name) {
@@ -423,8 +433,9 @@ TeleportCitizenChange::~TeleportCitizenChange() {
 
 }
 
-string TeleportCitizenChange::GetType() const {
-	return "teleport_citizen";
+const string& TeleportCitizenChange::GetType() const {
+	static const string type = "teleport_citizen";
+	return type;
 }
 
 void TeleportCitizenChange::SetName(string name) {
@@ -458,8 +469,9 @@ NPCNavigateChange::~NPCNavigateChange() {
 
 }
 
-string NPCNavigateChange::GetType() const {
-	return "npc_navigate";
+const string& NPCNavigateChange::GetType() const {
+	static const string type = "npc_navigate";
+	return type;
 }
 
 void NPCNavigateChange::SetName(string name) {
@@ -492,8 +504,9 @@ TeleportPlayerChange::~TeleportPlayerChange() {
 
 }
 
-string TeleportPlayerChange::GetType() const {
-	return "teleport_player";
+const string& TeleportPlayerChange::GetType() const {
+	static const string type = "teleport_player";
+	return type;
 }
 
 void TeleportPlayerChange::SetDestination(string destination) {
@@ -518,8 +531,9 @@ OpenShopChange::~OpenShopChange() {
 
 }
 
-string OpenShopChange::GetType() const {
-	return "open_shop";
+const string& OpenShopChange::GetType() const {
+	static const string type = "open_shop";
+	return type;
 }
 
 void OpenShopChange::SetSaler(string saler) {
@@ -544,8 +558,9 @@ StartPuzzleChange::~StartPuzzleChange() {
 
 }
 
-string StartPuzzleChange::GetType() const {
-	return "start_puzzle";
+const string& StartPuzzleChange::GetType() const {
+	static const string type = "start_puzzle";
+	return type;
 }
 
 void StartPuzzleChange::SetPuzzle(string puzzle) {
@@ -570,8 +585,9 @@ EnterVehicleChange::~EnterVehicleChange() {
 
 }
 
-string EnterVehicleChange::GetType() const {
-	return "enter_vehicle";
+const string& EnterVehicleChange::GetType() const {
+	static const string type = "enter_vehicle";
+	return type;
 }
 
 void EnterVehicleChange::SetVehicle(string vehicle) {
@@ -596,8 +612,9 @@ LeaveVehicleChange::~LeaveVehicleChange() {
 
 }
 
-string LeaveVehicleChange::GetType() const {
-	return "leave_vehicle";
+const string& LeaveVehicleChange::GetType() const {
+	static const string type = "leave_vehicle";
+	return type;
 }
 
 void LeaveVehicleChange::SetVehicle(string vehicle) {
@@ -628,8 +645,9 @@ CreateTimerChange::~CreateTimerChange() {
 
 }
 
-string CreateTimerChange::GetType() const {
-	return "create_timer";
+const string& CreateTimerChange::GetType() const {
+	static const string type = "create_timer";
+	return type;
 }
 
 void CreateTimerChange::SetName(string name) {
@@ -678,8 +696,9 @@ RemoveTimerChange::~RemoveTimerChange() {
 
 }
 
-string RemoveTimerChange::GetType() const {
-	return "remove_timer";
+const string& RemoveTimerChange::GetType() const {
+	static const string type = "remove_timer";
+	return type;
 }
 
 void RemoveTimerChange::SetName(string name) {
@@ -704,8 +723,9 @@ EnterBattleChange::~EnterBattleChange() {
 
 }
 
-string EnterBattleChange::GetType() const {
-	return "enter_battle";
+const string& EnterBattleChange::GetType() const {
+	static const string type = "enter_battle";
+	return type;
 }
 
 void EnterBattleChange::SetEnemy(string enemy) {
@@ -732,8 +752,9 @@ LaunchElevatorChange::~LaunchElevatorChange() {
 
 }
 
-string LaunchElevatorChange::GetType() const {
-	return "launch_elevator";
+const string& LaunchElevatorChange::GetType() const {
+	static const string type = "launch_elevator";
+	return type;
 }
 
 void LaunchElevatorChange::SetBuilding(string building) {
@@ -774,8 +795,9 @@ PlayVideoChange::~PlayVideoChange() {
 
 }
 
-string PlayVideoChange::GetType() const {
-	return "play_video";
+const string& PlayVideoChange::GetType() const {
+	static const string type = "play_video";
+	return type;
 }
 
 void PlayVideoChange::SetPath(string path) {
@@ -801,8 +823,9 @@ BankTransactionChange::~BankTransactionChange() {
 
 }
 
-string BankTransactionChange::GetType() const {
-	return "bank_transaction";
+const string& BankTransactionChange::GetType() const {
+	static const string type = "bank_transaction";
+	return type;
 }
 
 void BankTransactionChange::SetName(string name) {
@@ -837,8 +860,9 @@ GiveEstateChange::~GiveEstateChange() {
 
 }
 
-string GiveEstateChange::GetType() const {
-	return "give_estate";
+const string& GiveEstateChange::GetType() const {
+	static const string type = "give_estate";
+	return type;
 }
 
 void GiveEstateChange::SetEstate(string estate) {
@@ -880,8 +904,9 @@ RemoveEstateChange::~RemoveEstateChange() {
 
 }
 
-string RemoveEstateChange::GetType() const {
-	return "remove_estate";
+const string& RemoveEstateChange::GetType() const {
+	static const string type = "remove_estate";
+	return type;
 }
 
 void RemoveEstateChange::SetEstate(string estate) {
@@ -916,8 +941,9 @@ GiveVehicleChange::~GiveVehicleChange() {
 
 }
 
-string GiveVehicleChange::GetType() const {
-	return "give_vehicle";
+const string& GiveVehicleChange::GetType() const {
+	static const string type = "give_vehicle";
+	return type;
 }
 
 void GiveVehicleChange::SetVehicle(string vehicle) {
@@ -959,8 +985,9 @@ RemoveVehicleChange::~RemoveVehicleChange() {
 
 }
 
-string RemoveVehicleChange::GetType() const {
-	return "remove_vehicle";
+const string& RemoveVehicleChange::GetType() const {
+	static const string type = "remove_vehicle";
+	return type;
 }
 
 void RemoveVehicleChange::SetVehicle(string vehicle) {
@@ -994,8 +1021,9 @@ GiveObjectChange::~GiveObjectChange() {
 
 }
 
-string GiveObjectChange::GetType() const {
-	return "give_object";
+const string& GiveObjectChange::GetType() const {
+	static const string type = "give_object";
+	return type;
 }
 
 void GiveObjectChange::SetObject(string object) {
@@ -1030,8 +1058,9 @@ RemoveObjectChange::~RemoveObjectChange() {
 
 }
 
-string RemoveObjectChange::GetType() const {
-	return "remove_object";
+const string& RemoveObjectChange::GetType() const {
+	static const string type = "remove_object";
+	return type;
 }
 
 void RemoveObjectChange::SetObject(string object) {
@@ -1072,8 +1101,9 @@ PlayerInjuredChange::~PlayerInjuredChange() {
 
 }
 
-string PlayerInjuredChange::GetType() const {
-	return "player_injured";
+const string& PlayerInjuredChange::GetType() const {
+	static const string type = "player_injured";
+	return type;
 }
 
 void PlayerInjuredChange::SetWound(string wound) {
@@ -1098,8 +1128,9 @@ PlayerCuredChange::~PlayerCuredChange() {
 
 }
 
-string PlayerCuredChange::GetType() const {
-	return "player_cured";
+const string& PlayerCuredChange::GetType() const {
+	static const string type = "player_cured";
+	return type;
 }
 
 void PlayerCuredChange::SetWound(string wound) {
@@ -1124,8 +1155,9 @@ PlayerIllChange::~PlayerIllChange() {
 
 }
 
-string PlayerIllChange::GetType() const {
-	return "player_ill";
+const string& PlayerIllChange::GetType() const {
+	static const string type = "player_ill";
+	return type;
 }
 
 void PlayerIllChange::SetIllness(string illness) {
@@ -1150,8 +1182,9 @@ PlayerRecoverChange::~PlayerRecoverChange() {
 
 }
 
-string PlayerRecoverChange::GetType() const {
-	return "player_recover";
+const string& PlayerRecoverChange::GetType() const {
+	static const string type = "player_recover";
+	return type;
 }
 
 void PlayerRecoverChange::SetIllness(string illness) {
@@ -1176,8 +1209,9 @@ PlayerSleepChange::~PlayerSleepChange() {
 
 }
 
-string PlayerSleepChange::GetType() const {
-	return "player_sleep";
+const string& PlayerSleepChange::GetType() const {
+	static const string type = "player_sleep";
+	return type;
 }
 
 void PlayerSleepChange::SetHour(int hour) {
@@ -1202,8 +1236,9 @@ ChangeTimeChange::~ChangeTimeChange() {
 
 }
 
-string ChangeTimeChange::GetType() const {
-	return "change_time";
+const string& ChangeTimeChange::GetType() const {
+	static const string type = "change_time";
+	return type;
 }
 
 void ChangeTimeChange::SetDelta(Time delta) {
@@ -1229,8 +1264,9 @@ ChangeCultivationChange::~ChangeCultivationChange() {
 
 }
 
-string ChangeCultivationChange::GetType() const {
-	return "change_cultivation";
+const string& ChangeCultivationChange::GetType() const {
+	static const string type = "change_cultivation";
+	return type;
 }
 
 void ChangeCultivationChange::SetMethod(string method) {
@@ -1264,8 +1300,9 @@ ChangeWantedChange::~ChangeWantedChange() {
 
 }
 
-string ChangeWantedChange::GetType() const {
-	return "change_wanted";
+const string& ChangeWantedChange::GetType() const {
+	static const string type = "change_wanted";
+	return type;
 }
 
 void ChangeWantedChange::SetReason(string reason) {
@@ -1298,8 +1335,9 @@ ChangeWeatherChange::~ChangeWeatherChange() {
 
 }
 
-string ChangeWeatherChange::GetType() const {
-	return "change_weather";
+const string& ChangeWeatherChange::GetType() const {
+	static const string type = "change_weather";
+	return type;
 }
 
 void ChangeWeatherChange::SetWeather(string weather) {
@@ -1324,8 +1362,9 @@ ChangePolicyChange::~ChangePolicyChange() {
 
 }
 
-string ChangePolicyChange::GetType() const {
-	return "change_policy";
+const string& ChangePolicyChange::GetType() const {
+	static const string type = "change_policy";
+	return type;
 }
 
 void ChangePolicyChange::SetPolicy(string policy) {

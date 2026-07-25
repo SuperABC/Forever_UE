@@ -591,7 +591,7 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			auto doChanges = BuildChanges(obj["do"]);
 			change = new ForRangeChange(var.AsString(), from.AsString(), to.AsString(), step, doChanges);
 		}
-		else if (type == "placeholder") {
+		else if (type == "place_holder") {
 			auto label = obj["label"];
 			change = new PlaceHolderChange(label.IsNull() ? "" : label.AsString());
 		}

@@ -28,8 +28,9 @@ GameStartEvent::~GameStartEvent() {
 
 }
 
-string GameStartEvent::GetType() const {
-	return "game_start";
+const string& GameStartEvent::GetType() const {
+	static const string type = "game_start";
+	return type;
 }
 
 bool GameStartEvent::Match(Event* e,
@@ -48,8 +49,9 @@ ScriptMessageEvent::~ScriptMessageEvent() {
 
 }
 
-string ScriptMessageEvent::GetType() const {
-	return "script_message";
+const string& ScriptMessageEvent::GetType() const {
+	static const string type = "script_message";
+	return type;
 }
 
 bool ScriptMessageEvent::Match(Event* e,
@@ -79,12 +81,12 @@ string ScriptMessageEvent::GetMessage() const {
 }
 
 OptionDialogEvent::OptionDialogEvent(string name, string option) :
-	idx(-1), name(name), option(option) {
+	id(-1), name(name), option(option) {
 
 }
 
-OptionDialogEvent::OptionDialogEvent(int idx, string option) :
-	idx(idx), name(""), option(option) {
+OptionDialogEvent::OptionDialogEvent(int id, string option) :
+	id(id), name(""), option(option) {
 
 }
 
@@ -92,8 +94,9 @@ OptionDialogEvent::~OptionDialogEvent() {
 
 }
 
-string OptionDialogEvent::GetType() const {
-	return "option_dialog";
+const string& OptionDialogEvent::GetType() const {
+	static const string type = "option_dialog";
+	return type;
 }
 
 bool OptionDialogEvent::Match(Event* e,
@@ -104,8 +107,8 @@ bool OptionDialogEvent::Match(Event* e,
 	auto other = dynamic_cast<OptionDialogEvent*>(e);
 	if (!other) return false;
 
-	if (idx == -1 && name == "" ||
-		other->idx == -1 && other->name == "") {
+	if (id == -1 && name == "" ||
+		other->id == -1 && other->name == "") {
 		return option == other->option;
 	}
 
@@ -124,12 +127,12 @@ bool OptionDialogEvent::Match(Event* e,
 	return result;
 }
 
-void OptionDialogEvent::SetIdx(int idx) {
-	this->idx = idx;
+void OptionDialogEvent::SetId(int id) {
+	this->id = id;
 }
 
-int OptionDialogEvent::GetIdx() const {
-	return idx;
+int OptionDialogEvent::GetId() const {
+	return id;
 }
 
 void OptionDialogEvent::SetName(string name) {
@@ -157,8 +160,9 @@ SpeakingFinishEvent::~SpeakingFinishEvent() {
 
 }
 
-string SpeakingFinishEvent::GetType() const {
-	return "speaking_finish";
+const string& SpeakingFinishEvent::GetType() const {
+	static const string type = "speaking_finish";
+	return type;
 }
 
 bool SpeakingFinishEvent::Match(Event* e,
@@ -196,8 +200,9 @@ EnterZoneEvent::~EnterZoneEvent() {
 
 }
 
-string EnterZoneEvent::GetType() const {
-	return "enter_zone";
+const string& EnterZoneEvent::GetType() const {
+	static const string type = "enter_zone";
+	return type;
 }
 
 bool EnterZoneEvent::Match(Event* e,
@@ -235,8 +240,9 @@ LeaveZoneEvent::~LeaveZoneEvent() {
 
 }
 
-string LeaveZoneEvent::GetType() const {
-	return "leave_zone";
+const string& LeaveZoneEvent::GetType() const {
+	static const string type = "leave_zone";
+	return type;
 }
 
 bool LeaveZoneEvent::Match(Event* e,
@@ -273,8 +279,9 @@ EnterBuildingEvent::~EnterBuildingEvent() {
 
 }
 
-string EnterBuildingEvent::GetType() const {
-	return "enter_building";
+const string& EnterBuildingEvent::GetType() const {
+	static const string type = "enter_building";
+	return type;
 }
 
 bool EnterBuildingEvent::Match(Event* e,
@@ -324,8 +331,9 @@ LeaveBuildingEvent::~LeaveBuildingEvent() {
 
 }
 
-string LeaveBuildingEvent::GetType() const {
-	return "leave_building";
+const string& LeaveBuildingEvent::GetType() const {
+	static const string type = "leave_building";
+	return type;
 }
 
 bool LeaveBuildingEvent::Match(Event* e,
@@ -375,8 +383,9 @@ EnterRoomEvent::~EnterRoomEvent() {
 
 }
 
-string EnterRoomEvent::GetType() const {
-	return "enter_room";
+const string& EnterRoomEvent::GetType() const {
+	static const string type = "enter_room";
+	return type;
 }
 
 bool EnterRoomEvent::Match(Event* e,
@@ -439,8 +448,9 @@ LeaveRoomEvent::~LeaveRoomEvent() {
 
 }
 
-string LeaveRoomEvent::GetType() const {
-	return "leave_room";
+const string& LeaveRoomEvent::GetType() const {
+	static const string type = "leave_room";
+	return type;
 }
 
 bool LeaveRoomEvent::Match(Event* e,
@@ -501,8 +511,9 @@ PuzzleResultEvent::PuzzleResultEvent(int result)
 PuzzleResultEvent::~PuzzleResultEvent() {
 }
 
-string PuzzleResultEvent::GetType() const {
-	return "puzzle_result";
+const string& PuzzleResultEvent::GetType() const {
+	static const string type = "puzzle_result";
+	return type;
 }
 
 bool PuzzleResultEvent::Match(Event* e,
@@ -533,8 +544,9 @@ TransactionResultEvent::~TransactionResultEvent() {
 
 }
 
-string TransactionResultEvent::GetType() const {
-	return "transaction_result";
+const string& TransactionResultEvent::GetType() const {
+	static const string type = "transaction_result";
+	return type;
 }
 
 bool TransactionResultEvent::Match(Event* e,
@@ -582,8 +594,9 @@ ObjectResultEvent::~ObjectResultEvent() {
 
 }
 
-string ObjectResultEvent::GetType() const {
-	return "object_result";
+const string& ObjectResultEvent::GetType() const {
+	static const string type = "object_result";
+	return type;
 }
 
 bool ObjectResultEvent::Match(Event* e,
@@ -646,8 +659,9 @@ TimeUpEvent::~TimeUpEvent() {
 
 }
 
-string TimeUpEvent::GetType() const {
-	return "time_up";
+const string& TimeUpEvent::GetType() const {
+	static const string type = "time_up";
+	return type;
 }
 
 bool TimeUpEvent::Match(Event* e,
@@ -684,8 +698,9 @@ BattleWinEvent::~BattleWinEvent() {
 
 }
 
-string BattleWinEvent::GetType() const {
-	return "battle_win";
+const string& BattleWinEvent::GetType() const {
+	static const string type = "battle_win";
+	return type;
 }
 
 bool BattleWinEvent::Match(Event* e,
@@ -722,8 +737,9 @@ BattleLoseEvent::~BattleLoseEvent() {
 
 }
 
-string BattleLoseEvent::GetType() const {
-	return "battle_lose";
+const string& BattleLoseEvent::GetType() const {
+	static const string type = "battle_lose";
+	return type;
 }
 
 bool BattleLoseEvent::Match(Event* e,
@@ -760,8 +776,9 @@ NpcArriveEvent::~NpcArriveEvent() {
 
 }
 
-string NpcArriveEvent::GetType() const {
-	return "npc_arrive";
+const string& NpcArriveEvent::GetType() const {
+	static const string type = "npc_arrive";
+	return type;
 }
 
 bool NpcArriveEvent::Match(Event* e,
@@ -811,8 +828,9 @@ NPCMeetEvent::~NPCMeetEvent() {
 
 }
 
-string NPCMeetEvent::GetType() const {
-	return "npc_meet";
+const string& NPCMeetEvent::GetType() const {
+	static const string type = "npc_meet";
+	return type;
 }
 
 bool NPCMeetEvent::Match(Event* e,
@@ -849,8 +867,9 @@ CitizenBornEvent::~CitizenBornEvent() {
 
 }
 
-string CitizenBornEvent::GetType() const {
-	return "citizen_born";
+const string& CitizenBornEvent::GetType() const {
+	static const string type = "citizen_born";
+	return type;
 }
 
 bool CitizenBornEvent::Match(Event* e,
@@ -887,8 +906,9 @@ CitizenDeceaseEvent::~CitizenDeceaseEvent() {
 
 }
 
-string CitizenDeceaseEvent::GetType() const {
-	return "citizen_decease";
+const string& CitizenDeceaseEvent::GetType() const {
+	static const string type = "citizen_decease";
+	return type;
 }
 
 bool CitizenDeceaseEvent::Match(Event* e,
@@ -938,8 +958,9 @@ PlayerInjuredEvent::~PlayerInjuredEvent() {
 
 }
 
-string PlayerInjuredEvent::GetType() const {
-	return "player_injured";
+const string& PlayerInjuredEvent::GetType() const {
+	static const string type = "player_injured";
+	return type;
 }
 
 bool PlayerInjuredEvent::Match(Event* e,
@@ -976,8 +997,9 @@ PlayerCuredEvent::~PlayerCuredEvent() {
 
 }
 
-string PlayerCuredEvent::GetType() const {
-	return "player_cured";
+const string& PlayerCuredEvent::GetType() const {
+	static const string type = "player_cured";
+	return type;
 }
 
 bool PlayerCuredEvent::Match(Event* e,
@@ -1014,8 +1036,9 @@ PlayerIllEvent::~PlayerIllEvent() {
 
 }
 
-string PlayerIllEvent::GetType() const {
-	return "player_ill";
+const string& PlayerIllEvent::GetType() const {
+	static const string type = "player_ill";
+	return type;
 }
 
 bool PlayerIllEvent::Match(Event* e,
@@ -1052,8 +1075,9 @@ PlayerRecoverEvent::~PlayerRecoverEvent() {
 
 }
 
-string PlayerRecoverEvent::GetType() const {
-	return "player_recover";
+const string& PlayerRecoverEvent::GetType() const {
+	static const string type = "player_recover";
+	return type;
 }
 
 bool PlayerRecoverEvent::Match(Event* e,
@@ -1090,8 +1114,9 @@ PlayerRestEvent::~PlayerRestEvent() {
 
 }
 
-string PlayerRestEvent::GetType() const {
-	return "player_rest";
+const string& PlayerRestEvent::GetType() const {
+	static const string type = "player_rest";
+	return type;
 }
 
 bool PlayerRestEvent::Match(Event* e,
@@ -1122,8 +1147,9 @@ PlayerSleepEvent::~PlayerSleepEvent() {
 
 }
 
-string PlayerSleepEvent::GetType() const {
-	return "player_sleep";
+const string& PlayerSleepEvent::GetType() const {
+	static const string type = "player_sleep";
+	return type;
 }
 
 bool PlayerSleepEvent::Match(Event* e,
@@ -1154,8 +1180,9 @@ CultivationChangeEvent::~CultivationChangeEvent() {
 
 }
 
-string CultivationChangeEvent::GetType() const {
-	return "cultivation_change";
+const string& CultivationChangeEvent::GetType() const {
+	static const string type = "cultivation_change";
+	return type;
 }
 
 bool CultivationChangeEvent::Match(Event* e,
@@ -1201,8 +1228,9 @@ WantedChangeEvent::~WantedChangeEvent() {
 
 }
 
-string WantedChangeEvent::GetType() const {
-	return "wanted_change";
+const string& WantedChangeEvent::GetType() const {
+	static const string type = "wanted_change";
+	return type;
 }
 
 bool WantedChangeEvent::Match(Event* e,
@@ -1248,8 +1276,9 @@ PlayerArrestedEvent::~PlayerArrestedEvent() {
 
 }
 
-string PlayerArrestedEvent::GetType() const {
-	return "player_arrested";
+const string& PlayerArrestedEvent::GetType() const {
+	static const string type = "player_arrested";
+	return type;
 }
 
 bool PlayerArrestedEvent::Match(Event* e,
@@ -1286,8 +1315,9 @@ PlayerReleasedEvent::~PlayerReleasedEvent() {
 
 }
 
-string PlayerReleasedEvent::GetType() const {
-	return "player_released";
+const string& PlayerReleasedEvent::GetType() const {
+	static const string type = "player_released";
+	return type;
 }
 
 bool PlayerReleasedEvent::Match(Event* e,
@@ -1324,8 +1354,9 @@ WeatherChangeEvent::~WeatherChangeEvent() {
 
 }
 
-string WeatherChangeEvent::GetType() const {
-	return "weather_change";
+const string& WeatherChangeEvent::GetType() const {
+	static const string type = "weather_change";
+	return type;
 }
 
 bool WeatherChangeEvent::Match(Event* e,
@@ -1362,8 +1393,9 @@ PolicyChangeEvent::~PolicyChangeEvent() {
 
 }
 
-string PolicyChangeEvent::GetType() const {
-	return "policy_change";
+const string& PolicyChangeEvent::GetType() const {
+	static const string type = "policy_change";
+	return type;
 }
 
 bool PolicyChangeEvent::Match(Event* e,

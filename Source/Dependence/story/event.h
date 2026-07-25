@@ -26,7 +26,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const = 0;
+	virtual const std::string& GetType() const = 0;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -68,7 +68,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -98,7 +98,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -135,9 +135,9 @@ public:
 
 	/*
 	* 通过序号构造选项对话事件
-	* @idx, option: 对话目标序号与选项文本
+	* @id, option: 对话目标序号与选项文本
 	*/
-	OptionDialogEvent(int idx, std::string option);
+	OptionDialogEvent(int id, std::string option);
 
 	/*
 	* 析构选项对话事件
@@ -147,7 +147,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -159,14 +159,14 @@ public:
 
 	/*
 	* 设置目标序号
-	* @idx: 序号
+	* @id: 序号
 	*/
-	void SetIdx(int idx);
+	void SetId(int id);
 
 	/*
 	* 获取目标序号
 	*/
-	int GetIdx() const;
+	int GetId() const;
 
 	/*
 	* 设置目标名称
@@ -192,7 +192,7 @@ public:
 
 private:
 	// 选项索引
-	int idx;
+	int id;
 
 	// 选项名称
 	std::string name;
@@ -218,7 +218,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -261,7 +261,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -304,7 +304,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -347,7 +347,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -404,7 +404,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -461,7 +461,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -532,7 +532,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -603,7 +603,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -647,7 +647,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -707,7 +707,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -792,7 +792,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -835,7 +835,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -878,7 +878,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -921,7 +921,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -978,7 +978,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1021,7 +1021,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1064,7 +1064,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1121,7 +1121,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1164,7 +1164,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1207,7 +1207,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1250,7 +1250,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1293,7 +1293,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1336,7 +1336,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1379,7 +1379,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1436,7 +1436,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1493,7 +1493,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1536,7 +1536,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1579,7 +1579,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配
@@ -1622,7 +1622,7 @@ public:
 	/*
 	* 事件类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 判断是否与给定事件匹配

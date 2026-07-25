@@ -27,7 +27,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const = 0;
+	virtual const std::string& GetType() const = 0;
 
 	/*
 	* 获取控制条件
@@ -66,7 +66,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 获取循环变量名
@@ -134,7 +134,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置标签
@@ -175,7 +175,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置消息内容
@@ -210,7 +210,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 private:
 };
@@ -237,7 +237,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置变量名
@@ -292,7 +292,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置变量名
@@ -333,7 +333,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置里程碑名称
@@ -374,7 +374,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置目标名称
@@ -429,7 +429,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置目标名称
@@ -488,7 +488,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置形象标识
@@ -683,7 +683,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置NPC姓名
@@ -724,7 +724,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置市民姓名
@@ -779,7 +779,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置NPC姓名
@@ -834,7 +834,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置目标房间名称
@@ -875,7 +875,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置售货员姓名
@@ -916,7 +916,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置小游戏类型标识
@@ -957,7 +957,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置载具名称
@@ -998,7 +998,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置载具名称
@@ -1040,7 +1040,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置计时器名称
@@ -1123,7 +1123,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置计时器名称
@@ -1164,7 +1164,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置敌人名称
@@ -1205,7 +1205,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置建筑名称
@@ -1274,7 +1274,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置视频文件路径
@@ -1316,7 +1316,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置收款人姓名
@@ -1373,7 +1373,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置房产名称
@@ -1443,7 +1443,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置房产名称
@@ -1500,7 +1500,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置载具名称
@@ -1570,7 +1570,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置载具名称
@@ -1626,7 +1626,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置资产类型标识
@@ -1683,7 +1683,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置资产类型标识
@@ -1752,7 +1752,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置伤势描述
@@ -1793,7 +1793,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置痊愈的伤势
@@ -1834,7 +1834,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置病症描述
@@ -1875,7 +1875,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置康复的病症
@@ -1916,7 +1916,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置睡眠时长
@@ -1957,7 +1957,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置时间偏移量
@@ -1998,7 +1998,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置修炼方式
@@ -2053,7 +2053,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置通缉原因
@@ -2108,7 +2108,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置天气类型
@@ -2149,7 +2149,7 @@ public:
 	/*
 	* 变化类型
 	*/
-	virtual std::string GetType() const;
+	virtual const std::string& GetType() const;
 
 	/*
 	* 设置政策名称
