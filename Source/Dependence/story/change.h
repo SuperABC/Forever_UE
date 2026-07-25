@@ -1101,6 +1101,47 @@ private:
 
 };
 
+// 移除计时器（已实现）
+class RemoveTimerChange : public Change {
+public:
+	/*
+	* 默认构造移除计时器变化
+	*/
+	RemoveTimerChange();
+
+	/*
+	* 构造移除计时器变化
+	* @name: 计时器名称
+	*/
+	RemoveTimerChange(std::string name);
+
+	/*
+	* 析构移除计时器变化
+	*/
+	virtual ~RemoveTimerChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual std::string GetType() const;
+
+	/*
+	* 设置计时器名称
+	* @name: 名称
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取计时器名称
+	*/
+	std::string GetName() const;
+
+private:
+	// 计时器名称
+	std::string name;
+
+};
+
 // 进入战斗（已实现）
 class EnterBattleChange : public Change {
 public:

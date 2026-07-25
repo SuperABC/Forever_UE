@@ -664,6 +664,32 @@ string CreateTimerChange::GetLabel() const {
 	return label;
 }
 
+RemoveTimerChange::RemoveTimerChange() :
+	name() {
+
+}
+
+RemoveTimerChange::RemoveTimerChange(string name) :
+	name(name) {
+
+}
+
+RemoveTimerChange::~RemoveTimerChange() {
+
+}
+
+string RemoveTimerChange::GetType() const {
+	return "remove_timer";
+}
+
+void RemoveTimerChange::SetName(string name) {
+	this->name = name;
+}
+
+string RemoveTimerChange::GetName() const {
+	return name;
+}
+
 EnterBattleChange::EnterBattleChange() :
 	enemy() {
 

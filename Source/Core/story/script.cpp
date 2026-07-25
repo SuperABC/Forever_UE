@@ -742,6 +742,13 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			string label = obj["label"].IsNull() ? "" : obj["label"].AsString();
 			change = new CreateTimerChange(name.AsString(), time.AsString(), category.AsString(), label);
 		}
+		else if (type == "remove_timer") {
+			auto name = obj["name"];
+			if (name.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing name for remove_timer change.\n");
+			}
+			change = new RemoveTimerChange(name.AsString());
+		}
 		else if (type == "launch_elevator") {
 			auto building = obj["building"];
 			auto elevator = obj["elevator"];

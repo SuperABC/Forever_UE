@@ -162,6 +162,17 @@ vector<Event*> Story::ApplyChange(const Change* change,
 
 		CreateTimer(name, Time(time), obj->GetCategory(), label);
 	}
+	else if (type == "remove_timer") {
+		auto obj = dynamic_cast<const RemoveTimerChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to RemoveTimerChange.\n");
+		}
+		Condition nameCondition;
+		nameCondition.ParseCondition(obj->GetName());
+		string name = ToString(nameCondition.EvaluateValue(getValues));
+
+		RemoveTimer(name);
+	}
 	return result;
 }
 

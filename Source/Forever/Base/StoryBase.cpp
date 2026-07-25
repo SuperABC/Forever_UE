@@ -709,9 +709,6 @@ void AStoryBase::CheckTimers() {
 				}
 			}
 		}
-		else if(category == "organization") {
-
-		}
 		else if (category == "elevator") {
 			auto cabin = FindCabin(label);
 			if (cabin && cabin->GetScript()) {
