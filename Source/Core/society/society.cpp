@@ -14,9 +14,6 @@
 #include "story/change.h"
 #include "player/player.h"
 
-// 每次Tick最多执行的计划节点数量（职业与组织合计）
-#define MAX_TIMERS_PER_TICK 4
-
 // 资源/空间分配重试的最大尝试次数
 #define MAX_ALLOCATION_ATTEMPTS 16
 
@@ -332,7 +329,7 @@ void Society::Destroy() {
 	organizations.clear();
 }
 
-vector<pair<Change*, Script*>> Society::Tick(Player* player, Story* story, PostHandle* post) {
+vector<pair<Change*, Script*>> Society::Tick(Player* player, Story* story, PostHandle* post, int maxTimers) {
 	auto time = player->GetTime();
 	auto cross = currentTime.GetYear() == 0 || player->CrossDay();
 	currentTime = *time;
@@ -365,7 +362,7 @@ vector<pair<Change*, Script*>> Society::Tick(Player* player, Story* story, PostH
 
 	// 每帧执行有限数量的到期计划节点
 	int count = 0;
-	while (count < MAX_TIMERS_PER_TICK && !timerSet.empty()) {
+	while (count < maxTimers && !timerSet.empty()) {
 		auto it = timerSet.begin();
 		auto& [target, job, person, organization, node] = *it;
 		if (currentTime < target) break;

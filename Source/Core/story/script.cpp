@@ -872,8 +872,7 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			if (delta.IsNull()) {
 				THROW_EXCEPTION(RuntimeException, "Missing delta for change_time change.\n");
 			}
-			Time deltaTime = Time(delta.AsString());
-			change = new ChangeTimeChange(deltaTime);
+			change = new ChangeTimeChange(delta.AsString());
 		}
 		else if (type == "change_cultivation") {
 			auto method = obj["method"];

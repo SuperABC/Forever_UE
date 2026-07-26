@@ -28,10 +28,6 @@
 #include <cmath>
 #include <random>
 
-// 每次Tick最多执行的市民计划节点数量
-#define MAX_CITIZEN_TIMERS_PER_TICK 4
-
-
 using namespace std;
 
 NameFactory* Populace::nameFactory = nullptr;
@@ -159,7 +155,7 @@ void Populace::Destroy() {
 	name = nullptr;
 }
 
-vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* player, PostHandle* post) {
+vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* player, PostHandle* post, int maxTimers) {
 	static int step = 0;
 	static int stride = 20;
 
@@ -179,7 +175,7 @@ vector<pair<Change*, Script*>> Populace::Tick(Map* map, Story* story, Player* pl
 
 	vector<pair<Change*, Script*>> result;
 	int count = 0;
-	while (count < MAX_CITIZEN_TIMERS_PER_TICK && !timerSet.empty()) {
+	while (count < maxTimers && !timerSet.empty()) {
 		auto it = timerSet.begin();
 		auto& [target, citizen, node] = *it;
 		if (currentTime < target) break;

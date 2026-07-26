@@ -62,8 +62,9 @@ public:
 	* 时钟周期，返回本帧职业计划节点产生的变化列表（由调用方负责释放）
 	* @player, story: 玩家与剧情对象
 	* @post: 向Core发起查询的句柄
+	* @maxTimers: 本次最多执行的到期计划节点数量，默认按正常帧率节流，剧情跳变时间时可传更大值一次性执行完
 	*/
-	std::vector<std::pair<Change*, Script*>> Tick(Player* player, Story* story, PostHandle* post);
+	std::vector<std::pair<Change*, Script*>> Tick(Player* player, Story* story, PostHandle* post, int maxTimers = 4);
 
 	/*
 	* 应用剧情变化

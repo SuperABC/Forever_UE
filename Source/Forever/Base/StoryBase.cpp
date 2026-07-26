@@ -28,8 +28,13 @@
 #include "traffic/vehicle.h"
 #include "player/player.h"
 
-// 每次CheckTimers最多处理的到时计时器数量，避免单帧处理过多计时器导致卡顿
+#include <climits>
+
+// 正常帧率下，每次Tick最多处理的到时全局计时器数量，避免单帧处理过多计时器导致卡顿
 #define MAX_TIMERS_PER_CHECK 2
+
+// change_time等跨天时间跳变手动模拟Tick时使用，不限制单次执行的计时器/计划节点数量
+#define UNLIMITED_TIMERS INT_MAX
 
 
 using namespace std;
@@ -72,7 +77,7 @@ void AStoryBase::Tick(float DeltaTime) {
 		}
 	}
 
-	CheckTimers();
+	ProcessExpiredTimers(MAX_TIMERS_PER_CHECK);
 }
 
 void AStoryBase::SetGlobal(AGlobalBase* g) {
@@ -418,6 +423,38 @@ vector<Event*> AStoryBase::ApplyChange(const Change* change,
 			ApplyChanges(obj->GetChanges(), innerGetValues, ownerScript);
 		}
 	}
+	else if (type == "change_time") {
+		auto obj = dynamic_cast<const ChangeTimeChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to ChangeTimeChange.\n");
+		}
+
+		Condition deltaCondition;
+		deltaCondition.ParseCondition(obj->GetDelta());
+		Time delta(ToString(deltaCondition.EvaluateValue(getValues)));
+
+		auto player = global->GetPlayer();
+		Time startTime = *player->GetTime();
+		Time endTime = startTime + delta;
+
+		// 按日期差判断中间跨越了多少天，跨天时逐天在23:59:59收尾、次日00:00:01开局各手动模拟一次Tick
+		int daySpan = Time::DaysBetween(startTime, endTime);
+		if (daySpan > 0) {
+			Time cursor = startTime;
+			for (int i = 0; i < daySpan; i++) {
+				Time endOfDay = cursor;
+				endOfDay.SetTime(23, 59, 59, 999);
+				SimulateDayBoundary(endOfDay);
+
+				cursor.AddDays(1);
+				cursor.SetTime(0, 0, 1, 0);
+				SimulateDayBoundary(cursor);
+			}
+		}
+
+		// 无论是否跨天，最后都要落到目标时刻并强制执行完此刻之前到期的所有计时器，不留到之后按正常帧率节流慢慢补
+		SimulateDayBoundary(endTime);
+	}
 	return result;
 }
 
@@ -650,12 +687,12 @@ Cabin* AStoryBase::FindCabin(const string& name) {
 	return nullptr;
 }
 
-void AStoryBase::CheckTimers() {
+void AStoryBase::ProcessExpiredTimers(int maxCount) {
 	auto story = global->GetStory();
 	auto now = global->GetPlayer()->GetTime();
 
-	// 计时器按到达时间维护成小顶堆，这里直接从堆顶取最多MAX_TIMERS_PER_CHECK个已到时的计时器，不用遍历全部计时器
-	auto expired = story->PopExpiredTimers(*now, MAX_TIMERS_PER_CHECK);
+	// 计时器按到达时间维护成小顶堆，这里直接从堆顶取最多maxCount个已到时的计时器，不用遍历全部计时器
+	auto expired = story->PopExpiredTimers(*now, maxCount);
 
 	for (auto& [name, category, label] : expired) {
 		auto event = new TimeUpEvent(name);
@@ -745,6 +782,34 @@ void AStoryBase::CheckTimers() {
 
 		delete event;
 	}
+}
+
+void AStoryBase::SimulateDayBoundary(const Time& moment) {
+	auto player = global->GetPlayer();
+	player->SetTime(moment);
+
+	auto story = global->GetStory();
+	story->Tick(player);
+
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](const string& v) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(v);
+		}
+	};
+
+	// 与GlobalBase::Tick里applyAndFree的写法一致：应用职业/组织与市民日程节点产生的变化后释放
+	auto applyAndFree = [&](vector<pair<Change*, Script*>> changes) {
+		if (!changes.empty() && story->GetScript()) {
+			ApplyChanges(changes, getValues);
+		}
+		for (auto& [c, s] : changes) delete c;
+	};
+	applyAndFree(global->GetSociety()->Tick(player, story, global->GetImplement(), UNLIMITED_TIMERS));
+	applyAndFree(global->GetPopulace()->Tick(global->GetMap(), story, player, global->GetImplement(), UNLIMITED_TIMERS));
+
+	global->GetIndustry()->Tick(player);
+
+	ProcessExpiredTimers(UNLIMITED_TIMERS);
 }
 
 void AStoryBase::ScriptMessage(FString message) {

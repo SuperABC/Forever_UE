@@ -1227,7 +1227,7 @@ ChangeTimeChange::ChangeTimeChange() :
 
 }
 
-ChangeTimeChange::ChangeTimeChange(Time delta) :
+ChangeTimeChange::ChangeTimeChange(string delta) :
 	delta(delta) {
 
 }
@@ -1241,11 +1241,11 @@ const string& ChangeTimeChange::GetType() const {
 	return type;
 }
 
-void ChangeTimeChange::SetDelta(Time delta) {
+void ChangeTimeChange::SetDelta(string delta) {
 	this->delta = delta;
 }
 
-Time ChangeTimeChange::GetDelta() const {
+string ChangeTimeChange::GetDelta() const {
 	return delta;
 }
 

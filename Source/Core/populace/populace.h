@@ -56,8 +56,9 @@ public:
 	* 时钟周期，返回本帧调度节点产生的变化列表（由调用方负责释放）
 	* @map, story, player: 地图、剧情、玩家
 	* @post: 向Core发起查询的句柄
+	* @maxTimers: 本次最多执行的到期调度节点数量，默认按正常帧率节流，剧情跳变时间时可传更大值一次性执行完
 	*/
-	std::vector<std::pair<Change*, Script*>> Tick(Map* map, Story* story, Player* player, PostHandle* post);
+	std::vector<std::pair<Change*, Script*>> Tick(Map* map, Story* story, Player* player, PostHandle* post, int maxTimers = 4);
 
 	/*
 	* 应用剧情变化

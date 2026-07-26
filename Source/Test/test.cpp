@@ -511,7 +511,7 @@ Change* ParseChange(Parser& parser) {
 	else if (type == "change_time") {
 		string delta = "";
 		if (parser.HasOption("--delta")) delta = parser.GetOption("--delta");
-		return new ChangeTimeChange(Time(delta));
+		return new ChangeTimeChange(delta);
 	}
 	else if (type == "for_range") {
 		string var = "", from = "", to = "", step = "1";

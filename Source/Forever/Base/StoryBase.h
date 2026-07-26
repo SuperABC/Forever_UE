@@ -102,7 +102,17 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	void CheckTimers();
+	/*
+	* 检查并执行到期的全局计时器
+	* @maxCount: 本次最多执行的计时器数量，正常帧率节流时传MAX_TIMERS_PER_CHECK，跨天时间跳变时传UNLIMITED_TIMERS
+	*/
+	void ProcessExpiredTimers(int maxCount);
+
+	/*
+	* 将游戏时钟瞬间推进到指定时刻，并手动模拟一次Tick（刷新剧情时间变量、职业/组织/市民日程、生产结算、全局计时器），用于change_time等跨天时间跳变
+	* @moment: 目标时刻
+	*/
+	void SimulateDayBoundary(const Time& moment);
 
 	Cabin* FindCabin(const std::string& name);
 

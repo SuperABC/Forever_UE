@@ -111,8 +111,7 @@ private:
 
 };
 
-// 占位符（已实现），仅用于在剧本JSON里标记一个位置，供mod在WrapScript里通过FindLabel定位、
-// 替换成自己持有的内容；label允许为空、允许重复
+// 占位符（已实现）
 class PlaceHolderChange : public Change {
 public:
 	/*
@@ -1945,9 +1944,9 @@ public:
 
 	/*
 	* 构造变化时间变化
-	* @delta: 时间偏移量
+	* @delta: 时间偏移量表达式字符串
 	*/
-	ChangeTimeChange(Time delta);
+	ChangeTimeChange(std::string delta);
 
 	/*
 	* 析构变化时间变化
@@ -1961,18 +1960,18 @@ public:
 
 	/*
 	* 设置时间偏移量
-	* @delta: 偏移量
+	* @delta: 偏移量表达式字符串
 	*/
-	void SetDelta(Time delta);
+	void SetDelta(std::string delta);
 
 	/*
 	* 获取时间偏移量
 	*/
-	Time GetDelta() const;
+	std::string GetDelta() const;
 
 private:
-	// 时间偏移量
-	Time delta;
+	// 时间偏移量表达式字符串，求值后交给Time解析
+	std::string delta;
 
 };
 

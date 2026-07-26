@@ -323,6 +323,11 @@ Time* Player::GetTime() const {
 	return time;
 }
 
+void Player::SetTime(const Time& newTime) {
+	day = time->GetDay();
+	*time = newTime;
+}
+
 bool Player::CrossDay() {
 	return day != time->GetDay();
 }

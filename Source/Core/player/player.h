@@ -79,6 +79,12 @@ public:
 	Time* GetTime() const;
 
 	/*
+	* 直接将游戏时钟设为绝对时间，用于剧情脚本瞬间跳变时间（如change_time）；会记录跳变前的天数，供CrossDay正确检测跨天
+	* @newTime: 目标绝对时间
+	*/
+	void SetTime(const Time& newTime);
+
+	/*
 	* 是否发生跨天
 	*/
 	bool CrossDay();
