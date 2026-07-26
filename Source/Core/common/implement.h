@@ -4,9 +4,9 @@
 #include "../../Dependence/common/handle.h"
 
 #include "map/map.h"
-#include "map/room.h"
 #include "populace/populace.h"
 #include "society/society.h"
+#include "society/job.h"
 #include "story/story.h"
 #include "industry/industry.h"
 #include "traffic/traffic.h"

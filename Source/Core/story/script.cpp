@@ -258,10 +258,10 @@ vector<ScriptAction> Script::MatchEvent(Event* event,
 				}
 			}
 
-			auto dialogs = (*it)->content->GetDialogs();
-			actions.insert(actions.end(), dialogs.begin(), dialogs.end());
 			auto changes = (*it)->content->GetChanges();
 			actions.insert(actions.end(), changes.begin(), changes.end());
+			auto dialogs = (*it)->content->GetDialogs();
+			actions.insert(actions.end(), dialogs.begin(), dialogs.end());
 
 			if ((*it)->content->DropSelf(getValues)) {
 				it = actives.erase(it);

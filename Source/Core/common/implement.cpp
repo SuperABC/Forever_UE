@@ -1,5 +1,16 @@
 ﻿#include "implement.h"
 
+#include "map/map.h"
+#include "map/room.h"
+#include "populace/populace.h"
+#include "populace/person.h"
+#include "society/society.h"
+#include "society/job.h"
+#include "story/story.h"
+#include "industry/industry.h"
+#include "traffic/traffic.h"
+#include "player/player.h"
+
 
 using namespace std;
 
@@ -35,6 +46,37 @@ void PostImplement::Post(const JsonValue& request) {
 				result["result"] = "success";
 				result["name"] = room->GetName();
 				result["address"] = room->GetAddress();
+				return;
+			}
+		}
+		else if (request["post"].AsString() == "lookup citizen") {
+			auto name = request["name"].AsString();
+			auto citizen = populace->GetCitizen(name);
+			if (!citizen) {
+				result["result"] = "fail";
+				result["msg"] = "no citizen named " + name + " found.";
+				return;
+			}
+			else {
+				result["result"] = "success";
+				auto& citizenInfo = result["citizen"];
+				citizenInfo["name"] = citizen->GetName();
+				citizenInfo["avatar"] = citizen->GetAvatar();
+				citizenInfo["gender"] = citizen->GetGender() == GENDER_MALE ? "male" : "female";
+				citizenInfo["birthday"] = citizen->GetBirthday().ToString(true, false);
+				citizenInfo["age"] = citizen->GetAge(player->GetTime());
+				citizenInfo["height"] = citizen->GetHeight();
+				citizenInfo["weight"] = citizen->GetWeight();
+				citizenInfo["nick"] = citizen->GetNick();
+				citizenInfo["deposit"] = citizen->GetDeposit();
+				citizenInfo["phone"] = citizen->GetPhone();
+				citizenInfo["home"] = citizen->GetHome() ? citizen->GetHome()->GetName() : "";
+				citizenInfo["room"] = citizen->GetCurrentRoom() ? citizen->GetCurrentRoom()->GetName() : "";
+				auto jobs = JsonValue(DATA_ARRAY);
+				for (auto job : citizen->GetJobs()) {
+					jobs.append(job->GetName());
+				}
+				citizenInfo["jobs"] = jobs;
 				return;
 			}
 		}
