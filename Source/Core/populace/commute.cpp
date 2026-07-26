@@ -25,21 +25,8 @@ void Commute::SetTarget(const string& target) {
 	targetAddress = target;
 }
 
-void Commute::SetPaths(const vector<Connection*>& paths) {
-	currentPaths.clear();
-	for (auto path : paths) {
-		currentPaths.emplace_back(path, false);
-	}
-
-	// 根据相邻连接共享的端点，推算每段连接的实际通行方向（第一段默认按其自身起点->终点方向通行）
-	for (size_t i = 1; i < currentPaths.size(); i++) {
-		if (!currentPaths[i - 1].first || !currentPaths[i].first) continue;
-		int previousExit = currentPaths[i - 1].second ?
-			currentPaths[i - 1].first->GetStart().GetId() : currentPaths[i - 1].first->GetEnd().GetId();
-		if (currentPaths[i].first->GetEnd().GetId() == previousExit) {
-			currentPaths[i].second = true;
-		}
-	}
+void Commute::SetPaths(const vector<pair<Connection*, bool>>& paths) {
+	currentPaths = paths;
 }
 
 const vector<pair<Connection*, bool>>& Commute::GetPaths() const {

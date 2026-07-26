@@ -1513,7 +1513,7 @@ Room* Map::LocateRoom(const string& address) const {
 	}
 }
 
-vector<Connection*> Map::AutoNavigation(int startIdx, int endIdx) {
+vector<pair<Connection*, bool>> Map::AutoNavigation(int startIdx, int endIdx) {
 	if (navigationNodes.find(startIdx) == navigationNodes.end() ||
 		navigationNodes.find(endIdx) == navigationNodes.end()) {
 		debugf("Warning: navigation node not found in navigation graph.\n");
@@ -1524,6 +1524,7 @@ vector<Connection*> Map::AutoNavigation(int startIdx, int endIdx) {
 	unordered_map<int, float> dist;
 	unordered_map<int, int> prev;
 	unordered_map<int, Connection*> prevEdge;
+	unordered_map<int, bool> prevReversed;
 
 	for (auto& [id, _] : navigationNodes) {
 		dist[id] = numeric_limits<float>::max();
@@ -1555,6 +1556,8 @@ vector<Connection*> Map::AutoNavigation(int startIdx, int endIdx) {
 				dist[neighborId] = newDist;
 				prev[neighborId] = current;
 				prevEdge[neighborId] = edge;
+				// 本段实际通行方向是从current走向neighborId，若这与连接自身起点->终点方向不同则记为反向
+				prevReversed[neighborId] = (edge->GetStart().GetId() != current);
 				pq.push({ newDist, neighborId });
 			}
 		}
@@ -1565,10 +1568,10 @@ vector<Connection*> Map::AutoNavigation(int startIdx, int endIdx) {
 		return {};
 	}
 
-	vector<Connection*> path;
+	vector<pair<Connection*, bool>> path;
 	int current = endIdx;
 	while (current != startIdx) {
-		path.push_back(prevEdge[current]);
+		path.emplace_back(prevEdge[current], prevReversed[current]);
 		current = prev[current];
 	}
 	reverse(path.begin(), path.end());

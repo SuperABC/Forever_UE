@@ -27,10 +27,10 @@ public:
 	void SetTarget(const std::string& target);
 
 	/*
-	* 设置通勤路线（每段均从起点完整通行至终点）
-	* @paths: 路线连接列表
+	* 设置通勤路线
+	* @paths: 路线连接列表，每段为连接及其实际通行方向是否与其自身起点->终点相反
 	*/
-	void SetPaths(const std::vector<Connection*>& paths);
+	void SetPaths(const std::vector<std::pair<Connection*, bool>>& paths);
 
 	/*
 	* 获取通勤路线，每段为连接及其实际通行方向是否与其自身起点->终点相反

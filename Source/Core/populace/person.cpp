@@ -391,7 +391,7 @@ void Person::SetStatus(Room* room, bool notify) {
 	if (notify)statusChanged = room->GetAddress();
 }
 
-void Person::SetStatus(Room* target, const vector<Connection*>& paths, const Time& time) {
+void Person::SetStatus(Room* target, const vector<pair<Connection*, bool>>& paths, const Time& time) {
 	if (target == nullptr) {
 		THROW_EXCEPTION(NullPointerException, "Target room is null.\n");
 	}

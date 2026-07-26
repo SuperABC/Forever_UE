@@ -346,7 +346,7 @@ public:
 	* 设置通勤
 	* @target, paths, time: 目标房间、路线及出发时间
 	*/
-	void SetStatus(Room* target, const std::vector<Connection*>& paths, const Time& time);
+	void SetStatus(Room* target, const std::vector<std::pair<Connection*, bool>>& paths, const Time& time);
 
 	/*
 	* 获取所在地块

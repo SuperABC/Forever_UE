@@ -494,10 +494,10 @@ public:
 	Room* LocateRoom(const std::string& address) const;
 
 	/*
-	* 自动寻路
+	* 自动寻路，返回每段连接及其实际通行方向是否与其自身起点->终点相反
 	* @startIdx, endIdx: 起点与终点的导航节点id
 	*/
-	std::vector<Connection*> AutoNavigation(int startIdx, int endIdx);
+	std::vector<std::pair<Connection*, bool>> AutoNavigation(int startIdx, int endIdx);
 
 	/*
 	* 添加一个与已有节点相连的新节点，接入寻路图；返回新建的连接

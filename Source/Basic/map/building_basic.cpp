@@ -60,8 +60,8 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 	if (quad->GetSizeX() <= 3 || quad->GetSizeY() <= 3) {
 		layout = 0;
 		size = 40.f;
-		if (quad->GetSizeX() > 3)direction = 2 + GetRandom(2);
-		if(quad->GetSizeY() > 3)direction = GetRandom(2);
+		if (quad->GetSizeX() > 3)direction = GetRandom(2);
+		if(quad->GetSizeY() > 3)direction = 2 + GetRandom(2);
 	}
 	else if (quad->GetSizeX() <= 5 || quad->GetSizeY() <= 5) {
 		layout = GetRandom(2);
