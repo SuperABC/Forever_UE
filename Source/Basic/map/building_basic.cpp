@@ -41,91 +41,151 @@ float ResidentialBuilding::RandomAcreage() {
 }
 
 void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
-	if (quad->GetAcreage() < 1000) {
-		layers = 3 + GetRandom(2);
+	if (quad->GetAcreage() < 4000) {
+		layers = 3 + GetRandom(3);
 	}
-	else if (quad->GetAcreage() < 4000) {
-		layers = 5 + GetRandom(3);
+	else if (quad->GetAcreage() < 9000) {
+		layers = 6 + GetRandom(4);
 	}
 	else {
-		layers = 7 + GetRandom(4);
+		layers = 10 + GetRandom(5);
 	}
 	basements = 1;
 	height = 0.4f;
 	wallTexture = "/Game/Asset/Materials/White.White";
 
-	int direction = 0;
-	if (quad->GetSizeX() > quad->GetSizeY()) {
-		if (quad->GetSizeY() > 3.f) {
-			direction = GetRandom(2);
-		}
-		else {
-			direction = 2 + GetRandom(2);
-		}
+	int direction = GetRandom(4);
+	int layout = 0;
+	int size = 120.f;
+	if (quad->GetSizeX() <= 3 || quad->GetSizeY() <= 3) {
+		layout = 0;
+		size = 40.f;
+		if (quad->GetSizeX() > 3)direction = 2 + GetRandom(2);
+		if(quad->GetSizeY() > 3)direction = GetRandom(2);
+	}
+	else if (quad->GetSizeX() <= 5 || quad->GetSizeY() <= 5) {
+		layout = GetRandom(2);
+		size = 160.f;
+		if (quad->GetSizeX() > 5)direction = layout * 2 + GetRandom(2);
+		if (quad->GetSizeY() > 5)direction = 2 - layout * 2 + GetRandom(2);
+	}
+	else if (quad->GetSizeX() <= 7 || quad->GetSizeY() <= 7) {
+		layout = 2;
+		size = 120.f;
+		if (quad->GetSizeX() > 7)direction = GetRandom(2);
+		if (quad->GetSizeY() > 7)direction = 2 + GetRandom(2);
 	}
 	else {
-		if (quad->GetSizeX() > 3.f) {
-			direction = 2 + GetRandom(2);
-		}
-		else {
-			direction = GetRandom(2);
-		}
+		layout = 3;
+		size = 120.f;
+		if (quad->GetSizeX() > quad->GetSizeY())direction = GetRandom(2);
+		else direction = 2 + GetRandom(2);
 	}
 
 	string component = "residential";
 
-	if (quad->GetAcreage() < 5000) {
+	if (layout == 0) {
 		AssignFloor(-1, direction, "default_straight_linear_b+");
-		ArrangeRow(-1, 0, "residential", 120.f, component, 0);
-		ArrangeRow(-1, 1, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 0, "residential", size, component, 0);
+		ArrangeRow(-1, 1, "residential", size, component, 0);
 		AssignFloor(0, direction, "default_straight_linear_f^+-");
-		ArrangeRow(0, 0, "residential", 120.f, component, 0);
-		ArrangeRow(0, 1, "residential", 120.f, component, 0);
+		ArrangeRow(0, 0, "residential", size, component, 0);
+		ArrangeRow(0, 1, "residential", size, component, 0);
 		for (int i = 1; i < layers; i++) {
 			AssignFloor(i, direction, "default_straight_linear_f+-");
-			ArrangeRow(i, 0, "residential", 120.f, component, 0);
-			ArrangeRow(i, 1, "residential", 120.f, component, 0);
+			ArrangeRow(i, 0, "residential", size, component, 0);
+			ArrangeRow(i, 1, "residential", size, component, 0);
 		}
 	}
-	else {
+	else if (layout == 1) {
+		AssignFloor(-1, direction, "default_lobby_wing_b+");
+		ArrangeRow(-1, 0, "residential", size, component, 0);
+		ArrangeRow(-1, 1, "residential", size, component, 0);
+		ArrangeRow(-1, 2, "residential", size, component, 0);
+		ArrangeRow(-1, 3, "residential", size, component, 0);
+		AssignFloor(0, direction, "default_lobby_wing_f^+-");
+		ArrangeRow(0, 0, "residential", size, component, 0);
+		ArrangeRow(0, 1, "residential", size, component, 0);
+		ArrangeRow(0, 2, "residential", size, component, 0);
+		ArrangeRow(0, 3, "residential", size, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "default_lobby_wing_f+-");
+			ArrangeRow(i, 0, "residential", size, component, 0);
+			ArrangeRow(i, 1, "residential", size, component, 0);
+			ArrangeRow(i, 2, "residential", size, component, 0);
+			ArrangeRow(i, 3, "residential", size, component, 0);
+		}
+	}
+	else if (layout == 2) {
+		AssignFloor(-1, direction, "default_lshape_double_b+");
+		AssignRoom(-1, 0, "residential", component, 0);
+		AssignRoom(-1, 1, "residential", component, 0);
+		ArrangeRow(-1, 0, "residential", size, component, 0);
+		ArrangeRow(-1, 1, "residential", size, component, 0);
+		ArrangeRow(-1, 2, "residential", size, component, 0);
+		ArrangeRow(-1, 3, "residential", size, component, 0);
+		ArrangeRow(-1, 4, "residential", size, component, 0);
+		AssignFloor(0, direction, "default_lshape_double_f^+-");
+		AssignRoom(0, 0, "residential", component, 0);
+		AssignRoom(0, 1, "residential", component, 0);
+		ArrangeRow(0, 0, "residential", size, component, 0);
+		ArrangeRow(0, 1, "residential", size, component, 0);
+		ArrangeRow(0, 2, "residential", size, component, 0);
+		ArrangeRow(0, 3, "residential", size, component, 0);
+		ArrangeRow(0, 4, "residential", size, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "default_lshape_double_f+-");
+			AssignRoom(i, 0, "residential", component, 0);
+			AssignRoom(i, 1, "residential", component, 0);
+			ArrangeRow(i, 0, "residential", size, component, 0);
+			ArrangeRow(i, 1, "residential", size, component, 0);
+			ArrangeRow(i, 2, "residential", size, component, 0);
+			ArrangeRow(i, 3, "residential", size, component, 0);
+			ArrangeRow(i, 4, "residential", size, component, 0);
+		}
+	}
+	else if(layout == 3) {
 		AssignFloor(-1, direction, "default_nshape_double_b+");
 		AssignRoom(-1, 0, "empty", component, 0);
 		AssignRoom(-1, 1, "residential", component, 0);
 		AssignRoom(-1, 2, "residential", component, 0);
-		ArrangeRow(-1, 0, "residential", 120.f, component, 0);
-		ArrangeRow(-1, 1, "residential", 120.f, component, 0);
-		ArrangeRow(-1, 2, "residential", 120.f, component, 0);
-		ArrangeRow(-1, 3, "residential", 120.f, component, 0);
-		ArrangeRow(-1, 4, "residential", 120.f, component, 0);
-		ArrangeRow(-1, 5, "residential", 120.f, component, 0);
-		ArrangeRow(-1, 6, "residential", 120.f, component, 0);
-		ArrangeRow(-1, 7, "residential", 120.f, component, 0);
+		ArrangeRow(-1, 0, "residential", size, component, 0);
+		ArrangeRow(-1, 1, "residential", size, component, 0);
+		ArrangeRow(-1, 2, "residential", size, component, 0);
+		ArrangeRow(-1, 3, "residential", size, component, 0);
+		ArrangeRow(-1, 4, "residential", size, component, 0);
+		ArrangeRow(-1, 5, "residential", size, component, 0);
+		ArrangeRow(-1, 6, "residential", size, component, 0);
+		ArrangeRow(-1, 7, "residential", size, component, 0);
 		AssignFloor(0, direction, "default_nshape_double_f^+-");
 		AssignRoom(0, 0, "empty", component, 0);
 		AssignRoom(0, 1, "residential", component, 0);
 		AssignRoom(0, 2, "residential", component, 0);
-		ArrangeRow(0, 0, "residential", 120.f, component, 0);
-		ArrangeRow(0, 1, "residential", 120.f, component, 0);
-		ArrangeRow(0, 2, "residential", 120.f, component, 0);
-		ArrangeRow(0, 3, "residential", 120.f, component, 0);
-		ArrangeRow(0, 4, "residential", 120.f, component, 0);
-		ArrangeRow(0, 5, "residential", 120.f, component, 0);
-		ArrangeRow(0, 6, "residential", 120.f, component, 0);
-		ArrangeRow(0, 7, "residential", 120.f, component, 0);
+		ArrangeRow(0, 0, "residential", size, component, 0);
+		ArrangeRow(0, 1, "residential", size, component, 0);
+		ArrangeRow(0, 2, "residential", size, component, 0);
+		ArrangeRow(0, 3, "residential", size, component, 0);
+		ArrangeRow(0, 4, "residential", size, component, 0);
+		ArrangeRow(0, 5, "residential", size, component, 0);
+		ArrangeRow(0, 6, "residential", size, component, 0);
+		ArrangeRow(0, 7, "residential", size, component, 0);
 		for (int i = 1; i < layers; i++) {
 			AssignFloor(i, direction, "default_nshape_double_f+-");
 			AssignRoom(i, 0, "empty", component, 0);
 			AssignRoom(i, 1, "residential", component, 0);
 			AssignRoom(i, 2, "residential", component, 0);
-			ArrangeRow(i, 0, "residential", 120.f, component, 0);
-			ArrangeRow(i, 1, "residential", 120.f, component, 0);
-			ArrangeRow(i, 2, "residential", 120.f, component, 0);
-			ArrangeRow(i, 3, "residential", 120.f, component, 0);
-			ArrangeRow(i, 4, "residential", 120.f, component, 0);
-			ArrangeRow(i, 5, "residential", 120.f, component, 0);
-			ArrangeRow(i, 6, "residential", 120.f, component, 0);
-			ArrangeRow(i, 7, "residential", 120.f, component, 0);
+			ArrangeRow(i, 0, "residential", size, component, 0);
+			ArrangeRow(i, 1, "residential", size, component, 0);
+			ArrangeRow(i, 2, "residential", size, component, 0);
+			ArrangeRow(i, 3, "residential", size, component, 0);
+			ArrangeRow(i, 4, "residential", size, component, 0);
+			ArrangeRow(i, 5, "residential", size, component, 0);
+			ArrangeRow(i, 6, "residential", size, component, 0);
+			ArrangeRow(i, 7, "residential", size, component, 0);
 		}
+
+		AddElevator("elevator1", 0, 0, 0, layers - 1, "empty", { "basic_elevator" });
+		AddElevator("elevator2", 0, 1, 0, layers - 1, "empty", { "basic_elevator" });
 	}
 
 	script = { "empty", { "basic_building" } };
