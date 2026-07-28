@@ -247,7 +247,7 @@ void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
 		"/Game/Asset/Materials/White.White");
 	FString ceilingMaterial = ResolveTexture(building->GetCeilingTexture(),
 		"/Game/Asset/Materials/White.White");
-	FString groundMaterial = ResolveTexture(building->GetGroundTexture(),
+	FString floorMaterial = ResolveTexture(building->GetFloorTexture(),
 		"/Game/Asset/Materials/White.White");
 
 	auto construction = building->GetConstruction();
@@ -316,7 +316,7 @@ void ABuildingBase::ConstructBuilding(Building* building, FBuilding& info) {
 			info.walls.Add(
 				FWall(FVector(ground.GetPosX(), ground.GetPosY(), building->GetHeight() * i + 0.01f) + bias,
 					FVector(ground.GetSizeX(), ground.GetSizeY(), 0.02f),
-					groundMaterial));
+					floorMaterial));
 		}
 		auto corridors = building->GetFloor(i)->GetCorridors();
 		for (auto corridor : corridors) {

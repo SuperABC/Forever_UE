@@ -546,7 +546,7 @@ Building::Building(BuildingFactory* factory, const string& building) :
 	construction(),
 	wallTexture(),
 	ceilingTexture(),
-	groundTexture(),
+	floorTexture(),
 	decorations(),
 	address(),
 	pivots(),
@@ -670,8 +670,8 @@ string Building::GetCeilingTexture() const {
 	return ceilingTexture;
 }
 
-string Building::GetGroundTexture() const {
-	return groundTexture;
+string Building::GetFloorTexture() const {
+	return floorTexture;
 }
 
 vector<pair<string, vector<float>>>& Building::GetDecorations() {
@@ -808,7 +808,7 @@ void Building::LayoutBuilding(Layout* layout, Map* map) {
 	height = mod->height;
 	wallTexture = mod->wallTexture;
 	ceilingTexture = mod->ceilingTexture;
-	groundTexture = mod->groundTexture;
+	floorTexture = mod->floorTexture;
 	decorations = mod->decorations;
 
 	for(auto cabin : mod->elevators) {

@@ -214,7 +214,7 @@ public:
 	std::string ceilingTexture;
 
 	// 地板材质
-	std::string groundTexture;
+	std::string floorTexture;
 
 	// 所有楼层布局及方向（包含地下及地上）
 	std::vector<std::pair<std::string, int>> templates;

@@ -454,14 +454,14 @@ void Quad::SplitInto(float left, float right, float bottom, float top, const Qua
 
 	// 沿X分割为左右两部分，否则沿Y分割为上下两部分
 	if (right - left > top - bottom) {
-		int divX = static_cast<int>(left + (right - left) * lowerAcreage / totalAcreage);
-		if (abs(divX - left) < 2) divX = static_cast<int>(left);
-		if (abs(divX - right) < 2) divX = static_cast<int>(right);
-		lowerElem->SetVertices(left, bottom, static_cast<float>(divX), top);
-		upperElem->SetVertices(static_cast<float>(divX), bottom, right, top);
+		float divX = left + (right - left) * lowerAcreage / totalAcreage;
+		if (abs(divX - left) < 3.f) divX = left;
+		if (abs(divX - right) < 3.f) divX = right;
+		lowerElem->SetVertices(left, bottom, divX, top);
+		upperElem->SetVertices(divX, bottom, right, top);
 
-		auto [bx, by] = toWorld(static_cast<float>(divX), bottom);
-		auto [tx, ty] = toWorld(static_cast<float>(divX), top);
+		auto [bx, by] = toWorld(divX, bottom);
+		auto [tx, ty] = toWorld(divX, top);
 		Node* splitBottom = new Node(category, bx, by);
 		Node* splitTop = new Node(category, tx, ty);
 		outNewNodes.push_back(splitBottom);
@@ -499,14 +499,14 @@ void Quad::SplitInto(float left, float right, float bottom, float top, const Qua
 		upperBoundary.edges[3] = topRightEdge;
 	}
 	else {
-		int divY = static_cast<int>(bottom + (top - bottom) * lowerAcreage / totalAcreage);
-		if (abs(divY - bottom) < 2) divY = static_cast<int>(bottom);
-		if (abs(divY - top) < 2) divY = static_cast<int>(top);
-		lowerElem->SetVertices(left, static_cast<float>(divY), right, top);
-		upperElem->SetVertices(left, bottom, right, static_cast<float>(divY));
+		float divY = bottom + (top - bottom) * lowerAcreage / totalAcreage;
+		if (abs(divY - bottom) < 3.f) divY = bottom;
+		if (abs(divY - top) < 3.f) divY = top;
+		lowerElem->SetVertices(left, divY, right, top);
+		upperElem->SetVertices(left, bottom, right, divY);
 
-		auto [lx, ly] = toWorld(left, static_cast<float>(divY));
-		auto [rx, ry] = toWorld(right, static_cast<float>(divY));
+		auto [lx, ly] = toWorld(left, divY);
+		auto [rx, ry] = toWorld(right, divY);
 		Node* splitLeft = new Node(category, lx, ly);
 		Node* splitRight = new Node(category, rx, ry);
 		outNewNodes.push_back(splitLeft);

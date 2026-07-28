@@ -901,7 +901,7 @@ public:
 	/*
 	* 获取地板材质
 	*/
-	std::string GetGroundTexture() const;
+	std::string GetFloorTexture() const;
 
 	/*
 	* 获取装饰
@@ -1169,7 +1169,7 @@ private:
 	std::string ceilingTexture;
 
 	// 地板材质
-	std::string groundTexture;
+	std::string floorTexture;
 
 	// 装饰
 	std::vector<std::pair<std::string, std::vector<float>>> decorations;

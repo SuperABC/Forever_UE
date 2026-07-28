@@ -1642,7 +1642,7 @@ function makeOpeningList(item, fieldName, label) {
       entrySub.appendChild(div('row',
         btn('+ 位置', 'sm primary', () => {
           snapshot();
-          entry.positions.push([0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, -0.1]);
+          entry.positions.push([0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, fieldName === 'doors' ? 0 : -0.1]);
           rebuild();
         })
       ));

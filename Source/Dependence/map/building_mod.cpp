@@ -13,7 +13,7 @@ BuildingMod::BuildingMod() :
 	pivots(),
 	wallTexture(),
 	ceilingTexture(),
-	groundTexture(),
+	floorTexture(),
 	templates(),
 	elevators(),
 	singles(),
