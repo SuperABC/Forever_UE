@@ -259,6 +259,13 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		}));
 		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
 	}
+
+	// 测试用弯曲道路：端点位于地图中心附近，z=5，中间加一个控制点弯出弧线
+	Node curveBegin("roadnet", width / 2.f - 10.f, height / 2.f, 0.f);
+	Node curveEnd("roadnet", width / 2.f + 10.f, height / 2.f, 5.f);
+	Node curveControl("roadnet", width / 2.f, height / 2.f + 10.f, 2.5f);
+	roads.emplace_back("测试弯路", curveBegin, curveEnd, meshPath);
+	roads.back().AddControls({ { curveControl, 1.f } });
 	return;
 
 	for (size_t i = 1; i < min(horizontalNode1w.size(), horizontalNode2w.size()); i++) {

@@ -46,10 +46,24 @@ TArray<FRoad> ARoadnetBase::GetRoadnet() {
 	for (auto road : map->GetRoadnet()->GetRoads()) {
 		Node n1 = road->GetPoint(0.f);
 		Node n2 = road->GetPoint(1.f);
-		roads.Add(FRoad(
-			FVector(n1.GetX(), n1.GetY(), n1.GetZ()),
-			FVector(n2.GetX(), n2.GetY(), n2.GetZ()),
-			FString(road->GetType().data())));
+
+		float t1x, t1y, t1z;
+		road->GetTangent(0.f, t1x, t1y, t1z);
+		float t2x, t2y, t2z;
+		road->GetTangent(1.f, t2x, t2y, t2z);
+
+		FRoad r;
+		r.v1 = FVector(n1.GetX(), n1.GetY(), n1.GetZ());
+		r.v2 = FVector(n2.GetX(), n2.GetY(), n2.GetZ());
+		r.type = FString(road->GetType().data());
+		r.tangent1 = FVector(t1x, t1y, t1z);
+		r.tangent2 = FVector(t2x, t2y, t2z);
+		for (auto& [node, weight] : road->GetControls()) {
+			r.controls.Add(FVector(node.GetX(), node.GetY(), node.GetZ()));
+			r.weights.Add(weight);
+		}
+
+		roads.Add(r);
 	}
 
 	return roads;

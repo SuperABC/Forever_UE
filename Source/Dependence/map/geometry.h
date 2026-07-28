@@ -104,6 +104,9 @@ public:
 	// 添加控制点
 	void AddControls(std::vector<std::pair<Node, float>> controls);
 
+	// 获取控制点及其权重（拷贝）
+	std::vector<std::pair<Node, float>> GetControls() const;
+
 	// 根据n1.id, n2.id判断是否相同
 	bool operator==(const Connection& other) const;
 
@@ -115,6 +118,9 @@ public:
 
 	// 获取任一连线点
 	Node GetPoint(float f) const;
+
+	// 获取任一连线点处的切线方向（非单位向量，方向及模长由曲线参数化决定）
+	void GetTangent(float f, float& dx, float& dy, float& dz) const;
 
 	// 获取begin和end之间的距离（非两端点距离)
 	float CalcDistance() const;

@@ -106,6 +106,12 @@ static double Bernstein(int n, int i, double t) {
 	return Binomial(n, i) * pow(t, i) * pow(1.0 - t, n - i);
 }
 
+static double BernsteinDerivative(int n, int i, double t) {
+	double left = (i > 0) ? Bernstein(n - 1, i - 1, t) : 0.0;
+	double right = (i < n) ? Bernstein(n - 1, i, t) : 0.0;
+	return n * (left - right);
+}
+
 Connection::Connection(Node n1, Node n2, float begin, float end) :
 	begin(begin),
 	end(end),
@@ -158,6 +164,14 @@ void Connection::AddControls(vector<pair<Node, float>> controls) {
 	for (auto& [node, weight] : controls) {
 		controlVertices.emplace_back(new Node(node), weight);
 	}
+}
+
+vector<pair<Node, float>> Connection::GetControls() const {
+	vector<pair<Node, float>> result;
+	for (auto& [node, weight] : controlVertices) {
+		result.emplace_back(*node, weight);
+	}
+	return result;
 }
 
 bool Connection::operator==(const Connection& other) const {
@@ -222,6 +236,66 @@ Node Connection::GetPoint(float f) const {
 			z /= sumWeight;
 		}
 		return Node("", static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+	}
+}
+
+void Connection::GetTangent(float f, float& dx, float& dy, float& dz) const {
+	if (f < 0.f || f > 1.f) {
+		debugf("Warning: Bizier query position out of [0, 1].\n");
+		if (f < 0.f) f = 0.f;
+		if (f > 1.f) f = 1.f;
+	}
+
+	float x1 = beginVertex->GetX();
+	float y1 = beginVertex->GetY();
+	float z1 = beginVertex->GetZ();
+	float x2 = endVertex->GetX();
+	float y2 = endVertex->GetY();
+	float z2 = endVertex->GetZ();
+
+	if (controlVertices.empty()) {
+		dx = x2 - x1;
+		dy = y2 - y1;
+		dz = z2 - z1;
+	}
+	else {
+		int n = static_cast<int>(controlVertices.size());
+		vector<pair<Node*, float>> allPoints;
+		allPoints.reserve(n + 2);
+		allPoints.emplace_back(beginVertex, 1.0f);
+		for (auto& p : controlVertices) {
+			allPoints.push_back(p);
+		}
+		allPoints.emplace_back(endVertex, 1.0f);
+
+		int m = static_cast<int>(allPoints.size()) - 1;
+		double sumWeight = 0.0, sumWeightDeriv = 0.0;
+		double x = 0.0, y = 0.0, z = 0.0;
+		double xDeriv = 0.0, yDeriv = 0.0, zDeriv = 0.0;
+
+		for (int i = 0; i <= m; i++) {
+			double B = Bernstein(m, i, f);
+			double Bd = BernsteinDerivative(m, i, f);
+			double w = allPoints[i].second;
+			sumWeight += B * w;
+			sumWeightDeriv += Bd * w;
+			x += B * w * allPoints[i].first->GetX();
+			y += B * w * allPoints[i].first->GetY();
+			z += B * w * allPoints[i].first->GetZ();
+			xDeriv += Bd * w * allPoints[i].first->GetX();
+			yDeriv += Bd * w * allPoints[i].first->GetY();
+			zDeriv += Bd * w * allPoints[i].first->GetZ();
+		}
+
+		// 有理Bezier曲线导数由商法则给出：(N'D - ND') / D^2
+		if (sumWeight != 0.0) {
+			dx = static_cast<float>((xDeriv * sumWeight - x * sumWeightDeriv) / (sumWeight * sumWeight));
+			dy = static_cast<float>((yDeriv * sumWeight - y * sumWeightDeriv) / (sumWeight * sumWeight));
+			dz = static_cast<float>((zDeriv * sumWeight - z * sumWeightDeriv) / (sumWeight * sumWeight));
+		}
+		else {
+			dx = dy = dz = 0.f;
+		}
 	}
 }
 

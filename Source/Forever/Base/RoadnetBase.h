@@ -22,6 +22,18 @@ struct FRoad {
 	FVector v2;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
 	FString type;
+	// v1处的切线方向（非单位向量），供SplineMeshComponent等曲线绘制使用
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
+	FVector tangent1;
+	// v2处的切线方向（非单位向量），供SplineMeshComponent等曲线绘制使用
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
+	FVector tangent2;
+	// 控制点坐标（v1、v2之间，按顺序排列）
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
+	TArray<FVector> controls;
+	// 控制点对应权重（与controls一一对应）
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
+	TArray<float> weights;
 };
 
 USTRUCT(Blueprintable, BlueprintType)
