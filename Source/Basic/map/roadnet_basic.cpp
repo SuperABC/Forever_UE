@@ -1,9 +1,9 @@
 #include "roadnet_basic.h"
 
-#define ROAD_CONTROL_POINT_RATIO 0.33f
 #define TUNNEL_HEIGHT -1.f
 #define TUNNEL_HATCH_WIDTH 1.f
-#define TUNNEL_HATCH_LENGTH 2.f
+#define TUNNEL_HATCH_LENGTH 4.f
+#define TUNNEL_LOOKAHEAD_DISTANCE 5.f
 
 
 using namespace std;
@@ -54,22 +54,34 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		return isWater ? waterLevel + 1.f : getHeight(static_cast<int>(x), static_cast<int>(y));
 		};
 
-	// 沿给定方向延伸链条直到地图边界；山体节点直接按隧道高度处理，山体node本身就是隧道的起点/终点
+	// 检查(x,y)沿(stepX,stepY)方向及其反方向TUNNEL_LOOKAHEAD_DISTANCE个单位以内是否有山体
+	auto hasMountainNearby = [&](float x, float y, float stepX, float stepY) -> bool {
+		float stepLen = sqrt(stepX * stepX + stepY * stepY);
+		float unitX = stepX / stepLen, unitY = stepY / stepLen;
+		for (float d = 1.f; d <= TUNNEL_LOOKAHEAD_DISTANCE; d += 1.f) {
+			if (getTerrain(static_cast<int>(x + unitX * d), static_cast<int>(y + unitY * d)) == "mountain") return true;
+			if (getTerrain(static_cast<int>(x - unitX * d), static_cast<int>(y - unitY * d)) == "mountain") return true;
+		}
+		return false;
+		};
+
+	// 沿给定方向延伸链条直到地图边界；山体节点、以及前后TUNNEL_LOOKAHEAD_DISTANCE个单位内能探测到
+	// 山体的节点，都按隧道高度处理，进、出隧道都提前/延后过渡，避免洞口被山体地形挡住
 	auto extendChain = [&](float startX, float startY, float stepX, float stepY, vector<pair<Node, int>>& chain) {
 		for (float x = startX, y = startY; ; x += stepX, y += stepY) {
 			string t = getTerrain(static_cast<int>(x), static_cast<int>(y));
 			if (t == "") break;
-			float h = (t == "mountain") ? TUNNEL_HEIGHT : sampleHeight(x, y);
+			bool tunnel = (t == "mountain") || hasMountainNearby(x, y, stepX, stepY);
+			float h = tunnel ? TUNNEL_HEIGHT : sampleHeight(x, y);
 			intersections.emplace_back(x, y, h);
 			chain.emplace_back(intersections.back(), static_cast<int>(intersections.size()) - 1);
 		}
 		};
 
-	// 建一条道路：普通地面段控制点采样真实地形；隧道入口/出口过渡段从地面端朝隧道端开一个长度为
-	// TUNNEL_HATCH_LENGTH的hatch，3个控制点全部落在hatch范围内做出S形平滑坡度；完全在隧道内的路段保持平直
+	// 建一条道路：一端高度<0一端>=0（隧道或深水，不区分具体原因）时，在离>=0那一端TUNNEL_HATCH_LENGTH处
+	// 插入一个node，拆成斜坡(2个控制点)+平路(两端同高不需要控制点)两条独立Connection，斜坡整体开一个hatch；
+	// 两端同号（都隧道/深水，或都普通地面）时维持整段一条S形Connection，不拆分
 	auto addRoad = [&](const string& name, const Node& n1, const Node& n2) {
-		roads.emplace_back(name, n1, n2, meshPath);
-
 		bool n1Tunnel = n1.GetZ() < 0.f;
 		bool n2Tunnel = n2.GetZ() < 0.f;
 
@@ -81,42 +93,30 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 			float segLen = sqrt(dx * dx + dy * dy);
 			float ux = dx / segLen, uy = dy / segLen;
 
-			// 从地面端(groundNode)朝隧道端方向量出长度为TUNNEL_HATCH_LENGTH的hatch，3个控制点都落在
-			// 这1米范围内：c1贴近groundNode且高度跟它一样（标准S形曲线的起点侧控制点，保证起坡处切线水平），
-			// c2高度已经是隧道高度（S形曲线的下坠点），c3就卡在hatch终点(第1米末尾)、高度同样是隧道高度，
-			// 当"斜坡终点"用——从c3开始一直到tunnelNode都维持隧道高度，不再变化
-			float c1x = groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH / 3.f;
-			float c1y = groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH / 3.f;
-			float c2x = groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH * 2.f / 3.f;
-			float c2y = groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH * 2.f / 3.f;
-			float c3x = groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH;
-			float c3y = groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH;
-			Node c1("roadnet", c1x, c1y, groundNode.GetZ());
-			Node c2("roadnet", c2x, c2y, tunnelNode.GetZ());
-			Node c3("roadnet", c3x, c3y, tunnelNode.GetZ());
-			if (n1Tunnel) {
-				roads.back().AddControls({ { c3, 1.f }, { c2, 1.f }, { c1, 1.f } });
-			}
-			else {
-				roads.back().AddControls({ { c1, 1.f }, { c2, 1.f }, { c3, 1.f } });
-			}
+			// 在离groundNode的TUNNEL_HATCH_LENGTH处插入一个新node，把这段路拆成斜坡(groundNode->splitNode，
+			// 2个控制点在1/3、2/3处)和平路(splitNode->tunnelNode，两端同高不需要控制点)两条独立Connection；
+			// 只按node高度判断，不再额外查地形/水域——不管是隧道还是深水，统一按同一套逻辑处理
+			Node splitNode("roadnet", groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH, groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH, tunnelNode.GetZ());
+			roads.emplace_back(name, groundNode, splitNode, meshPath);
+			Node r1("roadnet", groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH / 3.f, groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH / 3.f, groundNode.GetZ());
+			Node r2("roadnet", groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH * 2.f / 3.f, groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH * 2.f / 3.f, tunnelNode.GetZ());
+			roads.back().AddControls({ { r1, 1.f }, { r2, 1.f } });
+			AddHatch(&roads.back(), 0.f, 1.f, TUNNEL_HATCH_WIDTH);
 
-			// hatch从groundNode开始，沿隧道方向开TUNNEL_HATCH_LENGTH；Connection::GetPoint的参数
-			// 现在是按弧长线性变化的，spanT可以直接按比例换算，不需要再手动二分查找弧长
-			float spanT = TUNNEL_HATCH_LENGTH / segLen;
-			if (n1Tunnel) {
-				AddHatch(&roads.back(), 1.f - spanT, 1.f, TUNNEL_HATCH_WIDTH);
-			}
-			else {
-				AddHatch(&roads.back(), 0.f, spanT, TUNNEL_HATCH_WIDTH);
-			}
+			roads.emplace_back(name, splitNode, tunnelNode, meshPath);
+			return;
 		}
-		else {
-			float cx = n1.GetX() + (n2.GetX() - n1.GetX()) * ROAD_CONTROL_POINT_RATIO;
-			float cy = n1.GetY() + (n2.GetY() - n1.GetY()) * ROAD_CONTROL_POINT_RATIO;
-			float cz = (n1Tunnel && n2Tunnel) ? TUNNEL_HEIGHT : sampleHeight(cx, cy);
-			roads.back().AddControls({ { Node("roadnet", cx, cy, cz), 1.f } });
-		}
+
+		// 两端都<0（都在隧道/深水里）或都>=0（都是普通地面）：维持整段一条S形connection，跟隧道斜坡
+		// 用一样的2控制点写法（1/3、2/3处，都不与真正的端点重合）：c1贴n1的高度保证起点切线水平，
+		// c2贴n2的高度保证终点切线水平，且两端切线都是非零的合理大小，相邻两段路在共享node上平滑接上，
+		// 不会因为控制点和端点重合导致切线突然塌缩成0，在node处把路面"捏"窄
+		roads.emplace_back(name, n1, n2, meshPath);
+		float dx = n2.GetX() - n1.GetX();
+		float dy = n2.GetY() - n1.GetY();
+		Node c1("roadnet", n1.GetX() + dx / 3.f, n1.GetY() + dy / 3.f, n1.GetZ());
+		Node c2("roadnet", n1.GetX() + dx * 2.f / 3.f, n1.GetY() + dy * 2.f / 3.f, n2.GetZ());
+		roads.back().AddControls({ { c1, 1.f }, { c2, 1.f } });
 		};
 
 	// 判断某坐标地形是否可以铺设block（plain或construction）
