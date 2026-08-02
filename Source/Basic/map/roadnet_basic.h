@@ -38,10 +38,14 @@ public:
 	* Override
 	* 构建路网
 	* @width, height: 地图分辨率
-	* @get: 获取地图element处地形类型
+	* @getTerrain: 获取地图element处地形类型
+	* @getHeight: 获取地图element处地形高度
+	* @getWater: 获取地图element处水域信息（是否水域、水面高度）
 	*/
 	virtual void DistributeRoadnet(int width, int height,
-		const std::function<std::string(int, int)>& get, int nodeStaticCount) override;
+		const std::function<std::string(int, int)>& getTerrain,
+		const std::function<float(int, int)>& getHeight,
+		const std::function<std::pair<bool, float>(int, int)>& getWater, int nodeStaticCount) override;
 
 private:
 	// 总实例数量

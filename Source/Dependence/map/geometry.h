@@ -143,6 +143,13 @@ protected:
 
 	// 控制点及其权重
 	OBJECT_HOLDER std::vector<std::pair<Node*, float>> controlVertices;
+
+private:
+	// 弧长参数表缓存，惰性计算；控制点变化后由AddControls清空
+	mutable std::vector<double> arcLengthCache;
+
+	// 按弧长比例f反查对应的原始Bezier多项式参数u，首次调用时惰性建表并缓存到arcLengthCache
+	double ResolveArcLengthParam(const std::vector<std::pair<Node*, float>>& allPoints, int m, float f) const;
 };
 
 class Intersection : public Node {

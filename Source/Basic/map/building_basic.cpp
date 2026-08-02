@@ -56,7 +56,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 
 	int direction = GetRandom(4);
 	int layout = 0;
-	int size = 120.f;
+	float size = 120.f;
 	if (quad->GetSizeX() <= 3 || quad->GetSizeY() <= 3) {
 		layout = 0;
 		size = 40.f;
@@ -115,6 +115,9 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 			ArrangeRow(i, 2, "residential", size, component, 0);
 			ArrangeRow(i, 3, "residential", size, component, 0);
 		}
+
+		AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
+		AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
 	}
 	else if (layout == 2) {
 		AssignFloor(-1, direction, "default_lshape_double_b+");
@@ -184,8 +187,8 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 			ArrangeRow(i, 7, "residential", size, component, 0);
 		}
 
-		AddElevator("elevator1", 0, 0, 0, layers - 1, "empty", { "basic_elevator" });
-		AddElevator("elevator2", 0, 1, 0, layers - 1, "empty", { "basic_elevator" });
+		AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
+		AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
 	}
 
 	script = { "empty", { "basic_building" } };

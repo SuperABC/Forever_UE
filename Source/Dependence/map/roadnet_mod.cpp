@@ -1,17 +1,37 @@
 ﻿#include "roadnet_mod.h"
 
+#include <cmath>
+
 
 using namespace std;
 
 RoadnetMod::RoadnetMod() :
 	intersections(),
 	roads(),
-	lots() {
+	lots(),
+	hatches() {
 
 }
 
 RoadnetMod::~RoadnetMod() {
 
+}
+
+void RoadnetMod::AddHatch(Connection* connection, float t1, float t2, float width) {
+	if (!connection) {
+		debugf("Warning: AddHatch connection is null.\n");
+		return;
+	}
+
+	Node p1 = connection->GetPoint(t1);
+	Node p2 = connection->GetPoint(t2);
+	float dx = p2.GetX() - p1.GetX();
+	float dy = p2.GetY() - p1.GetY();
+	float length = sqrt(dx * dx + dy * dy);
+	float rotation = atan2(dy, dx);
+	float cx = (p1.GetX() + p2.GetX()) * 0.5f;
+	float cy = (p1.GetY() + p2.GetY()) * 0.5f;
+	hatches.emplace_back(Quad(cx, cy, length, width), rotation);
 }
 
 void RoadnetFactory::RegisterRoadnet(const string& id,

@@ -49,11 +49,25 @@ public:
 	* Override
 	* 构建路网
 	* @width, height: 地图分辨率
-	* @get: 获取地图element处地形类型
+	* @getTerrain: 获取地图element处地形类型
+	* @getHeight: 获取地图element处地形高度
+	* @getWater: 获取地图element处水域信息（是否水域、水面高度）
 	* @nodeStaticCount: 跨dll传Node::count（不要在mod里留下未传回的Node实例）
 	*/
 	COSTOM_INIT virtual void DistributeRoadnet(int width, int height,
-		const std::function<std::string(int, int)>& get, int nodeStaticCount) = 0;
+		const std::function<std::string(int, int)>& getTerrain,
+		const std::function<float(int, int)>& getHeight,
+		const std::function<std::pair<bool, float>(int, int)>& getWater, int nodeStaticCount) = 0;
+
+	/*
+	* Tool
+	* 根据连接线在t1、t2两点的位置生成一个开洞信息（隧道入口或出口的其中一个洞口），加入本模组的开洞列表；
+	* 洞口沿道路方向的长度由t1、t2两点间距离决定，朝向为t1指向t2的方向
+	* @connection: 隧道所在连接线
+	* @t1, t2: 洞口沿连接线的起止参数位置
+	* @width: 洞口垂直于道路方向的宽度
+	*/
+	void AddHatch(Connection* connection, float t1, float t2, float width);
 
 	// 外部连接
 	std::vector<Node> externs;
@@ -66,6 +80,9 @@ public:
 
 	// 地块数据：Lot + 相邻道路(key为FACE_DIRECTION) + 角路口(key为CORNER_DIRECTION)
 	std::vector<std::pair<Lot, std::pair<std::unordered_map<int, Road>, std::unordered_map<int, Intersection>>>> lots;
+
+	// 开洞列表（隧道入口出口等）
+	std::vector<std::pair<Quad, float>> hatches;
 };
 
 class RoadnetFactory {

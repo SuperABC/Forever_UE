@@ -53,11 +53,17 @@ string Roadnet::GetName() const {
 }
 
 void Roadnet::DistributeRoadnet(int width, int height,
-	const function<string(int, int)>& get, int nodeStaticCount) {
-	mod->DistributeRoadnet(width, height, get, nodeStaticCount);
+	const function<string(int, int)>& getTerrain,
+	const function<float(int, int)>& getHeight,
+	const function<pair<bool, float>(int, int)>& getWater,
+	const function<void(Quad, float)>& addHatch, int nodeStaticCount) {
+	mod->DistributeRoadnet(width, height, getTerrain, getHeight, getWater, nodeStaticCount);
 
 	for(auto& ext : mod->externs) {
 		externs.push_back(new Node(ext));
+	}
+	for (auto& [quad, rotation] : mod->hatches) {
+		addHatch(quad, rotation);
 	}
 	for (auto& intersection : mod->intersections) {
 		intersections.push_back(new Intersection(intersection));
@@ -150,6 +156,8 @@ const char* EmptyRoadnet::GetName() {
 }
 
 void EmptyRoadnet::DistributeRoadnet(int width, int height,
-	const function<string(int, int)>& get, int nodeStaticCount) {
+	const function<string(int, int)>& getTerrain,
+	const function<float(int, int)>& getHeight,
+	const function<pair<bool, float>(int, int)>& getWater, int nodeStaticCount) {
 	Node::SetCount(nodeStaticCount);
 }

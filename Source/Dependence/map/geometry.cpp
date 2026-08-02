@@ -112,12 +112,34 @@ static double BernsteinDerivative(int n, int i, double t) {
 	return n * (left - right);
 }
 
+// 按原始Bezier多项式参数u（非弧长）计算连线上一点坐标，供弧长参数化内部采样使用
+static void EvaluateBezierPoint(const vector<pair<Node*, float>>& allPoints, int m, double u, double& x, double& y, double& z) {
+	double sumWeight = 0.0;
+	x = 0.0;
+	y = 0.0;
+	z = 0.0;
+	for (int i = 0; i <= m; i++) {
+		double B = Bernstein(m, i, u);
+		double w = allPoints[i].second;
+		sumWeight += B * w;
+		x += B * w * allPoints[i].first->GetX();
+		y += B * w * allPoints[i].first->GetY();
+		z += B * w * allPoints[i].first->GetZ();
+	}
+	if (sumWeight != 0.0) {
+		x /= sumWeight;
+		y /= sumWeight;
+		z /= sumWeight;
+	}
+}
+
 Connection::Connection(Node n1, Node n2, float begin, float end) :
 	begin(begin),
 	end(end),
 	beginVertex(new Node(n1)),
 	endVertex(new Node(n2)),
-	controlVertices() {
+	controlVertices(),
+	arcLengthCache() {
 
 }
 
@@ -126,7 +148,8 @@ Connection::Connection(const Connection& other) :
 	end(other.end),
 	beginVertex(new Node(*other.beginVertex)),
 	endVertex(new Node(*other.endVertex)),
-	controlVertices() {
+	controlVertices(),
+	arcLengthCache(other.arcLengthCache) {
 	for (auto& [node, weight] : other.controlVertices) {
 		controlVertices.emplace_back(new Node(*node), weight);
 	}
@@ -148,6 +171,7 @@ Connection& Connection::operator=(const Connection& other) {
 		for (auto& [node, weight] : other.controlVertices) {
 			controlVertices.emplace_back(new Node(*node), weight);
 		}
+		arcLengthCache = other.arcLengthCache;
 	}
 	return *this;
 }
@@ -164,6 +188,41 @@ void Connection::AddControls(vector<pair<Node, float>> controls) {
 	for (auto& [node, weight] : controls) {
 		controlVertices.emplace_back(new Node(node), weight);
 	}
+	arcLengthCache.clear();
+}
+
+// 按弧长比例f反查对应的原始Bezier多项式参数u，使GetPoint/GetTangent的参数f按物理距离线性变化
+// （即f=0.5时对应的点就是曲线弧长意义上的中点），而不是Bezier多项式意义上的中点；
+// 弧长表首次调用时惰性建好并缓存到arcLengthCache，同一条Connection之后的调用不再重新采样
+double Connection::ResolveArcLengthParam(const vector<pair<Node*, float>>& allPoints, int m, float f) const {
+	constexpr int SAMPLES = 128;
+	if (arcLengthCache.empty()) {
+		arcLengthCache.resize(SAMPLES + 1);
+		double prevX, prevY, prevZ;
+		EvaluateBezierPoint(allPoints, m, 0.0, prevX, prevY, prevZ);
+		arcLengthCache[0] = 0.0;
+		for (int i = 1; i <= SAMPLES; i++) {
+			double u = static_cast<double>(i) / SAMPLES;
+			double x, y, z;
+			EvaluateBezierPoint(allPoints, m, u, x, y, z);
+			double dx = x - prevX, dy = y - prevY, dz = z - prevZ;
+			arcLengthCache[i] = arcLengthCache[i - 1] + sqrt(dx * dx + dy * dy + dz * dz);
+			prevX = x;
+			prevY = y;
+			prevZ = z;
+		}
+	}
+
+	double targetLength = f * arcLengthCache[SAMPLES];
+	int lo = 0, hi = SAMPLES;
+	while (lo < hi - 1) {
+		int mid = (lo + hi) / 2;
+		if (arcLengthCache[mid] < targetLength) lo = mid;
+		else hi = mid;
+	}
+	double lenLo = arcLengthCache[lo], lenHi = arcLengthCache[hi];
+	double ratio = (lenHi > lenLo) ? (targetLength - lenLo) / (lenHi - lenLo) : 0.0;
+	return (lo + ratio) / SAMPLES;
 }
 
 vector<pair<Node, float>> Connection::GetControls() const {
@@ -218,11 +277,12 @@ Node Connection::GetPoint(float f) const {
 		allPoints.emplace_back(endVertex, 1.0f);
 
 		int m = static_cast<int>(allPoints.size()) - 1;
+		double u = ResolveArcLengthParam(allPoints, m, f);
 		double sumWeight = 0.0;
 		double x = 0.0, y = 0.0, z = 0.0;
 
 		for (int i = 0; i <= m; i++) {
-			double B = Bernstein(m, i, f);
+			double B = Bernstein(m, i, u);
 			double w = allPoints[i].second;
 			sumWeight += B * w;
 			x += B * w * allPoints[i].first->GetX();
@@ -269,13 +329,14 @@ void Connection::GetTangent(float f, float& dx, float& dy, float& dz) const {
 		allPoints.emplace_back(endVertex, 1.0f);
 
 		int m = static_cast<int>(allPoints.size()) - 1;
+		double u = ResolveArcLengthParam(allPoints, m, f);
 		double sumWeight = 0.0, sumWeightDeriv = 0.0;
 		double x = 0.0, y = 0.0, z = 0.0;
 		double xDeriv = 0.0, yDeriv = 0.0, zDeriv = 0.0;
 
 		for (int i = 0; i <= m; i++) {
-			double B = Bernstein(m, i, f);
-			double Bd = BernsteinDerivative(m, i, f);
+			double B = Bernstein(m, i, u);
+			double Bd = BernsteinDerivative(m, i, u);
 			double w = allPoints[i].second;
 			sumWeight += B * w;
 			sumWeightDeriv += Bd * w;

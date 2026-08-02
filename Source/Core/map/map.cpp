@@ -508,6 +508,12 @@ void Map::InitBlocks(int chunkX, int chunkY) {
 	auto setHeight = [this](int x, int y, float height) -> bool {
 		return this->SetHeight(x, y, height);
 		};
+	auto getWater = [this](int x, int y) -> pair<bool, float> {
+		return this->GetWater(x, y);
+		};
+	auto addHatch = [this](Quad q, float rotation) {
+		this->AddHatch(q, rotation);
+		};
 	auto terrainNames = terrainFactory->GetTerrains();
 	vector<Terrain*> terrains;
 	for (auto name : terrainNames) {
@@ -557,7 +563,7 @@ void Map::InitBlocks(int chunkX, int chunkY) {
 	if (!roadnet) {
 		THROW_EXCEPTION(RuntimeException, "No enabled roadnet in config.\n");
 	}
-	roadnet->DistributeRoadnet(width, height, getTerrain, Node::GetCount());
+	roadnet->DistributeRoadnet(width, height, getTerrain, getHeight, getWater, addHatch, Node::GetCount());
 	roadnet->AllocateAddress();
 
 	debugf("Log: Initializing navigation graph.\n");
