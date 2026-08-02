@@ -1292,6 +1292,82 @@ private:
 
 };
 
+// 播放背景音乐（已实现）
+class PlayBgmChange : public Change {
+public:
+	/*
+	* 默认构造播放背景音乐变化
+	*/
+	PlayBgmChange();
+
+	/*
+	* 构造播放背景音乐变化
+	* @bgm, loop: 背景音乐标识与是否循环播放
+	*/
+	PlayBgmChange(std::string bgm, bool loop = true);
+
+	/*
+	* 析构播放背景音乐变化
+	*/
+	virtual ~PlayBgmChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual const std::string& GetType() const;
+
+	/*
+	* 设置背景音乐标识
+	* @bgm: 标识
+	*/
+	void SetBgm(std::string bgm);
+
+	/*
+	* 获取背景音乐标识
+	*/
+	std::string GetBgm() const;
+
+	/*
+	* 设置是否循环播放
+	* @loop: 是否循环
+	*/
+	void SetLoop(bool loop);
+
+	/*
+	* 获取是否循环播放
+	*/
+	bool GetLoop() const;
+
+private:
+	// 背景音乐标识
+	std::string bgm;
+
+	// 是否循环播放
+	bool loop;
+
+};
+
+// 停止背景音乐（已实现）
+class StopBgmChange : public Change {
+public:
+	/*
+	* 构造停止背景音乐变化
+	*/
+	StopBgmChange();
+
+	/*
+	* 析构停止背景音乐变化
+	*/
+	virtual ~StopBgmChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual const std::string& GetType() const;
+
+private:
+};
+
 // 存款收支（已实现）
 class BankTransactionChange : public Change {
 public:
@@ -2188,6 +2264,8 @@ using ChangeValue = std::variant<
 	EnterBattleChange,
 	LaunchElevatorChange,
 	PlayVideoChange,
+	PlayBgmChange,
+	StopBgmChange,
 	BankTransactionChange,
 	GiveEstateChange,
 	RemoveEstateChange,

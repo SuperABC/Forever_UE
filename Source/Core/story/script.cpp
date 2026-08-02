@@ -911,6 +911,17 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			}
 			change = new PlayVideoChange(path.AsString());
 		}
+		else if (type == "play_bgm") {
+			auto bgm = obj["bgm"];
+			if (bgm.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing bgm for play_bgm change.\n");
+			}
+			auto loopVal = obj["loop"];
+			change = new PlayBgmChange(bgm.AsString(), loopVal.IsNull() ? true : loopVal.AsBool());
+		}
+		else if (type == "stop_bgm") {
+			change = new StopBgmChange();
+		}
 
 		if (!change) {
 			THROW_EXCEPTION(InvalidArgumentException, "Invalid change type: " + type + ".\n");

@@ -408,6 +408,16 @@ Change* ParseChange(Parser& parser) {
 		if (parser.HasOption("--path")) path = parser.GetOption("--path");
 		return new PlayVideoChange(path);
 	}
+	else if (type == "play_bgm") {
+		string bgm = "";
+		bool loop = true;
+		if (parser.HasOption("--bgm")) bgm = parser.GetOption("--bgm");
+		if (parser.HasOption("--loop")) loop = parser.GetOption("--loop") == "true";
+		return new PlayBgmChange(bgm, loop);
+	}
+	else if (type == "stop_bgm") {
+		return new StopBgmChange();
+	}
 	else if (type == "bank_transaction") {
 		string name = "";
 		int amount = 0;

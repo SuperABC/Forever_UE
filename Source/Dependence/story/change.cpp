@@ -808,6 +808,56 @@ string PlayVideoChange::GetPath() const {
 	return path;
 }
 
+PlayBgmChange::PlayBgmChange() :
+	bgm(),
+	loop(true) {
+
+}
+
+PlayBgmChange::PlayBgmChange(string bgm, bool loop) :
+	bgm(bgm),
+	loop(loop) {
+
+}
+
+PlayBgmChange::~PlayBgmChange() {
+
+}
+
+const string& PlayBgmChange::GetType() const {
+	static const string type = "play_bgm";
+	return type;
+}
+
+void PlayBgmChange::SetBgm(string bgm) {
+	this->bgm = bgm;
+}
+
+string PlayBgmChange::GetBgm() const {
+	return bgm;
+}
+
+void PlayBgmChange::SetLoop(bool loop) {
+	this->loop = loop;
+}
+
+bool PlayBgmChange::GetLoop() const {
+	return loop;
+}
+
+StopBgmChange::StopBgmChange() {
+
+}
+
+StopBgmChange::~StopBgmChange() {
+
+}
+
+const string& StopBgmChange::GetType() const {
+	static const string type = "stop_bgm";
+	return type;
+}
+
 BankTransactionChange::BankTransactionChange() :
 	name(),
 	amount(0) {

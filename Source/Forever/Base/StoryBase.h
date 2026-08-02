@@ -63,6 +63,10 @@ public:
 	void EnterBattle(AStoryBase* story, const FString& enemy);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void PlayVideo(const FString& path);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
+	void PlayBgm(const FString& bgm, bool loop);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
+	void StopBgm();
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void FinishSection();
 	UFUNCTION(BlueprintCallable, Category = "Story")

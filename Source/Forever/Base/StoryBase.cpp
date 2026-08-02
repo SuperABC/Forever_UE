@@ -386,6 +386,23 @@ vector<Event*> AStoryBase::ApplyChange(const Change* change,
 		string path = ToString(condition.EvaluateValue(getValues));
 		PlayVideo(UTF8_TO_TCHAR(path.data()));
 	}
+	else if (type == "play_bgm") {
+		auto obj = dynamic_cast<const PlayBgmChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to PlayBgmChange.\n");
+		}
+		Condition condition;
+		condition.ParseCondition(obj->GetBgm());
+		string bgm = ToString(condition.EvaluateValue(getValues));
+		PlayBgm(UTF8_TO_TCHAR(bgm.data()), obj->GetLoop());
+	}
+	else if (type == "stop_bgm") {
+		auto obj = dynamic_cast<const StopBgmChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to StopBgmChange.\n");
+		}
+		StopBgm();
+	}
 	else if (type == "for_range") {
 		auto obj = dynamic_cast<const ForRangeChange*>(change);
 		if (!obj) {
