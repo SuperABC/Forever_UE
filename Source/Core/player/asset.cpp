@@ -16,7 +16,11 @@ Asset::Asset(AssetFactory* factory, const string& asset) :
 	space(0.f),
 	contents(),
 	backpack(false),
-	usable(false),
+	usage(-1),
+	posX(0.f),
+	posY(0.f),
+	posZ(0.f),
+	scale(1.f),
 	icon(),
 	mesh() {
 	if (!mod)
@@ -56,7 +60,7 @@ void Asset::DefineAsset() {
 	}
 	icon = mod->icon;
 	mesh = mod->mesh;
-	usable = mod->usable;
+	usage = mod->usage;
 }
 
 string Asset::GetAsset() const {
@@ -87,8 +91,38 @@ bool Asset::GetBackpack() const {
 	return backpack;
 }
 
-bool Asset::GetUsable() const {
-	return usable;
+int Asset::GetUsage() const {
+	return usage;
+}
+
+void Asset::SetUsage(int usage) {
+	this->usage = usage;
+}
+
+float Asset::GetPositionX() const {
+	return posX;
+}
+
+float Asset::GetPositionY() const {
+	return posY;
+}
+
+float Asset::GetPositionZ() const {
+	return posZ;
+}
+
+void Asset::SetPosition(float x, float y, float z) {
+	posX = x;
+	posY = y;
+	posZ = z;
+}
+
+float Asset::GetScale() const {
+	return scale;
+}
+
+void Asset::SetScale(float scale) {
+	this->scale = scale;
 }
 
 string Asset::GetIcon() const {

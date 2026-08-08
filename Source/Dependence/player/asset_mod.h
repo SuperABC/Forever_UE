@@ -108,8 +108,8 @@ public:
 	// 是否可背
 	bool backpack;
 
-	// 是否可使用
-	bool usable;
+	// 可用次数：负数为不可用，0为应摧毁，正数为剩余可用次数
+	int usage;
 
 	// 资产图标路径
 	std::string icon;

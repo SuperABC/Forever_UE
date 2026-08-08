@@ -119,10 +119,52 @@ public:
 	bool GetBackpack() const;
 
 	/*
-	* 是否可使用
-	* @return: 是否可使用
+	* 获取剩余可用次数
+	* @return: 剩余可用次数，负数为不可用，0为应摧毁，正数为剩余可用次数
 	*/
-	bool GetUsable() const;
+	int GetUsage() const;
+
+	/*
+	* 设置剩余可用次数
+	* @usage: 剩余可用次数
+	*/
+	void SetUsage(int usage);
+
+	/*
+	* 获取资产位置X坐标
+	* @return: 位置X坐标
+	*/
+	float GetPositionX() const;
+
+	/*
+	* 获取资产位置Y坐标
+	* @return: 位置Y坐标
+	*/
+	float GetPositionY() const;
+
+	/*
+	* 获取资产位置Z坐标
+	* @return: 位置Z坐标
+	*/
+	float GetPositionZ() const;
+
+	/*
+	* 设置资产位置
+	* @x, y, z: 位置坐标
+	*/
+	void SetPosition(float x, float y, float z);
+
+	/*
+	* 获取资产缩放比例
+	* @return: 缩放比例
+	*/
+	float GetScale() const;
+
+	/*
+	* 设置资产缩放比例
+	* @scale: 缩放比例
+	*/
+	void SetScale(float scale);
 
 	/*
 	* 获取资产图标路径
@@ -173,8 +215,20 @@ private:
 	// 是否可背
 	bool backpack;
 
-	// 是否可使用
-	bool usable;
+	// 可用次数：负数为不可用，0为应摧毁，正数为剩余可用次数
+	int usage;
+
+	// 位置X坐标
+	float posX;
+
+	// 位置Y坐标
+	float posY;
+
+	// 位置Z坐标
+	float posZ;
+
+	// 缩放比例
+	float scale;
 
 	// 资产图标路径
 	std::string icon;

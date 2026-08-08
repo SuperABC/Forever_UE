@@ -32,7 +32,16 @@ struct FAsset {
 	bool isContainer;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Asset")
-	bool usable;
+	int32 usage;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Asset")
+	FString path;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Asset")
+	FVector location;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Asset")
+	float scale;
 };
 
 UCLASS()
@@ -48,24 +57,32 @@ public:
 	void SetGlobal(AGlobalBase* g);
 
 	UFUNCTION(BlueprintCallable, Category = "World")
-	AActor* GetInstance(FString name);
+	AActor* GetInstance(FString room, FString name);
 	UFUNCTION(BlueprintCallable, Category = "World")
-	void AddInstance(FString name, AActor* actor);
+	void AddInstance(FString room, FString name, AActor* actor);
 	UFUNCTION(BlueprintCallable, Category = "World")
-	void RemoveInstance(FString name, AActor*& instance);
+	void RemoveInstance(FString room, FString name, AActor*& instance);
+	UFUNCTION(BlueprintCallable, Category = "World")
+	void RemoveInstances(FString room, TArray<AActor*>& instances);
 
 	UFUNCTION(BlueprintCallable, Category = "Asset")
 	FAsset GetAsset(FString path);
 	UFUNCTION(BlueprintCallable, Category = "Asset")
 	TArray<FAsset> GetAssets(FString path);
 	UFUNCTION(BlueprintCallable, Category = "Asset")
-	FString PickAsset(FString path, FString target, FAsset& outAsset);
+	FString PickAsset(FString path, FString target, FString& room, FAsset& outAsset);
 	UFUNCTION(BlueprintCallable, Category = "Asset")
 	bool DestroyAsset(FString path);
 	UFUNCTION(BlueprintCallable, Category = "Asset")
 	bool DestroyAssets(FString path);
 	UFUNCTION(BlueprintCallable, Category = "Asset")
-	bool DropAsset(FString path);
+	bool DropAsset(FString path, FString& room, FAsset& outAsset);
+	UFUNCTION(BlueprintCallable, Category = "Asset")
+	bool UseAsset(FString path);
+	UFUNCTION(BlueprintCallable, Category = "Asset")
+	TArray<FAsset> GetRoom();
+	UFUNCTION(BlueprintCallable, Category = "Asset")
+	bool SetPosition(FString asset, FVector position);
 
 protected:
 	virtual void BeginPlay() override;
@@ -73,10 +90,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AGlobalBase* global;
 
-	UPROPERTY()
-	TMap<FString, AActor*> assetInstances;
-
 private:
 	Room* GetCurrentRoom() const;
+
+	std::unordered_map<std::string, TMap<FString, AActor*>> assetInstances;
 
 };

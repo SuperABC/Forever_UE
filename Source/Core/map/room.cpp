@@ -371,6 +371,9 @@ const vector<Asset*>& Room::GetAssets() const {
 
 void Room::AddAsset(Asset* asset) {
 	assets.push_back(asset);
+
+	auto pos = GetPosition();
+	asset->SetPosition(pos.first, pos.second, (GetLayer() + 0.5f) * GetParentBuilding()->GetHeight());
 }
 
 Asset* Room::RemoveAsset(const string& name) {

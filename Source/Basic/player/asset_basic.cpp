@@ -103,6 +103,7 @@ const char* ContainerAsset::GetName() {
 
 void ContainerAsset::DefineAsset() {
 	DefineContainer(1.0f, 1.0f, 10.0f, true);
+	mesh = "/Game/Asset/Meshes/Cube.Cube";
 }
 
 int VehicleAsset::count = 0;
