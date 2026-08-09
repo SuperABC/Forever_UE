@@ -72,8 +72,9 @@ void AStoryBase::Tick(float DeltaTime) {
 			auto speaker = get<0>(speaking);
 			auto content = get<1>(speaking);
 			auto label = get<2>(speaking);
+			auto voice = get<3>(speaking);
 			global->GetStory()->AddTalk(speaker, content);
-			UpdateDialog(UTF8_TO_TCHAR(speaker.data()), UTF8_TO_TCHAR(content.data()), UTF8_TO_TCHAR(label.data()));
+			UpdateDialog(UTF8_TO_TCHAR(speaker.data()), UTF8_TO_TCHAR(content.data()), UTF8_TO_TCHAR(label.data()), UTF8_TO_TCHAR(voice.data()));
 		}
 	}
 

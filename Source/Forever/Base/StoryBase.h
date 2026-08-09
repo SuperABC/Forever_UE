@@ -50,7 +50,7 @@ public:
 		Script* ownerScript = nullptr);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
-	void UpdateDialog(const FString& speaker, const FString& content, const FString& label);
+	void UpdateDialog(const FString& speaker, const FString& content, const FString& label, const FString& voice);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")
 	void UpdateDialogBranch(const TArray<FString>& options);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Story")

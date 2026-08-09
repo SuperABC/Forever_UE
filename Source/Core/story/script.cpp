@@ -549,13 +549,8 @@ vector<Dialog*> Script::BuildDialogs(JsonValue root) {
 
 		for (auto section : obj["list"]) {
 			if (section.IsObject()) {
-				auto label = section["label"];
-				if (label.IsNull()) {
-					dialog->AddDialog(section["speaker"].AsString(), section["content"].AsString(), "");
-				}
-				else {
-					dialog->AddDialog(section["speaker"].AsString(), section["content"].AsString(), label.AsString());
-				}
+				dialog->AddDialog(section["speaker"].AsString(), section["content"].AsString(),
+					section["label"].AsString(), section["voice"].AsString());
 			}
 			else if (section.IsArray()) {
 				vector<Option> options;

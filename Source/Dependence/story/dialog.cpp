@@ -29,7 +29,7 @@ vector<const Change*> Option::GetChanges() const {
 	return changes;
 }
 
-Section::Section(string speaker, string content, string label) : speaking({speaker, content, label}), ownerScript(nullptr) {
+Section::Section(string speaker, string content, string label, string voice) : speaking({speaker, content, label, voice}), ownerScript(nullptr) {
 	branch = false;
 }
 
@@ -54,13 +54,15 @@ void Section::EvaluateText(const vector<function<pair<bool, ValueType>(const str
 	get<1>(speaking) = ToString(condition.EvaluateValue(getValues));
 	condition.ParseCondition(get<2>(speaking));
 	get<2>(speaking) = ToString(condition.EvaluateValue(getValues));
+	condition.ParseCondition(get<3>(speaking));
+	get<3>(speaking) = ToString(condition.EvaluateValue(getValues));
 	for(auto& option : options) {
 		condition.ParseCondition(option.GetOption());
 		option.GetOption() = ToString(condition.EvaluateValue(getValues));
 	}
 }
 
-tuple<string, string, string> Section::GetSpeaking() const {
+tuple<string, string, string, string> Section::GetSpeaking() const {
 	return speaking;
 }
 
@@ -84,8 +86,8 @@ Dialog::~Dialog() {
 
 }
 
-void Dialog::AddDialog(string speaker, string content, string label) {
-	list.push_back(Section(speaker, content, label));
+void Dialog::AddDialog(string speaker, string content, string label, string voice) {
+	list.push_back(Section(speaker, content, label, voice));
 }
 
 void Dialog::AddDialog(vector<Option> options) {
