@@ -38,6 +38,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	Node::SetCount(nodeStaticCount);
 
 	string meshPath = "/Game/Asset/Meshes/default_1_1.default_1_1";
+	float meshUnit = 0.5f;
 
 	vector<pair<Node, int>> horizontalNode1w;
 	vector<pair<Node, int>> horizontalNode1e;
@@ -97,13 +98,13 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 			// 2个控制点在1/3、2/3处)和平路(splitNode->tunnelNode，两端同高不需要控制点)两条独立Connection；
 			// 只按node高度判断，不再额外查地形/水域——不管是隧道还是深水，统一按同一套逻辑处理
 			Node splitNode("roadnet", groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH, groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH, tunnelNode.GetZ());
-			roads.emplace_back(name, groundNode, splitNode, meshPath);
+			roads.emplace_back(name, groundNode, splitNode, meshPath, meshUnit);
 			Node r1("roadnet", groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH / 3.f, groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH / 3.f, groundNode.GetZ());
 			Node r2("roadnet", groundNode.GetX() + ux * TUNNEL_HATCH_LENGTH * 2.f / 3.f, groundNode.GetY() + uy * TUNNEL_HATCH_LENGTH * 2.f / 3.f, tunnelNode.GetZ());
 			roads.back().AddControls({ { r1, 1.f }, { r2, 1.f } });
 			AddHatch(&roads.back(), 0.f, 1.f, TUNNEL_HATCH_WIDTH);
 
-			roads.emplace_back(name, splitNode, tunnelNode, meshPath);
+			roads.emplace_back(name, splitNode, tunnelNode, meshPath, meshUnit);
 			return;
 		}
 
@@ -111,7 +112,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		// 用一样的2控制点写法（1/3、2/3处，都不与真正的端点重合）：c1贴n1的高度保证起点切线水平，
 		// c2贴n2的高度保证终点切线水平，且两端切线都是非零的合理大小，相邻两段路在共享node上平滑接上，
 		// 不会因为控制点和端点重合导致切线突然塌缩成0，在node处把路面"捏"窄
-		roads.emplace_back(name, n1, n2, meshPath);
+		roads.emplace_back(name, n1, n2, meshPath, meshUnit);
 		float dx = n2.GetX() - n1.GetX();
 		float dy = n2.GetY() - n1.GetY();
 		Node c1("roadnet", n1.GetX() + dx / 3.f, n1.GetY() + dy / 3.f, n1.GetZ());
@@ -267,8 +268,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		lots.emplace_back(Lot(horizontalNode1w[0].first, intersections[0], intersections[3], horizontalNode2w[0].first, { 0.0f, 0.5f, 0.5f, 0.5f }), make_pair(
 		unordered_map<int, Road>{
 			{ 1, roads[0] },
-			{ 2, Road("城西北路", intersections[horizontalNode1w[0].second], intersections[0], meshPath) },
-			{ 3, Road("城西南路", intersections[horizontalNode2w[0].second], intersections[3], meshPath) }
+			{ 2, Road("城西北路", intersections[horizontalNode1w[0].second], intersections[0], meshPath, meshUnit) },
+			{ 3, Road("城西南路", intersections[horizontalNode2w[0].second], intersections[3], meshPath, meshUnit) }
 		},
 		unordered_map<int, Intersection>{
 			{ 0, intersections[horizontalNode1w[0].second] },
@@ -282,8 +283,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 		lots.emplace_back(Lot(intersections[1], horizontalNode1e[0].first, horizontalNode2e[0].first, intersections[2], { 0.5f, 0.0f, 0.5f, 0.5f }), make_pair(
 		unordered_map<int, Road>{
 			{ 0, roads[1] },
-			{ 2, Road("城东北路", intersections[horizontalNode1e[0].second], intersections[1], meshPath) },
-			{ 3, Road("城东南路", intersections[horizontalNode2e[0].second], intersections[2], meshPath) }
+			{ 2, Road("城东北路", intersections[horizontalNode1e[0].second], intersections[1], meshPath, meshUnit) },
+			{ 3, Road("城东南路", intersections[horizontalNode2e[0].second], intersections[2], meshPath, meshUnit) }
 		},
 		unordered_map<int, Intersection>{
 			{ 0, intersections[1] },
@@ -296,8 +297,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	if (verticalNode1n.size() >= 1 && verticalNode2n.size() >= 1) {
 		lots.emplace_back(Lot(verticalNode1n[0].first, verticalNode2n[0].first, intersections[1], intersections[0], { 0.5f, 0.5f, 0.0f, 0.5f }), make_pair(
 		unordered_map<int, Road>{
-			{ 0, Road("城北西路", intersections[verticalNode1n[0].second], intersections[0], meshPath) },
-			{ 1, Road("城北东路", intersections[verticalNode2n[0].second], intersections[1], meshPath) },
+			{ 0, Road("城北西路", intersections[verticalNode1n[0].second], intersections[0], meshPath, meshUnit) },
+			{ 1, Road("城北东路", intersections[verticalNode2n[0].second], intersections[1], meshPath, meshUnit) },
 			{ 3, roads[2] }
 		},
 		unordered_map<int, Intersection>{
@@ -311,8 +312,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 	if (verticalNode1s.size() >= 1 && verticalNode2s.size() >= 1) {
 		lots.emplace_back(Lot(intersections[3], intersections[2], verticalNode2s[0].first, verticalNode1s[0].first, { 0.5f, 0.5f, 0.5f, 0.0f }), make_pair(
 		unordered_map<int, Road>{
-			{ 0, Road("城南西路", intersections[verticalNode1s[0].second], intersections[3], meshPath) },
-			{ 1, Road("城南东路", intersections[verticalNode2s[0].second], intersections[2], meshPath) },
+			{ 0, Road("城南西路", intersections[verticalNode1s[0].second], intersections[3], meshPath, meshUnit) },
+			{ 1, Road("城南东路", intersections[verticalNode2s[0].second], intersections[2], meshPath, meshUnit) },
 			{ 2, roads[3] }
 		},
 		unordered_map<int, Intersection>{
@@ -338,8 +339,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.0f, 0.0f, 0.5f, 0.5f }), make_pair(
 		unordered_map<int, Road>{
-			{ 2, Road("城西北路", intersections[nwIdx], intersections[neIdx], meshPath) },
-			{ 3, Road("城西南路", intersections[swIdx], intersections[seIdx], meshPath) }
+			{ 2, Road("城西北路", intersections[nwIdx], intersections[neIdx], meshPath, meshUnit) },
+			{ 3, Road("城西南路", intersections[swIdx], intersections[seIdx], meshPath, meshUnit) }
 		},
 		unordered_map<int, Intersection>{
 			{ 0, intersections[nwIdx] },
@@ -363,8 +364,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.0f, 0.0f, 0.5f, 0.5f }), make_pair(
 			unordered_map<int, Road>{
-				{ 2, Road("城东北路", intersections[nwIdx], intersections[neIdx], meshPath) },
-				{ 3, Road("城东南路", intersections[swIdx], intersections[seIdx], meshPath) }
+				{ 2, Road("城东北路", intersections[nwIdx], intersections[neIdx], meshPath, meshUnit) },
+				{ 3, Road("城东南路", intersections[swIdx], intersections[seIdx], meshPath, meshUnit) }
 			},
 			unordered_map<int, Intersection>{
 				{ 0, intersections[nwIdx] },
@@ -388,8 +389,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, 0.5f, 0.0f, 0.0f }), make_pair(
 			unordered_map<int, Road>{
-				{ 0, Road("城北西路", intersections[nwIdx], intersections[swIdx], meshPath) },
-				{ 1, Road("城北东路", intersections[neIdx], intersections[seIdx], meshPath) }
+				{ 0, Road("城北西路", intersections[nwIdx], intersections[swIdx], meshPath, meshUnit) },
+				{ 1, Road("城北东路", intersections[neIdx], intersections[seIdx], meshPath, meshUnit) }
 			},
 			unordered_map<int, Intersection>{
 				{ 0, intersections[nwIdx] },
@@ -413,8 +414,8 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 
 		lots.emplace_back(Lot(nwNode, neNode, seNode, swNode, { 0.5f, 0.5f, 0.0f, 0.0f }), make_pair(
 			unordered_map<int, Road>{
-				{ 0, Road("城南西路", intersections[nwIdx], intersections[swIdx], meshPath) },
-				{ 1, Road("城南东路", intersections[neIdx], intersections[seIdx], meshPath) }
+				{ 0, Road("城南西路", intersections[nwIdx], intersections[swIdx], meshPath, meshUnit) },
+				{ 1, Road("城南东路", intersections[neIdx], intersections[seIdx], meshPath, meshUnit) }
 			},
 			unordered_map<int, Intersection>{
 				{ 0, intersections[nwIdx] },

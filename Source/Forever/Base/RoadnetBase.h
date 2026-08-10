@@ -21,7 +21,10 @@ struct FRoad {
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
 	FVector v2;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
-	FString type;
+	FString mesh;
+	// mesh的基准长度
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
+	float unit;
 	// v1处的切线方向（非单位向量），供SplineMeshComponent等曲线绘制使用
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Road")
 	FVector tangent1;

@@ -407,24 +407,27 @@ Intersection::~Intersection() {
 
 }
 
-Road::Road(string name, Node n1, Node n2, string type, float begin, float end) :
+Road::Road(string name, Node n1, Node n2, string mesh, float unit, float begin, float end) :
 	Connection(n1, n2, begin, end),
 	name(name),
-	type(type) {
+	mesh(mesh),
+	unit(unit) {
 
 }
 
-Road::Road(const Connection& connection, string name, string type) :
+Road::Road(const Connection& connection, string name, string mesh, float unit) :
 	Connection(connection),
 	name(name),
-	type(type) {
+	mesh(mesh),
+	unit(unit) {
 
 }
 
 Road::Road(const Road& other) :
 	Connection(other),
 	name(other.name),
-	type(other.type) {
+	mesh(other.mesh),
+	unit(other.unit) {
 
 }
 
@@ -432,7 +435,8 @@ Road& Road::operator=(const Road& other) {
 	if (this != &other) {
 		Connection::operator=(other);
 		name = other.name;
-		type = other.type;
+		mesh = other.mesh;
+		unit = other.unit;
 	}
 	return *this;
 }
@@ -445,8 +449,12 @@ string Road::GetName() const {
 	return name;
 }
 
-string Road::GetType() const {
-	return type;
+string Road::GetMesh() const {
+	return mesh;
+}
+
+float Road::GetUnit() const {
+	return unit;
 }
 
 Quad::Quad() :

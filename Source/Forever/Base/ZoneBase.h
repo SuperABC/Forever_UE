@@ -20,6 +20,9 @@ struct FFence {
 	FVector center;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
 	FVector size;
+	// 栅栏单元绕Z轴的朝向（度），配合RepeatMesh1D(axis=X)使用：0表示栅栏沿X轴延伸，90表示沿Y轴延伸
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
+	float rotation;
 };
 
 USTRUCT(Blueprintable, BlueprintType)
@@ -34,6 +37,11 @@ struct FZone {
 	FVector size;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
 	float rotation;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
+	FString mesh;
+	// mesh的基准长度
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
+	float unit;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Zone")
 	TArray<FFence> fences;

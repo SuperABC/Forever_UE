@@ -179,10 +179,10 @@ public:
 	Road() = delete;
 
 	// 构造连接
-	explicit Road(std::string name, Node n1, Node n2, std::string type, float begin = 0.0f, float end = 1.0f);
+	explicit Road(std::string name, Node n1, Node n2, std::string mesh, float unit, float begin = 0.0f, float end = 1.0f);
 
 	// 由Connection构造，附加名称与半径
-	explicit Road(const Connection& connection, std::string name, std::string type);
+	explicit Road(const Connection& connection, std::string name, std::string mesh, float unit);
 
 	// 拷贝构造新创建nodes
 	Road(const Road& other);
@@ -196,15 +196,21 @@ public:
 	// 获取道路名称
 	std::string GetName() const;
 
-	// 获取道路类型
-	std::string GetType() const;
+	// 获取道路3D资产路径
+	std::string GetMesh() const;
+
+	// 获取道路mesh基准长度
+	float GetUnit() const;
 
 private:
 	// 道路名称
 	std::string name;
 
-	// 道路类型
-	std::string type;
+	// 道路3D资产路径
+	std::string mesh;
+
+	// 道路mesh基准长度
+	float unit;
 };
 
 struct QuadBoundary {

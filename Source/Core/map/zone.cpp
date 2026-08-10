@@ -17,6 +17,8 @@ Zone::Zone(ZoneFactory* factory, const string& zone) :
 	factory(factory),
 	type(),
 	name(),
+	mesh(),
+	unit(0.f),
 	parentBlock(nullptr),
 	address(""),
 	pivots(),
@@ -61,6 +63,14 @@ string Zone::GetType() const {
 
 string Zone::GetName() const {
 	return name;
+}
+
+string Zone::GetMesh() const {
+	return mesh;
+}
+
+float Zone::GetUnit() const {
+	return unit;
 }
 
 Block* Zone::GetParent() const {
@@ -156,6 +166,8 @@ pair<float, float> Zone::GetPosition(float x, float y) const {
 void Zone::LayoutZone(const Lot* block) {
 	mod->LayoutZone(block);
 	SetAcreage(mod->acreage);
+	mesh = mod->mesh;
+	unit = mod->unit;
 
 	float acreageTemporary = 0.f;
 	int attempt = 0;

@@ -55,7 +55,8 @@ TArray<FRoad> ARoadnetBase::GetRoadnet() {
 		FRoad r;
 		r.v1 = FVector(n1.GetX(), n1.GetY(), n1.GetZ());
 		r.v2 = FVector(n2.GetX(), n2.GetY(), n2.GetZ());
-		r.type = FString(road->GetType().data());
+		r.mesh = FString(road->GetMesh().data());
+		r.unit = road->GetUnit();
 		r.tangent1 = FVector(t1x, t1y, t1z);
 		r.tangent2 = FVector(t2x, t2y, t2z);
 		for (auto& [node, weight] : road->GetControls()) {

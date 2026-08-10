@@ -39,6 +39,16 @@ public:
 	std::string GetName() const;
 
 	/*
+	* 获取园区3D资产路径
+	*/
+	std::string GetMesh() const;
+
+	/*
+	* 获取园区mesh基准长度
+	*/
+	float GetUnit() const;
+
+	/*
 	* 获取所在地块
 	*/
 	Block* GetParent() const;
@@ -165,6 +175,12 @@ private:
 
 	// 地形名称
 	std::string name;
+
+	// 3D资产路径
+	std::string mesh;
+
+	// mesh基准长度
+	float unit;
 
 	// 所在街区
 	Block* parentBlock;

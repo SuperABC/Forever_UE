@@ -5,6 +5,8 @@ using namespace std;
 
 ZoneMod::ZoneMod() :
 	acreage(0.f),
+	mesh("/Game/Asset/Meshes/Cube.Cube"),
+	unit(0.1f),
 	buildings(),
 	script({ "empty", {} }) {
 

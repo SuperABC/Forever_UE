@@ -28,6 +28,8 @@ const char* ResidentialZone::GetName() {
 
 void ResidentialZone::LayoutZone(const Lot* lot) {
 	acreage = 10000.f;
+	mesh = "/Game/Asset/Meshes/Fence.Fence";
+	unit = 0.2f;
 	buildings = { {"residential", 1.f}, {"residential", 1.f} };
 	script = { "empty", { "basic_zone" } };
 }

@@ -67,6 +67,12 @@ public:
 	// 园区面积
 	float acreage;
 
+	// 园区3D资产路径
+	std::string mesh;
+
+	// mesh基准长度
+	float unit;
+
 	// 锚点
 	std::vector<std::vector<float>> pivots;
 
