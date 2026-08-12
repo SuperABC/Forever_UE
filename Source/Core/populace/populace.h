@@ -7,6 +7,7 @@
 
 #include <set>
 #include <tuple>
+#include <unordered_set>
 
 
 class Populace {
@@ -79,6 +80,23 @@ public:
 	Person* GetCitizen(const std::string& name) const;
 
 	/*
+	* 添加全局选项
+	* @option: 选项名称
+	*/
+	bool AddGlobalOption(const std::string& option);
+
+	/*
+	* 移除全局选项
+	* @option: 选项名称
+	*/
+	bool RemoveGlobalOption(const std::string& option);
+
+	/*
+	* 获取全部全局选项
+	*/
+	std::unordered_set<std::string> GetGlobalOptions() const;
+
+	/*
 	* 按精细程度从房间到地块依次取第一个可用的导航节点
 	* @room, building, zone, block: 候选位置，按精细程度从高到低传入
 	*/
@@ -121,6 +139,9 @@ private:
 
 	// 身份证号（姓名->所在citizens索引）
 	std::unordered_map<std::string, int> ids;
+
+	// 全局启用的选项集合
+	std::unordered_set<std::string> globalOptions;
 
 	// 当前游戏时间（每次Tick更新，用于设置通勤起始时间）
 	Time currentTime;

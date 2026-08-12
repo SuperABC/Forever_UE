@@ -254,6 +254,28 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		string option = ToString(conditionOption.EvaluateValue(getValues));
 		target->RemoveOption(option);
 	}
+	else if (type == "add_global") {
+		auto obj = dynamic_cast<const AddGlobalChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to AddGlobalChange.\n");
+		}
+
+		Condition conditionOption;
+		conditionOption.ParseCondition(obj->GetOption());
+		string option = ToString(conditionOption.EvaluateValue(getValues));
+		AddGlobalOption(option);
+	}
+	else if (type == "remove_global") {
+		auto obj = dynamic_cast<const RemoveGlobalChange*>(change);
+		if (!obj) {
+			THROW_EXCEPTION(InvalidArgumentException, "Failed to cast Change to RemoveGlobalChange.\n");
+		}
+
+		Condition conditionOption;
+		conditionOption.ParseCondition(obj->GetOption());
+		string option = ToString(conditionOption.EvaluateValue(getValues));
+		RemoveGlobalOption(option);
+	}
 	else if (type == "spawn_npc") {
 		auto obj = dynamic_cast<const SpawnNpcChange*>(change);
 		if (!obj) {
@@ -587,6 +609,26 @@ Person* Populace::GetCitizen(const string& name) const {
 		return nullptr;
 	}
 	return citizens[it->second];
+}
+
+bool Populace::AddGlobalOption(const string& option) {
+	if (globalOptions.find(option) == globalOptions.end()) {
+		globalOptions.insert(option);
+		return true;
+	}
+	return false;
+}
+
+bool Populace::RemoveGlobalOption(const string& option) {
+	if (globalOptions.find(option) != globalOptions.end()) {
+		globalOptions.erase(option);
+		return true;
+	}
+	return false;
+}
+
+unordered_set<string> Populace::GetGlobalOptions() const {
+	return globalOptions;
 }
 
 void Populace::GenerateCitizens(int num, Time* time, PostHandle* post) {

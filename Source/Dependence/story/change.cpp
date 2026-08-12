@@ -263,6 +263,60 @@ string RemoveOptionChange::GetOption() const {
 	return option;
 }
 
+AddGlobalChange::AddGlobalChange() :
+	option() {
+
+}
+
+AddGlobalChange::AddGlobalChange(string option) :
+	option(option) {
+
+}
+
+AddGlobalChange::~AddGlobalChange() {
+
+}
+
+const string& AddGlobalChange::GetType() const {
+	static const string type = "add_global";
+	return type;
+}
+
+void AddGlobalChange::SetOption(string option) {
+	this->option = option;
+}
+
+string AddGlobalChange::GetOption() const {
+	return option;
+}
+
+RemoveGlobalChange::RemoveGlobalChange() :
+	option() {
+
+}
+
+RemoveGlobalChange::RemoveGlobalChange(string option) :
+	option(option) {
+
+}
+
+RemoveGlobalChange::~RemoveGlobalChange() {
+
+}
+
+const string& RemoveGlobalChange::GetType() const {
+	static const string type = "remove_global";
+	return type;
+}
+
+void RemoveGlobalChange::SetOption(string option) {
+	this->option = option;
+}
+
+string RemoveGlobalChange::GetOption() const {
+	return option;
+}
+
 SpawnNpcChange::SpawnNpcChange() :
 	avatar(),
 	name(),

@@ -201,6 +201,63 @@ private:
 	std::string option;
 };
 
+// 全局对话（已实现）
+class GlobalDialogEvent : public Event {
+public:
+	/*
+	* 构造全局对话事件
+	* @name, option: 对话目标名称与选项文本
+	*/
+	GlobalDialogEvent(std::string name, std::string option);
+
+	/*
+	* 析构全局对话事件
+	*/
+	virtual ~GlobalDialogEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual const std::string& GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置目标名称
+	* @name: 名称
+	*/
+	void SetName(std::string name);
+
+	/*
+	* 获取目标名称
+	*/
+	std::string GetName() const;
+
+	/*
+	* 设置选项文本
+	* @option: 选项文本
+	*/
+	void SetOption(std::string option);
+
+	/*
+	* 获取选项文本
+	*/
+	std::string GetOption() const;
+
+private:
+	// 选项名称
+	std::string name;
+
+	// 选项文本
+	std::string option;
+};
+
 // 对话完成（已实现）
 class SpeakingFinishEvent : public Event {
 public:

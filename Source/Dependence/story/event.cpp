@@ -151,6 +151,59 @@ string OptionDialogEvent::GetOption() const {
 	return option;
 }
 
+GlobalDialogEvent::GlobalDialogEvent(string name, string option) :
+	name(name), option(option) {
+
+}
+
+GlobalDialogEvent::~GlobalDialogEvent() {
+
+}
+
+const string& GlobalDialogEvent::GetType() const {
+	static const string type = "global_dialog";
+	return type;
+}
+
+bool GlobalDialogEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<GlobalDialogEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (name.size() > 0 && other->name.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(name);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->name);
+	}
+	if (option.size() > 0 && other->option.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(option);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->option);
+	}
+
+	return result;
+}
+
+void GlobalDialogEvent::SetName(string name) {
+	this->name = name;
+}
+
+string GlobalDialogEvent::GetName() const {
+	return name;
+}
+
+void GlobalDialogEvent::SetOption(string option) {
+	this->option = option;
+}
+
+string GlobalDialogEvent::GetOption() const {
+	return option;
+}
+
 SpeakingFinishEvent::SpeakingFinishEvent(string label) :
 	label(label) {
 

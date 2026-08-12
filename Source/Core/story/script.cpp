@@ -325,6 +325,14 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 				event = new OptionDialogEvent(id.AsInt(), obj["option"].AsString());
 			}
 		}
+		else if (type == "global_dialog") {
+			auto name = obj["name"];
+			auto option = obj["option"];
+			if (name.IsNull() || option.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing name or option for global_dialog event.\n");
+			}
+			event = new GlobalDialogEvent(name.AsString(), option.AsString());
+		}
 		else if(type == "speaking_finish"){
 			auto label = obj["label"];
 			if (label.IsNull()) {
@@ -637,6 +645,20 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 				THROW_EXCEPTION(RuntimeException, "Missing name or option for remove_option change.\n");
 			}
 			change = new RemoveOptionChange(name.AsString(), option.AsString());
+		}
+		else if (type == "add_global") {
+			auto option = obj["option"];
+			if (option.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing option for add_global change.\n");
+			}
+			change = new AddGlobalChange(option.AsString());
+		}
+		else if (type == "remove_global") {
+			auto option = obj["option"];
+			if (option.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing option for remove_global change.\n");
+			}
+			change = new RemoveGlobalChange(option.AsString());
 		}
 		else if (type == "spawn_npc") {
 			auto name = obj["name"];

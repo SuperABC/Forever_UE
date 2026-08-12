@@ -559,6 +559,15 @@ TArray<FString> AStoryBase::GetOptions(FString name) {
 	THROW_EXCEPTION(InvalidArgumentException, string("Citizen, vehicle or cabin not found: ") + TCHAR_TO_UTF8(*name) + ".\n");
 }
 
+TArray<FString> AStoryBase::GetGlobals() {
+	TArray<FString> options;
+	auto populace = global->GetPopulace();
+	for (auto option : populace->GetGlobalOptions()) {
+		options.Add(UTF8_TO_TCHAR(option.data()));
+	}
+	return options;
+}
+
 void AStoryBase::GetTask(FString& task) {
 	auto story = global->GetStory();
 	task = UTF8_TO_TCHAR(story->GetScript()->GetTask().data());
@@ -964,6 +973,22 @@ void AStoryBase::OptionDialog(FString name, FString option) {
 	}
 
 	delete local;
+	delete event;
+}
+
+void AStoryBase::GlobalDialog(FString name, FString option) {
+	auto story = global->GetStory();
+	auto event = new GlobalDialogEvent(TCHAR_TO_UTF8(*name), TCHAR_TO_UTF8(*option));
+
+	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+		[&](const string& name) -> pair<bool, ValueType> {
+			return story->GetScript()->GetValue(name);
+		}
+	};
+	Script* local = Story::CreateLocal(event, getValues);
+	MatchEvent(event, story->GetScript(), getValues);
+	if (local) { getValues.pop_back(); delete local; }
+
 	delete event;
 }
 

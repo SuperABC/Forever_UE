@@ -461,6 +461,88 @@ private:
 
 };
 
+// 添加全局选项（已实现）
+class AddGlobalChange : public Change {
+public:
+	/*
+	* 默认构造添加全局选项变化
+	*/
+	AddGlobalChange();
+
+	/*
+	* 构造添加全局选项变化
+	* @option: 选项文本
+	*/
+	AddGlobalChange(std::string option);
+
+	/*
+	* 析构添加全局选项变化
+	*/
+	virtual ~AddGlobalChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual const std::string& GetType() const;
+
+	/*
+	* 设置选项文本
+	* @option: 选项文本
+	*/
+	void SetOption(std::string option);
+
+	/*
+	* 获取选项文本
+	*/
+	std::string GetOption() const;
+
+private:
+	// 选项文本
+	std::string option;
+
+};
+
+// 移除全局选项（已实现）
+class RemoveGlobalChange : public Change {
+public:
+	/*
+	* 默认构造移除全局选项变化
+	*/
+	RemoveGlobalChange();
+
+	/*
+	* 构造移除全局选项变化
+	* @option: 选项文本
+	*/
+	RemoveGlobalChange(std::string option);
+
+	/*
+	* 析构移除全局选项变化
+	*/
+	virtual ~RemoveGlobalChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual const std::string& GetType() const;
+
+	/*
+	* 设置选项文本
+	* @option: 选项文本
+	*/
+	void SetOption(std::string option);
+
+	/*
+	* 获取选项文本
+	*/
+	std::string GetOption() const;
+
+private:
+	// 选项文本
+	std::string option;
+
+};
+
 // 生成NPC（已实现）
 class SpawnNpcChange : public Change {
 public:
@@ -2251,6 +2333,8 @@ using ChangeValue = std::variant<
 	DeactivateMilestoneChange,
 	AddOptionChange,
 	RemoveOptionChange,
+	AddGlobalChange,
+	RemoveGlobalChange,
 	SpawnNpcChange,
 	RemoveNpcChange,
 	TeleportCitizenChange,

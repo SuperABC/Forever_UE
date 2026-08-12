@@ -74,6 +74,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	TArray<FString> GetOptions(FString name);
 	UFUNCTION(BlueprintCallable, Category = "Story")
+	TArray<FString> GetGlobals();
+	UFUNCTION(BlueprintCallable, Category = "Story")
 	void GetTask(FString& task);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	FString GetHistory();
@@ -86,6 +88,8 @@ public:
 	void ScriptMessage(FString message);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void OptionDialog(FString name, FString option);
+	UFUNCTION(BlueprintCallable, Category = "Story")
+	void GlobalDialog(FString name, FString option);
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	void SpeakingFinish(FString label);
 	UFUNCTION(BlueprintCallable, Category = "Story")
