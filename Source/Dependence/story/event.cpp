@@ -1485,4 +1485,43 @@ bool PolicyChangeEvent::GetStatus() const {
 	return status;
 }
 
+UseAssetEvent::UseAssetEvent(string asset) :
+	asset(asset) {
+
+}
+
+UseAssetEvent::~UseAssetEvent() {
+
+}
+
+const string& UseAssetEvent::GetType() const {
+	static const string type = "use_asset";
+	return type;
+}
+
+bool UseAssetEvent::Match(Event* e,
+	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
+	if (!e) return false;
+	if (GetType() != e->GetType()) return false;
+
+	auto other = dynamic_cast<UseAssetEvent*>(e);
+	if (!other) return false;
+
+	bool result = true;
+	if (asset.size() > 0 && other->asset.size() > 0) {
+		Condition condition;
+		condition.ParseCondition(asset);
+		result = result && (ToString(condition.EvaluateValue(getValues)) == other->asset);
+	}
+	return result;
+}
+
+void UseAssetEvent::SetAsset(string asset) {
+	this->asset = asset;
+}
+
+string UseAssetEvent::GetAsset() const {
+	return asset;
+}
+
 

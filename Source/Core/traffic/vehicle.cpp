@@ -78,13 +78,11 @@ void Vehicle::SetupVehicle() {
 	width = mod->width;
 	length = mod->length;
 
-	if (!mod->script.first.empty()) {
-		script = new Script(Story::scriptFactory, mod->script.first);
-		for (auto s : mod->script.second) {
-			script->ReadMilestones(Config::GetScript(s));
-		}
-		script->SetValue("self.name", name);
+	script = new Script(Story::scriptFactory, mod->script.first);
+	for (auto s : mod->script.second) {
+		script->ReadMilestones(Config::GetScript(s));
 	}
+	script->SetValue("self.name", name);
 }
 
 Script* Vehicle::GetScript() const {

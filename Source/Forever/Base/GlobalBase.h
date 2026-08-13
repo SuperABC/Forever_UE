@@ -69,6 +69,8 @@ public:
 	ATrafficBase* GetTrafficActor() const;
 	AAssetBase* GetAssetActor() const;
 
+	bool GetPaused() const;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
 	TSubclassOf<AActor> TerrainClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
@@ -133,4 +135,6 @@ protected:
 	AStoryBase* storyActor;
 	ATrafficBase* trafficActor;
 	AAssetBase* assetActor;
+
+	bool paused;
 };

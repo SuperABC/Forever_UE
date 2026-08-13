@@ -3,7 +3,12 @@
 
 using namespace std;
 
-OrganizationMod::OrganizationMod() {
+OrganizationMod::OrganizationMod() :
+	script({ "empty", {} }),
+	plans(),
+	changes(),
+	requirements(),
+	vacancies() {
 
 }
 

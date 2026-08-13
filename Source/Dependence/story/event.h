@@ -1718,3 +1718,46 @@ private:
 	// 是否启用
 	bool status;
 };
+
+// 使用资产
+class UseAssetEvent : public Event {
+public:
+	/*
+	* 构造使用资产事件
+	* @asset: 资产类型
+	*/
+	UseAssetEvent(std::string asset);
+
+	/*
+	* 析构使用资产事件
+	*/
+	virtual ~UseAssetEvent();
+
+	/*
+	* 事件类型
+	*/
+	virtual const std::string& GetType() const;
+
+	/*
+	* 判断是否与给定事件匹配
+	* @e: 待匹配事件
+	* @getValues: 值获取回调列表
+	*/
+	virtual bool Match(Event* e,
+		const std::vector<std::function<std::pair<bool, ValueType>(const std::string&)>>& getValues) override;
+
+	/*
+	* 设置资产类型
+	* @asset: 资产类型
+	*/
+	void SetAsset(std::string asset);
+
+	/*
+	* 获取资产类型
+	*/
+	std::string GetAsset() const;
+
+private:
+	// 资产类型
+	std::string asset;
+};

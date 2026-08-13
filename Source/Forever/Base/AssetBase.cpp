@@ -5,6 +5,9 @@
 #include "map/room.h"
 #include "map/map.h"
 #include "story/story.h"
+#include "story/script.h"
+#include "story/event.h"
+#include "StoryBase.h"
 
 
 using namespace std;
@@ -319,6 +322,44 @@ bool AAssetBase::UseAsset(FString path) {
 
 	usage -= 1;
 	asset->SetUsage(usage);
+
+	auto story = global->GetStory();
+	auto storyActor = global->GetStoryActor();
+	if (story && storyActor) {
+		auto event = new UseAssetEvent(asset->GetName());
+
+		vector<function<pair<bool, ValueType>(const string&)>> getValues = {
+			[&](const string& n) -> pair<bool, ValueType> {
+				return story->GetScript()->GetValue(n);
+			}
+		};
+		storyActor->MatchEvent(event, story->GetScript(), getValues);
+
+		function<void(Asset*)> matchAsset = [&](Asset* current) {
+			if (!current) return;
+
+			auto assetScript = current->GetScript();
+			if (assetScript) {
+				getValues.push_back(
+					[&](const string& n) -> pair<bool, ValueType> {
+						return assetScript->GetValue(n);
+					});
+				storyActor->MatchEvent(event, assetScript, getValues);
+				getValues.pop_back();
+			}
+
+			for (auto& [_, content] : current->GetContents()) {
+				matchAsset(content);
+			}
+		};
+
+		matchAsset(player->GetByPath("left"));
+		matchAsset(player->GetByPath("right"));
+		matchAsset(player->GetByPath("back"));
+
+		delete event;
+	}
+
 	return usage <= 0;
 }
 

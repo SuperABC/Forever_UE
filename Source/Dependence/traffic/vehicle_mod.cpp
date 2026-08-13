@@ -6,7 +6,8 @@ using namespace std;
 VehicleMod::VehicleMod() :
 	path(),
 	width(0.f),
-	length(0.f) {
+	length(0.f),
+	script({ "empty", {} }) {
 
 }
 

@@ -4,7 +4,7 @@
 using namespace std;
 
 JobMod::JobMod() :
-	script() {
+	script({ "empty", {} }) {
 
 }
 

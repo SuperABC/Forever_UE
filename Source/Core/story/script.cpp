@@ -535,6 +535,13 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 				num.IsNull() ? -1 : num.AsInt()
 			);
 		}
+		else if (type == "use_asset") {
+			auto asset = obj["asset"];
+			if (asset.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing asset for use_asset event.\n");
+			}
+			event = new UseAssetEvent(asset.AsString());
+		}
 
 		if (!event) {
 			THROW_EXCEPTION(RuntimeException, "Invalid event type: " + type + ".\n");

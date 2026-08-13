@@ -55,7 +55,7 @@ void AStoryBase::BeginPlay() {
 void AStoryBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	if (interacting == false && dialogQueue.size() > 0) {
+	if (!global->GetPaused() && interacting == false && dialogQueue.size() > 0) {
 		interacting = true;
 		auto section = dialogQueue.front();
 		if (section.IsBranch()) {

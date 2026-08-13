@@ -12,7 +12,8 @@ AssetMod::AssetMod() :
 	backpack(false),
 	usage(-1),
 	icon(),
-	mesh() {
+	mesh(),
+	script({ "empty", {} }) {
 
 }
 

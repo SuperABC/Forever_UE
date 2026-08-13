@@ -1,5 +1,8 @@
 ﻿#include "asset.h"
 
+#include "story/story.h"
+#include "story/script.h"
+
 
 using namespace std;
 
@@ -22,7 +25,8 @@ Asset::Asset(AssetFactory* factory, const string& asset) :
 	posZ(0.f),
 	scale(1.f),
 	icon(),
-	mesh() {
+	mesh(),
+	script(nullptr) {
 	if (!mod)
 		THROW_EXCEPTION(NullPointerException, "Asset " + asset + " mod is null.\n");
 
@@ -32,6 +36,9 @@ Asset::Asset(AssetFactory* factory, const string& asset) :
 
 Asset::~Asset() {
 	factory->DestroyAsset(mod);
+
+	if (script) delete script;
+	script = nullptr;
 
 	for (auto& [_, content] : contents) {
 		delete content;
@@ -61,6 +68,12 @@ void Asset::DefineAsset() {
 	icon = mod->icon;
 	mesh = mod->mesh;
 	usage = mod->usage;
+
+	script = new Script(Story::scriptFactory, mod->script.first);
+	for (auto s : mod->script.second) {
+		script->ReadMilestones(Config::GetScript(s));
+	}
+	script->SetValue("self.name", name);
 }
 
 string Asset::GetAsset() const {
@@ -131,6 +144,10 @@ string Asset::GetIcon() const {
 
 string Asset::GetMesh() const {
 	return mesh;
+}
+
+Script* Asset::GetScript() const {
+	return script;
 }
 
 bool Asset::AddContent(const string& name, Asset* content) {

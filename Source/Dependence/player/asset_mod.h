@@ -116,6 +116,9 @@ public:
 
 	// 资产模型路径
 	std::string mesh;
+
+	// 关联剧情与脚本
+	std::pair<std::string, std::vector<std::string>> script;
 };
 
 class AssetFactory {

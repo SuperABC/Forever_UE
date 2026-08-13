@@ -1,0 +1,14 @@
+[
+{
+	"milestone": "use_asset",
+	"visible": false,
+	"triggers": [{"type": "use_asset", "asset": "$$self.name"}],
+	"dialogs": [
+		{"list": [
+			{"content": "使用了$$self.name 。"},
+		]}
+	],
+	"changes": [],
+	"subsequences": []
+},
+]

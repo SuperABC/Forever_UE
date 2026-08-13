@@ -178,6 +178,12 @@ public:
 	*/
 	std::string GetMesh() const;
 
+	/*
+	* 获取资产剧情脚本
+	* @return: 剧情脚本
+	*/
+	Script* GetScript() const;
+
 private:
 	// 模组对象
 	OBJECT_HOLDER AssetMod* mod;
@@ -235,6 +241,9 @@ private:
 
 	// 资产模型路径
 	std::string mesh;
+
+	// 关联剧情
+	OBJECT_HOLDER Script* script;
 };
 
 // 空资产

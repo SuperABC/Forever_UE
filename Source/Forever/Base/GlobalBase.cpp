@@ -52,8 +52,9 @@ AGlobalBase::AGlobalBase() :
 	roomActor(nullptr),
 	populaceActor(nullptr),
 	storyActor(nullptr),
-	trafficActor(nullptr)
-{
+	trafficActor(nullptr),
+	assetActor(nullptr),
+	paused(false) {
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -320,12 +321,18 @@ AAssetBase* AGlobalBase::GetAssetActor() const {
 	return assetActor;
 }
 
+bool AGlobalBase::GetPaused() const {
+	return paused;
+}
+
 void AGlobalBase::GlobalPause() {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.0f);
+	paused = true;
 }
 
 void AGlobalBase::GlobalResume() {
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+	paused = false;
 }
 
 FStatus AGlobalBase::GetStatus() {
