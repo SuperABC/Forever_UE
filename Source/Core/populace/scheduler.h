@@ -40,9 +40,10 @@ public:
 
 	/*
 	* 初始化调度
-	* @name: 持有该调度的市民姓名
+	* @name: 市民姓名
+	* @personality: 个人属性
 	*/
-	void InitScheduler(std::string name);
+	void InitScheduler(std::string name, const Personality& personality);
 
 	/*
 	* 获取剧本

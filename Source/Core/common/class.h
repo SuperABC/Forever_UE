@@ -61,6 +61,7 @@ class EmotionExperience;
 class JobExperience;
 class Commute;
 class Person;
+struct Personality;
 
 class Asset;
 class AssetFactory;

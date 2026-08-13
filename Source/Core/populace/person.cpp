@@ -11,8 +11,146 @@
 #include "story/script.h"
 #include "player/asset.h"
 
+#include <algorithm>
+
 
 using namespace std;
+
+Personality::Personality() :
+	appearance(GetRandom(1000) / 1000.f),
+	fitness(GetRandom(1000) / 1000.f),
+	energy(GetRandom(1000) / 1000.f),
+	intelligence(GetRandom(1000) / 1000.f),
+	eloquence(GetRandom(1000) / 1000.f),
+	confidence(GetRandom(1000) / 1000.f),
+	morality(GetRandom(1000) / 1000.f),
+	mentality(GetRandom(1000) / 1000.f),
+	imagination(GetRandom(1000) / 1000.f),
+	knowledge(GetRandom(1000) / 1000.f),
+	art(GetRandom(1000) / 1000.f),
+	reasoning(GetRandom(1000) / 1000.f),
+	perception(GetRandom(1000) / 1000.f) {
+
+}
+
+float& Personality::operator[](PERSONALITY_TYPE type) {
+	switch (type) {
+	case PERSONALITY_APPEARANCE: return appearance;
+	case PERSONALITY_FITNESS: return fitness;
+	case PERSONALITY_ENERGY: return energy;
+	case PERSONALITY_INTELLIGENCE: return intelligence;
+	case PERSONALITY_ELOQUENCE: return eloquence;
+	case PERSONALITY_CONFIDENCE: return confidence;
+	case PERSONALITY_MORALITY: return morality;
+	case PERSONALITY_MENTALITY: return mentality;
+	case PERSONALITY_IMAGINATION: return imagination;
+	case PERSONALITY_KNOWLEDGE: return knowledge;
+	case PERSONALITY_ART: return art;
+	case PERSONALITY_REASONING: return reasoning;
+	case PERSONALITY_PERCEPTION: return perception;
+	default:
+		THROW_EXCEPTION(InvalidArgumentException, "Invalid personality type.\n");
+	}
+}
+
+float Personality::operator[](PERSONALITY_TYPE type) const {
+	return const_cast<Personality*>(this)->operator[](type);
+}
+
+float& Personality::operator()(const string& name) {
+	if (name == "appearance") return appearance;
+	if (name == "fitness") return fitness;
+	if (name == "energy") return energy;
+	if (name == "intelligence") return intelligence;
+	if (name == "eloquence") return eloquence;
+	if (name == "confidence") return confidence;
+	if (name == "morality") return morality;
+	if (name == "mentality") return mentality;
+	if (name == "imagination") return imagination;
+	if (name == "knowledge") return knowledge;
+	if (name == "art") return art;
+	if (name == "reasoning") return reasoning;
+	if (name == "perception") return perception;
+	THROW_EXCEPTION(InvalidArgumentException, "Invalid personality field name: " + name + ".\n");
+}
+
+float Personality::operator()(const string& name) const {
+	return const_cast<Personality*>(this)->operator()(name);
+}
+
+string Personality::GetFieldName(PERSONALITY_TYPE type) {
+	switch (type) {
+	case PERSONALITY_APPEARANCE: return "appearance";
+	case PERSONALITY_FITNESS: return "fitness";
+	case PERSONALITY_ENERGY: return "energy";
+	case PERSONALITY_INTELLIGENCE: return "intelligence";
+	case PERSONALITY_ELOQUENCE: return "eloquence";
+	case PERSONALITY_CONFIDENCE: return "confidence";
+	case PERSONALITY_MORALITY: return "morality";
+	case PERSONALITY_MENTALITY: return "mentality";
+	case PERSONALITY_IMAGINATION: return "imagination";
+	case PERSONALITY_KNOWLEDGE: return "knowledge";
+	case PERSONALITY_ART: return "art";
+	case PERSONALITY_REASONING: return "reasoning";
+	case PERSONALITY_PERCEPTION: return "perception";
+	default:
+		THROW_EXCEPTION(InvalidArgumentException, "Invalid personality type.\n");
+	}
+}
+
+Relation::Relation() :
+	familiarity(0.f),
+	respect(0.f),
+	favour(0.f),
+	trust(0.f),
+	competing(0.f),
+	reliability(0.f) {
+
+}
+
+float& Relation::operator[](RELATION_TYPE type) {
+	switch (type) {
+	case RELATION_FAMILIARITY: return familiarity;
+	case RELATION_RESPECT: return respect;
+	case RELATION_FAVOUR: return favour;
+	case RELATION_TRUST: return trust;
+	case RELATION_COMPETING: return competing;
+	case RELATION_RELIABILITY: return reliability;
+	default:
+		THROW_EXCEPTION(InvalidArgumentException, "Invalid relation type.\n");
+	}
+}
+
+float Relation::operator[](RELATION_TYPE type) const {
+	return const_cast<Relation*>(this)->operator[](type);
+}
+
+float& Relation::operator()(const string& name) {
+	if (name == "familiarity") return familiarity;
+	if (name == "respect") return respect;
+	if (name == "favour") return favour;
+	if (name == "trust") return trust;
+	if (name == "competing") return competing;
+	if (name == "reliability") return reliability;
+	THROW_EXCEPTION(InvalidArgumentException, "Invalid relation field name: " + name + ".\n");
+}
+
+float Relation::operator()(const string& name) const {
+	return const_cast<Relation*>(this)->operator()(name);
+}
+
+string Relation::GetFieldName(RELATION_TYPE type) {
+	switch (type) {
+	case RELATION_FAMILIARITY: return "familiarity";
+	case RELATION_RESPECT: return "respect";
+	case RELATION_FAVOUR: return "favour";
+	case RELATION_TRUST: return "trust";
+	case RELATION_COMPETING: return "competing";
+	case RELATION_RELIABILITY: return "reliability";
+	default:
+		THROW_EXCEPTION(InvalidArgumentException, "Invalid relation type.\n");
+	}
+}
 
 Person::Person() :
 	id(0),
@@ -27,6 +165,7 @@ Person::Person() :
 	deposit(0),
 	phone(0),
 	relatives(),
+	personality(),
 	acquaintances(),
 	assets(),
 	jobs(),
@@ -281,6 +420,66 @@ Scheduler* Person::GetScheduler() const {
 
 void Person::SetScheduler(Scheduler* scheduler) {
 	this->scheduler = scheduler;
+}
+
+const Personality& Person::GetPersonality() const {
+	return personality;
+}
+
+void Person::SetPersonalityValue(PERSONALITY_TYPE type, float value) {
+	personality[type] = value;
+	if (scheduler) {
+		scheduler->GetScript()->SetValue("self." + Personality::GetFieldName(type), static_cast<double>(value));
+	}
+}
+
+void Person::AdjustPersonalityValue(PERSONALITY_TYPE type, float delta) {
+	float value = clamp(personality[type] + delta, 0.0f, 1.0f);
+	personality[type] = value;
+	if (scheduler) {
+		scheduler->GetScript()->SetValue("self." + Personality::GetFieldName(type), static_cast<double>(value));
+	}
+}
+
+void Person::AddAcquaintance(const string& name) {
+	acquaintances[name] = Relation();
+	SetAcquaintanceValue(name, RELATION_FAMILIARITY, acquaintances[name][RELATION_FAMILIARITY]);
+	SetAcquaintanceValue(name, RELATION_RESPECT, acquaintances[name][RELATION_RESPECT]);
+	SetAcquaintanceValue(name, RELATION_FAVOUR, acquaintances[name][RELATION_FAVOUR]);
+	SetAcquaintanceValue(name, RELATION_TRUST, acquaintances[name][RELATION_TRUST]);
+	SetAcquaintanceValue(name, RELATION_COMPETING, acquaintances[name][RELATION_COMPETING]);
+	SetAcquaintanceValue(name, RELATION_RELIABILITY, acquaintances[name][RELATION_RELIABILITY]);
+}
+
+const Relation& Person::GetAcquaintance(const string& name) const {
+	auto it = acquaintances.find(name);
+	if (it == acquaintances.end()) {
+		THROW_EXCEPTION(InvalidArgumentException, "Acquaintance " + name + " not found.\n");
+	}
+	return it->second;
+}
+
+void Person::SetAcquaintanceValue(const string& name, RELATION_TYPE type, float value) {
+	auto it = acquaintances.find(name);
+	if (it == acquaintances.end()) {
+		THROW_EXCEPTION(InvalidArgumentException, "Acquaintance " + name + " not found.\n");
+	}
+	it->second[type] = value;
+	if (scheduler) {
+		scheduler->GetScript()->SetValue("self.acquaintances." + name + "." + Relation::GetFieldName(type), static_cast<double>(value));
+	}
+}
+
+void Person::AdjustAcquaintanceValue(const string& name, RELATION_TYPE type, float delta) {
+	auto it = acquaintances.find(name);
+	if (it == acquaintances.end()) {
+		THROW_EXCEPTION(InvalidArgumentException, "Acquaintance " + name + " not found.\n");
+	}
+	float value = clamp(it->second[type] + delta, 0.0f, 1.0f);
+	it->second[type] = value;
+	if (scheduler) {
+		scheduler->GetScript()->SetValue("self.acquaintances." + name + "." + Relation::GetFieldName(type), static_cast<double>(value));
+	}
 }
 
 void Person::AddEducationExperience(EducationExperience exp) {

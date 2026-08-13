@@ -328,12 +328,19 @@ vector<Event*> Populace::ApplyChange(Map* map, Player* player, Traffic* traffic,
 		if (obj->GetScheduler() != "") {
 			condition.ParseCondition(obj->GetScheduler());
 			string schedulerType = ToString(condition.EvaluateValue(getValues));
-			person->SetScheduler(new Scheduler(schedulerFactory, schedulerType));
-			person->GetScheduler()->InitScheduler(person->GetName());
+			Scheduler* scheduler = new Scheduler(schedulerFactory, schedulerType);
+			if (!scheduler) {
+				debugf("Warning: Failed to create scheduler '%s' for citizen %s.\n",
+					schedulerType.data(), person->GetName().data());
+			}
+			else {
+				person->SetScheduler(scheduler);
+				person->GetScheduler()->InitScheduler(person->GetName(), person->GetPersonality());
+			}
 		}
 		else {
 			person->SetScheduler(new Scheduler(schedulerFactory, "empty"));
-			person->GetScheduler()->InitScheduler(person->GetName());
+			person->GetScheduler()->InitScheduler(person->GetName(), person->GetPersonality());
 		}
 		
 		citizens.push_back(person);
@@ -967,8 +974,8 @@ void Populace::GenerateCitizens(int num, Time* time, PostHandle* post) {
 				selectedScheduler.data(), citizen->GetName().data());
 			continue;
 		}
-		scheduler->InitScheduler(citizen->GetName());
 		citizen->SetScheduler(scheduler);
+		scheduler->InitScheduler(citizen->GetName(), citizen->GetPersonality());
 	}
 
 	debugf("Log: Generate %d citizens.\n", citizens.size());

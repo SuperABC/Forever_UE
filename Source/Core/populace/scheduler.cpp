@@ -2,6 +2,7 @@
 
 #include "story/story.h"
 #include "story/script.h"
+#include "populace/person.h"
 
 
 using namespace std;
@@ -34,7 +35,7 @@ string Scheduler::GetName() const {
 	return name;
 }
 
-void Scheduler::InitScheduler(string name) {
+void Scheduler::InitScheduler(string name, const Personality& personality) {
 	mod->InitScheduler();
 
 	script = new Script(Story::scriptFactory, mod->script.first);
@@ -42,6 +43,19 @@ void Scheduler::InitScheduler(string name) {
 		script->ReadMilestones(Config::GetScript(s));
 	}
 	script->SetValue("self.name", name);
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_APPEARANCE), static_cast<double>(personality[PERSONALITY_APPEARANCE]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_FITNESS), static_cast<double>(personality[PERSONALITY_FITNESS]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_ENERGY), static_cast<double>(personality[PERSONALITY_ENERGY]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_INTELLIGENCE), static_cast<double>(personality[PERSONALITY_INTELLIGENCE]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_ELOQUENCE), static_cast<double>(personality[PERSONALITY_ELOQUENCE]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_CONFIDENCE), static_cast<double>(personality[PERSONALITY_CONFIDENCE]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_MORALITY), static_cast<double>(personality[PERSONALITY_MORALITY]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_MENTALITY), static_cast<double>(personality[PERSONALITY_MENTALITY]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_IMAGINATION), static_cast<double>(personality[PERSONALITY_IMAGINATION]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_KNOWLEDGE), static_cast<double>(personality[PERSONALITY_KNOWLEDGE]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_ART), static_cast<double>(personality[PERSONALITY_ART]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_REASONING), static_cast<double>(personality[PERSONALITY_REASONING]));
+	script->SetValue("self." + Personality::GetFieldName(PERSONALITY_PERCEPTION), static_cast<double>(personality[PERSONALITY_PERCEPTION]));
 }
 
 Script* Scheduler::GetScript() const {

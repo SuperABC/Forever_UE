@@ -33,6 +33,174 @@ enum RELATIVE_TYPE : int {
 	RELATIVE_DAUGHTER // 女儿
 };
 
+enum PERSONALITY_TYPE : int {
+	PERSONALITY_APPEARANCE, // 颜值
+	PERSONALITY_FITNESS, // 身材
+	PERSONALITY_ENERGY, // 体能
+	PERSONALITY_INTELLIGENCE, // 智商
+	PERSONALITY_ELOQUENCE, // 口才
+	PERSONALITY_CONFIDENCE, // 自信心
+	PERSONALITY_MORALITY, // 德行
+	PERSONALITY_MENTALITY, // 心态
+	PERSONALITY_IMAGINATION, // 想象力
+	PERSONALITY_KNOWLEDGE, // 学识
+	PERSONALITY_ART, // 艺术
+	PERSONALITY_REASONING, // 理性
+	PERSONALITY_PERCEPTION // 感性
+};
+
+enum RELATION_TYPE : int {
+	RELATION_FAMILIARITY, // 熟悉程度
+	RELATION_RESPECT, // 尊敬程度
+	RELATION_FAVOUR, // 好感程度
+	RELATION_TRUST, // 信任程度
+	RELATION_COMPETING, // 竞争程度
+	RELATION_RELIABILITY // 依赖程度
+};
+
+// 个人属性
+struct Personality {
+	/*
+	* 构造个人属性，各项属性随机初始化为[0, 1)区间内的值
+	*/
+	Personality();
+
+	/*
+	* 按类型访问属性字段（可写）
+	* @type: 属性类型
+	* @return: 字段引用
+	*/
+	float& operator[](PERSONALITY_TYPE type);
+
+	/*
+	* 按类型访问属性字段（只读）
+	* @type: 属性类型
+	* @return: 字段值
+	*/
+	float operator[](PERSONALITY_TYPE type) const;
+
+	/*
+	* 按脚本变量名访问属性字段（可写）
+	* @name: 脚本变量名
+	* @return: 字段引用
+	*/
+	float& operator()(const std::string& name);
+
+	/*
+	* 按脚本变量名访问属性字段（只读）
+	* @name: 脚本变量名
+	* @return: 字段值
+	*/
+	float operator()(const std::string& name) const;
+
+	/*
+	* 获取属性类型对应的脚本变量名
+	* @type: 属性类型
+	* @return: 脚本变量名
+	*/
+	static std::string GetFieldName(PERSONALITY_TYPE type);
+
+	// 颜值
+	float appearance;
+
+	// 身材
+	float fitness;
+
+	// 体能
+	float energy;
+
+	// 智商
+	float intelligence;
+
+	// 口才
+	float eloquence;
+
+	// 自信心
+	float confidence;
+
+	// 德行
+	float morality;
+
+	// 心态
+	float mentality;
+
+	// 想象力
+	float imagination;
+
+	// 学识
+	float knowledge;
+
+	// 艺术
+	float art;
+
+	// 理性
+	float reasoning;
+
+	// 感性
+	float perception;
+};
+
+// 人际关系
+struct Relation {
+	/*
+	* 构造人际关系，各项属性初始化为0
+	*/
+	Relation();
+
+	/*
+	* 按类型访问关系字段（可写）
+	* @type: 关系类型
+	* @return: 字段引用
+	*/
+	float& operator[](RELATION_TYPE type);
+
+	/*
+	* 按类型访问关系字段（只读）
+	* @type: 关系类型
+	* @return: 字段值
+	*/
+	float operator[](RELATION_TYPE type) const;
+
+	/*
+	* 按脚本变量名访问关系字段（可写）
+	* @name: 脚本变量名
+	* @return: 字段引用
+	*/
+	float& operator()(const std::string& name);
+
+	/*
+	* 按脚本变量名访问关系字段（只读）
+	* @name: 脚本变量名
+	* @return: 字段值
+	*/
+	float operator()(const std::string& name) const;
+
+	/*
+	* 获取关系类型对应的脚本变量名
+	* @type: 关系类型
+	* @return: 脚本变量名
+	*/
+	static std::string GetFieldName(RELATION_TYPE type);
+
+	// 熟悉程度
+	float familiarity;
+
+	// 尊敬程度
+	float respect;
+
+	// 好感程度
+	float favour;
+
+	// 信任程度
+	float trust;
+
+	// 竞争程度
+	float competing;
+
+	// 依赖程度
+	float reliability;
+};
+
 class Person {
 public:
 	/*
@@ -267,6 +435,47 @@ public:
 	void SetScheduler(Scheduler* scheduler);
 
 	/*
+	* 获取个人属性
+	*/
+	const Personality& GetPersonality() const;
+
+	/*
+	* 设置个人属性中指定类型的绝对值，并写入脚本变量
+	* @type, value: 属性类型与属性值
+	*/
+	void SetPersonalityValue(PERSONALITY_TYPE type, float value);
+
+	/*
+	* 按增量调整个人属性中指定类型的值，结果限制在[0, 1]区间内，并写入脚本变量
+	* @type, delta: 属性类型与增量
+	*/
+	void AdjustPersonalityValue(PERSONALITY_TYPE type, float delta);
+
+	/*
+	* 添加熟人关系，初始为默认值并写入脚本变量
+	* @name: 熟人姓名
+	*/
+	void AddAcquaintance(const std::string& name);
+
+	/*
+	* 获取指定熟人的关系，不存在时抛出异常
+	* @name: 熟人姓名
+	*/
+	const Relation& GetAcquaintance(const std::string& name) const;
+
+	/*
+	* 设置指定熟人关系中指定类型的绝对值，并写入脚本变量
+	* @name, type, value: 熟人姓名、关系类型与关系值
+	*/
+	void SetAcquaintanceValue(const std::string& name, RELATION_TYPE type, float value);
+
+	/*
+	* 按增量调整指定熟人关系中指定类型的值，结果限制在[0, 1]区间内，并写入脚本变量
+	* @name, type, delta: 熟人姓名、关系类型与增量
+	*/
+	void AdjustAcquaintanceValue(const std::string& name, RELATION_TYPE type, float delta);
+
+	/*
 	* 获取教育经历列表
 	*/
 	std::vector<EducationExperience>& GetEducationExperiences();
@@ -415,8 +624,11 @@ private:
 	// 亲属列表
 	std::vector<std::pair<RELATIVE_TYPE, Person*>> relatives;
 
-	// 熟人列表
-	std::vector<std::pair<std::string, Person*>> acquaintances;
+	// 个人属性
+	Personality personality;
+
+	// 熟人关系表
+	std::unordered_map<std::string, Relation> acquaintances;
 
 	// 持有房产与载具资产列表
 	OBJECT_HOLDER std::unordered_map<std::string, Asset*> assets;
