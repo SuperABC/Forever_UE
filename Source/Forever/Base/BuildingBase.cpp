@@ -223,14 +223,14 @@ void ABuildingBase::LeaveBuilding(FString building) {
 
 float ABuildingBase::GetRotation(FACE_DIRECTION direction) {
 	switch (direction) {
-	case FACE_EAST:
-		return 270.f;
 	case FACE_WEST:
+		return 270.f;
+	case FACE_EAST:
 		return 90.f;
 	case FACE_NORTH:
-		return 180.f;
-	case FACE_SOUTH:
 		return 0.f;
+	case FACE_SOUTH:
+		return 180.f;
 	}
 	return 0.f;
 }

@@ -74,9 +74,39 @@ void BuildingMod::ArrangeRow(int level, int slot, string room, float acreage, st
 	rows[{ component, id }][level].emplace_back(slot, room, acreage);
 }
 
-void BuildingMod::AddDecoration(string path,
-	float px, float py, float pz, float sx, float sy, float sz, float rx, float ry, float rz) {
-	decorations.push_back({ path, {px, py, pz, sx, sy, sz, rx, ry, rz} });
+void BuildingMod::AddDecoration(string path, const Quad* quad,
+	float px, float py, float pz, float sx, float sy, float sz, float rx, float ry, float rz,
+	int direction) {
+	if (direction < 0 || direction >= 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
+	}
+
+	float footprintSizeX = quad->GetSizeX() * construction.GetSizeX();
+	float footprintSizeY = quad->GetSizeY() * construction.GetSizeY();
+	float xRatio = footprintSizeX > 0.f ? px / footprintSizeX : 0.f;
+	float yRatio = footprintSizeY > 0.f ? py / footprintSizeY : 0.f;
+	float rotatedX = px, rotatedY = py, yaw = rz;
+	switch (direction) {
+	case 0:
+		rotatedX = yRatio * footprintSizeX;
+		rotatedY = (1.f - xRatio) * footprintSizeY;
+		yaw = rz + 270.f;
+		break;
+	case 1:
+		rotatedX = (1.f - yRatio) * footprintSizeX;
+		rotatedY = xRatio * footprintSizeY;
+		yaw = rz + 90.f;
+		break;
+	case 2:
+		break;
+	case 3:
+		rotatedX = (1.f - xRatio) * footprintSizeX;
+		rotatedY = (1.f - yRatio) * footprintSizeY;
+		yaw = rz + 180.f;
+		break;
+	}
+
+	decorations.push_back({ path, {rotatedX, rotatedY, pz, sx, sy, sz, rx, ry, yaw} });
 }
 
 void BuildingMod::AddPivot(vector<float> point, int face) {
@@ -90,16 +120,16 @@ void BuildingMod::AddPivot(vector<float> point, int face) {
 	auto rotated = point;
 	switch (face) {
 	case 0:
-		rotated[0] = 1.f - point[2];
-		rotated[1] = -point[3];
-		rotated[2] = point[0];
-		rotated[3] = point[1];
-		break;
-	case 1:
 		rotated[0] = point[2];
 		rotated[1] = point[3];
 		rotated[2] = 1.f - point[0];
 		rotated[3] = -point[1];
+		break;
+	case 1:
+		rotated[0] = 1.f - point[2];
+		rotated[1] = -point[3];
+		rotated[2] = point[0];
+		rotated[3] = point[1];
 		break;
 	case 2:
 		break;

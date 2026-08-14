@@ -169,14 +169,19 @@ public:
 
 	/*
 	* Tool
-	* 添加装饰
+	* 添加装饰，px/py/rz 按建筑朝北（face=FACE_NORTH）时的位形定义，
+	* 内部根据 direction 自动旋转到建筑实际朝向后加入装饰列表
 	* @path: 装饰资源路径
-	* @px, py, pz: 装饰位置
-	* @sx, sy, sz: 装饰缩放
-	* @rx, ry, rz: 装饰旋转
+	* @quad: 建筑所占据的矩形区域，即 LayoutBuilding 传入的 quad，用于换算占地绝对宽高
+	* @px, py: 装饰位置（朝北朝向下的定义，占楼栋占地宽高的绝对坐标）
+	* @pz: 装饰位置Z轴绝对高度（不随朝向变化）
+	* @sx, sy, sz: 装饰缩放（绝对值，不随朝向变化）
+	* @rx, ry, rz: 装饰旋转（rz 为朝北朝向下的定义，度；rx/ry 暂不随朝向变化）
+	* @direction: 建筑当前朝向（0~3，对应 FACE_DIRECTION）
 	*/
-	void AddDecoration(std::string path,
-		float px, float py, float pz, float sx, float sy, float sz, float rx, float ry, float rz);
+	void AddDecoration(std::string path, const Quad* quad,
+		float px, float py, float pz, float sx, float sy, float sz, float rx, float ry, float rz,
+		int direction);
 
 	/*
 	* Tool

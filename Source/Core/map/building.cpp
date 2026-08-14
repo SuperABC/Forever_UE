@@ -1419,16 +1419,6 @@ vector<float> Building::InverseParams(const vector<float>& params, int face) {
 	auto inversed = params;
 	switch (face) {
 	case 0:
-		inversed[0] = 1.f - params[6];
-		inversed[1] = -params[7];
-		inversed[2] = params[0];
-		inversed[3] = params[1];
-		inversed[4] = 1.f - params[2];
-		inversed[5] = -params[3];
-		inversed[6] = params[4];
-		inversed[7] = params[5];
-		break;
-	case 1:
 		inversed[0] = params[2];
 		inversed[1] = params[3];
 		inversed[2] = 1.f - params[4];
@@ -1437,6 +1427,16 @@ vector<float> Building::InverseParams(const vector<float>& params, int face) {
 		inversed[5] = params[7];
 		inversed[6] = 1.f - params[0];
 		inversed[7] = -params[1];
+		break;
+	case 1:
+		inversed[0] = 1.f - params[6];
+		inversed[1] = -params[7];
+		inversed[2] = params[0];
+		inversed[3] = params[1];
+		inversed[4] = 1.f - params[2];
+		inversed[5] = -params[3];
+		inversed[6] = params[4];
+		inversed[7] = params[5];
 		break;
 	case 2:
 		// 不变
@@ -1463,11 +1463,11 @@ int Building::InverseDirection(int direction, int face) {
 	}
 	switch (face) {
 	case 0:
-		if (direction >= 2) return 3 - direction;
-		else return direction + 2;
-	case 1:
 		if (direction >= 2) return direction - 2;
 		else return 3 - direction;
+	case 1:
+		if (direction >= 2) return 3 - direction;
+		else return direction + 2;
 	case 2:
 		return direction;
 	case 3:
@@ -1486,9 +1486,9 @@ vector<float> Building::InversePoint(const vector<float>& point, int face) {
 	}
 	switch (face) {
 	case 0:
-		return { 1.f - point[2], -point[3], point[0], point[1] };
-	case 1:
 		return { point[2], point[3], 1.f - point[0], -point[1] };
+	case 1:
+		return { 1.f - point[2], -point[3], point[0], point[1] };
 	case 2:
 		return point;
 	case 3:
@@ -1504,14 +1504,14 @@ vector<float> Building::InverseWall(const vector<float>& pos, int direction, int
 		THROW_EXCEPTION(InvalidArgumentException, "Wall position must have 8 elements.\n");
 	}
 	// Determine whether this rotation reverses the along-wall direction.
-	// face=0 (90° CCW + x-flip): reverses vertical walls (WEST=0, EAST=1)
-	// face=1 (90° CW + x-flip): reverses horizontal walls (NORTH=2, SOUTH=3)
+	// face=0 (90° CCW + x-flip): reverses horizontal walls (NORTH=2, SOUTH=3)
+	// face=1 (90° CW + x-flip): reverses vertical walls (WEST=0, EAST=1)
 	// face=2 (identity): no reversal
 	// face=3 (180°): reverses all walls
 	bool flip = false;
 	switch (face) {
-	case 0: flip = (direction == 0 || direction == 1); break;
-	case 1: flip = (direction == 2 || direction == 3); break;
+	case 0: flip = (direction == 2 || direction == 3); break;
+	case 1: flip = (direction == 0 || direction == 1); break;
 	case 3: flip = true; break;
 	}
 	if (!flip) return pos;
