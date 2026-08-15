@@ -24,6 +24,8 @@ struct FRoom {
 	FVector size;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
 	float rotation;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	TArray<FMesh> meshes;
 };
 
 UCLASS()

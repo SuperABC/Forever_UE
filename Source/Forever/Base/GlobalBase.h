@@ -40,6 +40,20 @@ struct FStatus {
 	float chronode;
 };
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FMesh {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FVector center;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FVector size;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	float rot;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
+	FString address;
+};
+
 UCLASS()
 class FOREVER_API AGlobalBase : public AActor {
 	GENERATED_BODY()

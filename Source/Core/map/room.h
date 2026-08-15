@@ -331,6 +331,11 @@ public:
 	void ClearVehicles();
 
 	/*
+	* 获取房间内家具
+	*/
+	const std::vector<std::pair<std::string, std::vector<float>>>& GetFurniture() const;
+
+	/*
 	* 获取屋内所有资产
 	*/
 	const std::vector<Asset*>& GetAssets() const;
@@ -389,6 +394,9 @@ private:
 
 	// 寻址锚点
 	OBJECT_HOLDER std::vector<Node*> pivots;
+
+	// 家具
+	std::vector<std::pair<std::string, std::vector<float>>> furniture;
 
 	// 导航图节点（房间中心点）
 	OBJECT_HOLDER Node* navigationNode;

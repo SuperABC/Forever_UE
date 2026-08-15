@@ -25,20 +25,6 @@ struct FWall {
 };
 
 USTRUCT(Blueprintable, BlueprintType)
-struct FMesh {
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
-	FVector center;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
-	FVector size;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
-	float rot;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Building")
-	FString address;
-};
-
-USTRUCT(Blueprintable, BlueprintType)
 struct FElevator {
 	GENERATED_BODY()
 

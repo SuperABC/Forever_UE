@@ -43,6 +43,17 @@ void ARoomBase::AddBuilding(const string& name, Building* building) {
 		roomInfo.center = FVector(pos.first, pos.second, (room->GetLayer() + 0.5f) * building->GetHeight());
 		roomInfo.size = FVector(room->GetSizeX(), room->GetSizeY(), building->GetHeight());
 		roomInfo.rotation = building->GetParentBlock()->GetRotation();
+		for (auto& [path, transform] : room->GetFurniture()) {
+			FMesh meshInfo;
+			meshInfo.center = FVector(
+				transform[0] - room->GetSizeX() / 2.f,
+				transform[1] - room->GetSizeY() / 2.f,
+				transform[2] - building->GetHeight() / 2.f);
+			meshInfo.size = FVector(transform[3], transform[4], transform[5]);
+			meshInfo.rot = transform[8];
+			meshInfo.address = FString(path.data());
+			roomInfo.meshes.Add(meshInfo);
+		}
 		rooms.Add(roomInfo);
 	}
 	UpdateRoom(UTF8_TO_TCHAR(name.data()), rooms, {});

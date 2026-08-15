@@ -29,6 +29,7 @@ Room::Room(RoomFactory* factory, const string& room) :
 	windows(),
 	number(""),
 	pivots(),
+	furniture(),
 	navigationNode(nullptr),
 	stated(false),
 	owner(nullptr),
@@ -139,6 +140,8 @@ void Room::SetNumber(int floor, int number) {
 
 void Room::ConfigRoom() {
 	mod->ConfigRoom(this, direction);
+
+	furniture = mod->furniture;
 
 	for(auto parking : mod->parkingSpaces) {
 		if(parking.size() == 8) {
@@ -363,6 +366,10 @@ void Room::RemoveVehicle(Vehicle* vehicle) {
 
 void Room::ClearVehicles() {
 	vehicles.clear();
+}
+
+const vector<pair<string, vector<float>>>& Room::GetFurniture() const {
+	return furniture;
 }
 
 const vector<Asset*>& Room::GetAssets() const {

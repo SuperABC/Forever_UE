@@ -29,6 +29,8 @@ const char* ResidentialRoom::GetName() {
 void ResidentialRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 	isResidential = true;
 	residentialCapacity = 1;
+
+	//AddFurniture("/Game/Asset/Meshes/Cube.Cube", quad, quad->GetSizeX() / 2.f, 0.f, 0.f, 0.1f, 0.1f, 0.1f, 0.f, 0.f, 0.f, direction);
 }
 
 void ResidentialRoom::PlacePivots(Quad* room) {

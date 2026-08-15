@@ -69,6 +69,22 @@ public:
 	*/
 	void AddPivot(std::vector<float> point, int face);
 
+	/*
+	* Tool
+	* 添加家具，px/py/rz 按房间朝北（face=FACE_NORTH）时的位形定义，
+	* 内部根据 direction 自动旋转到房间实际朝向后加入家具列表
+	* @path: 家具资源路径
+	* @quad: 房间所占据的矩形区域，即 ConfigRoom 传入的 quad
+	* @px, py: 家具位置（朝北朝向下的定义，相对房间自身左下角的绝对坐标）
+	* @pz: 家具位置Z轴高度（相对所在楼层地面，不随朝向变化）
+	* @sx, sy, sz: 家具缩放（绝对值，不随朝向变化）
+	* @rx, ry, rz: 家具旋转（rz 为朝北朝向下的定义，度；rx/ry 暂不随朝向变化）
+	* @direction: 房间当前朝向（0~3，对应 FACE_DIRECTION）
+	*/
+	void AddFurniture(std::string path, const Quad* quad,
+		float px, float py, float pz, float sx, float sy, float sz, float rx, float ry, float rz,
+		int direction);
+
 	// 是否可居住
 	bool isResidential;
 
@@ -101,6 +117,9 @@ public:
 
 	// 锚点
 	std::vector<std::vector<float>> pivots;
+
+	// 家具
+	std::vector<std::pair<std::string, std::vector<float>>> furniture;
 };
 
 class RoomFactory {

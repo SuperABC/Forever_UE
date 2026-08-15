@@ -16,7 +16,8 @@ RoomMod::RoomMod() :
 	storageConfig(),
 	manufactureTypes(),
 	parkingSpaces(),
-	pivots() {
+	pivots(),
+	furniture() {
 
 }
 
@@ -35,16 +36,16 @@ void RoomMod::AddPivot(vector<float> point, int face) {
 	auto rotated = point;
 	switch (face) {
 	case 0:
-		rotated[0] = 1.f - point[2];
-		rotated[1] = -point[3];
-		rotated[2] = point[0];
-		rotated[3] = point[1];
-		break;
-	case 1:
 		rotated[0] = point[2];
 		rotated[1] = point[3];
 		rotated[2] = 1.f - point[0];
 		rotated[3] = -point[1];
+		break;
+	case 1:
+		rotated[0] = 1.f - point[2];
+		rotated[1] = -point[3];
+		rotated[2] = point[0];
+		rotated[3] = point[1];
 		break;
 	case 2:
 		break;
@@ -59,6 +60,41 @@ void RoomMod::AddPivot(vector<float> point, int face) {
 	}
 
 	pivots.push_back(rotated);
+}
+
+void RoomMod::AddFurniture(string path, const Quad* quad,
+	float px, float py, float pz, float sx, float sy, float sz, float rx, float ry, float rz,
+	int direction) {
+	if (direction < 0 || direction >= 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
+	}
+
+	float w = quad->GetSizeX();
+	float h = quad->GetSizeY();
+	float xRatio = w > 0.f ? px / w : 0.f;
+	float yRatio = h > 0.f ? py / h : 0.f;
+	float rotatedX = px, rotatedY = py, yaw = rz;
+	switch (direction) {
+	case 0:
+		rotatedX = yRatio * w;
+		rotatedY = (1.f - xRatio) * h;
+		yaw = rz + 270.f;
+		break;
+	case 1:
+		rotatedX = (1.f - yRatio) * w;
+		rotatedY = xRatio * h;
+		yaw = rz + 90.f;
+		break;
+	case 2:
+		break;
+	case 3:
+		rotatedX = (1.f - xRatio) * w;
+		rotatedY = (1.f - yRatio) * h;
+		yaw = rz + 180.f;
+		break;
+	}
+
+	furniture.push_back({ path, {rotatedX, rotatedY, pz, sx, sy, sz, rx, ry, yaw} });
 }
 
 void RoomFactory::RegisterRoom(const string& id,
