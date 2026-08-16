@@ -15,9 +15,26 @@ StorageMod::~StorageMod() {
 
 }
 
+StorageFactory::StorageFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void StorageFactory::RegisterStorage(const string& id,
 	function<StorageMod* ()> creator, function<void(StorageMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void StorageFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void StorageFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void StorageFactory::RemoveAll() {

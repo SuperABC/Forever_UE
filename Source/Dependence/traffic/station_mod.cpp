@@ -14,11 +14,34 @@ StationMod::~StationMod() {
 
 }
 
+StationFactory::StationFactory()
+	: registries(),
+	configs(),
+	assigners(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+	temp.assigners.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void StationFactory::RegisterStation(const string& id,
 	function<vector<int>& (const vector<Lot*>& blocks)> assigner,
 	function<StationMod* ()> creator, function<void(StationMod*)> deleter) {
-	registries[id] = { creator, deleter };
-	assigners[id] = assigner;
+	temp.registries[id] = { creator, deleter };
+	temp.assigners[id] = assigner;
+}
+
+void StationFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+	for (auto& [id, assigner] : temp.assigners) {
+		assigners[id] = assigner;
+	}
+}
+
+void StationFactory::CleanTemp() {
+	temp.registries.clear();
+	temp.assigners.clear();
 }
 
 void StationFactory::RemoveAll() {

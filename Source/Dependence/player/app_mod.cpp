@@ -11,11 +11,28 @@ AppMod::~AppMod() {
 
 }
 
+AppFactory::AppFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void AppFactory::RegisterApp(const string& id,
 	function<void(PostHandle*)> init, function<int(Canvas*, int, PostHandle*)> loop,
 	function<void(Canvas*, PostHandle*)> back, function<void(Canvas*, PostHandle*)> refresh,
 	function<AppMod*()> creator, function<void(AppMod*)> deleter) {
-	registries[id] = { init, loop, back, refresh, creator, deleter };
+	temp.registries[id] = { init, loop, back, refresh, creator, deleter };
+}
+
+void AppFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void AppFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void AppFactory::RemoveAll() {

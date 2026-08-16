@@ -15,10 +15,33 @@ VehicleMod::~VehicleMod() {
 
 }
 
+VehicleFactory::VehicleFactory()
+	: registries(),
+	configs(),
+	labels(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+	temp.labels.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void VehicleFactory::RegisterVehicle(const string& id, string label,
 	function<VehicleMod* ()> creator, function<void(VehicleMod*)> deleter) {
-	registries[id] = { creator, deleter };
-	labels[label].push_back(id);
+	temp.registries[id] = { creator, deleter };
+	temp.labels[label].push_back(id);
+}
+
+void VehicleFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+	for (auto& [label, ids] : temp.labels) {
+		labels[label].insert(labels[label].end(), ids.begin(), ids.end());
+	}
+}
+
+void VehicleFactory::CleanTemp() {
+	temp.registries.clear();
+	temp.labels.clear();
 }
 
 void VehicleFactory::RemoveAll() {

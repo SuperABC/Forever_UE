@@ -76,6 +76,11 @@ public:
 class StationFactory {
 public:
 	/*
+	* 构造站点工厂,预留暂存区容量
+	*/
+	StationFactory();
+
+	/*
 	* 注册站点
 	* @id: 站点类型
 	* @assigner: 站点分配器
@@ -84,6 +89,16 @@ public:
 	void RegisterStation(const std::string& id,
 		std::function<std::vector<int>& (const std::vector<Lot*>& blocks)> assigner,
 		std::function<StationMod* ()> creator, std::function<void(StationMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -128,6 +143,19 @@ public:
 	void DestroyStation(StationMod* stationMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<StationMod* ()>, std::function<void(StationMod*)>>
+		> registries;
+
+		// 站点分配器
+		std::unordered_map<std::string,
+			std::function<std::vector<int>& (const std::vector<Lot*>& blocks)>> assigners;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -140,4 +168,7 @@ private:
 	// 站点分配器
 	std::unordered_map<std::string,
 		std::function<std::vector<int>& (const std::vector<Lot*>& blocks)>> assigners;
+
+	// 暂存数据
+	Temp temp;
 };

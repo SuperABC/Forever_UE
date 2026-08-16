@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModComponentsFunc)(ComponentFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModComponentsFunc)(ComponentFactory* factory);
+
 // 组合实体
 class Component {
 public:

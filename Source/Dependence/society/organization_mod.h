@@ -121,6 +121,11 @@ public:
 class OrganizationFactory {
 public:
 	/*
+	* 构造组织工厂,预留暂存区容量
+	*/
+	OrganizationFactory();
+
+	/*
 	* 注册组织
 	* @id: 组织类型
 	* @power: 分配权重
@@ -128,6 +133,16 @@ public:
 	*/
 	void RegisterOrganization(const std::string& id, float power,
 		std::function<OrganizationMod* ()> creator, std::function<void(OrganizationMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -165,6 +180,18 @@ public:
 	void DestroyOrganization(OrganizationMod* organizationMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<OrganizationMod* ()>, std::function<void(OrganizationMod*)>>
+		> registries;
+
+		// 权重
+		std::unordered_map<std::string, float> powers;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -176,5 +203,8 @@ private:
 
 	// 权重
 	std::unordered_map<std::string, float> powers;
+
+	// 暂存数据
+	Temp temp;
 };
 

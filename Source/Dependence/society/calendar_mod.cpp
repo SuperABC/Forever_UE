@@ -11,9 +11,26 @@ CalendarMod::~CalendarMod() {
 
 }
 
+CalendarFactory::CalendarFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void CalendarFactory::RegisterCalendar(const string& id,
 	function<CalendarMod* ()> creator, function<void(CalendarMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void CalendarFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void CalendarFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void CalendarFactory::RemoveAll() {

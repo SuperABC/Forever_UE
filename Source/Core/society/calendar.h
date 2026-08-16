@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModCalendarsFunc)(CalendarFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModCalendarsFunc)(CalendarFactory* factory);
+
 // 日程实体
 class Calendar {
 public:

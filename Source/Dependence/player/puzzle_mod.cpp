@@ -19,10 +19,27 @@ int PuzzleMod::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	return 0;
 }
 
+PuzzleFactory::PuzzleFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void PuzzleFactory::RegisterPuzzle(const string& id,
 	function<void(int, int, PostHandle*)> init, function<int(Canvas*, int, PostHandle*)> loop,
 	function<PuzzleMod* ()> creator, function<void(PuzzleMod*)> deleter) {
-	registries[id] = { init, loop, creator, deleter };
+	temp.registries[id] = { init, loop, creator, deleter };
+}
+
+void PuzzleFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void PuzzleFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void PuzzleFactory::RemoveAll() {

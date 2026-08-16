@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModOrganizationsFunc)(OrganizationFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModOrganizationsFunc)(OrganizationFactory* factory);
+
 // 组织实体
 class Organization {
 public:

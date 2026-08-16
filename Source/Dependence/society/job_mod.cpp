@@ -12,9 +12,26 @@ JobMod::~JobMod() {
 
 }
 
+JobFactory::JobFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void JobFactory::RegisterJob(const string& id,
 	function<JobMod* ()> creator, function<void(JobMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void JobFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void JobFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void JobFactory::RemoveAll() {

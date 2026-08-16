@@ -261,7 +261,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 			unordered_map<int, Intersection>{ {0, intersections[0]}, {1, intersections[1]}, {2, intersections[2]}, {3, intersections[3]} }
 		)
 	);
-	lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+	lots.back().first.SetArea(AREA_OFFICIAL_HIGH);
 	//return;
 
 	if (horizontalNode1w.size() >= 1 && horizontalNode2w.size() >= 1) {
@@ -277,7 +277,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 			{ 2, intersections[3] },
 			{ 3, intersections[horizontalNode2w[0].second] }
 		}));
-		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+		lots.back().first.SetArea(AREA_RESIDENTIAL_HIGH);
 	}
 	if (horizontalNode1e.size() >= 1 && horizontalNode2e.size() >= 1) {
 		lots.emplace_back(Lot(intersections[1], horizontalNode1e[0].first, horizontalNode2e[0].first, intersections[2], { 0.5f, 0.0f, 0.5f, 0.5f }), make_pair(
@@ -292,7 +292,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 			{ 2, intersections[horizontalNode2e[0].second] },
 			{ 3, intersections[2] }
 		}));
-		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+		lots.back().first.SetArea(AREA_RESIDENTIAL_HIGH);
 	}
 	if (verticalNode1n.size() >= 1 && verticalNode2n.size() >= 1) {
 		lots.emplace_back(Lot(verticalNode1n[0].first, verticalNode2n[0].first, intersections[1], intersections[0], { 0.5f, 0.5f, 0.0f, 0.5f }), make_pair(
@@ -307,7 +307,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 			{ 2, intersections[1] },
 			{ 3, intersections[0] }
 		}));
-		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+		lots.back().first.SetArea(AREA_RESIDENTIAL_HIGH);
 	}
 	if (verticalNode1s.size() >= 1 && verticalNode2s.size() >= 1) {
 		lots.emplace_back(Lot(intersections[3], intersections[2], verticalNode2s[0].first, verticalNode1s[0].first, { 0.5f, 0.5f, 0.5f, 0.0f }), make_pair(
@@ -322,7 +322,7 @@ void JingRoadnet::DistributeRoadnet(int width, int height,
 			{ 2, intersections[verticalNode2s[0].second] },
 			{ 3, intersections[verticalNode1s[0].second] }
 		}));
-		lots.back().first.SetArea(AREA_RESIDENTIAL_LOW);
+		lots.back().first.SetArea(AREA_RESIDENTIAL_HIGH);
 	}
 	return;
 

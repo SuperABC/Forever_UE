@@ -7,6 +7,9 @@
 
 typedef void (*RegisterModAppsFunc)(AppFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModAppsFunc)(AppFactory* factory);
+
 // 应用实体
 class App {
 public:

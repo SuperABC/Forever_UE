@@ -11,9 +11,26 @@ NameMod::~NameMod() {
 
 }
 
+NameFactory::NameFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void NameFactory::RegisterName(const string& id,
 	function<NameMod* ()> creator, function<void(NameMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void NameFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void NameFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void NameFactory::RemoveAll() {

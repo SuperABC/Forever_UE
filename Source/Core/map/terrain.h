@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModTerrainsFunc)(TerrainFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModTerrainsFunc)(TerrainFactory* factory);
+
 // 地形实体
 class Terrain {
 public:

@@ -60,6 +60,8 @@ void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyProduct(); },
 		[](ProductMod* product) { delete product; }
 	);
+	productFactory->MergeTemp();
+	productFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -76,6 +78,12 @@ void Industry::InitProducts(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModProductsFunc>(GetProcAddress(modHandle, "RegisterModProducts"));
 			if (registerFunc) {
 				registerFunc(productFactory);
+				productFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModProductsFunc>(GetProcAddress(modHandle, "FinishModProducts"));
+				if (finishFunc) {
+					finishFunc(productFactory);
+				}
 			}
 		}
 		else {
@@ -90,6 +98,8 @@ void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyStorage(); },
 		[](StorageMod* storage) { delete storage; }
 	);
+	storageFactory->MergeTemp();
+	storageFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -106,6 +116,12 @@ void Industry::InitStorages(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModStoragesFunc>(GetProcAddress(modHandle, "RegisterModStorages"));
 			if (registerFunc) {
 				registerFunc(storageFactory);
+				storageFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModStoragesFunc>(GetProcAddress(modHandle, "FinishModStorages"));
+				if (finishFunc) {
+					finishFunc(storageFactory);
+				}
 			}
 		}
 		else {
@@ -120,6 +136,8 @@ void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyManufacture(); },
 		[](ManufactureMod* manufacture) { delete manufacture; }
 	);
+	manufactureFactory->MergeTemp();
+	manufactureFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -136,6 +154,12 @@ void Industry::InitManufactures(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModManufacturesFunc>(GetProcAddress(modHandle, "RegisterModManufactures"));
 			if (registerFunc) {
 				registerFunc(manufactureFactory);
+				manufactureFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModManufacturesFunc>(GetProcAddress(modHandle, "FinishModManufactures"));
+				if (finishFunc) {
+					finishFunc(manufactureFactory);
+				}
 			}
 		}
 		else {

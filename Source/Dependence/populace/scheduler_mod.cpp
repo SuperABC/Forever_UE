@@ -16,10 +16,33 @@ void SchedulerMod::AddNode(const string& name, const Time& time) {
 	plans[name] = time;
 }
 
+SchedulerFactory::SchedulerFactory()
+	: registries(),
+	configs(),
+	powers(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+	temp.powers.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void SchedulerFactory::RegisterScheduler(const string& id, float power,
 	function<SchedulerMod* ()> creator, function<void(SchedulerMod*)> deleter) {
-	registries[id] = { creator, deleter };
-	powers[id] = power;
+	temp.registries[id] = { creator, deleter };
+	temp.powers[id] = power;
+}
+
+void SchedulerFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+	for (auto& [id, power] : temp.powers) {
+		powers[id] = power;
+	}
+}
+
+void SchedulerFactory::CleanTemp() {
+	temp.registries.clear();
+	temp.powers.clear();
 }
 
 void SchedulerFactory::RemoveAll() {

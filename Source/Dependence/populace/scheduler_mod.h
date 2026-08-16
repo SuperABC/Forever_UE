@@ -101,6 +101,11 @@ public:
 class SchedulerFactory {
 public:
 	/*
+	* 构造日程工厂,预留暂存区容量
+	*/
+	SchedulerFactory();
+
+	/*
 	* 注册调度
 	* @id: 调度类型
 	* @power: 分配权重
@@ -108,6 +113,16 @@ public:
 	*/
 	void RegisterScheduler(const std::string& id, float power,
 		std::function<SchedulerMod* ()> creator, std::function<void(SchedulerMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -145,6 +160,18 @@ public:
 	void DestroyScheduler(SchedulerMod* schedulerMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<SchedulerMod* ()>, std::function<void(SchedulerMod*)>>
+		> registries;
+
+		// 权重
+		std::unordered_map<std::string, float> powers;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -156,5 +183,8 @@ private:
 
 	// 权重
 	std::unordered_map<std::string, float> powers;
+
+	// 暂存数据
+	Temp temp;
 };
 

@@ -16,10 +16,33 @@ OrganizationMod::~OrganizationMod() {
 
 }
 
+OrganizationFactory::OrganizationFactory()
+	: registries(),
+	configs(),
+	powers(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+	temp.powers.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void OrganizationFactory::RegisterOrganization(const string& id, float power,
 	function<OrganizationMod* ()> creator, function<void(OrganizationMod*)> deleter) {
-	registries[id] = { creator, deleter };
-	powers[id] = power;
+	temp.registries[id] = { creator, deleter };
+	temp.powers[id] = power;
+}
+
+void OrganizationFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+	for (auto& [id, power] : temp.powers) {
+		powers[id] = power;
+	}
+}
+
+void OrganizationFactory::CleanTemp() {
+	temp.registries.clear();
+	temp.powers.clear();
 }
 
 void OrganizationFactory::RemoveAll() {

@@ -10,6 +10,9 @@
 // 子类注册函数
 typedef void (*RegisterModVehiclesFunc)(VehicleFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModVehiclesFunc)(VehicleFactory* factory);
+
 // 载具实体
 class Vehicle {
 public:

@@ -300,6 +300,8 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyTerrain(); },
 		[](TerrainMod* terrain) { delete terrain; }
 	);
+	terrainFactory->MergeTemp();
+	terrainFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -316,6 +318,12 @@ void Map::InitTerrains(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModTerrainsFunc>(GetProcAddress(modHandle, "RegisterModTerrains"));
 			if (registerFunc) {
 				registerFunc(terrainFactory);
+				terrainFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModTerrainsFunc>(GetProcAddress(modHandle, "FinishModTerrains"));
+				if (finishFunc) {
+					finishFunc(terrainFactory);
+				}
 			}
 		}
 		else {
@@ -329,6 +337,8 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
 	roadnetFactory->RegisterRoadnet(EmptyRoadnet::GetId(),
 		[]() { return new EmptyRoadnet(); },
 		[](RoadnetMod* roadnet) { delete roadnet; });
+	roadnetFactory->MergeTemp();
+	roadnetFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -345,6 +355,12 @@ void Map::InitRoadnets(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModRoadnetsFunc>(GetProcAddress(modHandle, "RegisterModRoadnets"));
 			if (registerFunc) {
 				registerFunc(roadnetFactory);
+				roadnetFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModRoadnetsFunc>(GetProcAddress(modHandle, "FinishModRoadnets"));
+				if (finishFunc) {
+					finishFunc(roadnetFactory);
+				}
 			}
 		}
 		else {
@@ -359,6 +375,8 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyZone(); },
 		[](ZoneMod* zone) { delete zone; }
 	);
+	zoneFactory->MergeTemp();
+	zoneFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -375,6 +393,12 @@ void Map::InitZones(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModZonesFunc>(GetProcAddress(modHandle, "RegisterModZones"));
 			if (registerFunc) {
 				registerFunc(zoneFactory);
+				zoneFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModZonesFunc>(GetProcAddress(modHandle, "FinishModZones"));
+				if (finishFunc) {
+					finishFunc(zoneFactory);
+				}
 			}
 		}
 		else {
@@ -390,6 +414,8 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyBuilding(); },
 		[](BuildingMod* building) { delete building; }
 	);
+	buildingFactory->MergeTemp();
+	buildingFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -406,6 +432,12 @@ void Map::InitBuildings(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModBuildingsFunc>(GetProcAddress(modHandle, "RegisterModBuildings"));
 			if (registerFunc) {
 				registerFunc(buildingFactory);
+				buildingFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModBuildingsFunc>(GetProcAddress(modHandle, "FinishModBuildings"));
+				if (finishFunc) {
+					finishFunc(buildingFactory);
+				}
 			}
 		}
 		else {
@@ -420,6 +452,8 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyComponent(); },
 		[](ComponentMod* building) { delete building; }
 	);
+	componentFactory->MergeTemp();
+	componentFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -436,6 +470,12 @@ void Map::InitComponents(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModComponentsFunc>(GetProcAddress(modHandle, "RegisterModComponents"));
 			if (registerFunc) {
 				registerFunc(componentFactory);
+				componentFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModComponentsFunc>(GetProcAddress(modHandle, "FinishModComponents"));
+				if (finishFunc) {
+					finishFunc(componentFactory);
+				}
 			}
 		}
 		else {
@@ -450,6 +490,8 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyRoom(); },
 		[](RoomMod* room) { delete room; }
 	);
+	roomFactory->MergeTemp();
+	roomFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -466,6 +508,12 @@ void Map::InitRooms(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModRoomsFunc>(GetProcAddress(modHandle, "RegisterModRooms"));
 			if (registerFunc) {
 				registerFunc(roomFactory);
+				roomFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModRoomsFunc>(GetProcAddress(modHandle, "FinishModRooms"));
+				if (finishFunc) {
+					finishFunc(roomFactory);
+				}
 			}
 		}
 		else {

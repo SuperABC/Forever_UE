@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModStoragesFunc)(StorageFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModStoragesFunc)(StorageFactory* factory);
+
 // 仓库实体
 class Storage {
 public:

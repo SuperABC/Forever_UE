@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModAssetsFunc)(AssetFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModAssetsFunc)(AssetFactory* factory);
+
 // 资产实体
 class Asset {
 public:

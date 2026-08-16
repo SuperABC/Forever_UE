@@ -66,12 +66,27 @@ public:
 class RouteFactory {
 public:
 	/*
+	* 构造路线工厂,预留暂存区容量
+	*/
+	RouteFactory();
+
+	/*
 	* 注册路线
 	* @id: 路线类型
 	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterRoute(const std::string& id,
 		std::function<RouteMod* ()> creator, std::function<void(RouteMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -109,6 +124,15 @@ public:
 	void DestroyRoute(RouteMod* routeMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<RouteMod* ()>, std::function<void(RouteMod*)>>
+		> registries;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -117,4 +141,7 @@ private:
 
 	// 启用配置
 	std::unordered_map<std::string, bool> configs;
+
+	// 暂存数据
+	Temp temp;
 };

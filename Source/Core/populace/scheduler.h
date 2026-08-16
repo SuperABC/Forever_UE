@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModSchedulersFunc)(SchedulerFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModSchedulersFunc)(SchedulerFactory* factory);
+
 // 调度实体
 class Scheduler {
 public:

@@ -124,12 +124,27 @@ public:
 class AssetFactory {
 public:
 	/*
+	* 构造资产工厂,预留暂存区容量
+	*/
+	AssetFactory();
+
+	/*
 	* 注册资产
 	* @id: 资产类型
 	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterAsset(const std::string& id,
 		std::function<AssetMod* ()> creator, std::function<void(AssetMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -162,6 +177,15 @@ public:
 	void DestroyAsset(AssetMod* assetMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<AssetMod* ()>, std::function<void(AssetMod*)>>
+		> registries;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -170,4 +194,7 @@ private:
 
 	// 启用配置
 	std::unordered_map<std::string, bool> configs;
+
+	// 暂存数据
+	Temp temp;
 };

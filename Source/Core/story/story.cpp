@@ -43,6 +43,8 @@ void Story::InitScripts(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyScript(); },
 		[](ScriptMod* script) { delete script; }
 	);
+	scriptFactory->MergeTemp();
+	scriptFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -59,6 +61,12 @@ void Story::InitScripts(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModScriptsFunc>(GetProcAddress(modHandle, "RegisterModScripts"));
 			if (registerFunc) {
 				registerFunc(scriptFactory);
+				scriptFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModScriptsFunc>(GetProcAddress(modHandle, "FinishModScripts"));
+				if (finishFunc) {
+					finishFunc(scriptFactory);
+				}
 			}
 		}
 		else {

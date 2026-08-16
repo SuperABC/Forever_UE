@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModRoutesFunc)(RouteFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModRoutesFunc)(RouteFactory* factory);
+
 // 线路实体
 class Route {
 public:

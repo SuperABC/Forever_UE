@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModZonesFunc)(ZoneFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModZonesFunc)(ZoneFactory* factory);
+
 // 园区实体
 class Zone : public Quad {
 public:

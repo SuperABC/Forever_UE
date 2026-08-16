@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModRoomsFunc)(RoomFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModRoomsFunc)(RoomFactory* factory);
+
 // 房间实体
 class Room : public Quad {
 public:

@@ -21,9 +21,26 @@ AssetMod::~AssetMod() {
 
 }
 
+AssetFactory::AssetFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void AssetFactory::RegisterAsset(const string& id,
 	function<AssetMod* ()> creator, function<void(AssetMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void AssetFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void AssetFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void AssetFactory::RemoveAll() {

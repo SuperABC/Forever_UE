@@ -246,6 +246,11 @@ public:
 class BuildingFactory {
 public:
 	/*
+	* 构造建筑工厂,预留暂存区容量
+	*/
+	BuildingFactory();
+
+	/*
 	* 注册建筑
 	* @id: 建筑类型
 	* @power: 建筑在各功能分区的生成权重
@@ -255,6 +260,16 @@ public:
 	void RegisterBuilding(const std::string& id,
 		const std::vector<float>& power, std::function<int(const Lot*, int, int)> assigner,
 		std::function<BuildingMod* ()> creator, std::function<void(BuildingMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -301,6 +316,21 @@ public:
 	void DestroyBuilding(BuildingMod* buildingMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<BuildingMod* ()>, std::function<void(BuildingMod*)>>
+		> registries;
+
+		// 权重
+		std::unordered_map<std::string, std::vector<float>> powers;
+
+		// 建筑生成器
+		std::unordered_map<std::string, std::function<int(const Lot*, int, int)>> assigners;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -315,5 +345,8 @@ private:
 
 	// 建筑生成器
 	std::unordered_map<std::string, std::function<int(const Lot*, int, int)>> assigners;
+
+	// 暂存数据
+	Temp temp;
 };
 

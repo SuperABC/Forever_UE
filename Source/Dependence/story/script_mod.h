@@ -119,6 +119,11 @@ public:
 class ScriptFactory {
 public:
 	/*
+	* 构造剧情工厂,预留暂存区容量
+	*/
+	ScriptFactory();
+
+	/*
 	* 注册脚本
 	* @id: 脚本类型
 	* @main: 是否为主线剧情脚本
@@ -126,6 +131,16 @@ public:
 	*/
 	void RegisterScript(const std::string& id, bool main,
 		std::function<ScriptMod* ()> creator, std::function<void(ScriptMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -163,6 +178,18 @@ public:
 	void DestroyScript(ScriptMod* scriptMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<ScriptMod* ()>, std::function<void(ScriptMod*)>>
+		> registries;
+
+		// 主线剧情脚本类型标识
+		std::string main;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -175,4 +202,6 @@ private:
 	// 主线剧情脚本类型标识
 	std::string main;
 
+	// 暂存数据
+	Temp temp;
 };

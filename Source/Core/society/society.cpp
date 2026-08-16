@@ -69,6 +69,8 @@ void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyCalendar(); },
 		[](CalendarMod* calendar) { delete calendar; }
 	);
+	calendarFactory->MergeTemp();
+	calendarFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -87,6 +89,13 @@ void Society::InitCalendars(unordered_map<string, HMODULE>& modHandles,
 				reinterpret_cast<RegisterModCalendarsFunc>(GetProcAddress(modHandle, "RegisterModCalendars"));
 			if (registerFunc) {
 				registerFunc(calendarFactory);
+				calendarFactory->MergeTemp();
+
+				auto finishFunc =
+					reinterpret_cast<FinishModCalendarsFunc>(GetProcAddress(modHandle, "FinishModCalendars"));
+				if (finishFunc) {
+					finishFunc(calendarFactory);
+				}
 			}
 		}
 		else {
@@ -102,6 +111,8 @@ void Society::InitJobs(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyJob(); },
 		[](JobMod* job) { delete job; }
 	);
+	jobFactory->MergeTemp();
+	jobFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -120,6 +131,13 @@ void Society::InitJobs(unordered_map<string, HMODULE>& modHandles,
 				reinterpret_cast<RegisterModJobsFunc>(GetProcAddress(modHandle, "RegisterModJobs"));
 			if (registerFunc) {
 				registerFunc(jobFactory);
+				jobFactory->MergeTemp();
+
+				auto finishFunc =
+					reinterpret_cast<FinishModJobsFunc>(GetProcAddress(modHandle, "FinishModJobs"));
+				if (finishFunc) {
+					finishFunc(jobFactory);
+				}
 			}
 		}
 		else {
@@ -135,6 +153,8 @@ void Society::InitOrganizations(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyOrganization(); },
 		[](OrganizationMod* job) { delete job; }
 	);
+	organizationFactory->MergeTemp();
+	organizationFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -153,6 +173,13 @@ void Society::InitOrganizations(unordered_map<string, HMODULE>& modHandles,
 				reinterpret_cast<RegisterModOrganizationsFunc>(GetProcAddress(modHandle, "RegisterModOrganizations"));
 			if (registerFunc) {
 				registerFunc(organizationFactory);
+				organizationFactory->MergeTemp();
+
+				auto finishFunc =
+					reinterpret_cast<FinishModOrganizationsFunc>(GetProcAddress(modHandle, "FinishModOrganizations"));
+				if (finishFunc) {
+					finishFunc(organizationFactory);
+				}
 			}
 		}
 		else {

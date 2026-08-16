@@ -14,9 +14,26 @@ RouteMod::~RouteMod() {
 
 }
 
+RouteFactory::RouteFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void RouteFactory::RegisterRoute(const string& id,
 	function<RouteMod* ()> creator, function<void(RouteMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void RouteFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void RouteFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void RouteFactory::RemoveAll() {

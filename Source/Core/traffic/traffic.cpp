@@ -67,6 +67,8 @@ void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyVehicle(); },
 		[](VehicleMod* vehicle) { delete vehicle; }
 	);
+	vehicleFactory->MergeTemp();
+	vehicleFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -83,6 +85,12 @@ void Traffic::InitVehicles(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModVehiclesFunc>(GetProcAddress(modHandle, "RegisterModVehicles"));
 			if (registerFunc) {
 				registerFunc(vehicleFactory);
+				vehicleFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModVehiclesFunc>(GetProcAddress(modHandle, "FinishModVehicles"));
+				if (finishFunc) {
+					finishFunc(vehicleFactory);
+				}
 			}
 		}
 		else {
@@ -97,6 +105,8 @@ void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyStation(); },
 		[](StationMod* station) { delete station; }
 	);
+	stationFactory->MergeTemp();
+	stationFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -113,6 +123,12 @@ void Traffic::InitStations(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModStationsFunc>(GetProcAddress(modHandle, "RegisterModStations"));
 			if (registerFunc) {
 				registerFunc(stationFactory);
+				stationFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModStationsFunc>(GetProcAddress(modHandle, "FinishModStations"));
+				if (finishFunc) {
+					finishFunc(stationFactory);
+				}
 			}
 		}
 		else {
@@ -127,6 +143,8 @@ void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyRoute(); },
 		[](RouteMod* route) { delete route; }
 	);
+	routeFactory->MergeTemp();
+	routeFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -143,6 +161,12 @@ void Traffic::InitRoutes(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModRoutesFunc>(GetProcAddress(modHandle, "RegisterModRoutes"));
 			if (registerFunc) {
 				registerFunc(routeFactory);
+				routeFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModRoutesFunc>(GetProcAddress(modHandle, "FinishModRoutes"));
+				if (finishFunc) {
+					finishFunc(routeFactory);
+				}
 			}
 		}
 		else {

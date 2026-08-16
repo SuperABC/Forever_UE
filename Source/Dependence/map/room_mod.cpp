@@ -97,9 +97,26 @@ void RoomMod::AddFurniture(string path, const Quad* quad,
 	furniture.push_back({ path, {rotatedX, rotatedY, pz, sx, sy, sz, rx, ry, yaw} });
 }
 
+RoomFactory::RoomFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void RoomFactory::RegisterRoom(const string& id,
 	function<RoomMod* ()> creator, function<void(RoomMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void RoomFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void RoomFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void RoomFactory::RemoveAll() {

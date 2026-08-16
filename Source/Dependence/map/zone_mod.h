@@ -86,6 +86,11 @@ public:
 class ZoneFactory {
 public:
 	/*
+	* 构造功能分区工厂,预留暂存区容量
+	*/
+	ZoneFactory();
+
+	/*
 	* 注册园区
 	* @id: 园区类型
 	* @assigner: 按地块计算应生成的园区数量的方法
@@ -93,6 +98,16 @@ public:
 	*/
 	void RegisterZone(const std::string& id, std::function<int(const Lot*)> assigner,
 		std::function<ZoneMod* ()> creator, std::function<void(ZoneMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -137,6 +152,18 @@ public:
 	void DestroyZone(ZoneMod* zoneMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<ZoneMod* ()>, std::function<void(ZoneMod*)>>
+		> registries;
+
+		// 园区生成器
+		std::unordered_map<std::string, std::function<int(const Lot*)>> assigners;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -148,5 +175,8 @@ private:
 
 	// 园区生成器
 	std::unordered_map<std::string, std::function<int(const Lot*)>> assigners;
+
+	// 暂存数据
+	Temp temp;
 };
 

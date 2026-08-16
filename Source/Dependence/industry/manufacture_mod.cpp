@@ -12,9 +12,26 @@ ManufactureMod::~ManufactureMod() {
 
 }
 
+ManufactureFactory::ManufactureFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void ManufactureFactory::RegisterManufacture(const string& id,
 	function<ManufactureMod* ()> creator, function<void(ManufactureMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void ManufactureFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void ManufactureFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void ManufactureFactory::RemoveAll() {

@@ -34,9 +34,26 @@ void RoadnetMod::AddHatch(Connection* connection, float t1, float t2, float widt
 	hatches.emplace_back(Quad(cx, cy, length, width), rotation);
 }
 
+RoadnetFactory::RoadnetFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void RoadnetFactory::RegisterRoadnet(const string& id,
 	function<RoadnetMod* ()> creator, function<void(RoadnetMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void RoadnetFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void RoadnetFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void RoadnetFactory::RemoveAll() {

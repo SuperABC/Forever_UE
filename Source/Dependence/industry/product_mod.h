@@ -64,12 +64,27 @@ public:
 class ProductFactory {
 public:
 	/*
+	* 构造产品工厂,预留暂存区容量
+	*/
+	ProductFactory();
+
+	/*
 	* 注册产品
 	* @id: 产品类型
 	* @creator, deleter: 构造与析构函数
 	*/
 	void RegisterProduct(const std::string& id,
 		std::function<ProductMod* ()> creator, std::function<void(ProductMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -102,6 +117,15 @@ public:
 	void DestroyProduct(ProductMod* productMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<ProductMod* ()>, std::function<void(ProductMod*)>>
+		> registries;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -110,5 +134,8 @@ private:
 
 	// 启用配置
 	std::unordered_map<std::string, bool> configs;
+
+	// 暂存数据
+	Temp temp;
 
 };

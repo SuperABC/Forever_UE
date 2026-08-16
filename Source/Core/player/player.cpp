@@ -63,6 +63,8 @@ void Player::InitAssets(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyAsset(); },
 		[](AssetMod* asset) { delete asset; }
 	);
+	assetFactory->MergeTemp();
+	assetFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -81,6 +83,12 @@ void Player::InitAssets(unordered_map<string, HMODULE>& modHandles,
 				reinterpret_cast<RegisterModAssetsFunc>(GetProcAddress(modHandle, "RegisterModAssets"));
 			if (registerFunc) {
 				registerFunc(assetFactory);
+				assetFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModAssetsFunc>(GetProcAddress(modHandle, "FinishModAssets"));
+				if (finishFunc) {
+					finishFunc(assetFactory);
+				}
 			}
 		}
 		else {
@@ -97,6 +105,8 @@ void Player::InitPuzzles(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyPuzzle(); },
 		[](PuzzleMod* puzzle) { delete puzzle; }
 	);
+	puzzleFactory->MergeTemp();
+	puzzleFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -113,6 +123,12 @@ void Player::InitPuzzles(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModPuzzlesFunc>(GetProcAddress(modHandle, "RegisterModPuzzles"));
 			if (registerFunc) {
 				registerFunc(puzzleFactory);
+				puzzleFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModPuzzlesFunc>(GetProcAddress(modHandle, "FinishModPuzzles"));
+				if (finishFunc) {
+					finishFunc(puzzleFactory);
+				}
 			}
 		}
 		else {
@@ -131,6 +147,8 @@ void Player::InitApps(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyApp(); },
 		[](AppMod* app) { delete app; }
 	);
+	appFactory->MergeTemp();
+	appFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -145,6 +163,12 @@ void Player::InitApps(unordered_map<string, HMODULE>& modHandles,
 			auto registerFunc = reinterpret_cast<RegisterModAppsFunc>(GetProcAddress(modHandle, "RegisterModApps"));
 			if (registerFunc) {
 				registerFunc(appFactory);
+				appFactory->MergeTemp();
+
+				auto finishFunc = reinterpret_cast<FinishModAppsFunc>(GetProcAddress(modHandle, "FinishModApps"));
+				if (finishFunc) {
+					finishFunc(appFactory);
+				}
 			}
 		}
 		else {

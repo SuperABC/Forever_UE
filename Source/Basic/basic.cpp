@@ -45,6 +45,10 @@ extern "C" __declspec(dllexport) void RegisterModTerrains(TerrainFactory* factor
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModTerrains(TerrainFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModRoadnets() {
 	static vector<string> mods = { "jing" };
 	return static_cast<void*>(&mods);
@@ -57,6 +61,10 @@ extern "C" __declspec(dllexport) void RegisterModRoadnets(RoadnetFactory* factor
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModRoadnets(RoadnetFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModZones() {
 	static vector<string> mods = { "residential" };
 	return static_cast<void*>(&mods);
@@ -67,6 +75,10 @@ extern "C" __declspec(dllexport) void RegisterModZones(ZoneFactory* factory) {
 		[]() { return new ResidentialZone(); },
 		[](ZoneMod* zone) { delete zone; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModZones(ZoneFactory* factory) {
+	factory->CleanTemp();
 }
 
 extern "C" __declspec(dllexport) void* GetModBuildings() {
@@ -97,6 +109,10 @@ extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* fact
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModBuildings(BuildingFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModComponents() {
 	static vector<string> mods = { "residential", "shop", "factory" };
 	return static_cast<void*>(&mods);
@@ -115,6 +131,10 @@ extern "C" __declspec(dllexport) void RegisterModComponents(ComponentFactory* fa
 		[]() { return new FactoryComponent(); },
 		[](ComponentMod* component) { delete component; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModComponents(ComponentFactory* factory) {
+	factory->CleanTemp();
 }
 
 extern "C" __declspec(dllexport) void* GetModRooms() {
@@ -145,6 +165,10 @@ extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModRooms(RoomFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModNames() {
 	static vector<string> mods = { "chinese" };
 	return static_cast<void*>(&mods);
@@ -157,6 +181,10 @@ extern "C" __declspec(dllexport) void RegisterModNames(NameFactory* factory) {
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModNames(NameFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModSchedulers() {
 	static vector<string> mods = { "workonly" };
 	return static_cast<void*>(&mods);
@@ -167,6 +195,10 @@ extern "C" __declspec(dllexport) void RegisterModSchedulers(SchedulerFactory* fa
 		[]() { return new WorkonlyScheduler(); },
 		[](SchedulerMod* scheduler) { delete scheduler; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModSchedulers(SchedulerFactory* factory) {
+	factory->CleanTemp();
 }
 
 extern "C" __declspec(dllexport) void* GetModCalendars() {
@@ -185,6 +217,10 @@ extern "C" __declspec(dllexport) void RegisterModCalendars(CalendarFactory* fact
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModCalendars(CalendarFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModJobs() {
 	static vector<string> mods = { "shop_saler" };
 	return static_cast<void*>(&mods);
@@ -195,6 +231,10 @@ extern "C" __declspec(dllexport) void RegisterModJobs(JobFactory* factory) {
 		[]() { return new ShopSalerJob(); },
 		[](JobMod* job) { delete job; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModJobs(JobFactory* factory) {
+	factory->CleanTemp();
 }
 
 extern "C" __declspec(dllexport) void* GetModOrganizations() {
@@ -209,6 +249,10 @@ extern "C" __declspec(dllexport) void RegisterModOrganizations(OrganizationFacto
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModOrganizations(OrganizationFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModScripts() {
 	static vector<string> mods = { "npc" };
 	return static_cast<void*>(&mods);
@@ -219,6 +263,10 @@ extern "C" __declspec(dllexport) void RegisterModScripts(ScriptFactory* factory)
 		[]() { return new NPCScript(); },
 		[](ScriptMod* script) { delete script; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModScripts(ScriptFactory* factory) {
+	factory->CleanTemp();
 }
 
 extern "C" __declspec(dllexport) void* GetModProducts() {
@@ -233,6 +281,10 @@ extern "C" __declspec(dllexport) void RegisterModProducts(ProductFactory* factor
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModProducts(ProductFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModStorages() {
 	static vector<string> mods = { "shop" };
 	return static_cast<void*>(&mods);
@@ -245,6 +297,10 @@ extern "C" __declspec(dllexport) void RegisterModStorages(StorageFactory* factor
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModStorages(StorageFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModManufactures() {
 	static vector<string> mods = { "experience" };
 	return static_cast<void*>(&mods);
@@ -255,6 +311,10 @@ extern "C" __declspec(dllexport) void RegisterModManufactures(ManufactureFactory
 		[]() { return new ExperienceManufacture(); },
 		[](ManufactureMod* manufacture) { delete manufacture; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModManufactures(ManufactureFactory* factory) {
+	factory->CleanTemp();
 }
 
 extern "C" __declspec(dllexport) void* GetModVehicles() {
@@ -273,6 +333,10 @@ extern "C" __declspec(dllexport) void RegisterModVehicles(VehicleFactory* factor
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModVehicles(VehicleFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModStations() {
 	static vector<string> mods = { "airport" };
 	return static_cast<void*>(&mods);
@@ -285,6 +349,10 @@ extern "C" __declspec(dllexport) void RegisterModStations(StationFactory* factor
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModStations(StationFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModRoutes() {
 	static vector<string> mods = { "air" };
 	return static_cast<void*>(&mods);
@@ -295,6 +363,10 @@ extern "C" __declspec(dllexport) void RegisterModRoutes(RouteFactory* factory) {
 		[]() { return new AirRoute(); },
 		[](RouteMod* station) { delete station; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModRoutes(RouteFactory* factory) {
+	factory->CleanTemp();
 }
 
 extern "C" __declspec(dllexport) void* GetModAssets() {
@@ -325,6 +397,10 @@ extern "C" __declspec(dllexport) void RegisterModAssets(AssetFactory* factory) {
 	);
 }
 
+extern "C" __declspec(dllexport) void FinishModAssets(AssetFactory* factory) {
+	factory->CleanTemp();
+}
+
 extern "C" __declspec(dllexport) void* GetModApps() {
 	static vector<string> mods = { "test" };
 	return static_cast<void*>(&mods);
@@ -339,6 +415,10 @@ extern "C" __declspec(dllexport) void RegisterModApps(AppFactory* factory) {
 		[]() { return new TestApp(); },
 		[](AppMod* app) { delete app; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModApps(AppFactory* factory) {
+	factory->CleanTemp();
 }
 
 extern "C" __declspec(dllexport) void* GetModPuzzles() {
@@ -377,5 +457,9 @@ extern "C" __declspec(dllexport) void RegisterModPuzzles(PuzzleFactory* factory)
 		[]() { return new WarPuzzle(); },
 		[](PuzzleMod* puzzle) { delete puzzle; }
 	);
+}
+
+extern "C" __declspec(dllexport) void FinishModPuzzles(PuzzleFactory* factory) {
+	factory->CleanTemp();
 }
 

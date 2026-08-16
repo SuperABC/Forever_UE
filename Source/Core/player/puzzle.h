@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModPuzzlesFunc)(PuzzleFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModPuzzlesFunc)(PuzzleFactory* factory);
+
 // 小游戏实体
 class Puzzle {
 public:

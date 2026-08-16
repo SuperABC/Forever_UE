@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModBuildingsFunc)(BuildingFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModBuildingsFunc)(BuildingFactory* factory);
+
 // 矩形相对参数的固定长度（两个对角点，每点x/y各占ratio+offset两个浮点）
 #define RECT_PARAM_COUNT 8
 

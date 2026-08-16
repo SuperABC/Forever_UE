@@ -31,7 +31,7 @@ vector<float> ResidentialBuilding::GetPowers() {
 }
 
 function<int(const Lot*, int, int)> ResidentialBuilding::BuildingAssigner = [](const Lot*, int, int) {
-	return 1;
+	return 0;
 };
 
 float ResidentialBuilding::RandomAcreage() {

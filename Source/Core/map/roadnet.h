@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModRoadnetsFunc)(RoadnetFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModRoadnetsFunc)(RoadnetFactory* factory);
+
 // 路网实体
 class Roadnet {
 public:

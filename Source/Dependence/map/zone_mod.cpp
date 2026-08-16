@@ -16,10 +16,33 @@ ZoneMod::~ZoneMod() {
 
 }
 
+ZoneFactory::ZoneFactory()
+	: registries(),
+	configs(),
+	assigners(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+	temp.assigners.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void ZoneFactory::RegisterZone(const string& id, function<int(const Lot*)> assigner,
 	function<ZoneMod* ()> creator, function<void(ZoneMod*)> deleter) {
-	registries[id] = { creator, deleter };
-	assigners[id] = assigner;
+	temp.registries[id] = { creator, deleter };
+	temp.assigners[id] = assigner;
+}
+
+void ZoneFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+	for (auto& [id, assigner] : temp.assigners) {
+		assigners[id] = assigner;
+	}
+}
+
+void ZoneFactory::CleanTemp() {
+	temp.registries.clear();
+	temp.assigners.clear();
 }
 
 void ZoneFactory::RemoveAll() {

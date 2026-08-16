@@ -146,12 +146,41 @@ void BuildingMod::AddPivot(vector<float> point, int face) {
 	pivots.push_back(rotated);
 }
 
+BuildingFactory::BuildingFactory()
+	: registries(),
+	configs(),
+	powers(),
+	assigners(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+	temp.powers.reserve(TEMP_RESERVE_CAPACITY);
+	temp.assigners.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void BuildingFactory::RegisterBuilding(const string& id,
 	const vector<float>& power, function<int(const Lot*, int, int)> assigner,
 	function<BuildingMod* ()> creator, function<void(BuildingMod*)> deleter) {
-	registries[id] = { creator, deleter };
-	powers[id] = power;
-	assigners[id] = assigner;
+	temp.registries[id] = { creator, deleter };
+	temp.powers[id] = power;
+	temp.assigners[id] = assigner;
+}
+
+void BuildingFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+	for (auto& [id, power] : temp.powers) {
+		powers[id] = power;
+	}
+	for (auto& [id, assigner] : temp.assigners) {
+		assigners[id] = assigner;
+	}
+}
+
+void BuildingFactory::CleanTemp() {
+	temp.registries.clear();
+	temp.powers.clear();
+	temp.assigners.clear();
 }
 
 void BuildingFactory::RemoveAll() {

@@ -47,15 +47,37 @@ int ScriptMod::FindLabel(const string& label) const {
 	return -1;
 }
 
+ScriptFactory::ScriptFactory()
+	: registries(),
+	configs(),
+	main(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void ScriptFactory::RegisterScript(const string& id, bool main,
 	function<ScriptMod* ()> creator, function<void(ScriptMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
 	if (main) {
-		if (this->main.size() > 0) {
+		if (temp.main.size() > 0) {
 			debugf("Warning: Multiple main script loaded, overwriting the previous one.\n");
 		}
-		this->main = id;
+		temp.main = id;
 	}
+}
+
+void ScriptFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+	if (!temp.main.empty()) {
+		main = temp.main;
+	}
+}
+
+void ScriptFactory::CleanTemp() {
+	temp.registries.clear();
+	temp.main.clear();
 }
 
 void ScriptFactory::RemoveAll() {

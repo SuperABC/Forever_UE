@@ -8,6 +8,9 @@
 // 子类注册函数
 typedef void (*RegisterModStationsFunc)(StationFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModStationsFunc)(StationFactory* factory);
+
 // 站点实体
 class Station {
 public:

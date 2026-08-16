@@ -81,6 +81,11 @@ public:
 class AppFactory {
 public:
 	/*
+	* 构造应用工厂,预留暂存区容量
+	*/
+	AppFactory();
+
+	/*
 	* 注册应用
 	* @id: 应用类型
 	* @creator, deleter: 构造与析构函数
@@ -89,6 +94,16 @@ public:
 		std::function<void(PostHandle*)> init, std::function<int(Canvas*, int, PostHandle*)> loop,
 		std::function<void(Canvas*, PostHandle*)> back, std::function<void(Canvas*, PostHandle*)> refresh,
 		std::function<AppMod*()> creator, std::function<void(AppMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -162,7 +177,18 @@ private:
 		std::function<void(AppMod*)> deleter;
 	};
 
-	// 启用配置
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<std::string, Registry> registries;
+	};
+
+	// 注册表
 	std::unordered_map<std::string, Registry> registries;
+
+	// 启用配置
 	std::unordered_map<std::string, bool> configs;
+
+	// 暂存数据
+	Temp temp;
 };

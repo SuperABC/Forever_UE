@@ -70,6 +70,11 @@ public:
 class VehicleFactory {
 public:
 	/*
+	* 构造载具工厂,预留暂存区容量
+	*/
+	VehicleFactory();
+
+	/*
 	* 注册载具
 	* @id: 载具类型
 	* @label: 载具标签
@@ -77,6 +82,16 @@ public:
 	*/
 	void RegisterVehicle(const std::string& id, std::string label,
 		std::function<VehicleMod* ()> creator, std::function<void(VehicleMod*)> deleter);
+
+	/*
+	* 将暂存数据合并进正式注册表
+	*/
+	void MergeTemp();
+
+	/*
+	* 清空暂存数据
+	*/
+	void CleanTemp();
 
 	/*
 	* 清空所有注册
@@ -109,6 +124,18 @@ public:
 	void DestroyVehicle(VehicleMod* vehicleMod) const;
 
 private:
+	// 暂存本轮注册写入的数据,避免跨模块直接写正式成员
+	struct Temp {
+		// 注册表
+		std::unordered_map<
+			std::string,
+			std::pair<std::function<VehicleMod* ()>, std::function<void(VehicleMod*)>>
+		> registries;
+
+		// 标签
+		std::unordered_map<std::string, std::vector<std::string>> labels;
+	};
+
 	// 注册表
 	std::unordered_map<
 		std::string,
@@ -120,5 +147,8 @@ private:
 
 	// 标签
 	std::unordered_map<std::string, std::vector<std::string>> labels;
+
+	// 暂存数据
+	Temp temp;
 };
 

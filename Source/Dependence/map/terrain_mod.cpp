@@ -40,9 +40,26 @@ void TerrainMod::ShapeFilter(int x, int y, int width, int height,
 		set(x, y, GetType());
 }
 
+TerrainFactory::TerrainFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void TerrainFactory::RegisterTerrain(const string& id,
 	function<TerrainMod* ()> creator, function<void(TerrainMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void TerrainFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void TerrainFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void TerrainFactory::RemoveAll() {

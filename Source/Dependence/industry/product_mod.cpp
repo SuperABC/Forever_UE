@@ -15,9 +15,26 @@ ProductMod::~ProductMod() {
 
 }
 
+ProductFactory::ProductFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void ProductFactory::RegisterProduct(const string& id,
 	function<ProductMod* ()> creator, function<void(ProductMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void ProductFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void ProductFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void ProductFactory::RemoveAll() {

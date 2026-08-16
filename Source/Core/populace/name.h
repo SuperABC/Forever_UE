@@ -10,6 +10,9 @@
 // 子类注册函数
 typedef void (*RegisterModNamesFunc)(NameFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModNamesFunc)(NameFactory* factory);
+
 // 姓名实体
 class Name {
 public:

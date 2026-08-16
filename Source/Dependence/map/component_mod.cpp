@@ -12,9 +12,26 @@ ComponentMod::~ComponentMod() {
 
 }
 
+ComponentFactory::ComponentFactory()
+	: registries(),
+	configs(),
+	temp() {
+	temp.registries.reserve(TEMP_RESERVE_CAPACITY);
+}
+
 void ComponentFactory::RegisterComponent(const string& id,
 	function<ComponentMod* ()> creator, function<void(ComponentMod*)> deleter) {
-	registries[id] = { creator, deleter };
+	temp.registries[id] = { creator, deleter };
+}
+
+void ComponentFactory::MergeTemp() {
+	for (auto& [id, registry] : temp.registries) {
+		registries[id] = registry;
+	}
+}
+
+void ComponentFactory::CleanTemp() {
+	temp.registries.clear();
 }
 
 void ComponentFactory::RemoveAll() {

@@ -73,6 +73,8 @@ void Populace::InitNames(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyName(); },
 		[](NameMod* name) { delete name; }
 	);
+	nameFactory->MergeTemp();
+	nameFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -91,6 +93,13 @@ void Populace::InitNames(unordered_map<string, HMODULE>& modHandles,
 				reinterpret_cast<RegisterModNamesFunc>(GetProcAddress(modHandle, "RegisterModNames"));
 			if (registerFunc) {
 				registerFunc(nameFactory);
+				nameFactory->MergeTemp();
+
+				auto finishFunc =
+					reinterpret_cast<FinishModNamesFunc>(GetProcAddress(modHandle, "FinishModNames"));
+				if (finishFunc) {
+					finishFunc(nameFactory);
+				}
 			}
 		}
 		else {
@@ -106,6 +115,8 @@ void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles,
 		[]() { return new EmptyScheduler(); },
 		[](SchedulerMod* scheduler) { delete scheduler; }
 	);
+	schedulerFactory->MergeTemp();
+	schedulerFactory->CleanTemp();
 
 	for (auto dll : dlls) {
 		HMODULE modHandle;
@@ -124,6 +135,13 @@ void Populace::InitSchedulers(unordered_map<string, HMODULE>& modHandles,
 				reinterpret_cast<RegisterModSchedulersFunc>(GetProcAddress(modHandle, "RegisterModSchedulers"));
 			if (registerFunc) {
 				registerFunc(schedulerFactory);
+				schedulerFactory->MergeTemp();
+
+				auto finishFunc =
+					reinterpret_cast<FinishModSchedulersFunc>(GetProcAddress(modHandle, "FinishModSchedulers"));
+				if (finishFunc) {
+					finishFunc(schedulerFactory);
+				}
 			}
 		}
 		else {

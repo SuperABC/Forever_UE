@@ -10,6 +10,9 @@
 // 子类注册函数
 typedef void (*RegisterModScriptsFunc)(ScriptFactory* factory);
 
+// 子类注册收尾函数
+typedef void (*FinishModScriptsFunc)(ScriptFactory* factory);
+
 // 事件实体
 class Script : public Container {
 public:
