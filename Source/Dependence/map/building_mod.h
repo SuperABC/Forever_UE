@@ -191,6 +191,15 @@ public:
 	*/
 	void AddPivot(std::vector<float> point, int face);
 
+	/*
+	* Tool
+	* 将正北朝向下定义的建筑体量按建筑当前朝向旋转后赋值给 construction
+	* @direction: 建筑当前朝向
+	* @x, y: 正北朝向下的体量中心比例坐标
+	* @sizeX, sizeY: 正北朝向下的体量尺寸比例
+	*/
+	void AssignConstruction(int direction, float x, float y, float sizeX, float sizeY);
+
 	// 最大面积限制
 	float maxAcreage;
 

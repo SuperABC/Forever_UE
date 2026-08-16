@@ -96,22 +96,7 @@ void AirportBuilding::LayoutBuilding(const Quad* quad) {
 }
 
 void AirportBuilding::PlaceConstruction() {
-	switch (direction) {
-	case 0:
-		construction = Quad(0.3f, 0.5f, 0.4f, 0.8f);
-		break;
-	case 1:
-		construction = Quad(0.7f, 0.5f, 0.4f, 0.8f);
-		break;
-	case 2:
-		construction = Quad(0.5f, 0.3f, 0.8f, 0.4f);
-		break;
-	case 3:
-		construction = Quad(0.5f, 0.7f, 0.8f, 0.4f);
-		break;
-	default:
-		break;
-	}
+	AssignConstruction(direction, 0.5f, 0.3f, 0.8f, 0.4f);
 }
 
 void AirportBuilding::PlacePivots(Quad* building) {

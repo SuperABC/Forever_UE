@@ -41,10 +41,10 @@ float ResidentialBuilding::RandomAcreage() {
 }
 
 void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
-	if (quad->GetAcreage() < 4000) {
+	if (quad->GetAcreage() < 5000) {
 		layers = 3 + GetRandom(3);
 	}
-	else if (quad->GetAcreage() < 9000) {
+	else if (quad->GetAcreage() < 10000) {
 		layers = 6 + GetRandom(4);
 	}
 	else {
@@ -202,6 +202,72 @@ void ResidentialBuilding::PlacePivots(Quad* building) {
 
 }
 
+const char* ResidentialLowBuilding::GetId() {
+	return "residential_low";
+}
+
+const char* ResidentialLowBuilding::GetType() const {
+	return "residential_low";
+}
+
+vector<float> ResidentialLowBuilding::GetPowers() {
+	vector<float> powers(AREA_END, 0.f);
+	powers[AREA_RESIDENTIAL_HIGH] = 0.2f;
+	powers[AREA_RESIDENTIAL_MIDDLE] = 0.2f;
+	powers[AREA_RESIDENTIAL_LOW] = 1.f;
+	return powers;
+}
+
+float ResidentialLowBuilding::RandomAcreage() {
+	minAcreage = 2000.f;
+	maxAcreage = 6000.f;
+	return 2000.f + GetRandom(1000) / 1000.f * 4000.f;
+}
+
+const char* ResidentialMiddleBuilding::GetId() {
+	return "residential_middle";
+}
+
+const char* ResidentialMiddleBuilding::GetType() const {
+	return "residential_middle";
+}
+
+vector<float> ResidentialMiddleBuilding::GetPowers() {
+	vector<float> powers(AREA_END, 0.f);
+	powers[AREA_RESIDENTIAL_HIGH] = 0.2f;
+	powers[AREA_RESIDENTIAL_MIDDLE] = 1.f;
+	powers[AREA_RESIDENTIAL_LOW] = 0.2f;
+	return powers;
+}
+
+float ResidentialMiddleBuilding::RandomAcreage() {
+	minAcreage = 4000.f;
+	maxAcreage = 12000.f;
+	return 4000.f + GetRandom(1000) / 1000.f * 8000.f;
+}
+
+const char* ResidentialHighBuilding::GetId() {
+	return "residential_high";
+}
+
+const char* ResidentialHighBuilding::GetType() const {
+	return "residential_high";
+}
+
+vector<float> ResidentialHighBuilding::GetPowers() {
+	vector<float> powers(AREA_END, 0.f);
+	powers[AREA_RESIDENTIAL_HIGH] = 1.f;
+	powers[AREA_RESIDENTIAL_MIDDLE] = 0.2f;
+	powers[AREA_RESIDENTIAL_LOW] = 0.2f;
+	return powers;
+}
+
+float ResidentialHighBuilding::RandomAcreage() {
+	minAcreage = 6000.f;
+	maxAcreage = 18000.f;
+	return 6000.f + GetRandom(1000) / 1000.f * 12000.f;
+}
+
 int ShopBuilding::count = 0;
 
 ShopBuilding::ShopBuilding() : id(count++) {
@@ -226,11 +292,18 @@ const char* ShopBuilding::GetName() {
 }
 
 vector<float> ShopBuilding::GetPowers() {
-	return vector<float>(AREA_END, 1.f);
+	vector<float> powers(AREA_END, 0.f);
+	powers[AREA_COMMERCIAL_HIGH] = 1.f;
+	powers[AREA_COMMERCIAL_MIDDLE] = 1.f;
+	powers[AREA_COMMERCIAL_LOW] = 1.f;
+	return powers;
 }
 
-function<int(const Lot*, int, int)> ShopBuilding::BuildingAssigner = [](const Lot*, int, int) {
-	return 1;
+function<int(const Lot*, int, int)> ShopBuilding::BuildingAssigner = [](const Lot* lot, int, int) {
+	if (lot->GetArea() == AREA_COMMERCIAL_HIGH ||
+		lot->GetArea() == AREA_COMMERCIAL_MIDDLE ||
+		lot->GetArea() == AREA_COMMERCIAL_LOW)return 1;
+	else return 0;
 };
 
 float ShopBuilding::RandomAcreage() {
@@ -342,11 +415,18 @@ const char* FactoryBuilding::GetName() {
 }
 
 vector<float> FactoryBuilding::GetPowers() {
-	return vector<float>(AREA_END, 1.f);
+	vector<float> powers(AREA_END, 0.f);
+	powers[AREA_INDUSTRIAL_HIGH] = 1.f;
+	powers[AREA_INDUSTRIAL_MIDDLE] = 1.f;
+	powers[AREA_INDUSTRIAL_LOW] = 1.f;
+	return powers;
 }
 
-function<int(const Lot*, int, int)> FactoryBuilding::BuildingAssigner = [](const Lot*, int, int) {
-	return 0;
+function<int(const Lot*, int, int)> FactoryBuilding::BuildingAssigner = [](const Lot* lot, int, int) {
+	if (lot->GetArea() == AREA_INDUSTRIAL_HIGH ||
+		lot->GetArea() == AREA_INDUSTRIAL_MIDDLE ||
+		lot->GetArea() == AREA_INDUSTRIAL_LOW)return 1;
+	else return 0;
 };
 
 float FactoryBuilding::RandomAcreage() {
@@ -376,5 +456,90 @@ void FactoryBuilding::PlaceConstruction() {
 }
 
 void FactoryBuilding::PlacePivots(Quad* building) {
+
+}
+
+int HospitalBuilding::count = 0;
+
+HospitalBuilding::HospitalBuilding() : id(count++) {
+	direction = GetRandom(4);
+}
+
+HospitalBuilding::~HospitalBuilding() {
+
+}
+
+const char* HospitalBuilding::GetId() {
+	return "hospital";
+}
+
+const char* HospitalBuilding::GetType() const {
+	return "hospital";
+}
+
+const char* HospitalBuilding::GetName() {
+	name = "医院建筑" + to_string(id);
+	return name.data();
+}
+
+vector<float> HospitalBuilding::GetPowers() {
+	return vector<float>(AREA_END, 0.f);
+}
+
+function<int(const Lot*, int, int)> HospitalBuilding::BuildingAssigner = [](const Lot* lot, int, int) {
+	if (lot->GetArea() == AREA_OFFICIAL_HIGH ||
+		lot->GetArea() == AREA_OFFICIAL_MIDDLE ||
+		lot->GetArea() == AREA_OFFICIAL_LOW)return 1;
+	else return 0;
+};
+
+float HospitalBuilding::RandomAcreage() {
+	minAcreage = 8000.f;
+	maxAcreage = 16000.f;
+	return 8000.f + GetRandom(1000) / 1000.f * 8000.f;
+}
+
+void HospitalBuilding::LayoutBuilding(const Quad* quad) {
+	basements = 1;
+	layers = 5 + GetRandom(6);
+	height = 0.4f;
+	wallTexture = "/Game/Asset/Materials/White.White";
+
+	string component = "empty";
+	float size = 160.f;
+
+	AssignFloor(-1, direction, "preset_entrance_wing_b+");
+	ArrangeRow(-1, 0, "empty", size, component, 0);
+	ArrangeRow(-1, 1, "empty", size, component, 0);
+	ArrangeRow(-1, 2, "empty", size, component, 0);
+	ArrangeRow(-1, 3, "empty", size, component, 0);
+
+	AssignFloor(0, direction, "preset_entrance_wing_f^+-");
+	ArrangeRow(0, 0, "empty", size, component, 0);
+	ArrangeRow(0, 1, "empty", size, component, 0);
+	ArrangeRow(0, 2, "empty", size, component, 0);
+	ArrangeRow(0, 3, "empty", size, component, 0);
+
+	for (int i = 1; i < layers; i++) {
+		AssignFloor(i, direction, "preset_entrance_wing_f+-");
+		ArrangeRow(i, 0, "empty", size, component, 0);
+		ArrangeRow(i, 1, "empty", size, component, 0);
+		ArrangeRow(i, 2, "empty", size, component, 0);
+		ArrangeRow(i, 3, "empty", size, component, 0);
+	}
+
+	AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
+	AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
+	AddElevator("elevator1", 0, 2, -basements, layers - 1, "empty", { "basic_elevator" });
+	AddElevator("elevator2", 0, 3, -basements, layers - 1, "empty", { "basic_elevator" });
+
+	script = { "empty", { "basic_building" } };
+}
+
+void HospitalBuilding::PlaceConstruction() {
+	AssignConstruction(direction, 0.5f, 0.4f, 0.8f, 0.4f);
+}
+
+void HospitalBuilding::PlacePivots(Quad* building) {
 
 }

@@ -82,14 +82,24 @@ extern "C" __declspec(dllexport) void FinishModZones(ZoneFactory* factory) {
 }
 
 extern "C" __declspec(dllexport) void* GetModBuildings() {
-	static vector<string> mods = { "residential", "shop", "factory", "airport"};
+	static vector<string> mods = { "residential_low", "residential_middle", "residential_high", "shop", "factory", "airport", "hospital"};
 	return static_cast<void*>(&mods);
 }
 
 extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* factory) {
-	factory->RegisterBuilding(ResidentialBuilding::GetId(),
-		ResidentialBuilding::GetPowers(), ResidentialBuilding::BuildingAssigner,
-		[]() { return new ResidentialBuilding(); },
+	factory->RegisterBuilding(ResidentialLowBuilding::GetId(),
+		ResidentialLowBuilding::GetPowers(), ResidentialBuilding::BuildingAssigner,
+		[]() { return new ResidentialLowBuilding(); },
+		[](BuildingMod* building) { delete building; }
+	);
+	factory->RegisterBuilding(ResidentialMiddleBuilding::GetId(),
+		ResidentialMiddleBuilding::GetPowers(), ResidentialBuilding::BuildingAssigner,
+		[]() { return new ResidentialMiddleBuilding(); },
+		[](BuildingMod* building) { delete building; }
+	);
+	factory->RegisterBuilding(ResidentialHighBuilding::GetId(),
+		ResidentialHighBuilding::GetPowers(), ResidentialBuilding::BuildingAssigner,
+		[]() { return new ResidentialHighBuilding(); },
 		[](BuildingMod* building) { delete building; }
 	);
 	factory->RegisterBuilding(ShopBuilding::GetId(),
@@ -100,6 +110,11 @@ extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* fact
 	factory->RegisterBuilding(FactoryBuilding::GetId(),
 		FactoryBuilding::GetPowers(), FactoryBuilding::BuildingAssigner,
 		[]() { return new FactoryBuilding(); },
+		[](BuildingMod* building) { delete building; }
+	);
+	factory->RegisterBuilding(HospitalBuilding::GetId(),
+		HospitalBuilding::GetPowers(), HospitalBuilding::BuildingAssigner,
+		[]() { return new HospitalBuilding(); },
 		[](BuildingMod* building) { delete building; }
 	);
 	factory->RegisterBuilding(AirportBuilding::GetId(),

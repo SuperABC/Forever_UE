@@ -27,10 +27,10 @@ const char* ResidentialZone::GetName() {
 }
 
 void ResidentialZone::LayoutZone(const Lot* lot) {
-	acreage = 10000.f;
+	acreage = 20000.f;
 	mesh = "/Game/Asset/Meshes/Fence.Fence";
 	unit = 0.2f;
-	buildings = { {"residential", 1.f}, {"residential", 1.f} };
+	buildings = { {"residential_high", 1.f}, {"residential_high", 1.f}, {"residential_high", 1.f}, {"residential_high", 1.f} };
 	script = { "empty", { "basic_zone" } };
 }
 
@@ -39,6 +39,8 @@ void ResidentialZone::PlacePivots(Quad* zone) {
 }
 
 function<int(const Lot*)> ResidentialZone::ZoneAssigner = [](const Lot* lot) -> int {
-	return 1;
+	if (lot->GetArea() == AREA_RESIDENTIAL_HIGH ||
+		lot->GetArea() == AREA_RESIDENTIAL_MIDDLE)return 1;
+	else return 0;
 };
 

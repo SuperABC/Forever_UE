@@ -146,6 +146,38 @@ void BuildingMod::AddPivot(vector<float> point, int face) {
 	pivots.push_back(rotated);
 }
 
+void BuildingMod::AssignConstruction(int direction, float x, float y, float sizeX, float sizeY) {
+	if (direction < 0 || direction >= 4) {
+		THROW_EXCEPTION(InvalidArgumentException, "Facing direction out of range [0,3].\n");
+	}
+
+	float posX = x, posY = y, sx = sizeX, sy = sizeY;
+	switch (direction) {
+	case FACE_WEST:
+		posX = y;
+		posY = 1.f - x;
+		sx = sizeY;
+		sy = sizeX;
+		break;
+	case FACE_EAST:
+		posX = 1.f - y;
+		posY = x;
+		sx = sizeY;
+		sy = sizeX;
+		break;
+	case FACE_NORTH:
+		break;
+	case FACE_SOUTH:
+		posX = 1.f - x;
+		posY = 1.f - y;
+		break;
+	default:
+		break;
+	}
+
+	construction = Quad(posX, posY, sx, sy);
+}
+
 BuildingFactory::BuildingFactory()
 	: registries(),
 	configs(),
