@@ -82,6 +82,10 @@ float AirportBuilding::RandomAcreage() {
 	return 0.f;
 }
 
+void AirportBuilding::PlaceConstruction(const Quad* quad) {
+	AssignConstruction(direction, 0.5f, 0.3f, 0.8f, 0.4f);
+}
+
 void AirportBuilding::LayoutBuilding(const Quad* quad) {
 	layers = 1;
 	basements = 0;
@@ -93,10 +97,6 @@ void AirportBuilding::LayoutBuilding(const Quad* quad) {
 	AssignRoom(0, 0, "empty", component, 0);
 
 	script = { "empty", { "basic_building" } };
-}
-
-void AirportBuilding::PlaceConstruction() {
-	AssignConstruction(direction, 0.5f, 0.3f, 0.8f, 0.4f);
 }
 
 void AirportBuilding::PlacePivots(Quad* building) {

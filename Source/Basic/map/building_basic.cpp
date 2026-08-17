@@ -40,6 +40,10 @@ float ResidentialBuilding::RandomAcreage() {
 	return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 2.f, 2);
 }
 
+void ResidentialBuilding::PlaceConstruction(const Quad* quad) {
+	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
+}
+
 void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 	if (quad->GetAcreage() < 5000) {
 		layers = 3 + GetRandom(3);
@@ -63,17 +67,17 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		if (quad->GetSizeX() > 3)direction = GetRandom(2);
 		if(quad->GetSizeY() > 3)direction = 2 + GetRandom(2);
 	}
-	else if (quad->GetSizeX() <= 5 || quad->GetSizeY() <= 5) {
+	else if (quad->GetSizeX() <= 6 || quad->GetSizeY() <= 6) {
 		layout = GetRandom(2);
 		size = 160.f;
-		if (quad->GetSizeX() > 5)direction = layout * 2 + GetRandom(2);
-		if (quad->GetSizeY() > 5)direction = 2 - layout * 2 + GetRandom(2);
+		if (quad->GetSizeX() > 6)direction = layout * 2 + GetRandom(2);
+		if (quad->GetSizeY() > 6)direction = 2 - layout * 2 + GetRandom(2);
 	}
-	else if (quad->GetSizeX() <= 7 || quad->GetSizeY() <= 7) {
+	else if (quad->GetSizeX() <= 9 || quad->GetSizeY() <= 9) {
 		layout = 2;
 		size = 120.f;
-		if (quad->GetSizeX() > 7)direction = GetRandom(2);
-		if (quad->GetSizeY() > 7)direction = 2 + GetRandom(2);
+		if (quad->GetSizeX() > 9)direction = GetRandom(2);
+		if (quad->GetSizeY() > 9)direction = 2 + GetRandom(2);
 	}
 	else {
 		layout = 3;
@@ -194,10 +198,6 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 	script = { "empty", { "basic_building" } };
 }
 
-void ResidentialBuilding::PlaceConstruction() {
-	construction = Quad(0.5f, 0.5f, 0.6f, 0.6f);
-}
-
 void ResidentialBuilding::PlacePivots(Quad* building) {
 
 }
@@ -312,6 +312,10 @@ float ShopBuilding::RandomAcreage() {
 	return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 1.f, 2);
 }
 
+void ShopBuilding::PlaceConstruction(const Quad* quad) {
+	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
+}
+
 void ShopBuilding::LayoutBuilding(const Quad* quad) {
 	layers = 2;
 	height = 0.4f;
@@ -383,10 +387,6 @@ void ShopBuilding::LayoutBuilding(const Quad* quad) {
 	script = { "empty", { "basic_building" } };
 }
 
-void ShopBuilding::PlaceConstruction() {
-	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
-}
-
 void ShopBuilding::PlacePivots(Quad* building) {
 
 }
@@ -435,6 +435,10 @@ float FactoryBuilding::RandomAcreage() {
 	return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 1.f, 2);
 }
 
+void FactoryBuilding::PlaceConstruction(const Quad* quad) {
+	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
+}
+
 void FactoryBuilding::LayoutBuilding(const Quad* quad) {
 	basements = 1;
 	height = 0.6f;
@@ -451,10 +455,6 @@ void FactoryBuilding::LayoutBuilding(const Quad* quad) {
 	script = { "empty", { "basic_building" } };
 }
 
-void FactoryBuilding::PlaceConstruction() {
-	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
-}
-
 void FactoryBuilding::PlacePivots(Quad* building) {
 
 }
@@ -462,7 +462,7 @@ void FactoryBuilding::PlacePivots(Quad* building) {
 int HospitalBuilding::count = 0;
 
 HospitalBuilding::HospitalBuilding() : id(count++) {
-	direction = GetRandom(4);
+
 }
 
 HospitalBuilding::~HospitalBuilding() {
@@ -497,6 +497,16 @@ float HospitalBuilding::RandomAcreage() {
 	minAcreage = 8000.f;
 	maxAcreage = 16000.f;
 	return 8000.f + GetRandom(1000) / 1000.f * 8000.f;
+}
+
+void HospitalBuilding::PlaceConstruction(const Quad* quad) {
+	if (quad->GetSizeX() > quad->GetSizeY()) {
+		direction = FACE_NORTH + GetRandom(2);
+	}
+	else {
+		direction = FACE_WEST + GetRandom(2);
+	}
+	AssignConstruction(direction, 0.5f, 0.4f, 0.8f, 0.4f);
 }
 
 void HospitalBuilding::LayoutBuilding(const Quad* quad) {
@@ -534,10 +544,6 @@ void HospitalBuilding::LayoutBuilding(const Quad* quad) {
 	AddElevator("elevator4", 0, 3, -basements, layers - 1, "empty", { "basic_elevator" });
 
 	script = { "empty", { "basic_building" } };
-}
-
-void HospitalBuilding::PlaceConstruction() {
-	AssignConstruction(direction, 0.5f, 0.4f, 0.8f, 0.4f);
 }
 
 void HospitalBuilding::PlacePivots(Quad* building) {
@@ -583,6 +589,10 @@ float OfficeBuilding::RandomAcreage() {
 	maxAcreage = 18000.f;
 	minAcreage = 2000.f;
 	return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 2.f, 2);
+}
+
+void OfficeBuilding::PlaceConstruction(const Quad* quad) {
+	construction = Quad(0.5f, 0.5f, 0.6f, 0.6f);
 }
 
 void OfficeBuilding::LayoutBuilding(const Quad* quad) {
@@ -739,10 +749,102 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 	script = { "empty", { "basic_building" } };
 }
 
-void OfficeBuilding::PlaceConstruction() {
-	construction = Quad(0.5f, 0.5f, 0.6f, 0.6f);
+void OfficeBuilding::PlacePivots(Quad* building) {
+
 }
 
-void OfficeBuilding::PlacePivots(Quad* building) {
+int HotelBuilding::count = 0;
+
+HotelBuilding::HotelBuilding() : id(count++) {
+	direction = GetRandom(4);
+}
+
+HotelBuilding::~HotelBuilding() {
+
+}
+
+const char* HotelBuilding::GetId() {
+	return "hotel";
+}
+
+const char* HotelBuilding::GetType() const {
+	return "hotel";
+}
+
+const char* HotelBuilding::GetName() {
+	name = "酒店建筑" + to_string(id);
+	return name.data();
+}
+
+vector<float> HotelBuilding::GetPowers() {
+	vector<float> powers(AREA_END, 0.f);
+	powers[AREA_COMMERCIAL_HIGH] = 0.2f;
+	powers[AREA_COMMERCIAL_MIDDLE] = 0.2f;
+	powers[AREA_COMMERCIAL_LOW] = 0.2f;
+	return powers;
+}
+
+function<int(const Lot*, int, int)> HotelBuilding::BuildingAssigner = [](const Lot* lot, int, int) {
+	if (lot->GetArea() == AREA_COMMERCIAL_HIGH ||
+		lot->GetArea() == AREA_COMMERCIAL_MIDDLE ||
+		lot->GetArea() == AREA_COMMERCIAL_LOW)return 1;
+	else return 0;
+};
+
+float HotelBuilding::RandomAcreage() {
+	minAcreage = 4000.f;
+	maxAcreage = 16000.f;
+	return 4000.f * powf(1.f + GetRandom(1000) / 1000.f * 1.f, 2);
+}
+
+void HotelBuilding::PlaceConstruction(const Quad* quad) {
+	AssignConstruction(direction, 0.5f, 0.5f, 0.8f, 0.8f);
+}
+
+void HotelBuilding::LayoutBuilding(const Quad* quad) {
+	basements = 1;
+	layers = 3 + GetRandom(6);
+	height = 0.4f;
+	wallTexture = "/Game/Asset/Materials/White.White";
+
+	string component = "empty";
+	float size = 160.f;
+
+	AssignFloor(-1, direction, "preset_tshape_double_b+");
+	AssignRoom(-1, 0, "empty", component, 0);
+	ArrangeRow(-1, 0, "empty", size, component, 0);
+	ArrangeRow(-1, 1, "empty", size, component, 0);
+	ArrangeRow(-1, 2, "empty", size, component, 0);
+	ArrangeRow(-1, 3, "empty", size, component, 0);
+	ArrangeRow(-1, 4, "empty", size, component, 0);
+	ArrangeRow(-1, 5, "empty", size, component, 0);
+
+	AssignFloor(0, direction, "preset_tshape_double_f^+-");
+	AssignRoom(0, 0, "empty", component, 0);
+	ArrangeRow(0, 0, "empty", size, component, 0);
+	ArrangeRow(0, 1, "empty", size, component, 0);
+	ArrangeRow(0, 2, "empty", size, component, 0);
+	ArrangeRow(0, 3, "empty", size, component, 0);
+	ArrangeRow(0, 4, "empty", size, component, 0);
+	ArrangeRow(0, 5, "empty", size, component, 0);
+
+	for (int i = 1; i < layers; i++) {
+		AssignFloor(i, direction, "preset_tshape_double_f+-");
+		AssignRoom(i, 0, "empty", component, 0);
+		ArrangeRow(i, 0, "empty", size, component, 0);
+		ArrangeRow(i, 1, "empty", size, component, 0);
+		ArrangeRow(i, 2, "empty", size, component, 0);
+		ArrangeRow(i, 3, "empty", size, component, 0);
+		ArrangeRow(i, 4, "empty", size, component, 0);
+		ArrangeRow(i, 5, "empty", size, component, 0);
+	}
+
+	AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
+	AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
+
+	script = { "empty", { "basic_building" } };
+}
+
+void HotelBuilding::PlacePivots(Quad* building) {
 
 }

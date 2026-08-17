@@ -657,7 +657,7 @@ const Quad Building::GetConstruction() const {
 }
 
 void Building::PlaceConstruction() {
-	mod->PlaceConstruction();
+	mod->PlaceConstruction(this);
 	construction = Quad(mod->construction.GetPosX() * GetSizeX(), mod->construction.GetPosY() * GetSizeY(),
 		mod->construction.GetSizeX() * GetSizeX(), mod->construction.GetSizeY() * GetSizeY());
 }
@@ -1882,11 +1882,11 @@ float EmptyBuilding::RandomAcreage() {
 	return 0.f;
 }
 
-void EmptyBuilding::LayoutBuilding(const Quad* quad) {
+void EmptyBuilding::PlaceConstruction(const Quad* quad) {
 
 }
 
-void EmptyBuilding::PlaceConstruction() {
+void EmptyBuilding::LayoutBuilding(const Quad* quad) {
 
 }
 

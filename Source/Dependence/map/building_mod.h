@@ -83,16 +83,16 @@ public:
 
 	/*
 	* Override
+	* 放置楼栋
+	*/
+	COSTOM_INIT virtual void PlaceConstruction(const Quad* quad) = 0;
+
+	/*
+	* Override
 	* 布局建筑
 	* @quad: 建筑所占据的矩形区域
 	*/
 	COSTOM_INIT virtual void LayoutBuilding(const Quad* quad) = 0;
-
-	/*
-	* Override
-	* 放置楼栋
-	*/
-	COSTOM_INIT virtual void PlaceConstruction() = 0;
 
 	/*
 	* Override

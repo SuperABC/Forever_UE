@@ -1265,16 +1265,16 @@ public:
 
 	/*
 	* Override
+	* 放置楼栋
+	*/
+	virtual void PlaceConstruction(const Quad* quad) override;
+
+	/*
+	* Override
 	* 布局建筑
 	* @quad: 建筑所占据的矩形区域
 	*/
 	virtual void LayoutBuilding(const Quad* quad) override;
-
-	/*
-	* Override
-	* 放置楼栋
-	*/
-	virtual void PlaceConstruction() override;
 
 	/*
 	* Override

@@ -51,16 +51,16 @@ public:
 
 	/*
 	* Override
+	* 放置楼栋
+	*/
+	virtual void PlaceConstruction(const Quad* quad) override;
+
+	/*
+	* Override
 	* 布局建筑
 	* @quad: 建筑所占据的矩形区域
 	*/
 	virtual void LayoutBuilding(const Quad* quad) override;
-
-	/*
-	* Override
-	* 放置楼栋
-	*/
-	virtual void PlaceConstruction() override;
 
 	/*
 	* Override
@@ -212,16 +212,16 @@ public:
 
 	/*
 	* Override
+	* 放置楼栋
+	*/
+	virtual void PlaceConstruction(const Quad* quad) override;
+
+	/*
+	* Override
 	* 布局建筑
 	* @quad: 建筑所占据的矩形区域
 	*/
 	virtual void LayoutBuilding(const Quad* quad) override;
-
-	/*
-	* Override
-	* 放置楼栋
-	*/
-	virtual void PlaceConstruction() override;
 
 	/*
 	* Override
@@ -289,16 +289,16 @@ public:
 
 	/*
 	* Override
+	* 放置楼栋
+	*/
+	virtual void PlaceConstruction(const Quad* quad) override;
+
+	/*
+	* Override
 	* 布局建筑
 	* @quad: 建筑所占据的矩形区域
 	*/
 	virtual void LayoutBuilding(const Quad* quad) override;
-
-	/*
-	* Override
-	* 放置楼栋
-	*/
-	virtual void PlaceConstruction() override;
 
 	/*
 	* Override
@@ -366,16 +366,16 @@ public:
 
 	/*
 	* Override
+	* 放置楼栋
+	*/
+	virtual void PlaceConstruction(const Quad* quad) override;
+
+	/*
+	* Override
 	* 布局建筑
 	* @quad: 建筑所占据的矩形区域
 	*/
 	virtual void LayoutBuilding(const Quad* quad) override;
-
-	/*
-	* Override
-	* 放置楼栋
-	*/
-	virtual void PlaceConstruction() override;
 
 	/*
 	* Override
@@ -446,16 +446,16 @@ public:
 
 	/*
 	* Override
+	* 放置楼栋
+	*/
+	virtual void PlaceConstruction(const Quad* quad) override;
+
+	/*
+	* Override
 	* 布局建筑
 	* @quad: 建筑所占据的矩形区域
 	*/
 	virtual void LayoutBuilding(const Quad* quad) override;
-
-	/*
-	* Override
-	* 放置楼栋
-	*/
-	virtual void PlaceConstruction() override;
 
 	/*
 	* Override
@@ -473,4 +473,84 @@ private:
 
 	// 实例名称
 	std::string name;
+};
+
+// 酒店建筑
+class HotelBuilding : public BuildingMod {
+public:
+	/*
+	* 构造酒店建筑
+	*/
+	HotelBuilding();
+
+	/*
+	* 析构酒店建筑
+	*/
+	virtual ~HotelBuilding();
+
+	/*
+	* Override
+	* 建筑静态类型标识
+	*/
+	static const char* GetId();
+
+	/*
+	* Override
+	* 建筑动态类型标识
+	*/
+	virtual const char* GetType() const override;
+
+	/*
+	* Override
+	* 建筑实例唯一名称
+	*/
+	virtual const char* GetName() override;
+
+	/*
+	* Override
+	* 建筑在各功能分区的生成权重
+	*/
+	static std::vector<float> GetPowers();
+
+	// 按地块计算应生成的建筑数量
+	static std::function<int(const Lot*, int, int)> BuildingAssigner;
+
+	/*
+	* Override
+	* 采样建筑面积
+	*/
+	virtual float RandomAcreage() override;
+
+	/*
+	* Override
+	* 放置楼栋
+	*/
+	virtual void PlaceConstruction(const Quad* quad) override;
+
+	/*
+	* Override
+	* 布局建筑
+	* @quad: 建筑所占据的矩形区域
+	*/
+	virtual void LayoutBuilding(const Quad* quad) override;
+
+	/*
+	* Override
+	* 放置寻址锚点
+	* @building: 建筑所占据的矩形区域
+	*/
+	virtual void PlacePivots(Quad* building) override;
+
+private:
+	// 总实例数量
+	static int count;
+
+	// 实例编号
+	int id;
+
+	// 实例名称
+	std::string name;
+
+	// 建筑朝向
+	int direction;
 };
