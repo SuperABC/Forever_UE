@@ -82,7 +82,7 @@ extern "C" __declspec(dllexport) void FinishModZones(ZoneFactory* factory) {
 }
 
 extern "C" __declspec(dllexport) void* GetModBuildings() {
-	static vector<string> mods = { "residential_low", "residential_middle", "residential_high", "shop", "factory", "airport", "hospital"};
+	static vector<string> mods = { "residential_low", "residential_middle", "residential_high", "shop", "factory", "airport", "hospital", "office"};
 	return static_cast<void*>(&mods);
 }
 
@@ -115,6 +115,11 @@ extern "C" __declspec(dllexport) void RegisterModBuildings(BuildingFactory* fact
 	factory->RegisterBuilding(HospitalBuilding::GetId(),
 		HospitalBuilding::GetPowers(), HospitalBuilding::BuildingAssigner,
 		[]() { return new HospitalBuilding(); },
+		[](BuildingMod* building) { delete building; }
+	);
+	factory->RegisterBuilding(OfficeBuilding::GetId(),
+		OfficeBuilding::GetPowers(), OfficeBuilding::BuildingAssigner,
+		[]() { return new OfficeBuilding(); },
 		[](BuildingMod* building) { delete building; }
 	);
 	factory->RegisterBuilding(AirportBuilding::GetId(),

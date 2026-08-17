@@ -530,8 +530,8 @@ void HospitalBuilding::LayoutBuilding(const Quad* quad) {
 
 	AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
 	AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
-	AddElevator("elevator1", 0, 2, -basements, layers - 1, "empty", { "basic_elevator" });
-	AddElevator("elevator2", 0, 3, -basements, layers - 1, "empty", { "basic_elevator" });
+	AddElevator("elevator3", 0, 2, -basements, layers - 1, "empty", { "basic_elevator" });
+	AddElevator("elevator4", 0, 3, -basements, layers - 1, "empty", { "basic_elevator" });
 
 	script = { "empty", { "basic_building" } };
 }
@@ -541,5 +541,208 @@ void HospitalBuilding::PlaceConstruction() {
 }
 
 void HospitalBuilding::PlacePivots(Quad* building) {
+
+}
+
+int OfficeBuilding::count = 0;
+
+OfficeBuilding::OfficeBuilding() : id(count++) {
+
+}
+
+OfficeBuilding::~OfficeBuilding() {
+
+}
+
+const char* OfficeBuilding::GetId() {
+	return "office";
+}
+
+const char* OfficeBuilding::GetType() const {
+	return "office";
+}
+
+const char* OfficeBuilding::GetName() {
+	name = "办公建筑" + to_string(id);
+	return name.data();
+}
+
+vector<float> OfficeBuilding::GetPowers() {
+	vector<float> powers(AREA_END, 0.f);
+	powers[AREA_OFFICIAL_HIGH] = 1.f;
+	powers[AREA_OFFICIAL_MIDDLE] = 1.f;
+	powers[AREA_OFFICIAL_LOW] = 1.f;
+	return powers;
+}
+
+function<int(const Lot*, int, int)> OfficeBuilding::BuildingAssigner = [](const Lot*, int, int) {
+	return 0;
+};
+
+float OfficeBuilding::RandomAcreage() {
+	maxAcreage = 18000.f;
+	minAcreage = 2000.f;
+	return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 2.f, 2);
+}
+
+void OfficeBuilding::LayoutBuilding(const Quad* quad) {
+	if (quad->GetAcreage() < 5000) {
+		layers = 3 + GetRandom(3);
+	}
+	else if (quad->GetAcreage() < 10000) {
+		layers = 6 + GetRandom(4);
+	}
+	else {
+		layers = 10 + GetRandom(5);
+	}
+	basements = 1;
+	height = 0.4f;
+	wallTexture = "/Game/Asset/Materials/White.White";
+
+	int direction = GetRandom(4);
+	int layout = 0;
+	float size = 120.f;
+	if (quad->GetSizeX() <= 3 || quad->GetSizeY() <= 3) {
+		layout = 0;
+		size = 40.f;
+		if (quad->GetSizeX() > 3)direction = GetRandom(2);
+		if(quad->GetSizeY() > 3)direction = 2 + GetRandom(2);
+	}
+	else if (quad->GetSizeX() <= 5 || quad->GetSizeY() <= 5) {
+		layout = GetRandom(2);
+		size = 160.f;
+		if (quad->GetSizeX() > 5)direction = layout * 2 + GetRandom(2);
+		if (quad->GetSizeY() > 5)direction = 2 - layout * 2 + GetRandom(2);
+	}
+	else if (quad->GetSizeX() <= 7 || quad->GetSizeY() <= 7) {
+		layout = 2;
+		size = 120.f;
+		if (quad->GetSizeX() > 7)direction = GetRandom(2);
+		if (quad->GetSizeY() > 7)direction = 2 + GetRandom(2);
+	}
+	else {
+		layout = 3;
+		size = 120.f;
+		if (quad->GetSizeX() > quad->GetSizeY())direction = GetRandom(2);
+		else direction = 2 + GetRandom(2);
+	}
+
+	string component = "empty";
+
+	if (layout == 0) {
+		AssignFloor(-1, direction, "preset_straight_linear_b+");
+		ArrangeRow(-1, 0, "empty", size, component, 0);
+		ArrangeRow(-1, 1, "empty", size, component, 0);
+		AssignFloor(0, direction, "preset_straight_linear_f^+-");
+		ArrangeRow(0, 0, "empty", size, component, 0);
+		ArrangeRow(0, 1, "empty", size, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "preset_straight_linear_f+-");
+			ArrangeRow(i, 0, "empty", size, component, 0);
+			ArrangeRow(i, 1, "empty", size, component, 0);
+		}
+	}
+	else if (layout == 1) {
+		AssignFloor(-1, direction, "preset_lobby_wing_b+");
+		ArrangeRow(-1, 0, "empty", size, component, 0);
+		ArrangeRow(-1, 1, "empty", size, component, 0);
+		ArrangeRow(-1, 2, "empty", size, component, 0);
+		ArrangeRow(-1, 3, "empty", size, component, 0);
+		AssignFloor(0, direction, "preset_lobby_wing_f^+-");
+		ArrangeRow(0, 0, "empty", size, component, 0);
+		ArrangeRow(0, 1, "empty", size, component, 0);
+		ArrangeRow(0, 2, "empty", size, component, 0);
+		ArrangeRow(0, 3, "empty", size, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "preset_lobby_wing_f+-");
+			ArrangeRow(i, 0, "empty", size, component, 0);
+			ArrangeRow(i, 1, "empty", size, component, 0);
+			ArrangeRow(i, 2, "empty", size, component, 0);
+			ArrangeRow(i, 3, "empty", size, component, 0);
+		}
+
+		AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
+		AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
+	}
+	else if (layout == 2) {
+		AssignFloor(-1, direction, "preset_lshape_double_b+");
+		AssignRoom(-1, 0, "empty", component, 0);
+		AssignRoom(-1, 1, "empty", component, 0);
+		ArrangeRow(-1, 0, "empty", size, component, 0);
+		ArrangeRow(-1, 1, "empty", size, component, 0);
+		ArrangeRow(-1, 2, "empty", size, component, 0);
+		ArrangeRow(-1, 3, "empty", size, component, 0);
+		ArrangeRow(-1, 4, "empty", size, component, 0);
+		AssignFloor(0, direction, "preset_lshape_double_f^+-");
+		AssignRoom(0, 0, "empty", component, 0);
+		AssignRoom(0, 1, "empty", component, 0);
+		ArrangeRow(0, 0, "empty", size, component, 0);
+		ArrangeRow(0, 1, "empty", size, component, 0);
+		ArrangeRow(0, 2, "empty", size, component, 0);
+		ArrangeRow(0, 3, "empty", size, component, 0);
+		ArrangeRow(0, 4, "empty", size, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "preset_lshape_double_f+-");
+			AssignRoom(i, 0, "empty", component, 0);
+			AssignRoom(i, 1, "empty", component, 0);
+			ArrangeRow(i, 0, "empty", size, component, 0);
+			ArrangeRow(i, 1, "empty", size, component, 0);
+			ArrangeRow(i, 2, "empty", size, component, 0);
+			ArrangeRow(i, 3, "empty", size, component, 0);
+			ArrangeRow(i, 4, "empty", size, component, 0);
+		}
+	}
+	else if(layout == 3) {
+		AssignFloor(-1, direction, "preset_nshape_double_b+");
+		AssignRoom(-1, 0, "empty", component, 0);
+		AssignRoom(-1, 1, "empty", component, 0);
+		AssignRoom(-1, 2, "empty", component, 0);
+		ArrangeRow(-1, 0, "empty", size, component, 0);
+		ArrangeRow(-1, 1, "empty", size, component, 0);
+		ArrangeRow(-1, 2, "empty", size, component, 0);
+		ArrangeRow(-1, 3, "empty", size, component, 0);
+		ArrangeRow(-1, 4, "empty", size, component, 0);
+		ArrangeRow(-1, 5, "empty", size, component, 0);
+		ArrangeRow(-1, 6, "empty", size, component, 0);
+		ArrangeRow(-1, 7, "empty", size, component, 0);
+		AssignFloor(0, direction, "preset_nshape_double_f^+-");
+		AssignRoom(0, 0, "empty", component, 0);
+		AssignRoom(0, 1, "empty", component, 0);
+		AssignRoom(0, 2, "empty", component, 0);
+		ArrangeRow(0, 0, "empty", size, component, 0);
+		ArrangeRow(0, 1, "empty", size, component, 0);
+		ArrangeRow(0, 2, "empty", size, component, 0);
+		ArrangeRow(0, 3, "empty", size, component, 0);
+		ArrangeRow(0, 4, "empty", size, component, 0);
+		ArrangeRow(0, 5, "empty", size, component, 0);
+		ArrangeRow(0, 6, "empty", size, component, 0);
+		ArrangeRow(0, 7, "empty", size, component, 0);
+		for (int i = 1; i < layers; i++) {
+			AssignFloor(i, direction, "preset_nshape_double_f+-");
+			AssignRoom(i, 0, "empty", component, 0);
+			AssignRoom(i, 1, "empty", component, 0);
+			AssignRoom(i, 2, "empty", component, 0);
+			ArrangeRow(i, 0, "empty", size, component, 0);
+			ArrangeRow(i, 1, "empty", size, component, 0);
+			ArrangeRow(i, 2, "empty", size, component, 0);
+			ArrangeRow(i, 3, "empty", size, component, 0);
+			ArrangeRow(i, 4, "empty", size, component, 0);
+			ArrangeRow(i, 5, "empty", size, component, 0);
+			ArrangeRow(i, 6, "empty", size, component, 0);
+			ArrangeRow(i, 7, "empty", size, component, 0);
+		}
+
+		AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
+		AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
+	}
+
+	script = { "empty", { "basic_building" } };
+}
+
+void OfficeBuilding::PlaceConstruction() {
+	construction = Quad(0.5f, 0.5f, 0.6f, 0.6f);
+}
+
+void OfficeBuilding::PlacePivots(Quad* building) {
 
 }
