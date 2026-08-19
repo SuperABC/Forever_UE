@@ -163,7 +163,7 @@ extern "C" __declspec(dllexport) void FinishModComponents(ComponentFactory* fact
 }
 
 extern "C" __declspec(dllexport) void* GetModRooms() {
-	static vector<string> mods = { "residential", "shop", "warehouse", "factory", "parking" };
+	static vector<string> mods = { "residential", "shop", "warehouse", "factory", "parking", "doctor", "morgue", "lobby", "bunk", "office", "register", "waiting" };
 	return static_cast<void*>(&mods);
 }
 
@@ -186,6 +186,34 @@ extern "C" __declspec(dllexport) void RegisterModRooms(RoomFactory* factory) {
 	);
 	factory->RegisterRoom(ParkingRoom::GetId(),
 		[]() { return new ParkingRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(DoctorRoom::GetId(),
+		[]() { return new DoctorRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(MorgueRoom::GetId(),
+		[]() { return new MorgueRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(LobbyRoom::GetId(),
+		[]() { return new LobbyRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(BunkRoom::GetId(),
+		[]() { return new BunkRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(OfficeRoom::GetId(),
+		[]() { return new OfficeRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(RegisterRoom::GetId(),
+		[]() { return new RegisterRoom(); },
+		[](RoomMod* room) { delete room; }
+	);
+	factory->RegisterRoom(WaitingRoom::GetId(),
+		[]() { return new WaitingRoom(); },
 		[](RoomMod* room) { delete room; }
 	);
 }

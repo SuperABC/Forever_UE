@@ -164,3 +164,224 @@ void FactoryRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 void FactoryRoom::PlacePivots(Quad* room) {
 
 }
+
+int LobbyRoom::count = 0;
+
+LobbyRoom::LobbyRoom() : id(count++) {
+
+}
+
+LobbyRoom::~LobbyRoom() {
+
+}
+
+const char* LobbyRoom::GetId() {
+	return "lobby";
+}
+
+const char* LobbyRoom::GetType() const {
+	return "lobby";
+}
+
+const char* LobbyRoom::GetName() {
+	name = "大堂" + to_string(id);
+	return name.data();
+}
+
+void LobbyRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
+	isWorkspace = true;
+	workspaceCapacity = 2;
+}
+
+void LobbyRoom::PlacePivots(Quad* room) {
+
+}
+
+int BunkRoom::count = 0;
+
+BunkRoom::BunkRoom() : id(count++) {
+
+}
+
+BunkRoom::~BunkRoom() {
+
+}
+
+const char* BunkRoom::GetId() {
+	return "bunk";
+}
+
+const char* BunkRoom::GetType() const {
+	return "bunk";
+}
+
+const char* BunkRoom::GetName() {
+	name = "客房" + to_string(id);
+	return name.data();
+}
+
+void BunkRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
+
+}
+
+void BunkRoom::PlacePivots(Quad* room) {
+
+}
+
+int OfficeRoom::count = 0;
+
+OfficeRoom::OfficeRoom() : id(count++) {
+
+}
+
+OfficeRoom::~OfficeRoom() {
+
+}
+
+const char* OfficeRoom::GetId() {
+	return "office";
+}
+
+const char* OfficeRoom::GetType() const {
+	return "office";
+}
+
+const char* OfficeRoom::GetName() {
+	name = "办公室" + to_string(id);
+	return name.data();
+}
+
+void OfficeRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
+	isWorkspace = true;
+	workspaceCapacity = 2;
+}
+
+void OfficeRoom::PlacePivots(Quad* room) {
+
+}
+
+int RegisterRoom::count = 0;
+
+RegisterRoom::RegisterRoom() : id(count++) {
+
+}
+
+RegisterRoom::~RegisterRoom() {
+
+}
+
+const char* RegisterRoom::GetId() {
+	return "register";
+}
+
+const char* RegisterRoom::GetType() const {
+	return "register";
+}
+
+const char* RegisterRoom::GetName() {
+	name = "挂号处" + to_string(id);
+	return name.data();
+}
+
+void RegisterRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
+	isWorkspace = true;
+	workspaceCapacity = 1;
+}
+
+void RegisterRoom::PlacePivots(Quad* room) {
+
+}
+
+int WaitingRoom::count = 0;
+
+WaitingRoom::WaitingRoom() : id(count++) {
+
+}
+
+WaitingRoom::~WaitingRoom() {
+
+}
+
+const char* WaitingRoom::GetId() {
+	return "waiting";
+}
+
+const char* WaitingRoom::GetType() const {
+	return "waiting";
+}
+
+const char* WaitingRoom::GetName() {
+	name = "等候室" + to_string(id);
+	return name.data();
+}
+
+void WaitingRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
+
+}
+
+void WaitingRoom::PlacePivots(Quad* room) {
+
+}
+
+int DoctorRoom::count = 0;
+
+DoctorRoom::DoctorRoom() : id(count++) {
+
+}
+
+DoctorRoom::~DoctorRoom() {
+
+}
+
+const char* DoctorRoom::GetId() {
+	return "doctor";
+}
+
+const char* DoctorRoom::GetType() const {
+	return "doctor";
+}
+
+const char* DoctorRoom::GetName() {
+	name = "诊室" + to_string(id);
+	return name.data();
+}
+
+void DoctorRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
+	isWorkspace = true;
+	workspaceCapacity = 1;
+}
+
+void DoctorRoom::PlacePivots(Quad* room) {
+
+}
+
+int MorgueRoom::count = 0;
+
+MorgueRoom::MorgueRoom() : id(count++) {
+
+}
+
+MorgueRoom::~MorgueRoom() {
+
+}
+
+const char* MorgueRoom::GetId() {
+	return "morgue";
+}
+
+const char* MorgueRoom::GetType() const {
+	return "morgue";
+}
+
+const char* MorgueRoom::GetName() {
+	name = "太平间" + to_string(id);
+	return name.data();
+}
+
+void MorgueRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
+
+}
+
+void MorgueRoom::PlacePivots(Quad* room) {
+
+}

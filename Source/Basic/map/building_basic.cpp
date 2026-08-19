@@ -519,23 +519,26 @@ void HospitalBuilding::LayoutBuilding(const Quad* quad) {
 	float size = 160.f;
 
 	AssignFloor(-1, direction, "preset_entrance_wing_b+");
-	ArrangeRow(-1, 0, "empty", size, component, 0);
-	ArrangeRow(-1, 1, "empty", size, component, 0);
-	ArrangeRow(-1, 2, "empty", size, component, 0);
-	ArrangeRow(-1, 3, "empty", size, component, 0);
+	AssignRoom(-1, 0, "waiting", component, 0);
+	ArrangeRow(-1, 0, "morgue", size, component, 0);
+	ArrangeRow(-1, 1, "morgue", size, component, 0);
+	ArrangeRow(-1, 2, "morgue", size, component, 0);
+	ArrangeRow(-1, 3, "morgue", size, component, 0);
 
 	AssignFloor(0, direction, "preset_entrance_wing_f^+-");
-	ArrangeRow(0, 0, "empty", size, component, 0);
-	ArrangeRow(0, 1, "empty", size, component, 0);
-	ArrangeRow(0, 2, "empty", size, component, 0);
-	ArrangeRow(0, 3, "empty", size, component, 0);
+	AssignRoom(0, 0, "register", component, 0);
+	ArrangeRow(0, 0, "doctor", size, component, 0);
+	ArrangeRow(0, 1, "doctor", size, component, 0);
+	ArrangeRow(0, 2, "doctor", size, component, 0);
+	ArrangeRow(0, 3, "doctor", size, component, 0);
 
 	for (int i = 1; i < layers; i++) {
 		AssignFloor(i, direction, "preset_entrance_wing_f+-");
-		ArrangeRow(i, 0, "empty", size, component, 0);
-		ArrangeRow(i, 1, "empty", size, component, 0);
-		ArrangeRow(i, 2, "empty", size, component, 0);
-		ArrangeRow(i, 3, "empty", size, component, 0);
+		AssignRoom(i, 0, "waiting", component, 0);
+		ArrangeRow(i, 0, "doctor", size, component, 0);
+		ArrangeRow(i, 1, "doctor", size, component, 0);
+		ArrangeRow(i, 2, "doctor", size, component, 0);
+		ArrangeRow(i, 3, "doctor", size, component, 0);
 	}
 
 	AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
@@ -641,34 +644,34 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 
 	if (layout == 0) {
 		AssignFloor(-1, direction, "preset_straight_linear_b+");
-		ArrangeRow(-1, 0, "empty", size, component, 0);
-		ArrangeRow(-1, 1, "empty", size, component, 0);
+		ArrangeRow(-1, 0, "office", size, component, 0);
+		ArrangeRow(-1, 1, "office", size, component, 0);
 		AssignFloor(0, direction, "preset_straight_linear_f^+-");
-		ArrangeRow(0, 0, "empty", size, component, 0);
-		ArrangeRow(0, 1, "empty", size, component, 0);
+		ArrangeRow(0, 0, "office", size, component, 0);
+		ArrangeRow(0, 1, "office", size, component, 0);
 		for (int i = 1; i < layers; i++) {
 			AssignFloor(i, direction, "preset_straight_linear_f+-");
-			ArrangeRow(i, 0, "empty", size, component, 0);
-			ArrangeRow(i, 1, "empty", size, component, 0);
+			ArrangeRow(i, 0, "office", size, component, 0);
+			ArrangeRow(i, 1, "office", size, component, 0);
 		}
 	}
 	else if (layout == 1) {
 		AssignFloor(-1, direction, "preset_lobby_wing_b+");
-		ArrangeRow(-1, 0, "empty", size, component, 0);
-		ArrangeRow(-1, 1, "empty", size, component, 0);
-		ArrangeRow(-1, 2, "empty", size, component, 0);
-		ArrangeRow(-1, 3, "empty", size, component, 0);
+		ArrangeRow(-1, 0, "office", size, component, 0);
+		ArrangeRow(-1, 1, "office", size, component, 0);
+		ArrangeRow(-1, 2, "office", size, component, 0);
+		ArrangeRow(-1, 3, "office", size, component, 0);
 		AssignFloor(0, direction, "preset_lobby_wing_f^+-");
-		ArrangeRow(0, 0, "empty", size, component, 0);
-		ArrangeRow(0, 1, "empty", size, component, 0);
-		ArrangeRow(0, 2, "empty", size, component, 0);
-		ArrangeRow(0, 3, "empty", size, component, 0);
+		ArrangeRow(0, 0, "office", size, component, 0);
+		ArrangeRow(0, 1, "office", size, component, 0);
+		ArrangeRow(0, 2, "office", size, component, 0);
+		ArrangeRow(0, 3, "office", size, component, 0);
 		for (int i = 1; i < layers; i++) {
 			AssignFloor(i, direction, "preset_lobby_wing_f+-");
-			ArrangeRow(i, 0, "empty", size, component, 0);
-			ArrangeRow(i, 1, "empty", size, component, 0);
-			ArrangeRow(i, 2, "empty", size, component, 0);
-			ArrangeRow(i, 3, "empty", size, component, 0);
+			ArrangeRow(i, 0, "office", size, component, 0);
+			ArrangeRow(i, 1, "office", size, component, 0);
+			ArrangeRow(i, 2, "office", size, component, 0);
+			ArrangeRow(i, 3, "office", size, component, 0);
 		}
 
 		AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
@@ -676,70 +679,70 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 	}
 	else if (layout == 2) {
 		AssignFloor(-1, direction, "preset_lshape_double_b+");
-		AssignRoom(-1, 0, "empty", component, 0);
-		AssignRoom(-1, 1, "empty", component, 0);
-		ArrangeRow(-1, 0, "empty", size, component, 0);
-		ArrangeRow(-1, 1, "empty", size, component, 0);
-		ArrangeRow(-1, 2, "empty", size, component, 0);
-		ArrangeRow(-1, 3, "empty", size, component, 0);
-		ArrangeRow(-1, 4, "empty", size, component, 0);
+		AssignRoom(-1, 0, "office", component, 0);
+		AssignRoom(-1, 1, "office", component, 0);
+		ArrangeRow(-1, 0, "office", size, component, 0);
+		ArrangeRow(-1, 1, "office", size, component, 0);
+		ArrangeRow(-1, 2, "office", size, component, 0);
+		ArrangeRow(-1, 3, "office", size, component, 0);
+		ArrangeRow(-1, 4, "office", size, component, 0);
 		AssignFloor(0, direction, "preset_lshape_double_f^+-");
-		AssignRoom(0, 0, "empty", component, 0);
-		AssignRoom(0, 1, "empty", component, 0);
-		ArrangeRow(0, 0, "empty", size, component, 0);
-		ArrangeRow(0, 1, "empty", size, component, 0);
-		ArrangeRow(0, 2, "empty", size, component, 0);
-		ArrangeRow(0, 3, "empty", size, component, 0);
-		ArrangeRow(0, 4, "empty", size, component, 0);
+		AssignRoom(0, 0, "office", component, 0);
+		AssignRoom(0, 1, "office", component, 0);
+		ArrangeRow(0, 0, "office", size, component, 0);
+		ArrangeRow(0, 1, "office", size, component, 0);
+		ArrangeRow(0, 2, "office", size, component, 0);
+		ArrangeRow(0, 3, "office", size, component, 0);
+		ArrangeRow(0, 4, "office", size, component, 0);
 		for (int i = 1; i < layers; i++) {
 			AssignFloor(i, direction, "preset_lshape_double_f+-");
-			AssignRoom(i, 0, "empty", component, 0);
-			AssignRoom(i, 1, "empty", component, 0);
-			ArrangeRow(i, 0, "empty", size, component, 0);
-			ArrangeRow(i, 1, "empty", size, component, 0);
-			ArrangeRow(i, 2, "empty", size, component, 0);
-			ArrangeRow(i, 3, "empty", size, component, 0);
-			ArrangeRow(i, 4, "empty", size, component, 0);
+			AssignRoom(i, 0, "office", component, 0);
+			AssignRoom(i, 1, "office", component, 0);
+			ArrangeRow(i, 0, "office", size, component, 0);
+			ArrangeRow(i, 1, "office", size, component, 0);
+			ArrangeRow(i, 2, "office", size, component, 0);
+			ArrangeRow(i, 3, "office", size, component, 0);
+			ArrangeRow(i, 4, "office", size, component, 0);
 		}
 	}
 	else if(layout == 3) {
 		AssignFloor(-1, direction, "preset_nshape_double_b+");
-		AssignRoom(-1, 0, "empty", component, 0);
-		AssignRoom(-1, 1, "empty", component, 0);
-		AssignRoom(-1, 2, "empty", component, 0);
-		ArrangeRow(-1, 0, "empty", size, component, 0);
-		ArrangeRow(-1, 1, "empty", size, component, 0);
-		ArrangeRow(-1, 2, "empty", size, component, 0);
-		ArrangeRow(-1, 3, "empty", size, component, 0);
-		ArrangeRow(-1, 4, "empty", size, component, 0);
-		ArrangeRow(-1, 5, "empty", size, component, 0);
-		ArrangeRow(-1, 6, "empty", size, component, 0);
-		ArrangeRow(-1, 7, "empty", size, component, 0);
+		AssignRoom(-1, 0, "office", component, 0);
+		AssignRoom(-1, 1, "office", component, 0);
+		AssignRoom(-1, 2, "office", component, 0);
+		ArrangeRow(-1, 0, "office", size, component, 0);
+		ArrangeRow(-1, 1, "office", size, component, 0);
+		ArrangeRow(-1, 2, "office", size, component, 0);
+		ArrangeRow(-1, 3, "office", size, component, 0);
+		ArrangeRow(-1, 4, "office", size, component, 0);
+		ArrangeRow(-1, 5, "office", size, component, 0);
+		ArrangeRow(-1, 6, "office", size, component, 0);
+		ArrangeRow(-1, 7, "office", size, component, 0);
 		AssignFloor(0, direction, "preset_nshape_double_f^+-");
-		AssignRoom(0, 0, "empty", component, 0);
-		AssignRoom(0, 1, "empty", component, 0);
-		AssignRoom(0, 2, "empty", component, 0);
-		ArrangeRow(0, 0, "empty", size, component, 0);
-		ArrangeRow(0, 1, "empty", size, component, 0);
-		ArrangeRow(0, 2, "empty", size, component, 0);
-		ArrangeRow(0, 3, "empty", size, component, 0);
-		ArrangeRow(0, 4, "empty", size, component, 0);
-		ArrangeRow(0, 5, "empty", size, component, 0);
-		ArrangeRow(0, 6, "empty", size, component, 0);
-		ArrangeRow(0, 7, "empty", size, component, 0);
+		AssignRoom(0, 0, "office", component, 0);
+		AssignRoom(0, 1, "office", component, 0);
+		AssignRoom(0, 2, "office", component, 0);
+		ArrangeRow(0, 0, "office", size, component, 0);
+		ArrangeRow(0, 1, "office", size, component, 0);
+		ArrangeRow(0, 2, "office", size, component, 0);
+		ArrangeRow(0, 3, "office", size, component, 0);
+		ArrangeRow(0, 4, "office", size, component, 0);
+		ArrangeRow(0, 5, "office", size, component, 0);
+		ArrangeRow(0, 6, "office", size, component, 0);
+		ArrangeRow(0, 7, "office", size, component, 0);
 		for (int i = 1; i < layers; i++) {
 			AssignFloor(i, direction, "preset_nshape_double_f+-");
-			AssignRoom(i, 0, "empty", component, 0);
-			AssignRoom(i, 1, "empty", component, 0);
-			AssignRoom(i, 2, "empty", component, 0);
-			ArrangeRow(i, 0, "empty", size, component, 0);
-			ArrangeRow(i, 1, "empty", size, component, 0);
-			ArrangeRow(i, 2, "empty", size, component, 0);
-			ArrangeRow(i, 3, "empty", size, component, 0);
-			ArrangeRow(i, 4, "empty", size, component, 0);
-			ArrangeRow(i, 5, "empty", size, component, 0);
-			ArrangeRow(i, 6, "empty", size, component, 0);
-			ArrangeRow(i, 7, "empty", size, component, 0);
+			AssignRoom(i, 0, "office", component, 0);
+			AssignRoom(i, 1, "office", component, 0);
+			AssignRoom(i, 2, "office", component, 0);
+			ArrangeRow(i, 0, "office", size, component, 0);
+			ArrangeRow(i, 1, "office", size, component, 0);
+			ArrangeRow(i, 2, "office", size, component, 0);
+			ArrangeRow(i, 3, "office", size, component, 0);
+			ArrangeRow(i, 4, "office", size, component, 0);
+			ArrangeRow(i, 5, "office", size, component, 0);
+			ArrangeRow(i, 6, "office", size, component, 0);
+			ArrangeRow(i, 7, "office", size, component, 0);
 		}
 
 		AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
@@ -812,31 +815,31 @@ void HotelBuilding::LayoutBuilding(const Quad* quad) {
 
 	AssignFloor(-1, direction, "preset_tshape_double_b+");
 	AssignRoom(-1, 0, "empty", component, 0);
-	ArrangeRow(-1, 0, "empty", size, component, 0);
-	ArrangeRow(-1, 1, "empty", size, component, 0);
-	ArrangeRow(-1, 2, "empty", size, component, 0);
-	ArrangeRow(-1, 3, "empty", size, component, 0);
-	ArrangeRow(-1, 4, "empty", size, component, 0);
-	ArrangeRow(-1, 5, "empty", size, component, 0);
+	ArrangeRow(-1, 0, "bunk", size, component, 0);
+	ArrangeRow(-1, 1, "bunk", size, component, 0);
+	ArrangeRow(-1, 2, "bunk", size, component, 0);
+	ArrangeRow(-1, 3, "bunk", size, component, 0);
+	ArrangeRow(-1, 4, "bunk", size, component, 0);
+	ArrangeRow(-1, 5, "bunk", size, component, 0);
 
 	AssignFloor(0, direction, "preset_tshape_double_f^+-");
-	AssignRoom(0, 0, "empty", component, 0);
-	ArrangeRow(0, 0, "empty", size, component, 0);
-	ArrangeRow(0, 1, "empty", size, component, 0);
-	ArrangeRow(0, 2, "empty", size, component, 0);
-	ArrangeRow(0, 3, "empty", size, component, 0);
-	ArrangeRow(0, 4, "empty", size, component, 0);
-	ArrangeRow(0, 5, "empty", size, component, 0);
+	AssignRoom(0, 0, "lobby", component, 0);
+	ArrangeRow(0, 0, "bunk", size, component, 0);
+	ArrangeRow(0, 1, "bunk", size, component, 0);
+	ArrangeRow(0, 2, "bunk", size, component, 0);
+	ArrangeRow(0, 3, "bunk", size, component, 0);
+	ArrangeRow(0, 4, "bunk", size, component, 0);
+	ArrangeRow(0, 5, "bunk", size, component, 0);
 
 	for (int i = 1; i < layers; i++) {
 		AssignFloor(i, direction, "preset_tshape_double_f+-");
 		AssignRoom(i, 0, "empty", component, 0);
-		ArrangeRow(i, 0, "empty", size, component, 0);
-		ArrangeRow(i, 1, "empty", size, component, 0);
-		ArrangeRow(i, 2, "empty", size, component, 0);
-		ArrangeRow(i, 3, "empty", size, component, 0);
-		ArrangeRow(i, 4, "empty", size, component, 0);
-		ArrangeRow(i, 5, "empty", size, component, 0);
+		ArrangeRow(i, 0, "bunk", size, component, 0);
+		ArrangeRow(i, 1, "bunk", size, component, 0);
+		ArrangeRow(i, 2, "bunk", size, component, 0);
+		ArrangeRow(i, 3, "bunk", size, component, 0);
+		ArrangeRow(i, 4, "bunk", size, component, 0);
+		ArrangeRow(i, 5, "bunk", size, component, 0);
 	}
 
 	AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
