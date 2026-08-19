@@ -765,15 +765,15 @@ int Map::InitContents() {
 	if (layout) delete layout;
 	layout = Building::ReadTemplates(Config::GetLayouts());
 	auto ApplyHatches = [this](Building* building, float offsetX, float offsetY) {
-		auto ground = building->GetFloor(0);
-		if (!ground || ground->GetHatches().empty()) return;
+		auto basement = building->GetFloor(-1);
+		if (!basement || basement->GetHatches().empty()) return;
 		auto block = building->GetParentBlock();
 		if (!block) return;
 		auto construction = building->GetConstruction();
 		float baseX = offsetX + building->GetLeft() + construction.GetLeft();
 		float baseY = offsetY + building->GetBottom() + construction.GetBottom();
 		float blockRot = block->GetRotation();
-		for (auto& hatch : ground->GetHatches()) {
+		for (auto& hatch : basement->GetHatches()) {
 			auto [wx, wy] = block->GetPosition(baseX + hatch.GetPosX(), baseY + hatch.GetPosY());
 			Quad q(wx, wy, hatch.GetSizeX(), hatch.GetSizeY());
 			AddHatch(q, blockRot);

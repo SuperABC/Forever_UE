@@ -116,7 +116,7 @@ hr { border: none; border-top: 1px solid #3a3a3a; margin: 6px 0; }
   <button onclick="applyGlobalSize()">应用</button>
   <select id="global-mode">
     <option value="ceilings">房顶</option>
-    <option value="grounds_hatches">地面</option>
+    <option value="grounds">地面</option>
     <option value="others" selected>房间</option>
     <option value="navigation">导航</option>
   </select>
@@ -263,10 +263,10 @@ const DIR_LABELS = ['← 西(0)', '→ 东(1)', '↑ 北(2)', '↓ 南(3)'];
 // "others" z-order (bottom to top): corridors drawn first so stairs appear on top.
 // "navigation" is handled entirely by drawNavMode() and has no geometry types.
 const MODE_TYPES = {
-  ceilings:        ['ceilings'],
-  grounds_hatches: ['grounds', 'hatches'],
-  others:          ['corridors', 'singles', 'rows', 'elevators', 'stairs', 'ramps'],
-  navigation:      [],
+  ceilings:   ['ceilings', 'hatches'],
+  grounds:    ['grounds'],
+  others:     ['corridors', 'singles', 'rows', 'elevators', 'stairs', 'ramps'],
+  navigation: [],
 };
 
 // Capability sets for geometry element types
