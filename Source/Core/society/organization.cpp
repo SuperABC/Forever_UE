@@ -95,20 +95,43 @@ vector<Job*> Organization::EnrollEmployee(const vector<Person*>& candidates) {
 
 void Organization::ArrangeRooms() {
 	for (auto& [component, vacancies] : jobs) {
-		vector<string> rooms;
-		for (auto room : component->GetRooms()) {
-			rooms.push_back(room->GetType());
+		auto& roomList = component->GetRooms();
+		vector<string> roomTypes;
+		roomTypes.reserve(roomList.size());
+		for (auto room : roomList) {
+			roomTypes.push_back(room->GetType());
 		}
 		vector<pair<string, int>> arrages;
+		arrages.reserve(vacancies.size());
 		for (auto& [job, _] : vacancies) {
 			arrages.emplace_back(job->GetType(), -1);
 		}
-		mod->ArrageRoom(arrages, rooms);
-		for (int i = 0; i < arrages.size(); i++) {
-			if (arrages[i].second >= 0) {
-				vacancies[i].first->SetPosition(component->GetRooms()[arrages[i].second]);
+		mod->ArrageRoom(arrages, roomTypes);
+
+		unordered_map<Room*, int> assignedCount;
+		vector<pair<Job*, Person*>> accepted;
+		accepted.reserve(vacancies.size());
+		for (int i = 0; i < static_cast<int>(arrages.size()); i++) {
+			int idx = arrages[i].second;
+			Room* assigned = nullptr;
+			if (idx >= 0 && idx < static_cast<int>(roomList.size())) {
+				Room* proposed = roomList[idx];
+				if (assignedCount[proposed] < proposed->WorkspaceCapacity()) {
+					assigned = proposed;
+				}
+			}
+			if (assigned) {
+				vacancies[i].first->SetPosition(assigned);
+				assignedCount[assigned]++;
+				accepted.push_back(vacancies[i]);
+			}
+			else {
+				debugf("Warning: Organization %s (%s) has no workspace capacity for job %s in component %s, dropping vacancy.\n",
+					name.data(), type.data(), vacancies[i].first->GetType().data(), component->GetName().data());
+				delete vacancies[i].first;
 			}
 		}
+		vacancies = std::move(accepted);
 	}
 }
 
