@@ -64,8 +64,8 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 	if (quad->GetSizeX() <= 3 || quad->GetSizeY() <= 3) {
 		layout = 0;
 		size = 40.f;
-		if (quad->GetSizeX() > 3)direction = GetRandom(2);
-		if(quad->GetSizeY() > 3)direction = 2 + GetRandom(2);
+		if (quad->GetSizeX() > 3)direction = FACE_WEST + GetRandom(2);
+		if(quad->GetSizeY() > 3)direction = FACE_NORTH + GetRandom(2);
 	}
 	else if (quad->GetSizeX() <= 6 || quad->GetSizeY() <= 6) {
 		layout = GetRandom(2);
@@ -76,44 +76,44 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 	else if (quad->GetSizeX() <= 9 || quad->GetSizeY() <= 9) {
 		layout = 2;
 		size = 120.f;
-		if (quad->GetSizeX() > 9)direction = GetRandom(2);
-		if (quad->GetSizeY() > 9)direction = 2 + GetRandom(2);
+		if (quad->GetSizeX() > 9)direction = FACE_WEST + GetRandom(2);
+		if (quad->GetSizeY() > 9)direction = FACE_NORTH + GetRandom(2);
 	}
 	else {
 		layout = 3;
 		size = 120.f;
-		if (quad->GetSizeX() > quad->GetSizeY())direction = GetRandom(2);
-		else direction = 2 + GetRandom(2);
+		if (quad->GetSizeX() > quad->GetSizeY())direction = FACE_WEST + GetRandom(2);
+		else direction = FACE_NORTH + GetRandom(2);
 	}
 
 	string component = "residential";
 
 	if (layout == 0) {
-		AssignFloor(-1, direction, "preset_straight_linear_b+");
+		AssignFloor(-1, direction, "preset_straight_linear_bg+");
 		ArrangeRow(-1, 0, "residential", size, component, 0);
 		ArrangeRow(-1, 1, "residential", size, component, 0);
-		AssignFloor(0, direction, "preset_straight_linear_f^+-");
+		AssignFloor(0, direction, "preset_straight_linear_fg+-");
 		ArrangeRow(0, 0, "residential", size, component, 0);
 		ArrangeRow(0, 1, "residential", size, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_straight_linear_f+-");
+			AssignFloor(i, direction, "preset_straight_linear_fu+-");
 			ArrangeRow(i, 0, "residential", size, component, 0);
 			ArrangeRow(i, 1, "residential", size, component, 0);
 		}
 	}
 	else if (layout == 1) {
-		AssignFloor(-1, direction, "preset_lobby_wing_b+");
+		AssignFloor(-1, direction, "preset_lobby_wing_bg+");
 		ArrangeRow(-1, 0, "residential", size, component, 0);
 		ArrangeRow(-1, 1, "residential", size, component, 0);
 		ArrangeRow(-1, 2, "residential", size, component, 0);
 		ArrangeRow(-1, 3, "residential", size, component, 0);
-		AssignFloor(0, direction, "preset_lobby_wing_f^+-");
+		AssignFloor(0, direction, "preset_lobby_wing_fg+-");
 		ArrangeRow(0, 0, "residential", size, component, 0);
 		ArrangeRow(0, 1, "residential", size, component, 0);
 		ArrangeRow(0, 2, "residential", size, component, 0);
 		ArrangeRow(0, 3, "residential", size, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_lobby_wing_f+-");
+			AssignFloor(i, direction, "preset_lobby_wing_fu+-");
 			ArrangeRow(i, 0, "residential", size, component, 0);
 			ArrangeRow(i, 1, "residential", size, component, 0);
 			ArrangeRow(i, 2, "residential", size, component, 0);
@@ -124,7 +124,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
 	}
 	else if (layout == 2) {
-		AssignFloor(-1, direction, "preset_lshape_double_b+");
+		AssignFloor(-1, direction, "preset_lshape_double_bg+");
 		AssignRoom(-1, 0, "residential", component, 0);
 		AssignRoom(-1, 1, "residential", component, 0);
 		ArrangeRow(-1, 0, "residential", size, component, 0);
@@ -132,7 +132,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(-1, 2, "residential", size, component, 0);
 		ArrangeRow(-1, 3, "residential", size, component, 0);
 		ArrangeRow(-1, 4, "residential", size, component, 0);
-		AssignFloor(0, direction, "preset_lshape_double_f^+-");
+		AssignFloor(0, direction, "preset_lshape_double_fg+-");
 		AssignRoom(0, 0, "residential", component, 0);
 		AssignRoom(0, 1, "residential", component, 0);
 		ArrangeRow(0, 0, "residential", size, component, 0);
@@ -141,7 +141,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(0, 3, "residential", size, component, 0);
 		ArrangeRow(0, 4, "residential", size, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_lshape_double_f+-");
+			AssignFloor(i, direction, "preset_lshape_double_fu+-");
 			AssignRoom(i, 0, "residential", component, 0);
 			AssignRoom(i, 1, "residential", component, 0);
 			ArrangeRow(i, 0, "residential", size, component, 0);
@@ -152,7 +152,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		}
 	}
 	else if(layout == 3) {
-		AssignFloor(-1, direction, "preset_nshape_double_b+");
+		AssignFloor(-1, direction, "preset_nshape_double_bg+");
 		AssignRoom(-1, 0, "empty", component, 0);
 		AssignRoom(-1, 1, "residential", component, 0);
 		AssignRoom(-1, 2, "residential", component, 0);
@@ -164,7 +164,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(-1, 5, "residential", size, component, 0);
 		ArrangeRow(-1, 6, "residential", size, component, 0);
 		ArrangeRow(-1, 7, "residential", size, component, 0);
-		AssignFloor(0, direction, "preset_nshape_double_f^+-");
+		AssignFloor(0, direction, "preset_nshape_double_fg+-");
 		AssignRoom(0, 0, "empty", component, 0);
 		AssignRoom(0, 1, "residential", component, 0);
 		AssignRoom(0, 2, "residential", component, 0);
@@ -177,7 +177,7 @@ void ResidentialBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(0, 6, "residential", size, component, 0);
 		ArrangeRow(0, 7, "residential", size, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_nshape_double_f+-");
+			AssignFloor(i, direction, "preset_nshape_double_fu+-");
 			AssignRoom(i, 0, "empty", component, 0);
 			AssignRoom(i, 1, "residential", component, 0);
 			AssignRoom(i, 2, "residential", component, 0);
@@ -307,13 +307,24 @@ function<int(const Lot*, int, int)> ShopBuilding::BuildingAssigner = [](const Lo
 };
 
 float ShopBuilding::RandomAcreage() {
-	maxAcreage = 8000.f;
-	minAcreage = 2000.f;
-	return 2000.f * powf(1.f + GetRandom(1000) / 1000.f * 1.f, 2);
+	maxAcreage = 16000.f;
+	minAcreage = 4000.f;
+	return 4000.f * powf(1.f + GetRandom(1000) / 1000.f * 1.f, 2);
 }
 
 void ShopBuilding::PlaceConstruction(const Quad* quad) {
-	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
+	auto scaleX = 0.6f;
+	auto scaleY = 0.6f;
+	if (quad->GetSizeX() < 6)scaleX = (quad->GetSizeX() - 2.4f) / quad->GetSizeX();
+	if (quad->GetSizeY() < 6)scaleY = (quad->GetSizeY() - 2.4f) / quad->GetSizeY();
+	construction = Quad(0.5f, 0.5f, scaleX, scaleY);
+
+	if (quad->GetSizeX() > quad->GetSizeY()) {
+		direction = FACE_WEST + GetRandom(2);
+	}
+	else {
+		direction = FACE_NORTH + GetRandom(2);
+	}
 }
 
 void ShopBuilding::LayoutBuilding(const Quad* quad) {
@@ -321,40 +332,47 @@ void ShopBuilding::LayoutBuilding(const Quad* quad) {
 	height = 0.4f;
 	wallTexture = "/Game/Asset/Materials/White.White";
 
-	int direction = 0;
-	if (quad->GetSizeX() > quad->GetSizeY()) {
-		if (quad->GetSizeY() > 3.f) {
-			direction = GetRandom(2);
-		}
-		else {
-			direction = 2 + GetRandom(2);
-		}
-	}
-	else {
-		if (quad->GetSizeX() > 3.f) {
-			direction = 2 + GetRandom(2);
-		}
-		else {
-			direction = GetRandom(2);
-		}
-	}
-
 	string component = "shop";
 
-	if (quad->GetAcreage() < 4000) {
-		AssignFloor(0, direction, "preset_lobby_linear_f^+");
+	if (quad->GetAcreage() < 6000) {
+		basements = 0;
+		AssignFloor(0, direction, "preset_lobby_linear_fg+");
 		AssignRoom(0, 0, "shop", component, 0);
 		ArrangeRow(0, 0, "warehouse", 200.f, component, 0);
 		ArrangeRow(0, 1, "warehouse", 200.f, component, 0);
-		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_lobby_linear_f-");
-			AssignRoom(i, 0, "residential", component, 0);
-			ArrangeRow(i, 0, "residential", 200.f, component, 0);
-			ArrangeRow(i, 1, "residential", 200.f, component, 0);
+		for (int i = 1; i < layers - 1; i++) {
+			AssignFloor(i, direction, "preset_lobby_linear_fu+-");
+			AssignRoom(i, 0, "warehouse", component, 0);
+			ArrangeRow(i, 0, "warehouse", 200.f, component, 0);
+			ArrangeRow(i, 1, "warehouse", 200.f, component, 0);
 		}
+		AssignFloor(layers - 1, direction, "preset_lobby_linear_fu-");
+		AssignRoom(layers - 1, 0, "warehouse", component, 0);
+		ArrangeRow(layers - 1, 0, "warehouse", 200.f, component, 0);
+		ArrangeRow(layers - 1, 1, "warehouse", 200.f, component, 0);
 	}
 	else {
-		AssignFloor(0, direction, "preset_circle_double_f^+");
+		basements = 1;
+		if (GetRandom(2)) {
+			AssignFloor(-1, direction, "preset_circle_double_pg+");
+			AssignRoom(-1, 0, "parking", component, 0);
+		}
+		else {
+			AssignFloor(-1, direction, "preset_circle_double_bg+");
+			AssignRoom(-1, 0, "warehouse", component, 0);
+			AssignRoom(-1, 1, "warehouse", component, 0);
+			AssignRoom(-1, 2, "warehouse", component, 0);
+			AssignRoom(-1, 3, "warehouse", component, 0);
+			AssignRoom(-1, 4, "warehouse", component, 0);
+			ArrangeRow(-1, 0, "warehouse", 100.f, component, 0);
+			ArrangeRow(-1, 1, "warehouse", 100.f, component, 0);
+			ArrangeRow(-1, 2, "warehouse", 100.f, component, 0);
+			ArrangeRow(-1, 3, "warehouse", 100.f, component, 0);
+			ArrangeRow(-1, 4, "warehouse", 100.f, component, 0);
+			ArrangeRow(-1, 5, "warehouse", 100.f, component, 0);
+			ArrangeRow(-1, 6, "warehouse", 100.f, component, 0);
+		}
+		AssignFloor(0, direction, "preset_circle_double_fg+-");
 		AssignRoom(0, 0, "shop", component, 0);
 		AssignRoom(0, 1, "shop", component, 0);
 		AssignRoom(0, 2, "warehouse", component, 0);
@@ -368,7 +386,7 @@ void ShopBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(0, 4, "warehouse", 100.f, component, 0);
 		ArrangeRow(0, 5, "warehouse", 100.f, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_circle_double_f+-");
+			AssignFloor(i, direction, "preset_circle_double_fu+-");
 			AssignRoom(i, 0, "warehouse", component, 0);
 			AssignRoom(i, 1, "warehouse", component, 0);
 			AssignRoom(i, 2, "warehouse", component, 0);
@@ -436,20 +454,36 @@ float FactoryBuilding::RandomAcreage() {
 }
 
 void FactoryBuilding::PlaceConstruction(const Quad* quad) {
-	construction = Quad(0.5f, 0.5f, 0.8f, 0.8f);
+	construction = Quad(0.5f, 0.5f, 0.6f, 0.6f);
 }
 
 void FactoryBuilding::LayoutBuilding(const Quad* quad) {
-	basements = 1;
 	height = 0.6f;
 	wallTexture = "/Game/Asset/Materials/White.White";
 
-	int direction = GetRandom(4);
+	int direction = 0;
+	if (quad->GetSizeX() > quad->GetSizeY()) {
+		direction = FACE_NORTH + GetRandom(2);
+		if (quad->GetSizeX() > 4) {
+			basements = 1;
+		}
+	}
+	else {
+		direction = FACE_WEST + GetRandom(2);
+		if (quad->GetSizeY() > 4) {
+			basements = 1;
+		}
+	}
 
 	string component = "factory";
-	AssignFloor(-1, direction, "preset_single_room_b+");
-	AssignRoom(-1, 0, "parking", component, 0);
-	AssignFloor(0, direction, "preset_single_room_f^-");
+	if (basements > 0) {
+		AssignFloor(-1, direction, "preset_single_room_pg+");
+		AssignRoom(-1, 0, "parking", component, 0);
+		AssignFloor(0, direction, "preset_single_room_fg-");
+	}
+	else {
+		AssignFloor(0, direction, "preset_single_room_fg");
+	}
 	AssignRoom(0, 0, "factory", component, 0);
 
 	script = { "empty", { "basic_building" } };
@@ -510,7 +544,7 @@ void HospitalBuilding::PlaceConstruction(const Quad* quad) {
 }
 
 void HospitalBuilding::LayoutBuilding(const Quad* quad) {
-	basements = 1;
+	basements = GetRandom(3);
 	layers = 5 + GetRandom(6);
 	height = 0.4f;
 	wallTexture = "/Game/Asset/Materials/White.White";
@@ -518,28 +552,47 @@ void HospitalBuilding::LayoutBuilding(const Quad* quad) {
 	string component = "empty";
 	float size = 160.f;
 
-	AssignFloor(-1, direction, "preset_entrance_wing_b+");
-	AssignRoom(-1, 0, "waiting", component, 0);
-	ArrangeRow(-1, 0, "morgue", size, component, 0);
-	ArrangeRow(-1, 1, "morgue", size, component, 0);
-	ArrangeRow(-1, 2, "morgue", size, component, 0);
-	ArrangeRow(-1, 3, "morgue", size, component, 0);
-
-	AssignFloor(0, direction, "preset_entrance_wing_f^+-");
+	if (basements > 0) {
+		AssignFloor(-basements, direction, "preset_entrance_wing_bu+");
+		AssignRoom(-basements, 0, "empty", component, 0);
+		ArrangeRow(-basements, 0, "morgue", size, component, 0);
+		ArrangeRow(-basements, 1, "morgue", size, component, 0);
+		ArrangeRow(-basements, 2, "morgue", size, component, 0);
+		ArrangeRow(-basements, 3, "morgue", size, component, 0);
+	}
+	for(int i = -basements + 1; i < 0; i++) {
+		AssignFloor(i, direction, "preset_entrance_wing_bu+-");
+		AssignRoom(i, 0, "empty", component, 0);
+		ArrangeRow(i, 0, "morgue", size, component, 0);
+		ArrangeRow(i, 1, "morgue", size, component, 0);
+		ArrangeRow(i, 2, "morgue", size, component, 0);
+		ArrangeRow(i, 3, "morgue", size, component, 0);
+	}
+	if (basements == 0) {
+		AssignFloor(0, direction, "preset_entrance_wing_fg+");
+	}
+	else {
+		AssignFloor(0, direction, "preset_entrance_wing_fg+-");
+	}
 	AssignRoom(0, 0, "register", component, 0);
 	ArrangeRow(0, 0, "doctor", size, component, 0);
 	ArrangeRow(0, 1, "doctor", size, component, 0);
 	ArrangeRow(0, 2, "doctor", size, component, 0);
 	ArrangeRow(0, 3, "doctor", size, component, 0);
-
-	for (int i = 1; i < layers; i++) {
-		AssignFloor(i, direction, "preset_entrance_wing_f+-");
+	for (int i = 1; i < layers - 1; i++) {
+		AssignFloor(i, direction, "preset_entrance_wing_fu+-");
 		AssignRoom(i, 0, "waiting", component, 0);
 		ArrangeRow(i, 0, "doctor", size, component, 0);
 		ArrangeRow(i, 1, "doctor", size, component, 0);
 		ArrangeRow(i, 2, "doctor", size, component, 0);
 		ArrangeRow(i, 3, "doctor", size, component, 0);
 	}
+	AssignFloor(layers - 1, direction, "preset_entrance_wing_fu-");
+	AssignRoom(layers - 1, 0, "waiting", component, 0);
+	ArrangeRow(layers - 1, 0, "doctor", size, component, 0);
+	ArrangeRow(layers - 1, 1, "doctor", size, component, 0);
+	ArrangeRow(layers - 1, 2, "doctor", size, component, 0);
+	ArrangeRow(layers - 1, 3, "doctor", size, component, 0);
 
 	AddElevator("elevator1", 0, 0, -basements, layers - 1, "empty", { "basic_elevator" });
 	AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
@@ -618,8 +671,8 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 	if (quad->GetSizeX() <= 3 || quad->GetSizeY() <= 3) {
 		layout = 0;
 		size = 40.f;
-		if (quad->GetSizeX() > 3)direction = GetRandom(2);
-		if(quad->GetSizeY() > 3)direction = 2 + GetRandom(2);
+		if (quad->GetSizeX() > 3)direction = FACE_WEST + GetRandom(2);
+		if(quad->GetSizeY() > 3)direction = FACE_NORTH + GetRandom(2);
 	}
 	else if (quad->GetSizeX() <= 5 || quad->GetSizeY() <= 5) {
 		layout = GetRandom(2);
@@ -630,44 +683,44 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 	else if (quad->GetSizeX() <= 7 || quad->GetSizeY() <= 7) {
 		layout = 2;
 		size = 120.f;
-		if (quad->GetSizeX() > 7)direction = GetRandom(2);
-		if (quad->GetSizeY() > 7)direction = 2 + GetRandom(2);
+		if (quad->GetSizeX() > 7)direction = FACE_WEST + GetRandom(2);
+		if (quad->GetSizeY() > 7)direction = FACE_NORTH + GetRandom(2);
 	}
 	else {
 		layout = 3;
 		size = 120.f;
-		if (quad->GetSizeX() > quad->GetSizeY())direction = GetRandom(2);
-		else direction = 2 + GetRandom(2);
+		if (quad->GetSizeX() > quad->GetSizeY())direction = FACE_WEST + GetRandom(2);
+		else direction = FACE_NORTH + GetRandom(2);
 	}
 
 	string component = "empty";
 
 	if (layout == 0) {
-		AssignFloor(-1, direction, "preset_straight_linear_b+");
+		AssignFloor(-1, direction, "preset_straight_linear_bg+");
 		ArrangeRow(-1, 0, "office", size, component, 0);
 		ArrangeRow(-1, 1, "office", size, component, 0);
-		AssignFloor(0, direction, "preset_straight_linear_f^+-");
+		AssignFloor(0, direction, "preset_straight_linear_fg+-");
 		ArrangeRow(0, 0, "office", size, component, 0);
 		ArrangeRow(0, 1, "office", size, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_straight_linear_f+-");
+			AssignFloor(i, direction, "preset_straight_linear_fu+-");
 			ArrangeRow(i, 0, "office", size, component, 0);
 			ArrangeRow(i, 1, "office", size, component, 0);
 		}
 	}
 	else if (layout == 1) {
-		AssignFloor(-1, direction, "preset_lobby_wing_b+");
+		AssignFloor(-1, direction, "preset_lobby_wing_bg+");
 		ArrangeRow(-1, 0, "office", size, component, 0);
 		ArrangeRow(-1, 1, "office", size, component, 0);
 		ArrangeRow(-1, 2, "office", size, component, 0);
 		ArrangeRow(-1, 3, "office", size, component, 0);
-		AssignFloor(0, direction, "preset_lobby_wing_f^+-");
+		AssignFloor(0, direction, "preset_lobby_wing_fg+-");
 		ArrangeRow(0, 0, "office", size, component, 0);
 		ArrangeRow(0, 1, "office", size, component, 0);
 		ArrangeRow(0, 2, "office", size, component, 0);
 		ArrangeRow(0, 3, "office", size, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_lobby_wing_f+-");
+			AssignFloor(i, direction, "preset_lobby_wing_fu+-");
 			ArrangeRow(i, 0, "office", size, component, 0);
 			ArrangeRow(i, 1, "office", size, component, 0);
 			ArrangeRow(i, 2, "office", size, component, 0);
@@ -678,7 +731,7 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 		AddElevator("elevator2", 0, 1, -basements, layers - 1, "empty", { "basic_elevator" });
 	}
 	else if (layout == 2) {
-		AssignFloor(-1, direction, "preset_lshape_double_b+");
+		AssignFloor(-1, direction, "preset_lshape_double_bg+");
 		AssignRoom(-1, 0, "office", component, 0);
 		AssignRoom(-1, 1, "office", component, 0);
 		ArrangeRow(-1, 0, "office", size, component, 0);
@@ -686,7 +739,7 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(-1, 2, "office", size, component, 0);
 		ArrangeRow(-1, 3, "office", size, component, 0);
 		ArrangeRow(-1, 4, "office", size, component, 0);
-		AssignFloor(0, direction, "preset_lshape_double_f^+-");
+		AssignFloor(0, direction, "preset_lshape_double_fg+-");
 		AssignRoom(0, 0, "office", component, 0);
 		AssignRoom(0, 1, "office", component, 0);
 		ArrangeRow(0, 0, "office", size, component, 0);
@@ -695,7 +748,7 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(0, 3, "office", size, component, 0);
 		ArrangeRow(0, 4, "office", size, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_lshape_double_f+-");
+			AssignFloor(i, direction, "preset_lshape_double_fu+-");
 			AssignRoom(i, 0, "office", component, 0);
 			AssignRoom(i, 1, "office", component, 0);
 			ArrangeRow(i, 0, "office", size, component, 0);
@@ -706,7 +759,7 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 		}
 	}
 	else if(layout == 3) {
-		AssignFloor(-1, direction, "preset_nshape_double_b+");
+		AssignFloor(-1, direction, "preset_nshape_double_bg+");
 		AssignRoom(-1, 0, "office", component, 0);
 		AssignRoom(-1, 1, "office", component, 0);
 		AssignRoom(-1, 2, "office", component, 0);
@@ -718,7 +771,7 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(-1, 5, "office", size, component, 0);
 		ArrangeRow(-1, 6, "office", size, component, 0);
 		ArrangeRow(-1, 7, "office", size, component, 0);
-		AssignFloor(0, direction, "preset_nshape_double_f^+-");
+		AssignFloor(0, direction, "preset_nshape_double_fg+-");
 		AssignRoom(0, 0, "office", component, 0);
 		AssignRoom(0, 1, "office", component, 0);
 		AssignRoom(0, 2, "office", component, 0);
@@ -731,7 +784,7 @@ void OfficeBuilding::LayoutBuilding(const Quad* quad) {
 		ArrangeRow(0, 6, "office", size, component, 0);
 		ArrangeRow(0, 7, "office", size, component, 0);
 		for (int i = 1; i < layers; i++) {
-			AssignFloor(i, direction, "preset_nshape_double_f+-");
+			AssignFloor(i, direction, "preset_nshape_double_fu+-");
 			AssignRoom(i, 0, "office", component, 0);
 			AssignRoom(i, 1, "office", component, 0);
 			AssignRoom(i, 2, "office", component, 0);
@@ -813,7 +866,7 @@ void HotelBuilding::LayoutBuilding(const Quad* quad) {
 	string component = "empty";
 	float size = 160.f;
 
-	AssignFloor(-1, direction, "preset_tshape_double_b+");
+	AssignFloor(-1, direction, "preset_tshape_double_bg+");
 	AssignRoom(-1, 0, "empty", component, 0);
 	ArrangeRow(-1, 0, "bunk", size, component, 0);
 	ArrangeRow(-1, 1, "bunk", size, component, 0);
@@ -822,7 +875,7 @@ void HotelBuilding::LayoutBuilding(const Quad* quad) {
 	ArrangeRow(-1, 4, "bunk", size, component, 0);
 	ArrangeRow(-1, 5, "bunk", size, component, 0);
 
-	AssignFloor(0, direction, "preset_tshape_double_f^+-");
+	AssignFloor(0, direction, "preset_tshape_double_fg+-");
 	AssignRoom(0, 0, "lobby", component, 0);
 	ArrangeRow(0, 0, "bunk", size, component, 0);
 	ArrangeRow(0, 1, "bunk", size, component, 0);
@@ -832,7 +885,7 @@ void HotelBuilding::LayoutBuilding(const Quad* quad) {
 	ArrangeRow(0, 5, "bunk", size, component, 0);
 
 	for (int i = 1; i < layers; i++) {
-		AssignFloor(i, direction, "preset_tshape_double_f+-");
+		AssignFloor(i, direction, "preset_tshape_double_fu+-");
 		AssignRoom(i, 0, "empty", component, 0);
 		ArrangeRow(i, 0, "bunk", size, component, 0);
 		ArrangeRow(i, 1, "bunk", size, component, 0);

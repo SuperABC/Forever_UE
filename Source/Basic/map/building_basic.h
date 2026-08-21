@@ -239,6 +239,9 @@ private:
 
 	// 实例名称
 	std::string name;
+
+	// 建筑朝向
+	int direction;
 };
 
 // 工厂建筑

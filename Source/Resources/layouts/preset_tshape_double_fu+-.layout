@@ -40,13 +40,13 @@
 			{
 				"direction": 0,
 				"positions": [
-					[0.5, -0.2, 0, 0.1, 0.5, 0.2, 1, -0.1],
+					[0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, -0.1],
 				],
 			},
 			{
 				"direction": 1,
 				"positions": [
-					[0.5, -0.2, 0, 0.1, 0.5, 0.2, 1, -0.1],
+					[0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, -0.1],
 				],
 			},
 		],
@@ -58,7 +58,7 @@
 			{
 				"direction": 3,
 				"positions": [
-					[0.5, -0.2, 0, 0.1, 0.5, 0.2, 1, -0.1],
+					[0.5, -0.1, 0, 0.1, 0.5, 0.1, 1, -0.1],
 				],
 			},
 		],
@@ -73,10 +73,12 @@
 					[0, 0, 0, 0, 1, 0, 1, 0],
 				],
 			},
+		],
+		"windows": [
 			{
 				"direction": 2,
 				"positions": [
-					[0.2, 0, 0, 0.1, 0.8, 0, 1, 0],
+					[0.2, 0, 0, 0.1, 0.8, 0, 1, -0.1],
 				],
 			},
 		],
@@ -204,9 +206,6 @@
 	"navigation": {
 		"nodes": [
 			{
-				"position": [0.5, 0, 0, -0.2],
-			},
-			{
 				"position": [0.5, 0, 0.1, 0.2],
 			},
 			{
@@ -243,25 +242,6 @@
 					"idx": 0,
 				},
 				"end": {
-					"type": "outside",
-				},
-			},
-			{
-				"begin": {
-					"type": "node",
-					"idx": 0,
-				},
-				"end": {
-					"type": "single",
-					"idx": 0,
-				},
-			},
-			{
-				"begin": {
-					"type": "node",
-					"idx": 1,
-				},
-				"end": {
 					"type": "single",
 					"idx": 0,
 				},
@@ -274,7 +254,7 @@
 				},
 				"end": {
 					"type": "node",
-					"idx": 1,
+					"idx": 0,
 				},
 			},
 			{
@@ -285,7 +265,7 @@
 				},
 				"end": {
 					"type": "node",
-					"idx": 1,
+					"idx": 0,
 				},
 			},
 			{
@@ -296,13 +276,13 @@
 				},
 				"end": {
 					"type": "node",
-					"idx": 1,
+					"idx": 0,
 				},
 			},
 			{
 				"begin": {
 					"type": "node",
-					"idx": 3,
+					"idx": 2,
 				},
 				"end": {
 					"type": "upstair",
@@ -311,19 +291,10 @@
 			{
 				"begin": {
 					"type": "node",
-					"idx": 2,
+					"idx": 1,
 				},
 				"end": {
 					"type": "downstair",
-				},
-			},
-			{
-				"begin": {
-					"type": "node",
-					"idx": 5,
-				},
-				"end": {
-					"type": "upstair",
 				},
 			},
 			{
@@ -332,7 +303,27 @@
 					"idx": 4,
 				},
 				"end": {
+					"type": "upstair",
+				},
+			},
+			{
+				"begin": {
+					"type": "node",
+					"idx": 3,
+				},
+				"end": {
 					"type": "downstair",
+				},
+			},
+			{
+				"begin": {
+					"type": "node",
+					"idx": 1,
+				},
+				"end": {
+					"type": "line",
+					"idx": 0,
+					"vertex": -1,
 				},
 			},
 			{
@@ -353,17 +344,6 @@
 				},
 				"end": {
 					"type": "line",
-					"idx": 0,
-					"vertex": -1,
-				},
-			},
-			{
-				"begin": {
-					"type": "node",
-					"idx": 4,
-				},
-				"end": {
-					"type": "line",
 					"idx": 1,
 					"vertex": -1,
 				},
@@ -371,7 +351,7 @@
 			{
 				"begin": {
 					"type": "node",
-					"idx": 5,
+					"idx": 4,
 				},
 				"end": {
 					"type": "line",

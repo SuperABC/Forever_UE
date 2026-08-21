@@ -93,7 +93,7 @@ void AirportBuilding::LayoutBuilding(const Quad* quad) {
 	wallTexture = "/Game/Asset/Materials/White.White";
 
 	string component = "empty";
-	AssignFloor(0, direction, "preset_single_room_f^");
+	AssignFloor(0, direction, "preset_single_room_fg");
 	AssignRoom(0, 0, "empty", component, 0);
 
 	script = { "empty", { "basic_building" } };

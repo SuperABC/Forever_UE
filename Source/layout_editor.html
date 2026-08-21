@@ -96,6 +96,13 @@ hr { border: none; border-top: 1px solid #3a3a3a; margin: 6px 0; }
   font-size: 14px; line-height: 1; cursor: pointer;
 }
 .file-close:hover { color: #ff7777; }
+.file-dirty {
+  flex-shrink: 0; color: #ffaa44; font-weight: bold;
+  padding: 0 1px; font-size: 13px;
+}
+.file-item.dragging { opacity: 0.4; }
+.file-item.drag-over-before { box-shadow: inset 0 2px 0 0 #4488aa; }
+.file-item.drag-over-after  { box-shadow: inset 0 -2px 0 0 #4488aa; }
 </style>
 </head>
 <body>
@@ -130,7 +137,7 @@ hr { border: none; border-top: 1px solid #3a3a3a; margin: 6px 0; }
   <div id="panel"></div>
 </div>
 <!-- Hidden file picker for load; onchange fires after user picks a file -->
-<input type="file" id="finput" accept=".layout" style="display:none" onchange="onFileChosen(event)">
+<input type="file" id="finput" accept=".layout" multiple style="display:none" onchange="onFileChosen(event)">
 
 <script>
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -363,14 +370,37 @@ function redo() {
 // ── File Entry Helpers ────────────────────────────────────────────────────────
 
 function makeBlankEntry(name) {
+  const data = { ceilings:[], grounds:[], hatches:[], stairs:[], ramps:[], elevators:[], corridors:[], singles:[], rows:[] };
+  const nav  = { nodes: [], lines: [], connections: [] };
   return {
     name,
     handle: null,
-    data: { ceilings:[], grounds:[], hatches:[], stairs:[], ramps:[], elevators:[], corridors:[], singles:[], rows:[] },
-    nav:  { nodes: [], lines: [], connections: [] },
+    data, nav,
     sel: null, navSel: null, multiSel: [],
     undoStack: [], redoStack: [],
+    // Snapshot of {data, nav} as of the last load/save — used to detect unsaved changes.
+    savedSnapshot: JSON.stringify({ data, nav }),
   };
+}
+
+// True if entry f's content differs from what's on disk (its last load/save point).
+// Undoing back to that exact content is treated as "not modified" (no false positive star).
+function isFileDirty(f, idx) {
+  if (!f || !f.savedSnapshot) return false;
+  const current = idx === activeFileIdx ? snapshotState() : JSON.stringify({ data: f.data, nav: f.nav });
+  return current !== f.savedSnapshot;
+}
+
+// Cheap per-frame refresh of just the active row's star (avoids rebuilding the
+// whole file list on every redraw(), which fires on every drag/edit).
+function updateActiveDirtyMark() {
+  if (activeFileIdx < 0) return;
+  const el = document.getElementById('file-list');
+  if (!el) return;
+  const item = el.querySelector(`.file-item[data-idx="${activeFileIdx}"]`);
+  if (!item) return;
+  const mark = item.querySelector('.file-dirty');
+  if (mark) mark.style.display = isFileDirty(files[activeFileIdx], activeFileIdx) ? '' : 'none';
 }
 
 function makeNewFileName() {
@@ -430,6 +460,18 @@ function closeFile(idx) {
   }
 }
 
+// Drag-to-reorder state for the open-files list
+let _dragFileIdx = null;
+
+function reorderFiles(from, to) {
+  if (from === to) return;
+  const activeEntry = activeFileIdx >= 0 ? files[activeFileIdx] : null;
+  const [moved] = files.splice(from, 1);
+  files.splice(to, 0, moved);
+  if (activeEntry) activeFileIdx = files.indexOf(activeEntry);
+  renderFileList();
+}
+
 function renderFileList() {
   const hasFile = activeFileIdx >= 0;
   document.getElementById('canvas-wrap').style.display = hasFile ? '' : 'none';
@@ -442,10 +484,18 @@ function renderFileList() {
     const item = document.createElement('div');
     item.className = 'file-item' + (i === activeFileIdx ? ' active' : '');
     item.title = f.handle ? f.handle.name : f.name;
+    item.draggable = true;
+    item.dataset.idx = i;
 
     const nameEl = document.createElement('span');
     nameEl.className = 'file-item-name';
     nameEl.textContent = f.name;
+
+    const dirtyEl = document.createElement('span');
+    dirtyEl.className = 'file-dirty';
+    dirtyEl.textContent = '*';
+    dirtyEl.title = '未保存的更改';
+    dirtyEl.style.display = isFileDirty(f, i) ? '' : 'none';
 
     const closeEl = document.createElement('span');
     closeEl.className = 'file-close';
@@ -453,8 +503,42 @@ function renderFileList() {
     closeEl.onclick = e => { e.stopPropagation(); closeFile(i); };
 
     item.appendChild(nameEl);
+    item.appendChild(dirtyEl);
     item.appendChild(closeEl);
     item.onclick = () => { if (i !== activeFileIdx) switchToFile(i); };
+
+    item.ondragstart = e => {
+      _dragFileIdx = i;
+      e.dataTransfer.effectAllowed = 'move';
+      item.classList.add('dragging');
+    };
+    item.ondragend = () => {
+      item.classList.remove('dragging');
+      el.querySelectorAll('.drag-over-before, .drag-over-after').forEach(n => {
+        n.classList.remove('drag-over-before', 'drag-over-after');
+      });
+      _dragFileIdx = null;
+    };
+    item.ondragover = e => {
+      if (_dragFileIdx === null || i === _dragFileIdx) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      const rect = item.getBoundingClientRect();
+      const isAfter = (e.clientY - rect.top) > rect.height / 2;
+      item.classList.toggle('drag-over-before', !isAfter);
+      item.classList.toggle('drag-over-after', isAfter);
+      item.dataset.dropAfter = isAfter ? '1' : '';
+    };
+    item.ondragleave = () => item.classList.remove('drag-over-before', 'drag-over-after');
+    item.ondrop = e => {
+      e.preventDefault();
+      const isAfter = item.dataset.dropAfter === '1';
+      item.classList.remove('drag-over-before', 'drag-over-after');
+      if (_dragFileIdx === null || _dragFileIdx === i) return;
+      const idxInRemaining = i > _dragFileIdx ? i - 1 : i;
+      reorderFiles(_dragFileIdx, isAfter ? idxInRemaining + 1 : idxInRemaining);
+    };
+
     el.appendChild(item);
   });
 }
@@ -903,6 +987,7 @@ function drawNavMode() {
 // ── Main Redraw ───────────────────────────────────────────────────────────────
 
 function redraw() {
+  updateActiveDirtyMark();
   canvas.width  = Math.round(CANVAS_PX * S.W / Math.max(S.W, S.H));
   canvas.height = Math.round(CANVAS_PX * S.H / Math.max(S.W, S.H));
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1886,6 +1971,7 @@ function parseAndApply(text, name, handle = null) {
     entry.nav = rawNav
       ? { nodes: rawNav.nodes || [], lines: rawNav.lines || [], connections: rawNav.connections || [] }
       : { nodes: [], lines: [], connections: [] };
+    entry.savedSnapshot = JSON.stringify({ data: entry.data, nav: entry.nav });
     saveCurrentToEntry();
     files.push(entry);
     applyEntry(files.length - 1);
@@ -1895,35 +1981,43 @@ function parseAndApply(text, name, handle = null) {
 async function loadFile() {
   if (window.showOpenFilePicker) {
     try {
-      const [handle] = await window.showOpenFilePicker({
+      const handles = await window.showOpenFilePicker({
         types: [{ description: 'Layout', accept: { 'text/plain': ['.layout'] } }],
         startIn: files[activeFileIdx]?.handle || 'documents',
+        multiple: true,
       });
-      // Check if already open
-      for (let i = 0; i < files.length; i++) {
-        if (files[i].handle && await files[i].handle.isSameEntry(handle)) {
-          switchToFile(i);
-          return;
+      let lastIdx = -1;
+      for (const handle of handles) {
+        // Check if already open
+        let existIdx = -1;
+        for (let i = 0; i < files.length; i++) {
+          if (files[i].handle && await files[i].handle.isSameEntry(handle)) { existIdx = i; break; }
         }
+        if (existIdx >= 0) { lastIdx = existIdx; continue; }
+        const file = await handle.getFile();
+        parseAndApply(await file.text(), file.name, handle);
+        lastIdx = files.length - 1;
       }
-      const file = await handle.getFile();
-      parseAndApply(await file.text(), file.name, handle);
+      if (lastIdx >= 0) switchToFile(lastIdx);
     } catch (err) { if (err.name !== 'AbortError') alert('加载失败: ' + err.message); }
   } else {
     document.getElementById('finput').click();
   }
 }
 
-function onFileChosen(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+async function onFileChosen(e) {
+  const chosen = Array.from(e.target.files);
   e.target.value = '';
-  // Check if already open by name
-  const existIdx = files.findIndex(f => f.name === file.name);
-  if (existIdx >= 0) { switchToFile(existIdx); return; }
-  const reader = new FileReader();
-  reader.onload = ev => parseAndApply(ev.target.result, file.name, null);
-  reader.readAsText(file);
+  if (!chosen.length) return;
+  let lastIdx = -1;
+  for (const file of chosen) {
+    // Check if already open by name
+    const existIdx = files.findIndex(f => f.name === file.name);
+    if (existIdx >= 0) { lastIdx = existIdx; continue; }
+    parseAndApply(await file.text(), file.name, null);
+    lastIdx = files.length - 1;
+  }
+  if (lastIdx >= 0) switchToFile(lastIdx);
 }
 
 async function saveFileAs() {
@@ -1937,7 +2031,7 @@ async function saveFileAs() {
         startIn: curEntry?.handle || 'documents',
         types: [{ description: 'Layout', accept: { 'text/plain': ['.layout'] } }],
       });
-      if (curEntry) { curEntry.handle = handle; curEntry.name = handle.name; }
+      if (curEntry) { curEntry.handle = handle; curEntry.name = handle.name; curEntry.savedSnapshot = snapshotState(); }
       document.getElementById('fname').textContent = handle.name;
       const writable = await handle.createWritable();
       await writable.write(content);
@@ -1945,11 +2039,13 @@ async function saveFileAs() {
       renderFileList();
     } catch (err) { if (err.name !== 'AbortError') alert('保存失败: ' + err.message); }
   } else {
+    if (curEntry) curEntry.savedSnapshot = snapshotState();
     const anchor    = document.createElement('a');
     anchor.href     = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
     anchor.download = fileName;
     anchor.click();
     URL.revokeObjectURL(anchor.href);
+    renderFileList();
   }
 }
 
@@ -1962,6 +2058,8 @@ async function saveFile() {
       const writable = await curEntry.handle.createWritable();
       await writable.write(content);
       await writable.close();
+      curEntry.savedSnapshot = snapshotState();
+      renderFileList();
       return;
     }
     if (window.showSaveFilePicker) {
@@ -1970,18 +2068,20 @@ async function saveFile() {
         startIn: curEntry?.handle || 'documents',
         types: [{ description: 'Layout', accept: { 'text/plain': ['.layout'] } }],
       });
-      if (curEntry) { curEntry.handle = handle; curEntry.name = handle.name; }
+      if (curEntry) { curEntry.handle = handle; curEntry.name = handle.name; curEntry.savedSnapshot = snapshotState(); }
       document.getElementById('fname').textContent = handle.name;
       const writable = await handle.createWritable();
       await writable.write(content);
       await writable.close();
       renderFileList();
     } else {
+      if (curEntry) curEntry.savedSnapshot = snapshotState();
       const anchor    = document.createElement('a');
       anchor.href     = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
       anchor.download = fileName;
       anchor.click();
       URL.revokeObjectURL(anchor.href);
+      renderFileList();
     }
   } catch (err) { if (err.name !== 'AbortError') alert('保存失败: ' + err.message); }
 }
