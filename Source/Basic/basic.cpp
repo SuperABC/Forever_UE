@@ -139,7 +139,7 @@ extern "C" __declspec(dllexport) void FinishModBuildings(BuildingFactory* factor
 }
 
 extern "C" __declspec(dllexport) void* GetModComponents() {
-	static vector<string> mods = { "residential", "shop", "factory", "hospital" };
+	static vector<string> mods = { "residential", "shop", "factory", "hospital", "hotel" };
 	return static_cast<void*>(&mods);
 }
 
@@ -158,6 +158,10 @@ extern "C" __declspec(dllexport) void RegisterModComponents(ComponentFactory* fa
 	);
 	factory->RegisterComponent(HospitalComponent::GetId(),
 		[]() { return new HospitalComponent(); },
+		[](ComponentMod* component) { delete component; }
+	);
+	factory->RegisterComponent(HotelComponent::GetId(),
+		[]() { return new HotelComponent(); },
 		[](ComponentMod* component) { delete component; }
 	);
 }
@@ -279,7 +283,7 @@ extern "C" __declspec(dllexport) void FinishModCalendars(CalendarFactory* factor
 }
 
 extern "C" __declspec(dllexport) void* GetModJobs() {
-	static vector<string> mods = { "shop_saler", "hospital_reception", "outpatient_doctor" };
+	static vector<string> mods = { "shop_saler", "hospital_reception", "outpatient_doctor", "hotel_reception", "building_guard", "hotel_clean" };
 	return static_cast<void*>(&mods);
 }
 
@@ -296,6 +300,18 @@ extern "C" __declspec(dllexport) void RegisterModJobs(JobFactory* factory) {
 		[]() { return new OutpatientDoctorJob(); },
 		[](JobMod* job) { delete job; }
 	);
+	factory->RegisterJob(HotelReceptionJob::GetId(),
+		[]() { return new HotelReceptionJob(); },
+		[](JobMod* job) { delete job; }
+	);
+	factory->RegisterJob(BuildingGuardJob::GetId(),
+		[]() { return new BuildingGuardJob(); },
+		[](JobMod* job) { delete job; }
+	);
+	factory->RegisterJob(HotelCleanJob::GetId(),
+		[]() { return new HotelCleanJob(); },
+		[](JobMod* job) { delete job; }
+	);
 }
 
 extern "C" __declspec(dllexport) void FinishModJobs(JobFactory* factory) {
@@ -303,7 +319,7 @@ extern "C" __declspec(dllexport) void FinishModJobs(JobFactory* factory) {
 }
 
 extern "C" __declspec(dllexport) void* GetModOrganizations() {
-	static vector<string> mods = { "shop", "hospital" };
+	static vector<string> mods = { "shop", "hospital", "hotel" };
 	return static_cast<void*>(&mods);
 }
 
@@ -314,6 +330,10 @@ extern "C" __declspec(dllexport) void RegisterModOrganizations(OrganizationFacto
 	);
 	factory->RegisterOrganization(HospitalOrganization::GetId(), HospitalOrganization::GetPower(),
 		[]() { return new HospitalOrganization(); },
+		[](OrganizationMod* organization) { delete organization; }
+	);
+	factory->RegisterOrganization(HotelOrganization::GetId(), HotelOrganization::GetPower(),
+		[]() { return new HotelOrganization(); },
 		[](OrganizationMod* organization) { delete organization; }
 	);
 }

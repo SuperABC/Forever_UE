@@ -84,6 +84,33 @@ void FactoryComponent::InitComponent() {
 
 }
 
+int HotelComponent::count = 0;
+
+HotelComponent::HotelComponent() : id(count++) {
+
+}
+
+HotelComponent::~HotelComponent() {
+
+}
+
+const char* HotelComponent::GetId() {
+	return "hotel";
+}
+
+const char* HotelComponent::GetType() const {
+	return "hotel";
+}
+
+const char* HotelComponent::GetName() {
+	name = "酒店组合" + to_string(id);
+	return name.data();
+}
+
+void HotelComponent::InitComponent() {
+
+}
+
 int HospitalComponent::count = 0;
 
 HospitalComponent::HospitalComponent() : id(count++) {

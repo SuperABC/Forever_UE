@@ -113,3 +113,114 @@ void OutpatientDoctorJob::ExecNode(const string& name,
 	PostHandle* post) {
 
 }
+
+int HotelReceptionJob::count = 0;
+
+HotelReceptionJob::HotelReceptionJob() : id(count++) {
+
+}
+
+HotelReceptionJob::~HotelReceptionJob() {
+
+}
+
+const char* HotelReceptionJob::GetId() {
+	return "hotel_reception";
+}
+
+const char* HotelReceptionJob::GetType() const {
+	return "hotel_reception";
+}
+
+const char* HotelReceptionJob::GetName() {
+	name = "前台" + to_string(id);
+	return name.data();
+}
+
+void HotelReceptionJob::InitJob() {
+	script = { "empty", {"hotel_reception"} };
+}
+
+void HotelReceptionJob::DailyPlan(const Time& time, PostHandle* post) {
+
+}
+
+void HotelReceptionJob::ExecNode(const string& name,
+	Container* storyScript, Container* schedulerScript, Container* jobScript,
+	PostHandle* post) {
+
+}
+
+int BuildingGuardJob::count = 0;
+
+BuildingGuardJob::BuildingGuardJob() : id(count++) {
+
+}
+
+BuildingGuardJob::~BuildingGuardJob() {
+
+}
+
+const char* BuildingGuardJob::GetId() {
+	return "building_guard";
+}
+
+const char* BuildingGuardJob::GetType() const {
+	return "building_guard";
+}
+
+const char* BuildingGuardJob::GetName() {
+	name = "保安" + to_string(id);
+	return name.data();
+}
+
+void BuildingGuardJob::InitJob() {
+	script = { "empty", {"building_guard"} };
+}
+
+void BuildingGuardJob::DailyPlan(const Time& time, PostHandle* post) {
+
+}
+
+void BuildingGuardJob::ExecNode(const string& name,
+	Container* storyScript, Container* schedulerScript, Container* jobScript,
+	PostHandle* post) {
+
+}
+
+int HotelCleanJob::count = 0;
+
+HotelCleanJob::HotelCleanJob() : id(count++) {
+
+}
+
+HotelCleanJob::~HotelCleanJob() {
+
+}
+
+const char* HotelCleanJob::GetId() {
+	return "hotel_clean";
+}
+
+const char* HotelCleanJob::GetType() const {
+	return "hotel_clean";
+}
+
+const char* HotelCleanJob::GetName() {
+	name = "保洁" + to_string(id);
+	return name.data();
+}
+
+void HotelCleanJob::InitJob() {
+	script = { "empty", {"hotel_clean"} };
+}
+
+void HotelCleanJob::DailyPlan(const Time& time, PostHandle* post) {
+
+}
+
+void HotelCleanJob::ExecNode(const string& name,
+	Container* storyScript, Container* schedulerScript, Container* jobScript,
+	PostHandle* post) {
+
+}

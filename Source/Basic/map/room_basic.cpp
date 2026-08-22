@@ -190,7 +190,7 @@ const char* LobbyRoom::GetName() {
 
 void LobbyRoom::ConfigRoom(Quad* quad, FACE_DIRECTION direction) {
 	isWorkspace = true;
-	workspaceCapacity = 2;
+	workspaceCapacity = 10;
 }
 
 void LobbyRoom::PlacePivots(Quad* room) {

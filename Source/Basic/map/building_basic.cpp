@@ -863,7 +863,7 @@ void HotelBuilding::LayoutBuilding(const Quad* quad) {
 	height = 0.4f;
 	wallTexture = "/Game/Asset/Materials/White.White";
 
-	string component = "empty";
+	string component = "hotel";
 	float size = 160.f;
 
 	AssignFloor(-1, direction, "preset_tshape_double_bg+");

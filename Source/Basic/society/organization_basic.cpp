@@ -164,4 +164,85 @@ void HospitalOrganization::ExecNode(const string& name,
 	}
 }
 
+int HotelOrganization::count = 0;
+
+HotelOrganization::HotelOrganization() : id(count++) {
+
+}
+
+HotelOrganization::~HotelOrganization() {
+
+}
+
+const char* HotelOrganization::GetId() {
+	return "hotel";
+}
+
+const char* HotelOrganization::GetType() const {
+	return "hotel";
+}
+
+const char* HotelOrganization::GetName() {
+	name = "酒店组织" + to_string(id);
+	return name.data();
+}
+
+float HotelOrganization::GetPower() {
+	return 1.f;
+}
+
+void HotelOrganization::ComponentRequirements() {
+	requirements["hotel"] = make_pair(1, 1);
+}
+
+void HotelOrganization::ArrageVacancies(const unordered_map<string, int>& components) {
+	for (const auto& [name, count] : components) {
+		vacancies[name] = vector<vector<pair<string, string>>>(count);
+		for (int i = 0; i < count; i++) {
+			for (int j = 0; j < 2; j++) {
+				vacancies[name][i].emplace_back("hotel_reception", "full");
+			}
+			for (int j = 0; j < 2; j++) {
+				vacancies[name][i].emplace_back("building_guard", "full");
+			}
+			for (int j = 0; j < 2; j++) {
+				vacancies[name][i].emplace_back("hotel_clean", "full");
+			}
+		}
+	}
+}
+
+void HotelOrganization::ArrageRoom(vector<pair<string, int>>& arrangements,
+	const vector<string>& rooms) {
+	// 前台/保安/保洁都安排在同一间大堂，不区分职位类型分配到不同房间。
+	int lobbyIndex = -1;
+	for (int k = 0; k < static_cast<int>(rooms.size()); k++) {
+		if (rooms[k] == "lobby") { lobbyIndex = k; break; }
+	}
+	for (auto& [_, room] : arrangements) {
+		room = lobbyIndex;
+	}
+}
+
+void HotelOrganization::InitOrganization() {
+	script = { "empty", { "" } };
+}
+
+void HotelOrganization::DailyPlan(const Time& time, PostHandle* post) {
+	if (time.GetDay() == 1) {
+		plans["salary_payment"] = time;
+	}
+}
+
+void HotelOrganization::ExecNode(const string& name,
+	Container* storyScript, Container* organizationScript, PostHandle* post) {
+	if (name == "salary_payment") {
+		int count = ToInt(organizationScript->GetValue("self.employee_count").second);
+		for (int i = 0; i < count; i++) {
+			string employee = ToString(organizationScript->GetValue("self.employees[" + to_string(i) + "].name").second);
+			changes.push_back(BankTransactionChange(employee, 5000));
+		}
+	}
+}
+
 
