@@ -139,7 +139,7 @@ extern "C" __declspec(dllexport) void FinishModBuildings(BuildingFactory* factor
 }
 
 extern "C" __declspec(dllexport) void* GetModComponents() {
-	static vector<string> mods = { "residential", "shop", "factory" };
+	static vector<string> mods = { "residential", "shop", "factory", "hospital" };
 	return static_cast<void*>(&mods);
 }
 
@@ -154,6 +154,10 @@ extern "C" __declspec(dllexport) void RegisterModComponents(ComponentFactory* fa
 	);
 	factory->RegisterComponent(FactoryComponent::GetId(),
 		[]() { return new FactoryComponent(); },
+		[](ComponentMod* component) { delete component; }
+	);
+	factory->RegisterComponent(HospitalComponent::GetId(),
+		[]() { return new HospitalComponent(); },
 		[](ComponentMod* component) { delete component; }
 	);
 }
@@ -275,13 +279,21 @@ extern "C" __declspec(dllexport) void FinishModCalendars(CalendarFactory* factor
 }
 
 extern "C" __declspec(dllexport) void* GetModJobs() {
-	static vector<string> mods = { "shop_saler" };
+	static vector<string> mods = { "shop_saler", "hospital_reception", "outpatient_doctor" };
 	return static_cast<void*>(&mods);
 }
 
 extern "C" __declspec(dllexport) void RegisterModJobs(JobFactory* factory) {
 	factory->RegisterJob(ShopSalerJob::GetId(),
 		[]() { return new ShopSalerJob(); },
+		[](JobMod* job) { delete job; }
+	);
+	factory->RegisterJob(HospitalReceptionJob::GetId(),
+		[]() { return new HospitalReceptionJob(); },
+		[](JobMod* job) { delete job; }
+	);
+	factory->RegisterJob(OutpatientDoctorJob::GetId(),
+		[]() { return new OutpatientDoctorJob(); },
 		[](JobMod* job) { delete job; }
 	);
 }
@@ -291,13 +303,17 @@ extern "C" __declspec(dllexport) void FinishModJobs(JobFactory* factory) {
 }
 
 extern "C" __declspec(dllexport) void* GetModOrganizations() {
-	static vector<string> mods = { "shop" };
+	static vector<string> mods = { "shop", "hospital" };
 	return static_cast<void*>(&mods);
 }
 
 extern "C" __declspec(dllexport) void RegisterModOrganizations(OrganizationFactory* factory) {
 	factory->RegisterOrganization(ShopOrganization::GetId(), ShopOrganization::GetPower(),
 		[]() { return new ShopOrganization(); },
+		[](OrganizationMod* organization) { delete organization; }
+	);
+	factory->RegisterOrganization(HospitalOrganization::GetId(), HospitalOrganization::GetPower(),
+		[]() { return new HospitalOrganization(); },
 		[](OrganizationMod* organization) { delete organization; }
 	);
 }

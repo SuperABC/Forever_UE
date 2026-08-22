@@ -146,3 +146,51 @@ private:
 	// 实例名称
 	std::string name;
 };
+
+// 医院组合
+class HospitalComponent : public ComponentMod {
+public:
+	/*
+	* 构造医院组合
+	*/
+	HospitalComponent();
+
+	/*
+	* 析构医院组合
+	*/
+	virtual ~HospitalComponent();
+
+	/*
+	* Override
+	* 组合静态类型标识
+	*/
+	static const char* GetId();
+
+	/*
+	* Override
+	* 组合动态类型标识
+	*/
+	virtual const char* GetType() const override;
+
+	/*
+	* Override
+	* 组合实例唯一名称
+	*/
+	virtual const char* GetName() override;
+
+	/*
+	* Override
+	* 初始化组合
+	*/
+	virtual void InitComponent() override;
+
+private:
+	// 总实例数量
+	static int count;
+
+	// 实例编号
+	int id;
+
+	// 实例名称
+	std::string name;
+};

@@ -83,3 +83,30 @@ const char* FactoryComponent::GetName() {
 void FactoryComponent::InitComponent() {
 
 }
+
+int HospitalComponent::count = 0;
+
+HospitalComponent::HospitalComponent() : id(count++) {
+
+}
+
+HospitalComponent::~HospitalComponent() {
+
+}
+
+const char* HospitalComponent::GetId() {
+	return "hospital";
+}
+
+const char* HospitalComponent::GetType() const {
+	return "hospital";
+}
+
+const char* HospitalComponent::GetName() {
+	name = "医院组合" + to_string(id);
+	return name.data();
+}
+
+void HospitalComponent::InitComponent() {
+
+}
