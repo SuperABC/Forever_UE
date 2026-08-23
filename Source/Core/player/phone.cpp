@@ -1,6 +1,7 @@
 ﻿#include "phone.h"
 
 #include "player/player.h"
+#include "json.h"
 
 #include <algorithm>
 
@@ -20,6 +21,13 @@ static const int thumbHeight = 160;
 static const int taskCellWidth = 240;
 static const int taskCellHeight = 200;
 static const int taskStartY = 50;
+static const int closeBtnSize = 24;
+
+// 底部工具栏三个按钮的命中区域（左上/右下坐标，Y相对于barY的偏移）
+static const int backBtnX1 = 40, backBtnX2 = 110;
+static const int homeBtnX1 = 210, homeBtnX2 = 270;
+static const int tasksBtnX1 = 360, tasksBtnX2 = 430;
+static const int bottomBtnY1 = 2, bottomBtnY2 = 38;
 
 
 Phone::Phone() :
@@ -202,7 +210,185 @@ void Phone::HandleTaskKeys(Canvas* canvas, PostHandle* post) {
 	}
 }
 
-void Phone::RenderHome(Canvas* canvas) {
+Phone::BottomButton Phone::HitBottomBar(int mx, int my) const {
+	if (my < barY + bottomBtnY1 || my > barY + bottomBtnY2) return BtnNone;
+	if (mx >= backBtnX1 && mx <= backBtnX2) return BtnBack;
+	if (mx >= homeBtnX1 && mx <= homeBtnX2) return BtnHome;
+	if (mx >= tasksBtnX1 && mx <= tasksBtnX2) return BtnTasks;
+	return BtnNone;
+}
+
+void Phone::HandleBottomBarMouse(Canvas* canvas, PostHandle* post) {
+	int mev;
+	vector<int> passthrough;
+
+	while ((mev = canvas->BiosMouse(0)) != -1) {
+		bool isPress = (mev & 0x8000) == 0;
+		int button = mev & ~0x8000;
+
+		if (isPress && button == 0) {
+			MouseState mouse = canvas->MouseStatus();
+			BottomButton btn = HitBottomBar(mouse.x, mouse.y);
+
+			if (btn == BtnBack) {
+				if (state == InApp) {
+					int idx = FindEntry(currentAppType);
+					if (idx >= 0) {
+						Player::appFactory->BackApp(entries[idx].type, canvas, post);
+					}
+				} else if (state == TaskList) {
+					state = Home;
+				}
+				continue;
+			} else if (btn == BtnHome) {
+				if (state == InApp) {
+					int idx = FindEntry(currentAppType);
+					if (idx >= 0) SaveSnapshot(canvas, idx);
+					state = Home;
+				} else if (state == TaskList) {
+					state = Home;
+				}
+				continue;
+			} else if (btn == BtnTasks) {
+				if (state == Home) {
+					state = TaskList;
+					taskSelection = max(0, min(taskSelection, (int)entries.size() - 1));
+				} else if (state == InApp) {
+					int idx = FindEntry(currentAppType);
+					if (idx >= 0) {
+						SaveSnapshot(canvas, idx);
+						taskSelection = idx;
+					}
+					state = TaskList;
+				}
+				continue;
+			}
+		}
+
+		// 未命中底部工具栏按钮，原样放回队列，留给当前界面/应用自己处理
+		passthrough.push_back(mev);
+	}
+
+	for (int m : passthrough) {
+		canvas->PushMouseButton(m & ~0x8000, (m & 0x8000) == 0);
+	}
+}
+
+void Phone::HandleHomeMouse(Canvas* canvas, PostHandle* post) {
+	int n = (int)appTypes.size();
+	if (n <= 0) return;
+
+	MouseState mouse = canvas->MouseStatus();
+
+	int hoverIdx = -1;
+	for (int i = 0; i < n; i++) {
+		int x = i % gridCols;
+		int y = i / gridCols;
+		int px = x * cellWidth + (cellWidth - iconWidth) / 2;
+		int py = gridStartY + y * cellHeight;
+
+		if (py + cellHeight > barY) break;
+
+		if (mouse.x >= px - 3 && mouse.x <= px + iconWidth + 3 &&
+			mouse.y >= py - 3 && mouse.y <= py + iconHeight + 3) {
+			hoverIdx = i;
+			break;
+		}
+	}
+
+	// 鼠标悬停时，选择框直接跟随鼠标，抢占键盘的选择状态
+	if (hoverIdx >= 0) homeSelection = hoverIdx;
+
+	int mev;
+	while ((mev = canvas->BiosMouse(0)) != -1) {
+		if ((mev & 0x8000) != 0 || (mev & ~0x8000) != 0) continue;
+		if (hoverIdx < 0) continue;
+
+		string type = appTypes[hoverIdx];
+		int idx = FindEntry(type);
+		if (idx < 0) {
+			entries.push_back({ type, false, {} });
+			idx = (int)entries.size() - 1;
+		}
+		OpenApp(canvas, idx, post);
+	}
+}
+
+void Phone::HandleTaskMouse(Canvas* canvas, PostHandle* post) {
+	int n = (int)entries.size();
+	if (n <= 0) return;
+
+	MouseState mouse = canvas->MouseStatus();
+
+	int hoverIdx = -1;
+	bool hoverClose = false;
+	for (int i = 0; i < n; i++) {
+		int x = i % taskCols;
+		int y = i / taskCols;
+		int cellY = taskStartY + y * taskCellHeight;
+
+		if (cellY + taskCellHeight > barY) break;
+
+		int thumbX = x * taskCellWidth + (taskCellWidth - thumbWidth) / 2;
+		int thumbY = cellY + 10;
+
+		if (mouse.x >= thumbX - 2 && mouse.x <= thumbX + thumbWidth + 2 &&
+			mouse.y >= thumbY - 2 && mouse.y <= thumbY + thumbHeight + 2) {
+			hoverIdx = i;
+
+			int closeX1 = thumbX + thumbWidth - closeBtnSize - 2;
+			int closeY1 = thumbY + 2;
+			int closeX2 = thumbX + thumbWidth - 2;
+			int closeY2 = thumbY + 2 + closeBtnSize;
+			hoverClose = (mouse.x >= closeX1 && mouse.x <= closeX2 && mouse.y >= closeY1 && mouse.y <= closeY2);
+			break;
+		}
+	}
+
+	// 鼠标悬停时，选择框直接跟随鼠标，抢占键盘的选择状态
+	if (hoverIdx >= 0) taskSelection = hoverIdx;
+
+	int mev;
+	while ((mev = canvas->BiosMouse(0)) != -1) {
+		if ((mev & 0x8000) != 0 || (mev & ~0x8000) != 0) continue;
+		if (hoverIdx < 0) continue;
+
+		if (hoverClose) {
+			if (entries[hoverIdx].type == currentAppType) {
+				currentAppType.clear();
+			}
+			entries.erase(entries.begin() + hoverIdx);
+			int newN = (int)entries.size();
+			if (newN == 0) {
+				taskSelection = 0;
+				state = Home;
+			} else {
+				taskSelection = min(taskSelection, newN - 1);
+			}
+			hoverIdx = -1;
+		} else {
+			taskSelection = min(hoverIdx, (int)entries.size() - 1);
+			OpenApp(canvas, taskSelection, post);
+		}
+	}
+}
+
+bool Phone::GetGameDateTime(PostHandle* post, string& date, string& time) const {
+	if (!post) return false;
+
+	JsonValue req(DATA_OBJECT);
+	req["post"] = "game time";
+	post->Post(req);
+
+	const JsonValue& result = post->GetResult();
+	if (result["result"].AsString() != "success") return false;
+
+	date = result["date"].AsString();
+	time = result["time"].AsString();
+	return true;
+}
+
+void Phone::RenderHome(Canvas* canvas, PostHandle* post) {
 	canvas->ClearBuffer();
 	canvas->SetAlpha(255);
 
@@ -212,6 +398,19 @@ void Phone::RenderHome(Canvas* canvas) {
 	canvas->SetColor(200, 200, 220);
 	canvas->SetFontSize(24);
 	canvas->PutString("桌面", 216, 10);
+
+	string gameDate, gameTime;
+	if (GetGameDateTime(post, gameDate, gameTime)) {
+		canvas->SetColor(200, 200, 220);
+		canvas->SetFontSize(24);
+
+		// 左上角显示日期
+		canvas->PutString(gameDate, 12, 10);
+
+		// 右上角显示时间（只精确到分钟）
+		int timeWidth = canvas->MeasureString(gameTime);
+		canvas->PutString(gameTime, width - timeWidth - 12, 10);
+	}
 
 	for (int i = 0; i < (int)appTypes.size(); i++) {
 		int x = i % gridCols;
@@ -282,6 +481,13 @@ void Phone::RenderTaskList(Canvas* canvas) {
 			canvas->SetColor(180, 180, 200);
 			canvas->SetFontSize(12);
 			canvas->PutString(entries[i].type, thumbX, thumbY + thumbHeight + 4);
+
+			// 关闭按钮："×"，位于缩略图右上角
+			int closeX1 = thumbX + thumbWidth - closeBtnSize - 2;
+			int closeY1 = thumbY + 2;
+			canvas->SetColor(220, 90, 90);
+			canvas->SetFontSize(22);
+			canvas->PutString("×", closeX1 + 3, closeY1 + 1);
 		}
 	}
 
@@ -292,6 +498,20 @@ void Phone::RenderBottomBar(Canvas* canvas) {
 	canvas->SetAlpha(255);
 	canvas->SetColor(25, 25, 35);
 	canvas->PutRect(0, barY, width - 1, height - 1, true);
+
+	MouseState mouse = canvas->MouseStatus();
+	BottomButton hover = HitBottomBar(mouse.x, mouse.y);
+
+	if (hover != BtnNone) {
+		canvas->SetColor(60, 140, 255);
+		if (hover == BtnBack) {
+			canvas->PutRect(backBtnX1, barY + bottomBtnY1, backBtnX2, barY + bottomBtnY2, false);
+		} else if (hover == BtnHome) {
+			canvas->PutRect(homeBtnX1, barY + bottomBtnY1, homeBtnX2, barY + bottomBtnY2, false);
+		} else if (hover == BtnTasks) {
+			canvas->PutRect(tasksBtnX1, barY + bottomBtnY1, tasksBtnX2, barY + bottomBtnY2, false);
+		}
+	}
 
 	canvas->SetColor(160, 160, 170);
 
@@ -310,17 +530,28 @@ void Phone::RenderBottomBar(Canvas* canvas) {
 int Phone::Loop(Canvas* canvas, int ms, PostHandle* post) {
 	if (!canvas) return 0;
 
-	// 第一阶段：处理按键（可能改变当前状态）
+	// 第一阶段：处理按键与鼠标（可能改变当前状态）
 	switch (state) {
-	case Home: HandleHomeKeys(canvas, post); break;
-	case InApp: HandleInAppKeys(canvas, post); break;
-	case TaskList: HandleTaskKeys(canvas, post); break;
+	case Home:
+		HandleHomeKeys(canvas, post);
+		HandleBottomBarMouse(canvas, post);
+		HandleHomeMouse(canvas, post);
+		break;
+	case InApp:
+		HandleInAppKeys(canvas, post);
+		HandleBottomBarMouse(canvas, post);
+		break;
+	case TaskList:
+		HandleTaskKeys(canvas, post);
+		HandleBottomBarMouse(canvas, post);
+		HandleTaskMouse(canvas, post);
+		break;
 	}
 
 	// 第二阶段：渲染当前界面
 	switch (state) {
 	case Home:
-		RenderHome(canvas);
+		RenderHome(canvas, post);
 		break;
 	case InApp: {
 		int idx = FindEntry(currentAppType);

@@ -99,6 +99,12 @@ private:
 		int postIndex;
 	};
 
+	// 分区标签的屏幕矩形（供鼠标点击命中测试）
+	struct TabRect {
+		int x1, y1, x2, y2;
+		int sectionIndex;
+	};
+
 	// --- 数据加载 ---
 
 	/*
@@ -118,6 +124,7 @@ private:
 
 	static void HandleListKeys(Canvas* canvas);
 	static void HandleListMouse(Canvas* canvas);
+	static void HandleTabMouse(Canvas* canvas);
 	static void HandleDetailKeys(Canvas* canvas);
 
 	// --- 渲染 ---
@@ -161,6 +168,9 @@ private:
 
 	// 帖子列表行命中区域（每帧渲染列表时重建）
 	static std::vector<RowRect> rowRects;
+
+	// 分区标签命中区域（每帧渲染标签栏时重建）
+	static std::vector<TabRect> tabRects;
 
 	// 实例名称缓存（GetName()用）
 	std::string name;

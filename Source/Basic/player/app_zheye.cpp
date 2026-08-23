@@ -12,6 +12,7 @@ namespace fs = std::filesystem;
 
 static const int TAB_BAR_HEIGHT = 52;
 static const int TAB_PADDING = 20;
+static const int TAB_ARROW_WIDTH = 28;
 static const int LIST_TOP = TAB_BAR_HEIGHT;
 static const int LIST_BOTTOM = 600;
 static const int ROW_HEIGHT = 60;
@@ -35,6 +36,7 @@ int ZheyeApp::replyScrollTop = -1;
 bool ZheyeApp::detailOverflowed = false;
 
 vector<ZheyeApp::RowRect> ZheyeApp::rowRects;
+vector<ZheyeApp::TabRect> ZheyeApp::tabRects;
 
 ZheyeApp::ZheyeApp() {
 
@@ -125,14 +127,18 @@ void ZheyeApp::HandleListKeys(Canvas* canvas) {
 		if (n <= 0) continue;
 
 		if (key == leftCode) {
-			currentSection = (currentSection - 1 + n) % n;
-			selectedPost = 0;
-			listScrollTop = 0;
+			if (currentSection > 0) {
+				currentSection--;
+				selectedPost = 0;
+				listScrollTop = 0;
+			}
 		}
 		else if (key == rightCode) {
-			currentSection = (currentSection + 1) % n;
-			selectedPost = 0;
-			listScrollTop = 0;
+			if (currentSection < n - 1) {
+				currentSection++;
+				selectedPost = 0;
+				listScrollTop = 0;
+			}
 		}
 		else if (key == upCode) {
 			if (!sections[currentSection].posts.empty()) {
@@ -179,6 +185,63 @@ void ZheyeApp::HandleListMouse(Canvas* canvas) {
 	}
 }
 
+void ZheyeApp::HandleTabMouse(Canvas* canvas) {
+	int n = static_cast<int>(sections.size());
+
+	int mev;
+	vector<int> passthrough;
+
+	while ((mev = canvas->BiosMouse(0)) != -1) {
+		bool isPress = (mev & 0x8000) == 0;
+		int button = mev & ~0x8000;
+
+		if (isPress && button == 0) {
+			MouseState mouse = canvas->MouseStatus();
+
+			if (mouse.y >= 0 && mouse.y < TAB_BAR_HEIGHT) {
+				if (mouse.x < TAB_ARROW_WIDTH) {
+					if (currentSection > 0) {
+						currentSection--;
+						selectedPost = 0;
+						listScrollTop = 0;
+					}
+					continue;
+				}
+				else if (mouse.x >= 480 - TAB_ARROW_WIDTH) {
+					if (currentSection < n - 1) {
+						currentSection++;
+						selectedPost = 0;
+						listScrollTop = 0;
+					}
+					continue;
+				}
+				else {
+					bool hit = false;
+					for (auto& rect : tabRects) {
+						if (mouse.x < rect.x1 || mouse.x > rect.x2 || mouse.y < rect.y1 || mouse.y > rect.y2) continue;
+
+						if (rect.sectionIndex != currentSection) {
+							currentSection = rect.sectionIndex;
+							selectedPost = 0;
+							listScrollTop = 0;
+						}
+						hit = true;
+						break;
+					}
+					if (hit) continue;
+				}
+			}
+		}
+
+		// 未命中标签栏，原样放回队列，留给帖子列表自己处理
+		passthrough.push_back(mev);
+	}
+
+	for (int m : passthrough) {
+		canvas->PushMouseButton(m & ~0x8000, (m & 0x8000) == 0);
+	}
+}
+
 void ZheyeApp::HandleDetailKeys(Canvas* canvas) {
 	int upCode = canvas->KeyCode("up");
 	int downCode = canvas->KeyCode("down");
@@ -215,10 +278,17 @@ void ZheyeApp::RenderTabBar(Canvas* canvas) {
 	canvas->SetColor(25, 25, 35);
 	canvas->PutRect(0, 0, 479, TAB_BAR_HEIGHT - 1, true);
 
+	// 分区标签的可用区域夹在左右两个箭头按钮之间
+	int areaX1 = TAB_ARROW_WIDTH;
+	int areaX2 = 480 - TAB_ARROW_WIDTH;
+	int areaWidth = areaX2 - areaX1;
+
+	tabRects.clear();
+
 	if (n > 0) {
 		canvas->SetFontSize(28);
 
-		// 按各分区文字实际宽度顺序排列，而不是等分480像素
+		// 按各分区文字实际宽度顺序排列，而不是等分可用宽度
 		vector<int> tabX(n), tabW(n);
 		int cursorX = 0;
 		for (int i = 0; i < n; i++) {
@@ -228,16 +298,16 @@ void ZheyeApp::RenderTabBar(Canvas* canvas) {
 		}
 		int totalWidth = cursorX;
 
-		// 保证当前选中的分区完整显示在屏幕内，超出屏幕就水平滚动标签栏
+		// 保证当前选中的分区完整显示在可用区域内，超出就水平滚动标签栏
 		int selLeft = tabX[currentSection];
 		int selRight = tabX[currentSection] + tabW[currentSection];
 		if (selLeft < tabScrollX) tabScrollX = selLeft;
-		if (selRight > tabScrollX + 480) tabScrollX = selRight - 480;
-		tabScrollX = max(0, min(tabScrollX, max(0, totalWidth - 480)));
+		if (selRight > tabScrollX + areaWidth) tabScrollX = selRight - areaWidth;
+		tabScrollX = max(0, min(tabScrollX, max(0, totalWidth - areaWidth)));
 
 		for (int i = 0; i < n; i++) {
-			int tx = tabX[i] - tabScrollX;
-			if (tx + tabW[i] < 0 || tx > 480) continue;
+			int tx = areaX1 + tabX[i] - tabScrollX;
+			if (tx + tabW[i] < areaX1 || tx > areaX2) continue;
 
 			bool sel = (i == currentSection);
 			if (sel) canvas->SetColor(230, 230, 235);
@@ -248,8 +318,21 @@ void ZheyeApp::RenderTabBar(Canvas* canvas) {
 				canvas->SetColor(60, 140, 255);
 				canvas->PutRect(tx, TAB_BAR_HEIGHT - 3, tx + tabW[i] - 1, TAB_BAR_HEIGHT - 1, true);
 			}
+
+			tabRects.push_back({ tx, 0, tx + tabW[i] - 1, TAB_BAR_HEIGHT - 1, i });
 		}
 	}
+
+	// 左右切换箭头，到达边界时变暗表示不可再切换
+	bool canLeft = currentSection > 0;
+	bool canRight = n > 0 && currentSection < n - 1;
+	int midY = TAB_BAR_HEIGHT / 2;
+
+	canvas->SetColor(canLeft ? 210 : 70, canLeft ? 210 : 70, canLeft ? 220 : 80);
+	canvas->PutTriangle(20, midY - 8, 20, midY + 8, 8, midY, true);
+
+	canvas->SetColor(canRight ? 210 : 70, canRight ? 210 : 70, canRight ? 220 : 80);
+	canvas->PutTriangle(460, midY - 8, 460, midY + 8, 472, midY, true);
 
 	canvas->SetColor(60, 60, 75);
 	canvas->PutLine(0, TAB_BAR_HEIGHT, 479, TAB_BAR_HEIGHT);
@@ -324,8 +407,9 @@ void ZheyeApp::RenderPostDetail(Canvas* canvas) {
 	// 标题和作者固定在顶部，滚动时不移动，只有下面的正文和回复区域会滚动
 	canvas->SetColor(230, 230, 235);
 	canvas->SetFontSize(30);
-	canvas->PutString(post.title, CONTENT_MARGIN, py + 8);
-	py += 48;
+	py += 8;
+	py += canvas->PutWrappedString(post.title, CONTENT_MARGIN, py, CONTENT_WIDTH);
+	py += 10;
 
 	canvas->SetColor(150, 150, 165);
 	canvas->SetFontSize(22);
@@ -406,6 +490,7 @@ int ZheyeApp::Loop(Canvas* canvas, int ms, PostHandle* post) {
 
 	if (screen == SectionList) {
 		HandleListKeys(canvas);
+		HandleTabMouse(canvas);
 		HandleListMouse(canvas);
 		RenderSectionList(canvas);
 	}

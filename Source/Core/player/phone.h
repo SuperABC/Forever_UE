@@ -51,6 +51,9 @@ private:
 	// 手机界面状态
 	enum State { Home, InApp, TaskList };
 
+	// 底部工具栏按钮标识
+	enum BottomButton { BtnNone, BtnBack, BtnHome, BtnTasks };
+
 	// 应用条目（类型、初始化标记、快照缓存）
 	struct AppEntry {
 		AppEntry(std::string type, bool initialized, std::vector<uint8_t> snapshot) :
@@ -132,10 +135,49 @@ private:
 	void HandleTaskKeys(Canvas* canvas, PostHandle* post);
 
 	/*
+	* 检测坐标落在底部工具栏的哪个按钮上
+	* @mx, my: 鼠标坐标
+	* @return: 命中的按钮标识，未命中返回BtnNone
+	*/
+	BottomButton HitBottomBar(int mx, int my) const;
+
+	/*
+	* 处理底部工具栏的鼠标点击，所有界面状态下都生效；
+	* 未命中按钮的鼠标事件会原样放回队列，留给当前界面/应用自己处理
+	* @canvas: 画布对象
+	* @post: 向Core发起查询的句柄
+	*/
+	void HandleBottomBarMouse(Canvas* canvas, PostHandle* post);
+
+	/*
+	* 处理桌面状态下的鼠标输入：悬停时选择框跟随鼠标，点击图标打开应用
+	* @canvas: 画布对象
+	* @post: 向Core发起查询的句柄
+	*/
+	void HandleHomeMouse(Canvas* canvas, PostHandle* post);
+
+	/*
+	* 处理任务列表状态下的鼠标输入：悬停高亮，点叉关闭应用，点其他区域继续应用
+	* @canvas: 画布对象
+	* @post: 向Core发起查询的句柄
+	*/
+	void HandleTaskMouse(Canvas* canvas, PostHandle* post);
+
+	/*
+	* 通过PostHandle向Core查询当前游戏内日期与时间（时间只精确到分钟）
+	* @post: 向Core发起查询的句柄
+	* @date: 输出日期字符串（YYYY-MM-DD）
+	* @time: 输出时间字符串（HH:mm）
+	* @return: 查询是否成功
+	*/
+	bool GetGameDateTime(PostHandle* post, std::string& date, std::string& time) const;
+
+	/*
 	* 渲染桌面界面
 	* @canvas: 画布对象
+	* @post: 向Core发起查询的句柄
 	*/
-	void RenderHome(Canvas* canvas);
+	void RenderHome(Canvas* canvas, PostHandle* post);
 
 	/*
 	* 渲染任务列表界面

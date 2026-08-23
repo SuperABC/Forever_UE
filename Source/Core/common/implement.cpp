@@ -93,6 +93,12 @@ void PostImplement::Post(const JsonValue& request) {
 				return;
 			}
 		}
+		else if (request["post"].AsString() == "game time") {
+			result["result"] = "success";
+			result["date"] = player->GetTime()->Format("YYYY-MM-DD");
+			result["time"] = player->GetTime()->Format("HH:mm");
+			return;
+		}
 	}
 
 	result["result"] = "fail";
