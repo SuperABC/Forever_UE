@@ -334,6 +334,155 @@ void Canvas::PutString(const string& text, int x, int y) {
 	ReleaseDC(nullptr, screenDC);
 }
 
+int Canvas::MeasureString(const string& text) {
+	if (text.empty()) return 0;
+
+	// UTF-8 → wide
+	int wlen = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, nullptr, 0);
+	if (wlen <= 1) return 0;
+	vector<wchar_t> wtext(wlen);
+	MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, wtext.data(), wlen);
+	int charCount = wlen - 1;
+
+	// font name → wide，默认微软雅黑
+	wstring wfont;
+	if (!fontName.empty()) {
+		int fnlen = MultiByteToWideChar(CP_UTF8, 0, fontName.c_str(), -1, nullptr, 0);
+		wfont.resize(fnlen);
+		MultiByteToWideChar(CP_UTF8, 0, fontName.c_str(), -1, wfont.data(), fnlen);
+	}
+	else {
+		wfont = L"Microsoft YaHei";
+	}
+
+	HDC screenDC = GetDC(nullptr);
+	HDC memDC = CreateCompatibleDC(screenDC);
+
+	HFONT hFont = CreateFontW(
+		fontSize, 0, 0, 0,
+		fontBold ? FW_BOLD : FW_THIN,
+		fontItalic ? TRUE : FALSE,
+		fontUnderline ? TRUE : FALSE,
+		FALSE,
+		DEFAULT_CHARSET,
+		OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS,
+		DEFAULT_QUALITY, FF_MODERN,
+		wfont.c_str());
+	HFONT oldFont = reinterpret_cast<HFONT>(SelectObject(memDC, hFont));
+
+	SIZE sz = {};
+	GetTextExtentPoint32W(memDC, wtext.data(), charCount, &sz);
+
+	SelectObject(memDC, oldFont);
+	DeleteObject(hFont);
+	DeleteDC(memDC);
+	ReleaseDC(nullptr, screenDC);
+
+	return sz.cx;
+}
+
+int Canvas::PutWrappedString(const string& text, int x, int y, int maxWidth) {
+	if (text.empty() || width <= 0 || height <= 0 || maxWidth <= 0) return 0;
+
+	// UTF-8 → wide
+	int wlen = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, nullptr, 0);
+	if (wlen <= 1) return 0;
+	vector<wchar_t> wtext(wlen);
+	MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, wtext.data(), wlen);
+	int charCount = wlen - 1;
+
+	// font name → wide，默认微软雅黑
+	wstring wfont;
+	if (!fontName.empty()) {
+		int fnlen = MultiByteToWideChar(CP_UTF8, 0, fontName.c_str(), -1, nullptr, 0);
+		wfont.resize(fnlen);
+		MultiByteToWideChar(CP_UTF8, 0, fontName.c_str(), -1, wfont.data(), fnlen);
+	}
+	else {
+		wfont = L"Microsoft YaHei";
+	}
+
+	HDC screenDC = GetDC(nullptr);
+	HDC memDC = CreateCompatibleDC(screenDC);
+
+	HFONT hFont = CreateFontW(
+		fontSize, 0, 0, 0,
+		fontBold ? FW_BOLD : FW_THIN,
+		fontItalic ? TRUE : FALSE,
+		fontUnderline ? TRUE : FALSE,
+		FALSE,
+		DEFAULT_CHARSET,
+		OUT_CHARACTER_PRECIS, CLIP_CHARACTER_PRECIS,
+		DEFAULT_QUALITY, FF_MODERN,
+		wfont.c_str());
+	HFONT oldFont = reinterpret_cast<HFONT>(SelectObject(memDC, hFont));
+
+	// 第一遍：DT_CALCRECT 量出换行后所需高度
+	RECT calcRc = { 0, 0, maxWidth, 0 };
+	DrawTextW(memDC, wtext.data(), charCount, &calcRc, DT_WORDBREAK | DT_CALCRECT | DT_NOPREFIX);
+	int outW = maxWidth;
+	int outH = calcRc.bottom - calcRc.top;
+	if (outH <= 0) {
+		SelectObject(memDC, oldFont);
+		DeleteObject(hFont);
+		DeleteDC(memDC);
+		ReleaseDC(nullptr, screenDC);
+		return 0;
+	}
+
+	// 创建 24-bit 位图
+	BITMAPINFOHEADER bi = {};
+	bi.biSize = sizeof(BITMAPINFOHEADER);
+	bi.biWidth = outW;
+	bi.biHeight = outH;
+	bi.biPlanes = 1;
+	bi.biBitCount = 24;
+	bi.biCompression = BI_RGB;
+
+	HBITMAP hbm = CreateCompatibleBitmap(screenDC, outW, outH);
+	HBITMAP oldBm = reinterpret_cast<HBITMAP>(SelectObject(memDC, hbm));
+
+	// 黑底白字，第二遍实际按 DT_WORDBREAK 绘制
+	RECT fillRc = { 0, 0, outW, outH };
+	FillRect(memDC, &fillRc, reinterpret_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
+	SetTextColor(memDC, RGB(255, 255, 255));
+	SetBkMode(memDC, TRANSPARENT);
+	RECT drawRc = { 0, 0, outW, outH };
+	DrawTextW(memDC, wtext.data(), charCount, &drawRc, DT_WORDBREAK | DT_NOPREFIX);
+
+	// 读回像素（24-bit BGR，自底向上）
+	int rowStride = ((outW * 3 + 3) & ~3);
+	vector<uint8_t> bits(static_cast<size_t>(rowStride) * outH);
+	GetDIBits(memDC, hbm, 0, outH, bits.data(), reinterpret_cast<BITMAPINFO*>(&bi), DIB_RGB_COLORS);
+
+	// 合成到 canvas buffer
+	for (int row = 0; row < outH; row++) {
+		int srcRow = outH - 1 - row;
+		for (int col = 0; col < outW; col++) {
+			uint8_t gray = bits[static_cast<size_t>(srcRow) * rowStride + col * 3];
+			if (!gray) continue;
+			int px = x + col, py = y + row;
+			if (px < 0 || px >= width || py < 0 || py >= height) continue;
+			int idx = (py * width + px) * 4;
+			uint8_t a = static_cast<uint8_t>(static_cast<int>(gray) * brushA / 255);
+			uint8_t ia = 255 - a;
+			buffer[idx] = static_cast<uint8_t>((buffer[idx] * ia + static_cast<int>(brushB) * a) / 255);
+			buffer[idx + 1] = static_cast<uint8_t>((buffer[idx + 1] * ia + static_cast<int>(brushG) * a) / 255);
+			buffer[idx + 2] = static_cast<uint8_t>((buffer[idx + 2] * ia + static_cast<int>(brushR) * a) / 255);
+			buffer[idx + 3] = max(buffer[idx + 3], a);
+		}
+	}
+
+	SelectObject(memDC, oldBm);
+	SelectObject(memDC, oldFont);
+	DeleteObject(hbm);
+	DeleteObject(hFont);
+	DeleteDC(memDC);
+	ReleaseDC(nullptr, screenDC);
+
+	return outH;
+}
+
 void Canvas::PutRawImage(const uint8_t* srcBGRA, int srcW, int srcH, int x, int y, int dstW, int dstH) {
 	for (int dy = 0; dy < dstH; dy++) {
 		for (int dx = 0; dx < dstW; dx++) {

@@ -98,6 +98,9 @@
     <ClCompile Include="player\app_basic.cpp">
       <Filter>player</Filter>
     </ClCompile>
+    <ClCompile Include="player\app_zheye.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
     <ClCompile Include="player\asset_basic.cpp">
       <Filter>player</Filter>
     </ClCompile>
@@ -173,6 +176,9 @@
       <Filter>player</Filter>
     </ClInclude>
     <ClInclude Include="player\app_basic.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="player\app_zheye.h">
       <Filter>player</Filter>
     </ClInclude>
     <ClInclude Include="player\asset_basic.h">

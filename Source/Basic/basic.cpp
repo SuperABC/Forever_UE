@@ -23,6 +23,7 @@
 #include "player/puzzle_flappy.h"
 #include "player/puzzle_war.h"
 #include "player/app_basic.h"
+#include "player/app_zheye.h"
 
 #pragma comment(lib, "Dependence.lib")
 
@@ -491,7 +492,7 @@ extern "C" __declspec(dllexport) void FinishModAssets(AssetFactory* factory) {
 }
 
 extern "C" __declspec(dllexport) void* GetModApps() {
-	static vector<string> mods = { "test" };
+	static vector<string> mods = { "test", "zheye" };
 	return static_cast<void*>(&mods);
 }
 
@@ -502,6 +503,14 @@ extern "C" __declspec(dllexport) void RegisterModApps(AppFactory* factory) {
 		TestApp::Back,
 		TestApp::Refresh,
 		[]() { return new TestApp(); },
+		[](AppMod* app) { delete app; }
+	);
+	factory->RegisterApp(ZheyeApp::GetId(),
+		ZheyeApp::Init,
+		ZheyeApp::Loop,
+		ZheyeApp::Back,
+		ZheyeApp::Refresh,
+		[]() { return new ZheyeApp(); },
 		[](AppMod* app) { delete app; }
 	);
 }

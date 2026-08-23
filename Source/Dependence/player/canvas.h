@@ -203,6 +203,23 @@ public:
 	void PutString(const std::string& text, int x, int y);
 
 	/*
+	* 绘制自动换行文字（使用 Windows GDI + 当前字体设置）
+	* @text: 要绘制的文本（UTF-8编码）
+	* @x: 文字左上角横坐标
+	* @y: 文字左上角纵坐标
+	* @maxWidth: 最大宽度（像素），超出后自动换行
+	* @return: 实际渲染高度（像素）
+	*/
+	int PutWrappedString(const std::string& text, int x, int y, int maxWidth);
+
+	/*
+	* 测量单行文字的像素宽度（使用当前字体设置，不换行，不绘制）
+	* @text: 要测量的文本（UTF-8编码）
+	* @return: 文字宽度（像素），失败返回0
+	*/
+	int MeasureString(const std::string& text);
+
+	/*
 	* 绘制原始BGRA图像数据（缩放到dstW x dstH）
 	* @srcBGRA: 源图像数据指针（BGRA格式）
 	* @srcW: 源图像宽度

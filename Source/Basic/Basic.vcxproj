@@ -30,6 +30,7 @@
     <ClCompile Include="map\terrain_basic.cpp" />
     <ClCompile Include="map\zone_basic.cpp" />
     <ClCompile Include="player\app_basic.cpp" />
+    <ClCompile Include="player\app_zheye.cpp" />
     <ClCompile Include="player\puzzle_basic.cpp" />
     <ClCompile Include="player\puzzle_dance.cpp" />
     <ClCompile Include="player\puzzle_flappy.cpp" />
@@ -57,6 +58,7 @@
     <ClInclude Include="map\terrain_basic.h" />
     <ClInclude Include="map\zone_basic.h" />
     <ClInclude Include="player\app_basic.h" />
+    <ClInclude Include="player\app_zheye.h" />
     <ClInclude Include="player\puzzle_basic.h" />
     <ClInclude Include="player\puzzle_dance.h" />
     <ClInclude Include="player\puzzle_flappy.h" />

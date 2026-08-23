@@ -13,6 +13,7 @@ using namespace std;
 
 typedef void* (*GetModFunc)();
 
+string Config::configDir = "";
 unordered_map<string, vector<string>> Config::dllPaths = {};
 unordered_map<string, unordered_map<string, bool>> Config::modEnables = {};
 vector<string> Config::resourcePaths = {};
@@ -50,6 +51,7 @@ void Config::ReadConfig(const string& path) {
 	if (!fin.is_open()) {
 		THROW_EXCEPTION(IOException, "Failed to open file: " + path + ".\n");
 	}
+	configDir = filesystem::path(path).parent_path().string();
 	if (reader.Parse(fin, root)) {
 		for (auto dllPath : root["dll_paths"]) {
 			AddDllPath(dllPath.AsString());
@@ -378,6 +380,10 @@ void Config::WriteConfig(const string& path) {
 	auto json = writer.Write(root);
 	fout << json;
 	fout.close();
+}
+
+string Config::GetConfigDir() {
+	return configDir;
 }
 
 vector<string> Config::GetDllPaths() {

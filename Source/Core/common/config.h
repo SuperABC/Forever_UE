@@ -23,6 +23,12 @@ public:
 	static void WriteConfig(const std::string& path);
 
 	/*
+	* 获取当前生效的config.json所在目录
+	* @return: 目录绝对路径
+	*/
+	static std::string GetConfigDir();
+
+	/*
 	* 获取已注册的所有mod目录路径
 	* @return: mod目录路径列表
 	*/
@@ -149,6 +155,9 @@ private:
 	* @return: 匹配返回true，否则false
 	*/
 	static bool CheckFileFormat(const std::filesystem::path& filePath, const std::string& format);
+
+	// 当前生效的config.json所在目录
+	static std::string configDir;
 
 	// mod目录路径 -> [dll绝对路径列表]
 	static std::unordered_map<std::string, std::vector<std::string>> dllPaths;

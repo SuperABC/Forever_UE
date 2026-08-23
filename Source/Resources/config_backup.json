@@ -23,7 +23,7 @@
 	"route_mods": ["air"],
 	"station_mods": ["airport"],
 	"vehicle_mods": ["plane"],
-	"app_mods" : [ "test" ],
+	"app_mods" : [ "test", "zheye" ],
 	"puzzle_mods": ["test"],
 	
 	"resource_paths": [

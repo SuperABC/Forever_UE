@@ -80,6 +80,19 @@ void PostImplement::Post(const JsonValue& request) {
 				return;
 			}
 		}
+		else if (request["post"].AsString() == "config path") {
+			auto path = Config::GetConfigDir();
+			if (path.empty()) {
+				result["result"] = "fail";
+				result["msg"] = "config path not available.";
+				return;
+			}
+			else {
+				result["result"] = "success";
+				result["path"] = path;
+				return;
+			}
+		}
 	}
 
 	result["result"] = "fail";
