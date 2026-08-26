@@ -86,9 +86,9 @@ Event* ParseEvent(Parser& parser) {
 	if (type == "game_start") {
 		return new GameStartEvent();
 	}
-	else if (type == "script_message") {
+	else if (type == "global_message") {
 		if (parser.HasOption("--message")) message = parser.GetOption("--message");
-		return new ScriptMessageEvent(message);
+		return new GlobalMessageEvent(message);
 	}
 	else if (type == "option_dialog") {
 		if (parser.HasOption("--id")) id = stoi(parser.GetOption("--id"));

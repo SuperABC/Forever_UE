@@ -22,6 +22,7 @@ static const int CONTENT_WIDTH = 480 - CONTENT_MARGIN * 2;
 
 string ZheyeApp::publicPath = "";
 bool ZheyeApp::available = false;
+bool ZheyeApp::runtimeSaveReady = false;
 
 vector<ZheyeApp::Section> ZheyeApp::sections;
 int ZheyeApp::currentSection = 0;
@@ -71,11 +72,17 @@ bool ZheyeApp::ReadJsonFile(const string& path, JsonValue& out) {
 	return ok;
 }
 
+void ZheyeApp::ResetRuntimeSave() {
+	error_code ec;
+	fs::copy_file(fs::path(publicPath) / "data.json", fs::path(publicPath) / "runtime.json",
+		fs::copy_options::overwrite_existing, ec);
+}
+
 bool ZheyeApp::LoadData() {
 	sections.clear();
 
 	JsonValue root;
-	if (!ReadJsonFile((fs::path(publicPath) / "data.json").string(), root)) return false;
+	if (!ReadJsonFile((fs::path(publicPath) / "runtime.json").string(), root)) return false;
 
 	for (auto& sectionVal : root["sections"]) {
 		Section section;
@@ -476,6 +483,12 @@ void ZheyeApp::Init(PostHandle* post) {
 	if (result["result"].AsString() != "success") return;
 
 	publicPath = (fs::path(result["path"].AsString()) / "public" / "zheye").string();
+
+	if (!runtimeSaveReady) {
+		ResetRuntimeSave();
+		runtimeSaveReady = true;
+	}
+
 	available = LoadData();
 }
 

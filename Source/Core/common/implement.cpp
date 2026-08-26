@@ -99,6 +99,19 @@ void PostImplement::Post(const JsonValue& request) {
 			result["time"] = player->GetTime()->Format("HH:mm");
 			return;
 		}
+		else if (request["post"].AsString() == "global message") {
+			auto message = request["message"].AsString();
+			if (message.empty()) {
+				result["result"] = "fail";
+				result["msg"] = "message is empty.";
+				return;
+			}
+			else {
+				story->AddMessage(message);
+				result["result"] = "success";
+				return;
+			}
+		}
 	}
 
 	result["result"] = "fail";

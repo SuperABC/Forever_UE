@@ -18,7 +18,8 @@ Story::Story() :
 	script(nullptr),
 	historyTalk(),
 	currentTime(),
-	timerSet() {
+	timerSet(),
+	pendingMessages() {
 	if (!scriptFactory) {
 		scriptFactory = new ScriptFactory();
 	}
@@ -225,6 +226,16 @@ vector<tuple<string, string, string>> Story::PopExpiredTimers(const Time& now, i
 		timerSet.erase(it);
 	}
 
+	return result;
+}
+
+void Story::AddMessage(const string& message) {
+	pendingMessages.push_back(message);
+}
+
+vector<string> Story::PopMessages() {
+	vector<string> result;
+	result.swap(pendingMessages);
 	return result;
 }
 

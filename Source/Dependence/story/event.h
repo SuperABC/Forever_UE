@@ -81,19 +81,19 @@ public:
 private:
 };
 
-// 脚本消息（已实现）
-class ScriptMessageEvent : public Event {
+// 全局消息（已实现）
+class GlobalMessageEvent : public Event {
 public:
 	/*
-	* 构造脚本消息事件
+	* 构造全局消息事件
 	* @message: 消息内容
 	*/
-	ScriptMessageEvent(std::string message);
+	GlobalMessageEvent(std::string message);
 
 	/*
-	* 析构脚本消息事件
+	* 析构全局消息事件
 	*/
-	virtual ~ScriptMessageEvent();
+	virtual ~GlobalMessageEvent();
 
 	/*
 	* 事件类型

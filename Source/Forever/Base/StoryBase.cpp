@@ -78,6 +78,11 @@ void AStoryBase::Tick(float DeltaTime) {
 		}
 	}
 
+	auto pendingMessages = global->GetStory()->PopMessages();
+	for (auto& message : pendingMessages) {
+		ScriptMessage(UTF8_TO_TCHAR(message.data()));
+	}
+
 	ProcessExpiredTimers(MAX_TIMERS_PER_CHECK);
 }
 
@@ -841,7 +846,7 @@ void AStoryBase::SimulateDayBoundary(const Time& moment) {
 
 void AStoryBase::ScriptMessage(FString message) {
 	auto story = global->GetStory();
-	auto event = new ScriptMessageEvent(TCHAR_TO_UTF8(*message));
+	auto event = new GlobalMessageEvent(TCHAR_TO_UTF8(*message));
 
 	vector<function<pair<bool, ValueType>(const string&)>> getValues = {
 		[&](const string& name) -> pair<bool, ValueType> {

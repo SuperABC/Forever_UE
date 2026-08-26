@@ -144,11 +144,20 @@ private:
 	*/
 	static bool ReadJsonFile(const std::string& path, class JsonValue& out);
 
+	/*
+	* 用初始化存档(data.json)覆盖实时存档(runtime.json)，清除上一局残留的动态修改
+	*/
+	static void ResetRuntimeSave();
+
 	// 数据根目录（Source/Resources/public/zheye），Init()中通过PostHandle解析
 	static std::string publicPath;
 	static bool available;
 
-	// 版块数据（Init()时从data.json一次性全部读入内存）
+	// 本局游戏是否已经用初始化存档覆盖过实时存档；DLL静态存储期与游戏进程同生命周期，
+	// 因此这个标记天然实现了"整局游戏只重置一次"，不受App被反复打开/关闭的影响
+	static bool runtimeSaveReady;
+
+	// 版块数据（Init()时从runtime.json一次性全部读入内存）
 	static std::vector<Section> sections;
 	static int currentSection;
 	static int selectedPost;

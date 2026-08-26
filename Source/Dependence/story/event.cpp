@@ -40,26 +40,26 @@ bool GameStartEvent::Match(Event* e,
 	return true;
 }
 
-ScriptMessageEvent::ScriptMessageEvent(string message) :
+GlobalMessageEvent::GlobalMessageEvent(string message) :
 	message(message) {
 
 }
 
-ScriptMessageEvent::~ScriptMessageEvent() {
+GlobalMessageEvent::~GlobalMessageEvent() {
 
 }
 
-const string& ScriptMessageEvent::GetType() const {
-	static const string type = "script_message";
+const string& GlobalMessageEvent::GetType() const {
+	static const string type = "global_message";
 	return type;
 }
 
-bool ScriptMessageEvent::Match(Event* e,
+bool GlobalMessageEvent::Match(Event* e,
 	const vector<function<pair<bool, ValueType>(const string&)>>& getValues) {
 	if (!e) return false;
 	if (GetType() != e->GetType()) return false;
 
-	auto other = dynamic_cast<ScriptMessageEvent*>(e);
+	auto other = dynamic_cast<GlobalMessageEvent*>(e);
 	if (!other) return false;
 
 	bool result = true;
@@ -72,11 +72,11 @@ bool ScriptMessageEvent::Match(Event* e,
 	return result;
 }
 
-void ScriptMessageEvent::SetMessage(string message) {
+void GlobalMessageEvent::SetMessage(string message) {
 	this->message = message;
 }
 
-string ScriptMessageEvent::GetMessage() const {
+string GlobalMessageEvent::GetMessage() const {
 	return message;
 }
 

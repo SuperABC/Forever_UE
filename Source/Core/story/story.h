@@ -96,6 +96,17 @@ public:
 	*/
 	std::vector<std::tuple<std::string, std::string, std::string>> PopExpiredTimers(const Time& now, int maxCount);
 
+	/*
+	* 添加一条待广播的全局消息，供App等外部调用方通过PostHandle写入
+	* @message: 消息内容
+	*/
+	void AddMessage(const std::string& message);
+
+	/*
+	* 取出所有待处理的全局消息（取出后队列清空）
+	*/
+	std::vector<std::string> PopMessages();
+
 	// 获取玩家当前房间
 	Room* GetCurrentRoom(Map* map) const;
 
@@ -123,6 +134,9 @@ private:
 
 	// 计时器集合（到达时间, 名称, 所属脚本类型, 所属脚本实体名称），按到达时间有序，begin()即最先到时的计时器
 	std::set<std::tuple<Time, std::string, std::string, std::string>> timerSet;
+
+	// 待广播的全局消息队列
+	std::vector<std::string> pendingMessages;
 
 };
 

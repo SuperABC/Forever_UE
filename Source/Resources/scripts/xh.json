@@ -46,7 +46,7 @@
 	"milestone": "test_message",
 	"visible": false,
 	"drop": false,
-	"triggers": [{"type": "script_message", "message": "test"}],
+	"triggers": [{"type": "global_message", "message": "test"}],
 	"dialogs": [
 		{"condition": "$$plot_step==chapter1_arrive_songshan", "list": [
 			{"speaker": "", "content": "测试成功，你已经开始体验《校花的贴身高手》"}

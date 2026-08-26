@@ -307,12 +307,12 @@ vector<Event*> Script::BuildEvent(JsonValue root) {
 		if (type == "game_start") {
 			event = new GameStartEvent();
 		}
-		else if (type == "script_message") {
+		else if (type == "global_message") {
 			auto message = obj["message"];
 			if (message.IsNull()) {
-				THROW_EXCEPTION(RuntimeException, "Missing message for script_message event.\n");
+				THROW_EXCEPTION(RuntimeException, "Missing message for global_message event.\n");
 			}
-			event = new ScriptMessageEvent(message.AsString());
+			event = new GlobalMessageEvent(message.AsString());
 		}
 		else if (type == "option_dialog") {
 			auto id = obj["id"];
