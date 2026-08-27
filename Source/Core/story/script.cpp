@@ -623,6 +623,14 @@ vector<Change*> Script::BuildChanges(JsonValue root) {
 			}
 			change = new SetValueChange(variable.AsString(), value.AsString());
 		}
+		else if (type == "global_setting") {
+			auto setting = obj["setting"];
+			auto value = obj["value"];
+			if (setting.IsNull() || value.IsNull()) {
+				THROW_EXCEPTION(RuntimeException, "Missing setting or value for global_setting change.\n");
+			}
+			change = new GlobalSettingChange(setting.AsString(), value.AsString());
+		}
 		else if (type == "remove_value") {
 			auto variable = obj["variable"];
 			if (variable.IsNull()) {

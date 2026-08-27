@@ -137,6 +137,43 @@ string SetValueChange::GetValue() const {
 	return value;
 }
 
+GlobalSettingChange::GlobalSettingChange() :
+	setting(),
+	value() {
+
+}
+
+GlobalSettingChange::GlobalSettingChange(string setting, string value) :
+	setting(setting),
+	value(value) {
+
+}
+
+GlobalSettingChange::~GlobalSettingChange() {
+
+}
+
+const string& GlobalSettingChange::GetType() const {
+	static const string type = "global_setting";
+	return type;
+}
+
+void GlobalSettingChange::SetSetting(string setting) {
+	this->setting = setting;
+}
+
+string GlobalSettingChange::GetSetting() const {
+	return setting;
+}
+
+void GlobalSettingChange::SetValue(string value) {
+	this->value = value;
+}
+
+string GlobalSettingChange::GetValue() const {
+	return value;
+}
+
 RemoveValueChange::RemoveValueChange() :
 	variable() {
 

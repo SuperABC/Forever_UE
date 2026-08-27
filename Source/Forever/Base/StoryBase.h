@@ -80,6 +80,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Story")
 	FString GetHistory();
 	UFUNCTION(BlueprintCallable, Category = "Story")
+	FString GetSetting(FString setting);
+	UFUNCTION(BlueprintCallable, Category = "Story")
 	void SetStatus(const FString& name, const FString& destination);
 
 	UFUNCTION(BlueprintCallable, Category = "Story")

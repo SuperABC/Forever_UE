@@ -233,7 +233,7 @@ void AGlobalBase::BeginPlay() {
 void AGlobalBase::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
-	player->Tick(DeltaTime);
+	player->Tick(DeltaTime, story);
 	map->Tick(player);
 	auto applyAndFree = [&](vector<pair<Change*, Script*>> changes) {
 		if (!changes.empty() && storyActor && story->GetScript()) {

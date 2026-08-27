@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "class.h"
+
 #include <string>
 #include <vector>
 #include <unordered_set>
@@ -73,6 +75,12 @@ public:
 	* @return: 已启用mod名称列表
 	*/
 	static std::vector<std::string> GetEnables(const std::string& type);
+
+	/*
+	* 获取所有全局设置的初始值
+	* @return: 设置名称到初始值的映射
+	*/
+	static std::unordered_map<std::string, ValueType> GetGlobalSettings();
 
 	/*
 	* 获取已注册的所有resource目录路径
@@ -164,6 +172,9 @@ private:
 
 	// mod类型 -> { mod名称 -> 是否启用 }
 	static std::unordered_map<std::string, std::unordered_map<std::string, bool>> modEnables;
+
+	// 全局设置名称 -> 初始值
+	static std::unordered_map<std::string, ValueType> globalSettings;
 
 	// 已注册的resource目录路径列表
 	static std::vector<std::string> resourcePaths;

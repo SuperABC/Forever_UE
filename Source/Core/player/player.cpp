@@ -5,6 +5,7 @@
 #include "player/app.h"
 #include "story/event.h"
 #include "story/change.h"
+#include "story/story.h"
 
 
 using namespace std;
@@ -225,9 +226,9 @@ void Player::Destroy() {
 	assets.clear();
 }
 
-void Player::Tick(float delta) {
+void Player::Tick(float delta, Story* story) {
 	day = time->GetDay();
-	time->AddMilliseconds((int)(delta * 60 * 1000));
+	time->AddMilliseconds((int)(delta * 60 * 1000 * ToDouble(story->GetSetting("time_flow_ratio"))));
 }
 
 vector<Event*> Player::ApplyChange(const Change* change,

@@ -19,7 +19,8 @@ Story::Story() :
 	historyTalk(),
 	currentTime(),
 	timerSet(),
-	pendingMessages() {
+	pendingMessages(),
+	globalSettings() {
 	if (!scriptFactory) {
 		scriptFactory = new ScriptFactory();
 	}
@@ -84,6 +85,8 @@ void Story::Init(Map* map, Populace* populace, Player* player) {
 		script->ReadMilestones(story);
 	}
 	script->SetValue("system.time.year", player->GetTime()->GetYear());
+
+	globalSettings = Config::GetGlobalSettings();
 }
 
 void Story::Destroy() {
@@ -133,6 +136,18 @@ vector<Event*> Story::ApplyChange(const Change* change,
 		conditionValue.ParseCondition(obj->GetValue());
 		script->SetValue(ToString(conditionVariable.EvaluateValue(getValues)),
 			conditionValue.EvaluateValue(getValues));
+	}
+	else if (type == "global_setting") {
+		auto obj = dynamic_cast<const GlobalSettingChange*>(change);
+		if (obj == nullptr) {
+			THROW_EXCEPTION(RuntimeException, "Failed to cast Change to GlobalSettingChange.\n");
+		}
+		Condition settingCondition;
+		settingCondition.ParseCondition(obj->GetSetting());
+		Condition valueCondition;
+		valueCondition.ParseCondition(obj->GetValue());
+		globalSettings[ToString(settingCondition.EvaluateValue(getValues))] =
+			valueCondition.EvaluateValue(getValues);
 	}
 	else if (type == "remove_value") {
 		auto obj = dynamic_cast<const RemoveValueChange*>(change);
@@ -253,6 +268,14 @@ Room* Story::GetCurrentRoom(Map* map) const {
 	}
 
 	return nullptr;
+}
+
+ValueType Story::GetSetting(const string& setting) const {
+	auto it = globalSettings.find(setting);
+	if (it == globalSettings.end()) {
+		THROW_EXCEPTION(RuntimeException, "Unknown global setting: " + setting + ".\n");
+	}
+	return it->second;
 }
 
 Script* Story::CreateLocal(Event* event,

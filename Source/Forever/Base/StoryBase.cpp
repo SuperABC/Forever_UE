@@ -590,6 +590,11 @@ FString AStoryBase::GetHistory() {
 	return UTF8_TO_TCHAR(result.data());
 }
 
+FString AStoryBase::GetSetting(FString setting) {
+	auto value = global->GetStory()->GetSetting(TCHAR_TO_UTF8(*setting));
+	return UTF8_TO_TCHAR(ToString(value).data());
+}
+
 void AStoryBase::SetStatus(const FString& name, const FString& destination) {
 	auto citizen = global->GetPopulace()->GetCitizen(TCHAR_TO_UTF8(*name));
 	if (!citizen) return;

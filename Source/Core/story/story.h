@@ -7,6 +7,7 @@
 
 #include <set>
 #include <tuple>
+#include <unordered_map>
 
 
 class Story {
@@ -111,6 +112,13 @@ public:
 	Room* GetCurrentRoom(Map* map) const;
 
 	/*
+	* 查询当前某个全局设置的值
+	* @setting: 设置名称
+	* @return: 当前值
+	*/
+	ValueType GetSetting(const std::string& setting) const;
+
+	/*
 	* 为事件注入 local 变量并追加到 getValues，返回创建的 Script*（无 local 时返回 nullptr）
 	* 调用方在不再需要时应 pop_back getValues 并 delete 返回值
 	* @event: 触发事件
@@ -137,6 +145,9 @@ private:
 
 	// 待广播的全局消息队列
 	std::vector<std::string> pendingMessages;
+
+	// 运行时全局设置（游戏初始化时从Config读取初始值，运行时可被GlobalSettingChange修改，不持久化）
+	std::unordered_map<std::string, ValueType> globalSettings;
 
 };
 

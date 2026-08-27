@@ -269,6 +269,61 @@ private:
 
 };
 
+// 全局设置修改（已实现）
+class GlobalSettingChange : public Change {
+public:
+	/*
+	* 默认构造全局设置修改变化
+	*/
+	GlobalSettingChange();
+
+	/*
+	* 构造全局设置修改变化
+	* @setting, value: 设置名与值表达式
+	*/
+	GlobalSettingChange(std::string setting, std::string value);
+
+	/*
+	* 析构全局设置修改变化
+	*/
+	virtual ~GlobalSettingChange();
+
+	/*
+	* 变化类型
+	*/
+	virtual const std::string& GetType() const;
+
+	/*
+	* 设置设置名
+	* @setting: 设置名
+	*/
+	void SetSetting(std::string setting);
+
+	/*
+	* 获取设置名
+	*/
+	std::string GetSetting() const;
+
+	/*
+	* 设置值表达式
+	* @value: 值表达式
+	*/
+	void SetValue(std::string value);
+
+	/*
+	* 获取值表达式
+	*/
+	std::string GetValue() const;
+
+private:
+	// 设置名
+	std::string setting;
+
+	// 值表达式
+	std::string value;
+
+};
+
 // 移除变量（已实现）
 class RemoveValueChange : public Change {
 public:

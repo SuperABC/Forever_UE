@@ -62,8 +62,9 @@ public:
 	/*
 	* 时钟周期更新
 	* @delta: 本帧时长（秒）
+	* @story: 剧情对象，用于读取time_flow_ratio全局设置
 	*/
-	void Tick(float delta);
+	void Tick(float delta, Story* story);
 
 	/*
 	* 应用剧情变化

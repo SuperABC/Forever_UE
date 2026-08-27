@@ -16,6 +16,7 @@ typedef void* (*GetModFunc)();
 string Config::configDir = "";
 unordered_map<string, vector<string>> Config::dllPaths = {};
 unordered_map<string, unordered_map<string, bool>> Config::modEnables = {};
+unordered_map<string, ValueType> Config::globalSettings = {};
 vector<string> Config::resourcePaths = {};
 unordered_map<string, vector<string>> Config::layoutPaths = {};
 unordered_map<string, unordered_map<string, string>> Config::scriptPaths = {};
@@ -37,6 +38,7 @@ bool Config::CheckFileFormat(const filesystem::path& filePath, const string& for
 void Config::ReadConfig(const string& path) {
 	dllPaths.clear();
 	modEnables.clear();
+	globalSettings.clear();
 	resourcePaths.clear();
 	layoutPaths.clear();
 	scriptPaths.clear();
@@ -145,6 +147,11 @@ void Config::ReadConfig(const string& path) {
 		for (auto storyPath : root["story_paths"]) {
 			AddScript(storyPath.AsString());
 		}
+
+		globalSettings["show_option_name"] = root["global_setting"]["show_option_name"].AsBool();
+		globalSettings["skip_dialog_duration"] = root["global_setting"]["skip_dialog_duration"].AsDouble();
+		globalSettings["skip_video_duration"] = root["global_setting"]["skip_video_duration"].AsDouble();
+		globalSettings["time_flow_ratio"] = root["global_setting"]["time_flow_ratio"].AsDouble();
 	}
 	else {
 		fin.close();
@@ -372,6 +379,13 @@ void Config::WriteConfig(const string& path) {
 		stories.append(story);
 	}
 	root["story_paths"] = stories;
+
+	JsonValue globalSetting = JsonValue(DATA_OBJECT);
+	globalSetting["show_option_name"] = JsonValue(get<bool>(globalSettings["show_option_name"]));
+	globalSetting["skip_dialog_duration"] = JsonValue(get<double>(globalSettings["skip_dialog_duration"]));
+	globalSetting["skip_video_duration"] = JsonValue(get<double>(globalSettings["skip_video_duration"]));
+	globalSetting["time_flow_ratio"] = JsonValue(get<double>(globalSettings["time_flow_ratio"]));
+	root["global_setting"] = globalSetting;
 
 	ofstream fout(path);
 	if (!fout.is_open()) {
@@ -853,6 +867,10 @@ vector<string> Config::GetEnables(const string& type) {
 		}
 	}
 	return enables;
+}
+
+unordered_map<string, ValueType> Config::GetGlobalSettings() {
+	return globalSettings;
 }
 
 vector<string> Config::GetResourcePaths() {
